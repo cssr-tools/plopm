@@ -87,7 +87,7 @@
 <h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
 <section id="spe11b">
 <h2>SPE11B<a class="headerlink" href="#spe11b" title="Link to this heading"></a></h2>
-<p>These files, located in the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples">examples folder</a>, were generated using
+<p>The simulation files located in the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples">examples folder</a> were generated using
 <a class="reference external" href="https://github.com/OPM/pyopmspe11">pyopmspe11</a> by running this <a class="reference external" href="https://github.com/OPM/pyopmspe11/blob/main/examples/hello_world/spe11b.txt">configuration file</a>.
 Then, if you succeed in installing <strong>plopm</strong>, inside the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples">examples folder</a> by typing in the terminal</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm
@@ -111,7 +111,7 @@ download the files in that folder and add the input deck in the same folder, the
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-o<span class="w"> </span>.<span class="w"> </span>-s<span class="w"> </span>,,0<span class="w"> </span>-x<span class="w"> </span><span class="m">455600</span>,462200<span class="w"> </span>-y<span class="w"> </span><span class="m">7319500</span>,7327100
 </pre></div>
 </div>
-<p>these are onee of the generated figures:</p>
+<p>these are some of the generated figures:</p>
 <img alt="_images/plopm.png" src="_images/plopm.png" />
 <p>Here, we plot the top view (xy axis, k=1), and we set the xlim (-x) and ylim (-y) in order to reduce the white space outside the active cells.</p>
 </section>
@@ -122,6 +122,9 @@ for an example where <strong>plopm</strong> is used to generate figures from the
 <a class="reference external" href="https://github.com/OPM/opm-data/tree/master/spe10model2">SPE10_MODEL2 model</a> by downloading the files and using the
 <a class="reference external" href="https://opm-project.org/?page_id=19">OPM Flow</a> simulator.</p>
 <img alt="_images/spe10.png" src="_images/spe10.png" />
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE10_MODEL2<span class="w"> </span>-o<span class="w"> </span>.<span class="w"> </span>-s<span class="w"> </span><span class="m">50</span>,,
+</pre></div>
+</div>
 </section>
 </section>
 

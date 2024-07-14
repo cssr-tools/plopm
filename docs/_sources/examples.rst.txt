@@ -6,7 +6,7 @@ Examples
 SPE11B 
 ======
 
-These files, located in the `examples folder <https://github.com/cssr-tools/plopm/blob/main/examples>`_, were generated using 
+The simulation files located in the `examples folder <https://github.com/cssr-tools/plopm/blob/main/examples>`_ were generated using 
 `pyopmspe11 <https://github.com/OPM/pyopmspe11>`_ by running this `configuration file <https://github.com/OPM/pyopmspe11/blob/main/examples/hello_world/spe11b.txt>`_. 
 Then, if you succeed in installing **plopm**, inside the `examples folder <https://github.com/cssr-tools/plopm/blob/main/examples>`_ by typing in the terminal
 
@@ -38,7 +38,7 @@ download the files in that folder and add the input deck in the same folder, the
 
     plopm -i NORNE_ATW2013 -o . -s ,,0 -x 455600,462200 -y 7319500,7327100
 
-these are onee of the generated figures:
+these are some of the generated figures:
 
 .. image:: ./figs/plopm.png
 
@@ -54,3 +54,7 @@ for an example where **plopm** is used to generate figures from the
 `OPM Flow <https://opm-project.org/?page_id=19>`_ simulator.
 
 .. image:: ./figs/spe10.png
+
+.. code-block:: bash
+
+    plopm -i SPE10_MODEL2 -o . -s 50,,
