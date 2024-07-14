@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/cssr-tools/plopm/actions/workflows/plopm.yml/badge.svg)](https://github.com/cssr-tools/plopm/actions/workflows/CI.yml)
+[![Build Status](https://github.com/cssr-tools/plopm/actions/workflows/CI.yml/badge.svg)](https://github.com/cssr-tools/plopm/actions/workflows/CI.yml)
 <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10%20|%203.11%20|%203.12-blue.svg"></a>
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -10,7 +10,7 @@
 Quick generation of PNG figures from a simulation model given any 2D slide.
 
 ## Installation
-To install the _plopm_ executable in an existing Python enviornment: 
+To install the _plopm_ executable in an existing Python environment: 
 
 ```bash
 pip install git+https://github.com/cssr-tools/plopm.git
