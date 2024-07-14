@@ -28,7 +28,7 @@ The current implementation supports the following executable with the argument o
 
 .. code-block:: bash
 
-    pycopm -i some_input -o some_output_folder
+    plopm -i some_input -o some_output_folder
 
 where 
 
@@ -42,14 +42,14 @@ where
 
 Installation
 ------------
-See the `Github page <https://github.com/cssr-tools/pycopm>`_.
+See the `Github page <https://github.com/cssr-tools/plopm>`_.
 
 .. tip::
-    Check the `CI.yml <https://github.com/cssr-tools/pycopm/blob/main/.github/workflows/CI.yml>`_ file.
+    Check the `CI.yml <https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml>`_ file.
 
 Getting started
 ---------------
 See the :doc:`examples <./examples>`.
 
 .. tip::
-    Check the `tests <https://github.com/cssr-tools/pycopm/blob/main/tests>`_.
+    Check the `tests <https://github.com/cssr-tools/plopm/blob/main/tests>`_.
