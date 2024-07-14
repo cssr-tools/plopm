@@ -10,8 +10,14 @@
 Quick generation of PNG figures from a simulation model given any 2D slide.
 
 ## Installation
+To install the _plopm_ executable in an existing Python enviornment: 
 
-You can install the Python requirements in a virtual environment with the following commands:
+```bash
+pip install git+https://github.com/cssr-tools/plopm.git
+```
+
+If you are interested in modifying the source code, then you can clone the repository and 
+install the Python requirements in a virtual environment with the following commands:
 
 ```bash
 # Clone the repo
