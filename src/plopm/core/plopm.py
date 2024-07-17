@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
+# pylint: disable=R1702
 
 """
 Script to plot 2D maps of OPM Flow geological models.
@@ -10,34 +11,30 @@ import argparse
 import csv
 from io import StringIO
 import numpy as np
-from resdata.resfile import ResdataFile
-from resdata.grid import Grid
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+try:
+    from opm.io.ecl import EclFile as OpmFile
+    from opm.io.ecl import EGrid as OpmGrid
+except ImportError:
+    print("The Python package opm was not found, using resdata")
+try:
+    from resdata.resfile import ResdataFile
+    from resdata.grid import Grid
+except ImportError:
+    print("The resdata Python package was not found, using opm")
 
 
 def plopm():
     """Main function for the plopm executable"""
     cmdargs = load_parser()
     dic = {"name": cmdargs["input"].strip()}
-    font = {"family": "normal", "weight": "normal", "size": float(cmdargs["size"])}
-    matplotlib.rc("font", **font)
-    plt.rcParams.update(
-        {
-            "text.usetex": True,
-            "font.family": "monospace",
-            "legend.columnspacing": 0.9,
-            "legend.handlelength": 3.5,
-            "legend.fontsize": float(cmdargs["size"]),
-            "lines.linewidth": 4,
-            "axes.titlesize": float(cmdargs["size"]),
-            "axes.grid": False,
-            "figure.figsize": (8, 16),
-        }
-    )
     dic["coords"] = ["x", "y", "z"]
     dic["scale"] = cmdargs["scale"].strip()
+    dic["use"] = cmdargs["use"].strip()
+    dic["size"] = float(cmdargs["size"])
     dic["xlim"], dic["ylim"] = [], []
     dic["slide"] = np.genfromtxt(StringIO(cmdargs["slide"]), delimiter=",", dtype=int)
     if cmdargs["xlim"]:
@@ -48,9 +45,49 @@ def plopm():
         dic["ylim"] = np.genfromtxt(
             StringIO(cmdargs["ylim"]), delimiter=",", dtype=float
         )
-    dic["nx"] = Grid(f"{dic['name']}.EGRID").nx
-    dic["ny"] = Grid(f"{dic['name']}.EGRID").ny
-    dic["nz"] = Grid(f"{dic['name']}.EGRID").nz
+    ini_properties(dic)
+    if dic["slide"][0] > -1:
+        dic["mx"], dic["my"] = 2 * dic["ny"] - 1, 2 * dic["nz"] - 1
+        dic["xmeaning"], dic["ymeaning"] = "y", "z"
+    elif dic["slide"][1] > -1:
+        dic["mx"], dic["my"] = 2 * dic["nx"] - 1, 2 * dic["nz"] - 1
+        dic["xmeaning"], dic["ymeaning"] = "x", "z"
+    else:
+        dic["mx"], dic["my"] = 2 * dic["nx"] - 1, 2 * dic["ny"] - 1
+        dic["xmeaning"], dic["ymeaning"] = "x", "y"
+    dic["wx"], dic["wy"] = 2 * dic["nx"] - 1, 2 * dic["ny"] - 1
+    get_kws(dic)
+    get_wells(dic)
+    get_mesh(dic)
+    if dic["slide"][0] > -1:
+        dic["tslide"] = f", slide i={dic['slide'][0]}"
+        get_yzcoords(dic)
+        map_yzcoords(dic)
+    elif dic["slide"][1] > -1:
+        dic["tslide"] = f", slide j={dic['slide'][1]}"
+        get_xzcoords(dic)
+        map_xzcoords(dic)
+    else:
+        dic["tslide"] = f", slide k={dic['slide'][2]}"
+        get_xycoords(dic)
+        map_xycoords(dic)
+    make_2dmaps(dic)
+    if dic["wellsij"] and dic["use"] == "resdata":
+        get_xy_wells(dic)
+        make_wells(dic)
+
+
+def ini_properties(dic):
+    """
+    Define the properties to plot
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     dic["props"] = [
         "porv",
         "permx",
@@ -69,6 +106,21 @@ def plopm():
         " [-]",
         " [-]",
     ]
+    font = {"family": "normal", "weight": "normal", "size": dic["size"]}
+    matplotlib.rc("font", **font)
+    plt.rcParams.update(
+        {
+            "text.usetex": True,
+            "font.family": "monospace",
+            "legend.columnspacing": 0.9,
+            "legend.handlelength": 3.5,
+            "legend.fontsize": dic["size"],
+            "lines.linewidth": 4,
+            "axes.titlesize": dic["size"],
+            "axes.grid": False,
+            "figure.figsize": (8, 16),
+        }
+    )
     dic["cmaps"] = [
         "terrain",
         "turbo",
@@ -100,36 +152,19 @@ def plopm():
         lambda x, _: f"{x:.0f}",
         lambda x, _: f"{x:.0f}",
     ]
-    if dic["slide"][0] > -1:
-        dic["mx"], dic["my"] = 2 * dic["ny"] - 1, 2 * dic["nz"] - 1
-        dic["xmeaning"], dic["ymeaning"] = "y", "z"
-    elif dic["slide"][1] > -1:
-        dic["mx"], dic["my"] = 2 * dic["nx"] - 1, 2 * dic["nz"] - 1
-        dic["xmeaning"], dic["ymeaning"] = "x", "z"
+    if dic["use"] == "resdata":
+        dic["nx"] = Grid(f"{dic['name']}.EGRID").nx
+        dic["ny"] = Grid(f"{dic['name']}.EGRID").ny
+        dic["nz"] = Grid(f"{dic['name']}.EGRID").nz
     else:
-        dic["mx"], dic["my"] = 2 * dic["nx"] - 1, 2 * dic["ny"] - 1
-        dic["xmeaning"], dic["ymeaning"] = "x", "y"
-    dic["wx"], dic["wy"] = 2 * dic["nx"] - 1, 2 * dic["ny"] - 1
-    get_kws(dic)
-    get_wells(dic)
-    if dic["slide"][0] > -1:
-        dic["tslide"] = f", slide i={dic['slide'][0]}"
-        get_yzcoords(dic)
-    elif dic["slide"][1] > -1:
-        dic["tslide"] = f", slide j={dic['slide'][1]}"
-        get_xzcoords(dic)
-    else:
-        dic["tslide"] = f", slide k={dic['slide'][2]}"
-        get_xycoords(dic)
-    if dic["wellsij"]:
-        get_xy_wells(dic)
-        make_wells(dic)
-    make_2dmaps(dic)
+        dic["nx"] = OpmGrid(f"{dic['name']}.EGRID").dimension[0]
+        dic["ny"] = OpmGrid(f"{dic['name']}.EGRID").dimension[1]
+        dic["nz"] = OpmGrid(f"{dic['name']}.EGRID").dimension[2]
 
 
 def get_yzcoords(dic):
     """
-    Map the coordinates from the OPM Grid to the 2D yz-mesh
+    Handle the coordinates from the OPM Grid to the 2D yz-mesh
 
     Args:
         dic (dict): Global dictionary
@@ -138,28 +173,18 @@ def get_yzcoords(dic):
         dic (dict): Modified global dictionary
 
     """
-    mesh = Grid(f"{dic['name']}.EGRID").export_corners(
-        Grid(f"{dic['name']}.EGRID").export_index()
-    )
-    (
-        dic["xc"],
-        dic["yc"],
-    ) = (
-        [],
-        [],
-    )
     n_k = dic["slide"][0]
     for j in range(dic["nz"]):
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [1, 7, 2, 8]):
             dic[f"{k}c"][-1].append(
-                mesh[(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
+                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
             )
         for i in range(dic["ny"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [1, 7, 2, 8]):
                 dic[f"{k}c"][-1].append(
-                    mesh[
+                    dic["mesh"][
                         (i + 1) * dic["nx"]
                         + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"]
                     ][n]
@@ -169,31 +194,22 @@ def get_yzcoords(dic):
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [13, 19, 14, 20]):
             dic[f"{k}c"][-1].append(
-                mesh[(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
+                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
             )
         for i in range(dic["ny"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [13, 19, 14, 20]):
                 dic[f"{k}c"][-1].append(
-                    mesh[
+                    dic["mesh"][
                         (i + 1) * dic["nx"]
                         + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"]
                     ][n]
                     + n_k
                 )
-    for cell in Grid(f"{dic['name']}.EGRID").cells():
-        if cell.active and cell.i == dic["slide"][0]:
-            for name in dic["props"]:
-                dic[name + "a"][
-                    2 * cell.j + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]
-                ] = dic[name][cell.active_index]
-            dic["porva"][2 * cell.j + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]] = dic[
-                "porv"
-            ][cell.global_index]
 
 
-def get_xzcoords(dic):
+def map_yzcoords(dic):
     """
-    Map the coordinates from the OPM Grid to the 2D xz-mesh
+    Map the properties from the simulations to the 2D slide
 
     Args:
         dic (dict): Global dictionary
@@ -202,9 +218,64 @@ def get_xzcoords(dic):
         dic (dict): Modified global dictionary
 
     """
-    mesh = Grid(f"{dic['name']}.EGRID").export_corners(
-        Grid(f"{dic['name']}.EGRID").export_index()
-    )
+    if dic["use"] == "resdata":
+        for cell in Grid(f"{dic['name']}.EGRID").cells():
+            if cell.active and cell.i == dic["slide"][0]:
+                for name in dic["props"]:
+                    dic[name + "a"][
+                        2 * cell.j + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]
+                    ] = dic[name][cell.active_index]
+                dic["porva"][2 * cell.j + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]] = (
+                    dic["porv"][cell.global_index]
+                )
+    else:
+        for k in range(dic["nz"]):
+            for j in range(dic["ny"]):
+                for i in range(dic["nx"]):
+                    if (
+                        dic["porv"][i + j * dic["nx"] + k * dic["nx"] * dic["ny"]] > 0
+                        and i == dic["slide"][0]
+                    ):
+                        for name in dic["props"]:
+                            dic[name + "a"][
+                                2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = dic[name][
+                                dic["actind"][
+                                    i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
+                                ]
+                            ]
+                        dic["porva"][2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]] = dic[
+                            "porv"
+                        ][i + j * dic["nx"] + k * dic["nx"] * dic["ny"]]
+
+
+def get_mesh(dic):
+    """
+    Read the coordinates using either opm or resdata
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    if dic["use"] == "resdata":
+        dic["mesh"] = Grid(f"{dic['name']}.EGRID").export_corners(
+            Grid(f"{dic['name']}.EGRID").export_index()
+        )
+    else:
+        dic["mesh"] = []
+        for k in range(dic["nz"]):
+            for j in range(dic["ny"]):
+                for i in range(dic["nx"]):
+                    dic["mesh"].append([])
+                    for n in range(8):
+                        dic["mesh"][-1] += [
+                            OpmGrid(f"{dic['name']}.EGRID").xyz_from_ijk(i, j, k)[0][n],
+                            OpmGrid(f"{dic['name']}.EGRID").xyz_from_ijk(i, j, k)[1][n],
+                            OpmGrid(f"{dic['name']}.EGRID").xyz_from_ijk(i, j, k)[2][n],
+                        ]
     (
         dic["xc"],
         dic["yc"],
@@ -212,44 +283,50 @@ def get_xzcoords(dic):
         [],
         [],
     )
+
+
+def get_xzcoords(dic):
+    """
+    Handle the coordinates from the OPM Grid to the 2D xz-mesh
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     n_k = dic["slide"][1] * dic["nx"]
     for j in range(dic["nz"]):
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [0, 3, 2, 5]):
             dic[f"{k}c"][-1].append(
-                mesh[(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
+                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
             )
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [0, 3, 2, 5]):
                 dic[f"{k}c"][-1].append(
-                    mesh[1 + i + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
+                    dic["mesh"][1 + i + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n]
+                    + n_k
                 )
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [12, 15, 14, 17]):
             dic[f"{k}c"][-1].append(
-                mesh[(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
+                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
             )
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [12, 15, 14, 17]):
                 dic[f"{k}c"][-1].append(
-                    mesh[1 + i + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
+                    dic["mesh"][1 + i + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n]
+                    + n_k
                 )
-    for cell in Grid(f"{dic['name']}.EGRID").cells():
-        if cell.active and cell.j == dic["slide"][1]:
-            for name in dic["props"]:
-                dic[name + "a"][
-                    2 * cell.i + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]
-                ] = dic[name][cell.active_index]
-            dic["porva"][2 * cell.i + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]] = dic[
-                "porv"
-            ][cell.global_index]
 
 
-def get_xycoords(dic):
+def map_xzcoords(dic):
     """
-    Map the coordinates from the OPM Grid to the 2D xy-mesh
+    Map the properties from the simulations to the 2D slide
 
     Args:
         dic (dict): Global dictionary
@@ -258,41 +335,104 @@ def get_xycoords(dic):
         dic (dict): Modified global dictionary
 
     """
-    mesh = Grid(f"{dic['name']}.EGRID").export_corners(
-        Grid(f"{dic['name']}.EGRID").export_index()
-    )
-    (
-        dic["xc"],
-        dic["yc"],
-    ) = (
-        [],
-        [],
-    )
+    if dic["use"] == "resdata":
+        for cell in Grid(f"{dic['name']}.EGRID").cells():
+            if cell.active and cell.j == dic["slide"][1]:
+                for name in dic["props"]:
+                    dic[name + "a"][
+                        2 * cell.i + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]
+                    ] = dic[name][cell.active_index]
+                dic["porva"][2 * cell.i + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]] = (
+                    dic["porv"][cell.global_index]
+                )
+    else:
+        for k in range(dic["nz"]):
+            for j in range(dic["ny"]):
+                for i in range(dic["nx"]):
+                    if (
+                        dic["porv"][i + j * dic["nx"] + k * dic["nx"] * dic["ny"]] > 0
+                        and j == dic["slide"][1]
+                    ):
+                        for name in dic["props"]:
+                            dic[name + "a"][
+                                2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = dic[name][
+                                dic["actind"][
+                                    i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
+                                ]
+                            ]
+                        dic["porva"][2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]] = dic[
+                            "porv"
+                        ][i + j * dic["nx"] + k * dic["nx"] * dic["ny"]]
+
+
+def get_xycoords(dic):
+    """
+    Handle the coordinates from the OPM Grid to the 2D xy-mesh
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     n_k = dic["slide"][2] * dic["nx"] * dic["ny"]
     for j in range(dic["ny"]):
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [0, 3, 1, 4]):
-            dic[f"{k}c"][-1].append(mesh[j * dic["nx"]][n] + n_k)
+            dic[f"{k}c"][-1].append(dic["mesh"][j * dic["nx"]][n] + n_k)
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [0, 3, 1, 4]):
-                dic[f"{k}c"][-1].append(mesh[1 + i + j * dic["nx"]][n] + n_k)
+                dic[f"{k}c"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n] + n_k)
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [6, 9, 7, 10]):
-            dic[f"{k}c"][-1].append(mesh[j * dic["nx"]][n] + n_k)
+            dic[f"{k}c"][-1].append(dic["mesh"][j * dic["nx"]][n] + n_k)
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [6, 9, 7, 10]):
-                dic[f"{k}c"][-1].append(mesh[1 + i + j * dic["nx"]][n] + n_k)
-    for cell in Grid(f"{dic['name']}.EGRID").cells():
-        if cell.active and cell.k == dic["slide"][2]:
-            for name in dic["props"]:
-                dic[name + "a"][2 * cell.i + 2 * cell.j * dic["mx"]] = dic[name][
-                    cell.active_index
+                dic[f"{k}c"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n] + n_k)
+
+
+def map_xycoords(dic):
+    """
+    Map the properties from the simulations to the 2D slide
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    if dic["use"] == "resdata":
+        for cell in Grid(f"{dic['name']}.EGRID").cells():
+            if cell.active and cell.k == dic["slide"][2]:
+                for name in dic["props"]:
+                    dic[name + "a"][2 * cell.i + 2 * cell.j * dic["mx"]] = dic[name][
+                        cell.active_index
+                    ]
+                dic["porva"][2 * cell.i + 2 * cell.j * dic["mx"]] = dic["porv"][
+                    cell.global_index
                 ]
-            dic["porva"][2 * cell.i + 2 * cell.j * dic["mx"]] = dic["porv"][
-                cell.global_index
-            ]
+    else:
+        for k in range(dic["nz"]):
+            for j in range(dic["ny"]):
+                for i in range(dic["nx"]):
+                    if (
+                        dic["porv"][i + j * dic["nx"] + k * dic["nx"] * dic["ny"]] > 0
+                        and k == dic["slide"][2]
+                    ):
+                        for name in dic["props"]:
+                            dic[name + "a"][2 * i + 2 * j * dic["mx"]] = dic[name][
+                                dic["actind"][
+                                    i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
+                                ]
+                            ]
+                        dic["porva"][2 * i + 2 * j * dic["mx"]] = dic["porv"][
+                            i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
+                        ]
 
 
 def get_kws(dic):
@@ -307,10 +447,15 @@ def get_kws(dic):
 
     """
     for name in dic["props"]:
-        dic[name] = np.array(
-            ResdataFile(f"{dic['name']}.INIT").iget_kw(name.upper())[0]
-        )
+        if dic["use"] == "resdata":
+            dic[name] = np.array(
+                ResdataFile(f"{dic['name']}.INIT").iget_kw(name.upper())[0]
+            )
+        else:
+            dic[name] = np.array(OpmFile(f"{dic['name']}.INIT")[name.upper()])
         dic[name + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
+    if dic["use"] == "opm":
+        dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
 
 
 def get_xy_wells(dic):
@@ -324,7 +469,7 @@ def get_xy_wells(dic):
         dic (dict): Modified global dictionary
 
     """
-    mesh = Grid(f"{dic['name']}.EGRID").export_corners(
+    dic["mesh"] = Grid(f"{dic['name']}.EGRID").export_corners(
         Grid(f"{dic['name']}.EGRID").export_index()
     )
     (
@@ -339,17 +484,17 @@ def get_xy_wells(dic):
         dic["xw"].append([])
         dic["yw"].append([])
         for k, n in zip(["x", "x", "y", "y"], [0, 3, 1, 4]):
-            dic[f"{k}w"][-1].append(mesh[j * dic["nx"]][n] + n_k)
+            dic[f"{k}w"][-1].append(dic["mesh"][j * dic["nx"]][n] + n_k)
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [0, 3, 1, 4]):
-                dic[f"{k}w"][-1].append(mesh[1 + i + j * dic["nx"]][n] + n_k)
+                dic[f"{k}w"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n] + n_k)
         dic["xw"].append([])
         dic["yw"].append([])
         for k, n in zip(["x", "x", "y", "y"], [6, 9, 7, 10]):
-            dic[f"{k}w"][-1].append(mesh[j * dic["nx"]][n] + n_k)
+            dic[f"{k}w"][-1].append(dic["mesh"][j * dic["nx"]][n] + n_k)
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [6, 9, 7, 10]):
-                dic[f"{k}w"][-1].append(mesh[1 + i + j * dic["nx"]][n] + n_k)
+                dic[f"{k}w"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n] + n_k)
     for cell in Grid(f"{dic['name']}.EGRID").cells():
         if cell.active:
             dic["wellsa"][2 * cell.i + 2 * cell.j * dic["wx"]] = len(dic["wellsij"])
@@ -561,6 +706,12 @@ def load_parser():
         "--ylim",
         default="",
         help="Set the lower and upper bounds in the 2D map along y ('' by default).",
+    )
+    parser.add_argument(
+        "-u",
+        "--use",
+        default="resdata",
+        help="Use resdata or opm Python libraries ('resdata' by default).",
     )
     return vars(parser.parse_known_args()[0])
 
