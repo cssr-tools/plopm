@@ -9,6 +9,7 @@ Script to plot 2D maps of OPM Flow geological models.
 
 import argparse
 import csv
+import os
 from io import StringIO
 import numpy as np
 import matplotlib
@@ -35,7 +36,7 @@ def plopm():
     dic["scale"] = cmdargs["scale"].strip()
     dic["use"] = cmdargs["use"].strip()
     dic["size"] = float(cmdargs["size"])
-    dic["xlim"], dic["ylim"] = [], []
+    dic["xlim"], dic["ylim"], dic["wellsij"] = [], [], []
     dic["slide"] = np.genfromtxt(StringIO(cmdargs["slide"]), delimiter=",", dtype=int)
     if cmdargs["xlim"]:
         dic["xlim"] = np.genfromtxt(
@@ -57,7 +58,8 @@ def plopm():
         dic["xmeaning"], dic["ymeaning"] = "x", "y"
     dic["wx"], dic["wy"] = 2 * dic["nx"] - 1, 2 * dic["ny"] - 1
     get_kws(dic)
-    get_wells(dic)
+    if os.path.isfile(f"{dic['name']}.DATA"):
+        get_wells(dic)
     get_mesh(dic)
     if dic["slide"][0] > -1:
         dic["tslide"] = f", slide i={dic['slide'][0]}"
@@ -153,13 +155,15 @@ def ini_properties(dic):
         lambda x, _: f"{x:.0f}",
     ]
     if dic["use"] == "resdata":
-        dic["nx"] = Grid(f"{dic['name']}.EGRID").nx
-        dic["ny"] = Grid(f"{dic['name']}.EGRID").ny
-        dic["nz"] = Grid(f"{dic['name']}.EGRID").nz
+        dic["egrid"] = Grid(f"{dic['name']}.EGRID")
+        dic["nx"] = dic["egrid"].nx
+        dic["ny"] = dic["egrid"].ny
+        dic["nz"] = dic["egrid"].nz
     else:
-        dic["nx"] = OpmGrid(f"{dic['name']}.EGRID").dimension[0]
-        dic["ny"] = OpmGrid(f"{dic['name']}.EGRID").dimension[1]
-        dic["nz"] = OpmGrid(f"{dic['name']}.EGRID").dimension[2]
+        dic["egrid"] = OpmGrid(f"{dic['name']}.EGRID")
+        dic["nx"] = dic["egrid"].dimension[0]
+        dic["ny"] = dic["egrid"].dimension[1]
+        dic["nz"] = dic["egrid"].dimension[2]
 
 
 def get_yzcoords(dic):
@@ -219,7 +223,7 @@ def map_yzcoords(dic):
 
     """
     if dic["use"] == "resdata":
-        for cell in Grid(f"{dic['name']}.EGRID").cells():
+        for cell in dic["egrid"].cells():
             if cell.active and cell.i == dic["slide"][0]:
                 for name in dic["props"]:
                     dic[name + "a"][
@@ -261,10 +265,9 @@ def get_mesh(dic):
 
     """
     if dic["use"] == "resdata":
-        dic["mesh"] = Grid(f"{dic['name']}.EGRID").export_corners(
-            Grid(f"{dic['name']}.EGRID").export_index()
-        )
+        dic["mesh"] = dic["egrid"].export_corners(dic["egrid"].export_index())
     else:
+        hola = dic["egrid"]
         dic["mesh"] = []
         for k in range(dic["nz"]):
             for j in range(dic["ny"]):
@@ -272,17 +275,11 @@ def get_mesh(dic):
                     dic["mesh"].append([])
                     for n in range(8):
                         dic["mesh"][-1] += [
-                            OpmGrid(f"{dic['name']}.EGRID").xyz_from_ijk(i, j, k)[0][n],
-                            OpmGrid(f"{dic['name']}.EGRID").xyz_from_ijk(i, j, k)[1][n],
-                            OpmGrid(f"{dic['name']}.EGRID").xyz_from_ijk(i, j, k)[2][n],
+                            hola.xyz_from_ijk(i, j, k)[0][n],
+                            hola.xyz_from_ijk(i, j, k)[1][n],
+                            hola.xyz_from_ijk(i, j, k)[2][n],
                         ]
-    (
-        dic["xc"],
-        dic["yc"],
-    ) = (
-        [],
-        [],
-    )
+    dic["xc"], dic["yc"] = [], []
 
 
 def get_xzcoords(dic):
@@ -336,7 +333,7 @@ def map_xzcoords(dic):
 
     """
     if dic["use"] == "resdata":
-        for cell in Grid(f"{dic['name']}.EGRID").cells():
+        for cell in dic["egrid"].cells():
             if cell.active and cell.j == dic["slide"][1]:
                 for name in dic["props"]:
                     dic[name + "a"][
@@ -407,7 +404,7 @@ def map_xycoords(dic):
 
     """
     if dic["use"] == "resdata":
-        for cell in Grid(f"{dic['name']}.EGRID").cells():
+        for cell in dic["egrid"].cells():
             if cell.active and cell.k == dic["slide"][2]:
                 for name in dic["props"]:
                     dic[name + "a"][2 * cell.i + 2 * cell.j * dic["mx"]] = dic[name][
@@ -469,9 +466,7 @@ def get_xy_wells(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["mesh"] = Grid(f"{dic['name']}.EGRID").export_corners(
-        Grid(f"{dic['name']}.EGRID").export_index()
-    )
+    dic["mesh"] = dic["egrid"].export_corners(dic["egrid"].export_index())
     (
         dic["xw"],
         dic["yw"],
@@ -495,7 +490,7 @@ def get_xy_wells(dic):
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [6, 9, 7, 10]):
                 dic[f"{k}w"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n] + n_k)
-    for cell in Grid(f"{dic['name']}.EGRID").cells():
+    for cell in dic["egrid"].cells():
         if cell.active:
             dic["wellsa"][2 * cell.i + 2 * cell.j * dic["wx"]] = len(dic["wellsij"])
     for i, well in enumerate(dic["wellsij"]):
@@ -514,7 +509,6 @@ def get_wells(dic):
 
     """
     dic["wellsa"] = np.ones((dic["wx"]) * (dic["wy"])) * np.nan
-    dic["wellsij"] = []
     wells = False
     with open(f"{dic['name']}.DATA", "r", encoding="utf8") as file:
         for row in csv.reader(file):
