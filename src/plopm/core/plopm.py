@@ -107,6 +107,7 @@ def ini_properties(dic):
         " [-]",
         " [-]",
         " [-]",
+        " [-]",
     ]
     font = {"family": "normal", "weight": "normal", "size": dic["size"]}
     matplotlib.rc("font", **font)
@@ -144,6 +145,7 @@ def ini_properties(dic):
         "Porosity",
         "Fipnum",
         "Satnum",
+        "MPI rank",
     ]
     dic["format"] = [
         lambda x, _: f"{x:.2e}",
@@ -153,17 +155,22 @@ def ini_properties(dic):
         lambda x, _: f"{x:.1f}",
         lambda x, _: f"{x:.0f}",
         lambda x, _: f"{x:.0f}",
+        lambda x, _: f"{x:.0f}",
     ]
     if dic["use"] == "resdata":
         dic["egrid"] = Grid(f"{dic['name']}.EGRID")
         dic["nx"] = dic["egrid"].nx
         dic["ny"] = dic["egrid"].ny
         dic["nz"] = dic["egrid"].nz
+        if ResdataFile(f"{dic['name']}.INIT").has_kw("MPI_RANK"):
+            dic["props"] += ["mpi_rank"]
     else:
         dic["egrid"] = OpmGrid(f"{dic['name']}.EGRID")
         dic["nx"] = dic["egrid"].dimension[0]
         dic["ny"] = dic["egrid"].dimension[1]
         dic["nz"] = dic["egrid"].dimension[2]
+        if OpmFile(f"{dic['name']}.INIT").count("MPI_RANK"):
+            dic["props"] += ["mpi_rank"]
 
 
 def get_yzcoords(dic):
@@ -267,7 +274,6 @@ def get_mesh(dic):
     if dic["use"] == "resdata":
         dic["mesh"] = dic["egrid"].export_corners(dic["egrid"].export_index())
     else:
-        hola = dic["egrid"]
         dic["mesh"] = []
         for k in range(dic["nz"]):
             for j in range(dic["ny"]):
@@ -275,9 +281,9 @@ def get_mesh(dic):
                     dic["mesh"].append([])
                     for n in range(8):
                         dic["mesh"][-1] += [
-                            hola.xyz_from_ijk(i, j, k)[0][n],
-                            hola.xyz_from_ijk(i, j, k)[1][n],
-                            hola.xyz_from_ijk(i, j, k)[2][n],
+                            dic["egrid"].xyz_from_ijk(i, j, k)[0][n],
+                            dic["egrid"].xyz_from_ijk(i, j, k)[1][n],
+                            dic["egrid"].xyz_from_ijk(i, j, k)[2][n],
                         ]
     dic["xc"], dic["yc"] = [], []
 
