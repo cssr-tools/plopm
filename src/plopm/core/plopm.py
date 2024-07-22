@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R1702
+# pylint: disable=R1702, W0123, W1401
 
 """
 Script to plot 2D maps of OPM Flow geological models.
@@ -19,10 +19,12 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 try:
     from opm.io.ecl import EclFile as OpmFile
     from opm.io.ecl import EGrid as OpmGrid
+    from opm.io.ecl import ESmry as OpmSummary
 except ImportError:
     print("The Python package opm was not found, using resdata")
 try:
     from resdata.resfile import ResdataFile
+    from resdata.summary import Summary
     from resdata.grid import Grid
 except ImportError:
     print("The resdata Python package was not found, using opm")
@@ -31,22 +33,11 @@ except ImportError:
 def plopm():
     """Main function for the plopm executable"""
     cmdargs = load_parser()
-    dic = {"name": cmdargs["input"].strip()}
-    dic["coords"] = ["x", "y", "z"]
-    dic["scale"] = cmdargs["scale"].strip()
-    dic["use"] = cmdargs["use"].strip()
-    dic["size"] = float(cmdargs["size"])
-    dic["xlim"], dic["ylim"], dic["wellsij"] = [], [], []
-    dic["slide"] = np.genfromtxt(StringIO(cmdargs["slide"]), delimiter=",", dtype=int)
-    if cmdargs["xlim"]:
-        dic["xlim"] = np.genfromtxt(
-            StringIO(cmdargs["xlim"]), delimiter=",", dtype=float
-        )
-    if cmdargs["ylim"]:
-        dic["ylim"] = np.genfromtxt(
-            StringIO(cmdargs["ylim"]), delimiter=",", dtype=float
-        )
+    dic = ini_dic(cmdargs)
     ini_properties(dic)
+    ini_readers(dic)
+    if not os.path.exists(dic["output"]):
+        os.system(f"mkdir {dic['output']}")
     if dic["slide"][0] > -1:
         dic["mx"], dic["my"] = 2 * dic["ny"] - 1, 2 * dic["nz"] - 1
         dic["xmeaning"], dic["ymeaning"] = "y", "z"
@@ -58,25 +49,144 @@ def plopm():
         dic["xmeaning"], dic["ymeaning"] = "x", "y"
     dic["wx"], dic["wy"] = 2 * dic["nx"] - 1, 2 * dic["ny"] - 1
     get_kws(dic)
-    if os.path.isfile(f"{dic['name']}.DATA"):
-        get_wells(dic)
+    if len(dic["vsum"]) > 0:
+        make_summary(dic)
+        return
     get_mesh(dic)
+    if dic["wells"] == 1:
+        get_wells(dic)
+        get_xy_wells(dic)
+        make_wells(dic)
+        return
     if dic["slide"][0] > -1:
-        dic["tslide"] = f", slide i={dic['slide'][0]}"
+        dic["tslide"] = f", slide i={dic['slide'][0]+1}"
+        dic["nslide"] = f"{dic['slide'][0]+1},*,*"
         get_yzcoords(dic)
         map_yzcoords(dic)
     elif dic["slide"][1] > -1:
-        dic["tslide"] = f", slide j={dic['slide'][1]}"
+        dic["tslide"] = f", slide j={dic['slide'][1]+1}"
+        dic["nslide"] = f"*,{dic['slide'][1]+1},*"
         get_xzcoords(dic)
         map_xzcoords(dic)
     else:
-        dic["tslide"] = f", slide k={dic['slide'][2]}"
+        dic["tslide"] = f", slide k={dic['slide'][2]+1}"
+        dic["nslide"] = f"*,*,{dic['slide'][2]+1}"
         get_xycoords(dic)
         map_xycoords(dic)
     make_2dmaps(dic)
-    if dic["wellsij"] and dic["use"] == "resdata":
-        get_xy_wells(dic)
-        make_wells(dic)
+
+
+def make_summary(dic):
+    """
+    Plot the summary variable
+
+    Args:
+        cmdargs (dict): Command arguments
+
+    Returns:
+        None
+
+    """
+    plt.rcParams.update({"axes.grid": True})
+    fig, axis = plt.subplots()
+    if len(dic["cmaps"]) == 1:
+        axis.step(dic["time"], dic["vsum"], color=dic["cmaps"][0])
+    else:
+        axis.step(dic["time"], dic["vsum"], color="b")
+    axis.set_ylabel(dic["props"][0])
+    axis.set_xlabel("Time [s]")
+    axis.set_xlim([min(dic["time"]), max(dic["time"])])
+    axis.set_ylim([min(dic["vsum"]), max(dic["vsum"])])
+    axis.set_xticks(
+        np.linspace(
+            min(dic["time"]),
+            max(dic["time"]),
+            4,
+        )
+    )
+    axis.set_yticks(
+        np.linspace(
+            min(dic["vsum"]),
+            max(dic["vsum"]),
+            4,
+        )
+    )
+    fig.savefig(f"{dic['output']}/{dic['variable']}.png", bbox_inches="tight", dpi=300)
+    plt.close()
+
+
+def ini_dic(cmdargs):
+    """
+    Initialize the global dictionary
+
+    Args:
+        cmdargs (dict): Command arguments
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    dic = {"name": cmdargs["input"].strip()}
+    dic["coords"] = ["x", "y", "z"]
+    dic["scale"] = cmdargs["scale"].strip()
+    dic["use"] = cmdargs["use"].strip()
+    dic["variable"] = cmdargs["variable"].strip()
+    dic["size"] = float(cmdargs["size"])
+    dic["legend"] = cmdargs["legend"].strip()
+    dic["numbers"] = cmdargs["numbers"].strip()
+    dic["colormap"] = cmdargs["colormap"].strip()
+    dic["output"] = cmdargs["output"].strip()
+    dic["xlim"], dic["ylim"], dic["wellsij"], dic["vsum"] = [], [], [], []
+    dic["dtitle"] = ""
+    dic["restart"] = int(cmdargs["restart"])
+    dic["wells"] = int(cmdargs["wells"])
+    if dic["restart"] == -1:
+        dic["restart"] = 0
+    dic["slide"] = (
+        np.genfromtxt(StringIO(cmdargs["slide"]), delimiter=",", dtype=int) - 1
+    )
+    if cmdargs["xlim"]:
+        dic["xlim"] = np.genfromtxt(
+            StringIO(cmdargs["xlim"]), delimiter=",", dtype=float
+        )
+    if cmdargs["ylim"]:
+        dic["ylim"] = np.genfromtxt(
+            StringIO(cmdargs["ylim"]), delimiter=",", dtype=float
+        )
+    return dic
+
+
+def ini_readers(dic):
+    """
+    Set the classes for reading the properties
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    if dic["use"] == "resdata":
+        dic["egrid"] = Grid(f"{dic['name']}.EGRID")
+        dic["init"] = ResdataFile(f"{dic['name']}.INIT")
+        dic["nx"] = dic["egrid"].nx
+        dic["ny"] = dic["egrid"].ny
+        dic["nz"] = dic["egrid"].nz
+        if os.path.isfile(f"{dic['name']}.UNRST"):
+            dic["unrst"] = ResdataFile(f"{dic['name']}.UNRST")
+        if os.path.isfile(f"{dic['name']}.SMSPEC"):
+            dic["summary"] = Summary(f"{dic['name']}.SMSPEC")
+    else:
+        dic["egrid"] = OpmGrid(f"{dic['name']}.EGRID")
+        dic["init"] = OpmFile(f"{dic['name']}.INIT")
+        dic["nx"] = dic["egrid"].dimension[0]
+        dic["ny"] = dic["egrid"].dimension[1]
+        dic["nz"] = dic["egrid"].dimension[2]
+        if os.path.isfile(f"{dic['name']}.UNRST"):
+            dic["unrst"] = OpmFile(f"{dic['name']}.UNRST")
+        if os.path.isfile(f"{dic['name']}.SMSPEC"):
+            dic["summary"] = OpmSummary(f"{dic['name']}.SMSPEC")
 
 
 def ini_properties(dic):
@@ -90,25 +200,67 @@ def ini_properties(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["props"] = [
-        "porv",
-        "permx",
-        "permy",
-        "permz",
-        "poro",
-        "fipnum",
-        "satnum",
-    ]
-    dic["units"] = [
-        r" [m$^3$]",
-        " [mD]",
-        " [mD]",
-        " [mD]",
-        " [-]",
-        " [-]",
-        " [-]",
-        " [-]",
-    ]
+    if dic["variable"]:
+        dic["props"] = [dic["variable"]]
+        if dic["variable"].lower() in ["disperc", "depth", "dx", "dy", "dz"]:
+            dic["units"] = [" [m]"]
+            dic["cmaps"] = ["jet"]
+            dic["format"] = [lambda x, _: f"{x:.2e}"]
+        elif dic["variable"].lower() in ["porv"]:
+            dic["units"] = [r" [m$^3$]"]
+            dic["cmaps"] = ["terrain"]
+            dic["format"] = [lambda x, _: f"{x:.2e}"]
+        elif dic["variable"].lower() in ["permx", "permy", "permz"]:
+            dic["units"] = [" [mD]"]
+            dic["cmaps"] = ["turbo"]
+            dic["format"] = [lambda x, _: f"{x:.0f}"]
+        elif "num" in dic["variable"].lower():
+            dic["units"] = [" [-]"]
+            dic["cmaps"] = ["tab20b"]
+            dic["format"] = [lambda x, _: f"{x:.2f}"]
+        else:
+            dic["units"] = [" [-]"]
+            dic["cmaps"] = ["gnuplot"]
+            dic["format"] = [lambda x, _: f"{x:.0f}"]
+        if dic["legend"]:
+            dic["units"] = [f" {dic['legend']}"]
+        if dic["numbers"]:
+            dic["format"] = [eval(dic["numbers"])]
+        if dic["colormap"]:
+            dic["cmaps"] = [dic["colormap"]]
+    else:
+        dic["props"] = [
+            "porv",
+            "permx",
+            "permz",
+            "poro",
+            "fipnum",
+            "satnum",
+        ]
+        dic["units"] = [
+            r" [m$^3$]",
+            " [mD]",
+            " [mD]",
+            " [-]",
+            " [-]",
+            " [-]",
+        ]
+        dic["format"] = [
+            lambda x, _: f"{x:.2e}",
+            lambda x, _: f"{x:.0f}",
+            lambda x, _: f"{x:.0f}",
+            lambda x, _: f"{x:.1f}",
+            lambda x, _: f"{x:.0f}",
+            lambda x, _: f"{x:.0f}",
+        ]
+        dic["cmaps"] = [
+            "terrain",
+            "turbo",
+            "turbo",
+            "gnuplot",
+            "tab20b",
+            "tab20b",
+        ]
     font = {"family": "normal", "weight": "normal", "size": dic["size"]}
     matplotlib.rc("font", **font)
     plt.rcParams.update(
@@ -124,53 +276,6 @@ def ini_properties(dic):
             "figure.figsize": (8, 16),
         }
     )
-    dic["cmaps"] = [
-        "terrain",
-        "turbo",
-        "turbo",
-        "turbo",
-        "gnuplot",
-        "tab20b",
-        "tab20b",
-        "jet",
-        "gnuplot",
-        "coolwarm",
-        "coolwarm",
-    ]
-    dic["title"] = [
-        "Pore volume",
-        "X-permeability",
-        "Y-permeability",
-        "Z-permeability",
-        "Porosity",
-        "Fipnum",
-        "Satnum",
-        "MPI rank",
-    ]
-    dic["format"] = [
-        lambda x, _: f"{x:.2e}",
-        lambda x, _: f"{x:.0f}",
-        lambda x, _: f"{x:.0f}",
-        lambda x, _: f"{x:.0f}",
-        lambda x, _: f"{x:.1f}",
-        lambda x, _: f"{x:.0f}",
-        lambda x, _: f"{x:.0f}",
-        lambda x, _: f"{x:.0f}",
-    ]
-    if dic["use"] == "resdata":
-        dic["egrid"] = Grid(f"{dic['name']}.EGRID")
-        dic["nx"] = dic["egrid"].nx
-        dic["ny"] = dic["egrid"].ny
-        dic["nz"] = dic["egrid"].nz
-        if ResdataFile(f"{dic['name']}.INIT").has_kw("MPI_RANK"):
-            dic["props"] += ["mpi_rank"]
-    else:
-        dic["egrid"] = OpmGrid(f"{dic['name']}.EGRID")
-        dic["nx"] = dic["egrid"].dimension[0]
-        dic["ny"] = dic["egrid"].dimension[1]
-        dic["nz"] = dic["egrid"].dimension[2]
-        if OpmFile(f"{dic['name']}.INIT").count("MPI_RANK"):
-            dic["props"] += ["mpi_rank"]
 
 
 def get_yzcoords(dic):
@@ -184,13 +289,12 @@ def get_yzcoords(dic):
         dic (dict): Modified global dictionary
 
     """
-    n_k = dic["slide"][0]
     for j in range(dic["nz"]):
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [1, 7, 2, 8]):
             dic[f"{k}c"][-1].append(
-                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
+                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n]
             )
         for i in range(dic["ny"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [1, 7, 2, 8]):
@@ -199,13 +303,12 @@ def get_yzcoords(dic):
                         (i + 1) * dic["nx"]
                         + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"]
                     ][n]
-                    + n_k
                 )
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [13, 19, 14, 20]):
             dic[f"{k}c"][-1].append(
-                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
+                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n]
             )
         for i in range(dic["ny"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [13, 19, 14, 20]):
@@ -214,7 +317,6 @@ def get_yzcoords(dic):
                         (i + 1) * dic["nx"]
                         + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"]
                     ][n]
-                    + n_k
                 )
 
 
@@ -236,9 +338,10 @@ def map_yzcoords(dic):
                     dic[name + "a"][
                         2 * cell.j + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]
                     ] = dic[name][cell.active_index]
-                dic["porva"][2 * cell.j + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]] = (
-                    dic["porv"][cell.global_index]
-                )
+                if "porv" in dic["props"]:
+                    dic["porva"][
+                        2 * cell.j + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]
+                    ] = dic["porv"][cell.global_index]
     else:
         for k in range(dic["nz"]):
             for j in range(dic["ny"]):
@@ -255,9 +358,12 @@ def map_yzcoords(dic):
                                     i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
                                 ]
                             ]
-                        dic["porva"][2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]] = dic[
-                            "porv"
-                        ][i + j * dic["nx"] + k * dic["nx"] * dic["ny"]]
+                        if "porv" in dic["props"]:
+                            dic["porva"][
+                                2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = dic["porv"][
+                                i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
+                            ]
 
 
 def get_mesh(dic):
@@ -299,31 +405,28 @@ def get_xzcoords(dic):
         dic (dict): Modified global dictionary
 
     """
-    n_k = dic["slide"][1] * dic["nx"]
     for j in range(dic["nz"]):
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [0, 3, 2, 5]):
             dic[f"{k}c"][-1].append(
-                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
+                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n]
             )
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [0, 3, 2, 5]):
                 dic[f"{k}c"][-1].append(
                     dic["mesh"][1 + i + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n]
-                    + n_k
                 )
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [12, 15, 14, 17]):
             dic[f"{k}c"][-1].append(
-                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n] + n_k
+                dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n]
             )
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [12, 15, 14, 17]):
                 dic[f"{k}c"][-1].append(
                     dic["mesh"][1 + i + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"]][n]
-                    + n_k
                 )
 
 
@@ -345,9 +448,10 @@ def map_xzcoords(dic):
                     dic[name + "a"][
                         2 * cell.i + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]
                     ] = dic[name][cell.active_index]
-                dic["porva"][2 * cell.i + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]] = (
-                    dic["porv"][cell.global_index]
-                )
+                if "porv" in dic["props"]:
+                    dic["porva"][
+                        2 * cell.i + 2 * (dic["nz"] - cell.k - 1) * dic["mx"]
+                    ] = dic["porv"][cell.global_index]
     else:
         for k in range(dic["nz"]):
             for j in range(dic["ny"]):
@@ -364,9 +468,12 @@ def map_xzcoords(dic):
                                     i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
                                 ]
                             ]
-                        dic["porva"][2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]] = dic[
-                            "porv"
-                        ][i + j * dic["nx"] + k * dic["nx"] * dic["ny"]]
+                        if "porv" in dic["props"]:
+                            dic["porva"][
+                                2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = dic["porv"][
+                                i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
+                            ]
 
 
 def get_xycoords(dic):
@@ -380,22 +487,21 @@ def get_xycoords(dic):
         dic (dict): Modified global dictionary
 
     """
-    n_k = dic["slide"][2] * dic["nx"] * dic["ny"]
     for j in range(dic["ny"]):
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [0, 3, 1, 4]):
-            dic[f"{k}c"][-1].append(dic["mesh"][j * dic["nx"]][n] + n_k)
+            dic[f"{k}c"][-1].append(dic["mesh"][j * dic["nx"]][n])
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [0, 3, 1, 4]):
-                dic[f"{k}c"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n] + n_k)
+                dic[f"{k}c"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n])
         dic["xc"].append([])
         dic["yc"].append([])
         for k, n in zip(["x", "x", "y", "y"], [6, 9, 7, 10]):
-            dic[f"{k}c"][-1].append(dic["mesh"][j * dic["nx"]][n] + n_k)
+            dic[f"{k}c"][-1].append(dic["mesh"][j * dic["nx"]][n])
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [6, 9, 7, 10]):
-                dic[f"{k}c"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n] + n_k)
+                dic[f"{k}c"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n])
 
 
 def map_xycoords(dic):
@@ -416,9 +522,10 @@ def map_xycoords(dic):
                     dic[name + "a"][2 * cell.i + 2 * cell.j * dic["mx"]] = dic[name][
                         cell.active_index
                     ]
-                dic["porva"][2 * cell.i + 2 * cell.j * dic["mx"]] = dic["porv"][
-                    cell.global_index
-                ]
+                if "porv" in dic["props"]:
+                    dic["porva"][2 * cell.i + 2 * cell.j * dic["mx"]] = dic["porv"][
+                        cell.global_index
+                    ]
     else:
         for k in range(dic["nz"]):
             for j in range(dic["ny"]):
@@ -433,9 +540,10 @@ def map_xycoords(dic):
                                     i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
                                 ]
                             ]
-                        dic["porva"][2 * i + 2 * j * dic["mx"]] = dic["porv"][
-                            i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
-                        ]
+                        if "porv" in dic["props"]:
+                            dic["porva"][2 * i + 2 * j * dic["mx"]] = dic["porv"][
+                                i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
+                            ]
 
 
 def get_kws(dic):
@@ -451,13 +559,41 @@ def get_kws(dic):
     """
     for name in dic["props"]:
         if dic["use"] == "resdata":
-            dic[name] = np.array(
-                ResdataFile(f"{dic['name']}.INIT").iget_kw(name.upper())[0]
-            )
+            if dic["init"].has_kw(name.upper()):
+                dic[name] = np.array(dic["init"].iget_kw(name.upper())[0])
+            elif dic["unrst"].has_kw(name.upper()):
+                dic[name] = np.array(
+                    dic["unrst"].iget_kw(name.upper())[dic["restart"] - 1]
+                )
+                ntot = len(dic["unrst"].iget_kw(name.upper()))
+                dic["dtitle"] = (
+                    f", rst {ntot if dic['restart']==0 else dic['restart']} out of {ntot}"
+                )
+            elif dic["summary"].has_key(name.upper()):
+                dic["vsum"] = dic["summary"][name.upper()].values
+                dic["time"] = dic["summary"]["TIME"].values
+                return
         else:
-            dic[name] = np.array(OpmFile(f"{dic['name']}.INIT")[name.upper()])
+            if dic["init"].count(name.upper()):
+                dic[name] = np.array(dic["init"][name.upper()])
+            elif dic["unrst"].count(name.upper()):
+                nrst = (
+                    dic["restart"] - 1
+                    if dic["restart"] > 0
+                    else dic["unrst"].count(name.upper()) - 1
+                )
+                dic[name] = np.array(dic["unrst"][name.upper(), nrst])
+                ntot = dic["unrst"].count(name.upper())
+                dic["dtitle"] = (
+                    f", rst {ntot if dic['restart']==0 else dic['restart']} out of {ntot}"
+                )
+            elif name.upper() in dic["summary"].keys():
+                dic["vsum"] = dic["summary"][name.upper()]
+                dic["time"] = dic["summary"]["TIME"]
+                return
         dic[name + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
     if dic["use"] == "opm":
+        dic["porv"] = np.array(dic["init"]["PORV"])
         dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
 
 
@@ -480,22 +616,21 @@ def get_xy_wells(dic):
         [],
         [],
     )
-    n_k = dic["slide"][2] * dic["nx"] * dic["ny"]
     for j in range(dic["ny"]):
         dic["xw"].append([])
         dic["yw"].append([])
         for k, n in zip(["x", "x", "y", "y"], [0, 3, 1, 4]):
-            dic[f"{k}w"][-1].append(dic["mesh"][j * dic["nx"]][n] + n_k)
+            dic[f"{k}w"][-1].append(dic["mesh"][j * dic["nx"]][n])
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [0, 3, 1, 4]):
-                dic[f"{k}w"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n] + n_k)
+                dic[f"{k}w"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n])
         dic["xw"].append([])
         dic["yw"].append([])
         for k, n in zip(["x", "x", "y", "y"], [6, 9, 7, 10]):
-            dic[f"{k}w"][-1].append(dic["mesh"][j * dic["nx"]][n] + n_k)
+            dic[f"{k}w"][-1].append(dic["mesh"][j * dic["nx"]][n])
         for i in range(dic["nx"] - 1):
             for k, n in zip(["x", "x", "y", "y"], [6, 9, 7, 10]):
-                dic[f"{k}w"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n] + n_k)
+                dic[f"{k}w"][-1].append(dic["mesh"][1 + i + j * dic["nx"]][n])
     for cell in dic["egrid"].cells():
         if cell.active:
             dic["wellsa"][2 * cell.i + 2 * cell.j * dic["wx"]] = len(dic["wellsij"])
@@ -515,7 +650,7 @@ def get_wells(dic):
 
     """
     dic["wellsa"] = np.ones((dic["wx"]) * (dic["wy"])) * np.nan
-    wells = False
+    wells, sources = False, False
     with open(f"{dic['name']}.DATA", "r", encoding="utf8") as file:
         for row in csv.reader(file):
             nrwo = str(row)[2:-2]
@@ -529,8 +664,20 @@ def get_wells(dic):
                         int(nrwo.split()[3]) - 1,
                     ]
                 )
+            if sources:
+                if len(nrwo.split()) < 2:
+                    break
+                dic["wellsij"].append(
+                    [
+                        f"SOURCE{len(dic['wellsij'])+1}",
+                        int(nrwo.split()[0]) - 1,
+                        int(nrwo.split()[1]) - 1,
+                    ]
+                )
             if nrwo == "WELSPECS":
                 wells = True
+            if nrwo == "SOURCE":
+                sources = True
 
 
 def make_2dmaps(dic):
@@ -558,16 +705,12 @@ def make_2dmaps(dic):
         )
         if dic["scale"] == "yes":
             axis.axis("scaled")
-        if len(dic["xlim"]) > 1:
-            axis.set_xlim(dic["xlim"])
-        if len(dic["ylim"]) > 1:
-            axis.set_ylim(dic["ylim"])
         axis.set_xlabel(f"{dic['xmeaning']} [m]")
         axis.set_ylabel(f"{dic['ymeaning']} [m]")
         extra = ""
         if name == "porv":
             extra = f" (sum={sum(dic[name]):.3e})"
-        axis.set_title(dic["title"][n] + dic["tslide"] + extra)
+        axis.set_title(name + dic["tslide"] + dic["dtitle"] + extra)
         minc = dic[name][~np.isnan(dic[name])].min()
         maxc = dic[name][~np.isnan(dic[name])].max()
         ntick = 5
@@ -594,9 +737,29 @@ def make_2dmaps(dic):
             minc,
             maxc,
         )
-        if dic["slide"][2] == -1:
+        if dic["slide"][2] == -2:
             axis.invert_yaxis()
-        fig.savefig(f"{name}.png", bbox_inches="tight", dpi=300)
+        axis.set_xticks(
+            np.linspace(
+                min(min(dic["xc"])),
+                max(max(dic["xc"])),
+                4,
+            )
+        )
+        axis.set_yticks(
+            np.linspace(
+                min(min(dic["yc"])),
+                max(max(dic["yc"])),
+                4,
+            )
+        )
+        if len(dic["xlim"]) > 1:
+            axis.set_xlim(dic["xlim"])
+        if len(dic["ylim"]) > 1:
+            axis.set_ylim(dic["ylim"])
+        fig.savefig(
+            f"{dic['output']}/{name}_{dic['nslide']}.png", bbox_inches="tight", dpi=300
+        )
         plt.close()
 
 
@@ -646,15 +809,30 @@ def make_wells(dic):
     colors = cmap(np.linspace(0, 1, len(dic["wellsij"]) + 1))
     for i, well in enumerate(dic["wellsij"]):
         plt.text(0, i, f"{i}-({well[1]+1},{well[2]+1})", c=colors[i], fontweight="bold")
-    axis.axis("scaled")
-    axis.set_title("Well's location, top view xy (k=0)")
+    if dic["scale"] == "yes":
+        axis.axis("scaled")
+    axis.set_title("Well's location, top view xy (k=1)")
+    axis.set_xlabel(f"{dic['xmeaning']} [m]")
+    axis.set_ylabel(f"{dic['ymeaning']} [m]")
+    axis.set_xticks(
+        np.linspace(
+            min(min(dic["xw"])),
+            max(max(dic["xw"])),
+            4,
+        )
+    )
+    axis.set_yticks(
+        np.linspace(
+            min(min(dic["yw"])),
+            max(max(dic["yw"])),
+            4,
+        )
+    )
     if dic["xlim"]:
         axis.set_xlim(dic["xlim"])
     if dic["ylim"]:
         axis.set_ylim(dic["ylim"])
-    axis.set_xlabel(f"{dic['xmeaning']} [m]")
-    axis.set_ylabel(f"{dic['ymeaning']} [m]")
-    fig.savefig("wells.png", bbox_inches="tight", dpi=300)
+    fig.savefig(f"{dic['output']}/wells.png", bbox_inches="tight", dpi=300)
     plt.close()
 
 
@@ -672,15 +850,15 @@ def load_parser():
     parser.add_argument(
         "-o",
         "--output",
-        default="output",
-        help="The base name of the output folder ('output' by default).",
+        default=".",
+        help="The base name of the output folder ('.' by default).",
     )
     parser.add_argument(
         "-s",
         "--slide",
-        default=",0,",
+        default=",1,",
         help="The slide for the 2d maps of the static variables, e.g,"
-        " '10,,' to plot the xz plane on all cells with i=10+1 (',0,' "
+        " '10,,' to plot the xz plane on all cells with i=10 (',1,' "
         " by default, i.e., the xz surface at j=1.)",
     )
     parser.add_argument(
@@ -712,6 +890,47 @@ def load_parser():
         "--use",
         default="resdata",
         help="Use resdata or opm Python libraries ('resdata' by default).",
+    )
+    parser.add_argument(
+        "-v",
+        "--variable",
+        default="",
+        help="Specify the name of the static vairable to plot (e.g.,'depth') ('' by "
+        "default, i.e., plotting: porv, permx, permz, poro, fipnum, and satnum).",
+    )
+    parser.add_argument(
+        "-c",
+        "--colormap",
+        default="",
+        help="Specify the colormap (e.g., 'jet') ('' by default, i.e., set by "
+        " plopm).",
+    )
+    parser.add_argument(
+        "-n",
+        "--numbers",
+        default="",
+        help="Specify the format for the numbers in the colormap (e.g., "
+        "\"lambda x, _: f'{x:.0f}'\") ('' by default, i.e., set by plopm).",
+    )
+    parser.add_argument(
+        "-l",
+        "--legend",
+        default="",
+        help="Specify the units (e.g., \"[m\$^2\$]\") ('' by "
+        "default, i.e., set by plopm).",
+    )
+    parser.add_argument(
+        "-r",
+        "--restart",
+        default="-1",
+        help="Restart number to plot the dynamic variable, where 1 corresponds to "
+        "the initial one ('-1' by default, i.e., the last restart file).",
+    )
+    parser.add_argument(
+        "-w",
+        "--wells",
+        default=0,
+        help="Plot the xz-position of the wells or sources ('0' by default).",
     )
     return vars(parser.parse_known_args()[0])
 
