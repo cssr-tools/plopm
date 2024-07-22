@@ -98,17 +98,30 @@ Then, if you succeed in installing <strong>plopm</strong>, inside the <a class="
 <img alt="_images/satnum_spe11b.png" src="_images/satnum_spe11b.png" />
 </figure>
 <p>The default argument options are:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-o<span class="w"> </span>output<span class="w"> </span>-s<span class="w"> </span>,,0<span class="w"> </span>-f<span class="w"> </span><span class="m">14</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-o<span class="w"> </span>.<span class="w"> </span>-s<span class="w"> </span>,1,<span class="w"> </span>-f<span class="w"> </span><span class="m">14</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>-z<span class="w"> </span>yes<span class="w"> </span>-u<span class="w"> </span>resdata<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>-l<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>-r<span class="w"> </span>-1<span class="w"> </span>-w<span class="w"> </span><span class="m">0</span>
 </pre></div>
 </div>
 <p>See the <a class="reference internal" href="introduction.html#overview"><span class="std std-ref">Overview</span></a> or run <cite>plopm -h</cite> for the definition of the argument options.</p>
+<p>For example, for the gas saturation at the report step number 4:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-c<span class="w"> </span>cubehelix<span class="w"> </span>-r<span class="w"> </span><span class="m">4</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;lambda x, _: f&#39;{x:.2f}&#39;&quot;</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="_images/sgas_spe11b.png" src="_images/sgas_spe11b.png" />
+</figure>
+<p>and for the gas in place summary vector:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>fgip<span class="w"> </span>-c<span class="w"> </span>k
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/fgip_spe11b.png"><img alt="_images/fgip_spe11b.png" src="_images/fgip_spe11b.png" style="width: 440.0px; height: 790.0px;" /></a>
+</figure>
 </section>
 <section id="norne">
 <h2>Norne<a class="headerlink" href="#norne" title="Link to this heading"></a></h2>
-<p>This example relies on the input deck <a class="reference external" href="https://github.com/OPM/opm-tests/blob/master/norne/NORNE_ATW2013.DATA">NORNE_ATW2013.DATA</a>
-and the simulation results in <a class="reference external" href="https://github.com/OPM/opm-tests/tree/master/norne/ECL.2014.2">opm-tests</a>. Then, if you
-download the files in that folder and add the input deck in the same folder, then by using the <strong>plopm</strong> tool:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-o<span class="w"> </span>.<span class="w"> </span>-s<span class="w"> </span>,,0<span class="w"> </span>-x<span class="w"> </span><span class="m">455600</span>,462200<span class="w"> </span>-y<span class="w"> </span><span class="m">7319500</span>,7327100
+<p>This example relies on the simulation results in <a class="reference external" href="https://github.com/OPM/opm-tests/tree/master/norne/ECL.2014.2">opm-tests</a>. If you
+download the files in that folder, then by using the <strong>plopm</strong> tool:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-o<span class="w"> </span>.<span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-x<span class="w"> </span><span class="m">455600</span>,462200<span class="w"> </span>-y<span class="w"> </span><span class="m">7319500</span>,7327100
 </pre></div>
 </div>
 <p>these are some of the generated figures:</p>
@@ -122,9 +135,14 @@ for an example where <strong>plopm</strong> is used to generate figures from the
 <a class="reference external" href="https://github.com/OPM/opm-data/tree/master/spe10model2">SPE10_MODEL2 model</a> by downloading the files and using the
 <a class="reference external" href="https://opm-project.org/?page_id=19">OPM Flow</a> simulator.</p>
 <img alt="_images/spe10.png" src="_images/spe10.png" />
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE10_MODEL2<span class="w"> </span>-o<span class="w"> </span>.<span class="w"> </span>-s<span class="w"> </span><span class="m">50</span>,,
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE10_MODEL2<span class="w"> </span>-o<span class="w"> </span>.<span class="w"> </span>-s<span class="w"> </span><span class="m">4</span>,,
 </pre></div>
 </div>
+<p>To plot the location of the wells from the top view, then:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE10_MODEL2<span class="w"> </span>-w<span class="w"> </span><span class="m">1</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/wells.png"><img alt="_images/wells.png" src="_images/wells.png" style="width: 485.40000000000003px; height: 730.0px;" /></a>
 </section>
 </section>
 

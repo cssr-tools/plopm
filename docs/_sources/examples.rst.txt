@@ -22,21 +22,37 @@ The default argument options are:
 
 .. code-block:: bash
 
-    plopm -i SPE11B -o output -s ,,0 -f 14 -x '' -y ''
+    plopm -i SPE11B -o . -s ,1, -f 14 -x '' -y '' -z yes -u resdata -v '' -c '' -n '' -l '' -r -1 -w 0
 
 See the :ref:`overview` or run `plopm -h` for the definition of the argument options.
+
+For example, for the gas saturation at the report step number 4:
+
+.. code-block:: bash
+
+    plopm -i SPE11B -v sgas -c cubehelix -r 4 -n "lambda x, _: f'{x:.2f}'"
+
+.. figure:: figs/sgas_spe11b.png
+
+and for the gas in place summary vector:
+
+.. code-block:: bash
+
+    plopm -i SPE11B -v fgip -c k
+
+.. figure:: figs/fgip_spe11b.png
+    :scale: 20%
 
 =====
 Norne 
 =====
 
-This example relies on the input deck `NORNE_ATW2013.DATA <https://github.com/OPM/opm-tests/blob/master/norne/NORNE_ATW2013.DATA>`_ 
-and the simulation results in `opm-tests <https://github.com/OPM/opm-tests/tree/master/norne/ECL.2014.2>`_. Then, if you
-download the files in that folder and add the input deck in the same folder, then by using the **plopm** tool:
+This example relies on the simulation results in `opm-tests <https://github.com/OPM/opm-tests/tree/master/norne/ECL.2014.2>`_. If you
+download the files in that folder, then by using the **plopm** tool:
 
 .. code-block:: bash
 
-    plopm -i NORNE_ATW2013 -o . -s ,,0 -x 455600,462200 -y 7319500,7327100
+    plopm -i NORNE_ATW2013 -o . -s ,,1 -x 455600,462200 -y 7319500,7327100
 
 these are some of the generated figures:
 
@@ -57,4 +73,13 @@ for an example where **plopm** is used to generate figures from the
 
 .. code-block:: bash
 
-    plopm -i SPE10_MODEL2 -o . -s 50,,
+    plopm -i SPE10_MODEL2 -o . -s 4,,
+
+To plot the location of the wells from the top view, then:
+
+.. code-block:: bash
+
+    plopm -i SPE10_MODEL2 -w 1
+
+.. image:: ./figs/wells.png
+    :scale: 20%

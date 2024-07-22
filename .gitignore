@@ -163,13 +163,12 @@ cython_debug/
 .DS_Store
 
 # Tests
-examples/fipnum.png
-examples/permx.png
-examples/permy.png
-examples/permz.png
-examples/poro.png
-examples/porv.png
-examples/satnum.png
+examples/fipnum_*,1,*.png
+examples/permx_*,1,*.png
+examples/permz_*,1,*.png
+examples/poro_*,1,*.png
+examples/porv_*,1,*.png
+examples/satnum_*,1,*.png
 tests/generic_deck
 
 # Python environment

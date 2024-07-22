@@ -97,6 +97,18 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="plopm.core.plopm.get_mesh">
+<span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">get_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.get_mesh" title="Link to this definition"></a></dt>
+<dd><p>Read the coordinates using either opm or resdata</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="plopm.core.plopm.get_wells">
 <span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">get_wells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.get_wells" title="Link to this definition"></a></dt>
 <dd><p>Using the input deck (.DATA) to read the i,j well locations</p>
@@ -123,7 +135,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.core.plopm.get_xycoords">
 <span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">get_xycoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.get_xycoords" title="Link to this definition"></a></dt>
-<dd><p>Map the coordinates from the OPM Grid to the 2D xy-mesh</p>
+<dd><p>Handle the coordinates from the OPM Grid to the 2D xy-mesh</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 </dd>
@@ -135,7 +147,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.core.plopm.get_xzcoords">
 <span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">get_xzcoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.get_xzcoords" title="Link to this definition"></a></dt>
-<dd><p>Map the coordinates from the OPM Grid to the 2D xz-mesh</p>
+<dd><p>Handle the coordinates from the OPM Grid to the 2D xz-mesh</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 </dd>
@@ -147,7 +159,43 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.core.plopm.get_yzcoords">
 <span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">get_yzcoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.get_yzcoords" title="Link to this definition"></a></dt>
-<dd><p>Map the coordinates from the OPM Grid to the 2D yz-mesh</p>
+<dd><p>Handle the coordinates from the OPM Grid to the 2D yz-mesh</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.core.plopm.ini_dic">
+<span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">ini_dic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.ini_dic" title="Link to this definition"></a></dt>
+<dd><p>Initialize the global dictionary</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>cmdargs (dict): Command arguments</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.core.plopm.ini_properties">
+<span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">ini_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.ini_properties" title="Link to this definition"></a></dt>
+<dd><p>Define the properties to plot</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.core.plopm.ini_readers">
+<span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">ini_readers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.ini_readers" title="Link to this definition"></a></dt>
+<dd><p>Set the classes for reading the properties</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 </dd>
@@ -181,6 +229,18 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="plopm.core.plopm.make_summary">
+<span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">make_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.make_summary" title="Link to this definition"></a></dt>
+<dd><p>Plot the summary variable</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>cmdargs (dict): Command arguments</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="plopm.core.plopm.make_wells">
 <span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">make_wells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.make_wells" title="Link to this definition"></a></dt>
 <dd><p>If there are any well, we only plot them on the top xy view</p>
@@ -192,6 +252,42 @@
 </dd>
 </dl>
 </div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.core.plopm.map_xycoords">
+<span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">map_xycoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.map_xycoords" title="Link to this definition"></a></dt>
+<dd><p>Map the properties from the simulations to the 2D slide</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.core.plopm.map_xzcoords">
+<span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">map_xzcoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.map_xzcoords" title="Link to this definition"></a></dt>
+<dd><p>Map the properties from the simulations to the 2D slide</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.core.plopm.map_yzcoords">
+<span class="sig-prename descclassname"><span class="pre">plopm.core.plopm.</span></span><span class="sig-name descname"><span class="pre">map_yzcoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.core.plopm.map_yzcoords" title="Link to this definition"></a></dt>
+<dd><p>Map the properties from the simulations to the 2D slide</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
