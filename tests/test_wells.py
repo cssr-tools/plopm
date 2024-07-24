@@ -12,5 +12,5 @@ def test_wells():
         ["plopm", "-i", "SPE10_MODEL2", "-o", ".", "-w", "1"],
         check=True,
     )
-    assert os.path.exists(f"{cwd}/tests/generic_deck/wells.png")
+    assert os.path.exists(f"{cwd}/tests/generic_deck/wells_*,1,*.png")
     os.chdir(cwd)
