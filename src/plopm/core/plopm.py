@@ -10,7 +10,8 @@ import argparse
 import numpy as np
 from plopm.utils.initialization import ini_dic, ini_properties, ini_readers
 from plopm.utils.readers import (
-    get_kws,
+    get_kws_resdata,
+    get_kws_opm,
     get_wells,
     get_xycoords_resdata,
     get_xycoords_opm,
@@ -29,7 +30,10 @@ def plopm():
     dic = ini_dic(cmdargs)
     ini_properties(dic)
     ini_readers(dic)
-    get_kws(dic)
+    if dic["use"] == "resdata":
+        get_kws_resdata(dic)
+    else:
+        get_kws_opm(dic)
     if len(dic["vsum"]) > 0:
         make_summary(dic)
         return
@@ -118,13 +122,15 @@ def handle_slide_z(dic):
 def load_parser():
     """Argument options"""
     parser = argparse.ArgumentParser(
-        description="plopm, a Python tool to plot 2D surfaces" " from OPM simulations.",
+        description="plopm: Simplified and flexible Python tool for quick "
+        "visualization of OPM Flow geological models.",
     )
     parser.add_argument(
         "-i",
         "--input",
         default="SPE11B",
-        help="The base name of the deck ('SPE11B' by default).",
+        help="The base name of the input files; if more than one is given, separate "
+        "them by ',' (e.g, 'SPE11B,SPE11B_TUNED') ('SPE11B' by default).",
     )
     parser.add_argument(
         "-o",
@@ -181,8 +187,15 @@ def load_parser():
         "-c",
         "--colormap",
         default="",
-        help="Specify the colormap (e.g., 'jet') ('' by default, i.e., set by "
-        " plopm).",
+        help="Specify the colormap (e.g., 'jet') or color(s) for the summary "
+        "(e.g., 'b,r')  ('' by default, i.e., set by plopm).",
+    )
+    parser.add_argument(
+        "-e",
+        "--linsty",
+        default="",
+        help="Specify the linestyles separated by ';' (e.g., 'solid;:') ('' by default, "
+        "i.e., set by plopm).",
     )
     parser.add_argument(
         "-n",
@@ -192,10 +205,31 @@ def load_parser():
         "\"lambda x, _: f'{x:.0f}'\") ('' by default, i.e., set by plopm).",
     )
     parser.add_argument(
+        "-b",
+        "--bounds",
+        default="",
+        help="Specify the upper and lower bounds for the colormap (e.g., "
+        " '[-0.1,11]') ('' by default, i.e., set by matplotlib).",
+    )
+    parser.add_argument(
+        "-d",
+        "--dimensions",
+        default="8,16",
+        help="Specify the dimensions  of the Figure (e.g., "
+        " '5,5') ('8,16' by default).",
+    )
+    parser.add_argument(
         "-l",
         "--legend",
         default="",
         help="Specify the units (e.g., \"[m\$^2\$]\") ('' by "
+        "default, i.e., set by plopm).",
+    )
+    parser.add_argument(
+        "-t",
+        "--title",
+        default="",
+        help="Specify the figure title (e.g., 'Final saturation map') ('' by "
         "default, i.e., set by plopm).",
     )
     parser.add_argument(

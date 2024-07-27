@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
+# pylint: disable=W3301
 
 """
 Utiliy functions to write the PNGs figures.
@@ -22,30 +23,53 @@ def make_summary(dic):
         None
 
     """
+    if (
+        len(dic["cmaps"][0].split(",")) == len(dic["names"])
+        and dic["cmaps"][0] != "gnuplot"
+    ):
+        dic["colors"] = dic["cmaps"][0].split(",")
+    if len(dic["linsty"].split(";")) == len(dic["names"]) and dic["linsty"]:
+        dic["linestyle"] = dic["linsty"].split(";")
     plt.rcParams.update({"axes.grid": True})
     fig, axis = plt.subplots()
-    if len(dic["cmaps"]) == 1:
-        axis.step(dic["time"], dic["vsum"], color=dic["cmaps"][0])
-    else:
-        axis.step(dic["time"], dic["vsum"], color="b")
+    min_t, min_v = min(dic["time"][0]), min(dic["vsum"][0])
+    max_t, max_v = max(dic["time"][0]), max(dic["vsum"][0])
+    for i, name in enumerate(dic["names"]):
+        label = name
+        if len(name.split("/")) > 1:
+            label = name.split("/")[-2] + "/" + name.split("/")[-1]
+        axis.step(
+            dic["time"][i],
+            dic["vsum"][i],
+            color=dic["colors"][i],
+            ls=dic["linestyle"][i],
+            label=label,
+        )
+        min_t = min(min_t, min(dic["time"][i]))
+        min_v = min(min_v, min(dic["vsum"][i]))
+        max_t = max(max_t, max(dic["time"][i]))
+        max_v = max(max_v, max(dic["vsum"][i]))
     axis.set_ylabel(dic["props"][0])
     axis.set_xlabel("Time [s]")
-    axis.set_xlim([min(dic["time"]), max(dic["time"])])
-    axis.set_ylim([min(dic["vsum"]), max(dic["vsum"])])
+    axis.set_xlim([min_t, max_t])
+    axis.set_ylim([min_v, max_v])
     axis.set_xticks(
         np.linspace(
-            min(dic["time"]),
-            max(dic["time"]),
+            min_t,
+            max_t,
             4,
         )
     )
     axis.set_yticks(
         np.linspace(
-            min(dic["vsum"]),
-            max(dic["vsum"]),
+            min_v,
+            max_v,
             4,
         )
     )
+    axis.legend()
+    if dic["titles"] != "":
+        axis.set_title(dic["titles"])
     fig.savefig(f"{dic['output']}/{dic['variable']}.png", bbox_inches="tight", dpi=300)
     plt.close()
 
@@ -81,6 +105,13 @@ def make_2dmaps(dic):
         if dic["well"] != 1 and dic["grid"] != 1:
             minc = dic[name][~np.isnan(dic[name])].min()
             maxc = dic[name][~np.isnan(dic[name])].max()
+            if len(dic["bounds"]) == 2:
+                minc = float(dic["bounds"][0][1:])
+                maxc = float(dic["bounds"][1][:-1])
+            elif len(dic["names"]) == 2:
+                minmax = max(abs(maxc), abs(minc))
+                minc = -minmax
+                maxc = minmax
             if maxc == minc:
                 ntick = 1
             elif name in ["fipnum", "satnum"]:
@@ -143,6 +174,8 @@ def handle_axis(dic, axis, name):
             f"Grid = [{dic['nx']},{dic['ny']},{dic['nz']}], "
             + f"Total no. active cells = {max(dic['actind'])+1}"
         )
+    if dic["titles"] != "":
+        axis.set_title(dic["titles"])
     if dic["slide"][2] == -2:
         axis.invert_yaxis()
     axis.set_xticks(

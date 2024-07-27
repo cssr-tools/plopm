@@ -83,3 +83,37 @@ To plot the location of the wells from the top view, then:
 
 .. image:: ./figs/wells.png
     :scale: 20%
+
+=====================
+Different input files 
+=====================
+Let us assume we have two different runs in different folders for the spe11b case, where the firsts results are save
+in a folder called spe11b, and simulation results where the injection rate has been increased are saved in a folder
+called spe11b_larger_inj. Then, to plot the summary vector for both runs we can execute:
+
+.. code-block:: bash
+
+    plopm -i spe11b/SPE11B,/Users/dmar/spe11b_larger_inj/SPE11B -v tcpu -d 5,5 -c r,b -e 'solid;:' -t 'Comparing the simulation times' -f 10 
+
+.. image:: ./figs/tcpu.png
+
+Here, we have lower the size of the figure to 5,5 inches, set to use red and blue colors with solid and dotted lines, as well as settting the title and lower the font size to 10.
+
+.. tip::
+    For any summary variable, one can give the path to more than two different simulation cases, just by separating the folder paths by commas in the -i.
+
+To look at the difference between these two simulations for the dynamic variable sgas at the restar step 3, this can be achieved by executing:
+
+.. code-block:: bash
+
+    plopm -i spe11b/SPE11B,spe11b_larger_inj/SPE11B -v sgas -r 3
+
+.. image:: ./figs/sgas_diff.png
+
+To changue the colormap and setting the clorbar limits manually, this can be achieved by:
+
+.. code-block:: bash
+    
+    plopm -i spe11b/SPE11B,spe11b_larger_inj/SPE11B -v sgas -r 3 -c tab20c -b '[-0.8,0]'
+
+.. image:: ./figs/sgas_diff_edit.png

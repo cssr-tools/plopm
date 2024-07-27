@@ -52,6 +52,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#spe11b">SPE11B</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#norne">Norne</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generic-deck">Generic deck</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#different-input-files">Different input files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">plopm Python API</a></li>
@@ -143,6 +144,31 @@ for an example where <strong>plopm</strong> is used to generate figures from the
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/wells.png"><img alt="_images/wells.png" src="_images/wells.png" style="width: 485.40000000000003px; height: 730.0px;" /></a>
+</section>
+<section id="different-input-files">
+<h2>Different input files<a class="headerlink" href="#different-input-files" title="Link to this heading"></a></h2>
+<p>Let us assume we have two different runs in different folders for the spe11b case, where the firsts results are save
+in a folder called spe11b, and simulation results where the injection rate has been increased are saved in a folder
+called spe11b_larger_inj. Then, to plot the summary vector for both runs we can execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>spe11b/SPE11B,/Users/dmar/spe11b_larger_inj/SPE11B<span class="w"> </span>-v<span class="w"> </span>tcpu<span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5<span class="w"> </span>-c<span class="w"> </span>r,b<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;solid;:&#39;</span><span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Comparing the simulation times&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">10</span>
+</pre></div>
+</div>
+<img alt="_images/tcpu.png" src="_images/tcpu.png" />
+<p>Here, we have lower the size of the figure to 5,5 inches, set to use red and blue colors with solid and dotted lines, as well as settting the title and lower the font size to 10.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>For any summary variable, one can give the path to more than two different simulation cases, just by separating the folder paths by commas in the -i.</p>
+</div>
+<p>To look at the difference between these two simulations for the dynamic variable sgas at the restar step 3, this can be achieved by executing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>spe11b/SPE11B,spe11b_larger_inj/SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span>
+</pre></div>
+</div>
+<img alt="_images/sgas_diff.png" src="_images/sgas_diff.png" />
+<p>To changue the colormap and setting the clorbar limits manually, this can be achieved by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>spe11b/SPE11B,spe11b_larger_inj/SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span><span class="w"> </span>-c<span class="w"> </span>tab20c<span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[-0.8,0]&#39;</span>
+</pre></div>
+</div>
+<img alt="_images/sgas_diff_edit.png" src="_images/sgas_diff_edit.png" />
 </section>
 </section>
 
