@@ -243,7 +243,7 @@ def get_xycoords_opm(dic):
                 )
 
 
-def get_kws(dic):
+def get_kws_resdata(dic):
     """
     Get the static properties from the INIT file using ResdataFile
 
@@ -255,44 +255,69 @@ def get_kws(dic):
 
     """
     for name in dic["props"]:
-        if dic["use"] == "resdata":
-            if dic["init"].has_kw(name.upper()):
-                dic[name] = np.array(dic["init"].iget_kw(name.upper())[0])
-            elif dic["unrst"].has_kw(name.upper()):
+        if dic["init"].has_kw(name.upper()):
+            dic[name] = np.array(dic["init"].iget_kw(name.upper())[0])
+        elif dic["unrst"][0].has_kw(name.upper()):
+            if len(dic["names"]) == 1:
                 dic[name] = np.array(
-                    dic["unrst"].iget_kw(name.upper())[dic["restart"] - 1]
+                    dic["unrst"][0].iget_kw(name.upper())[dic["restart"] - 1]
                 )
-                ntot = len(dic["unrst"].iget_kw(name.upper()))
-                dic["dtitle"] = (
-                    f", rst {ntot if dic['restart']==0 else dic['restart']} out of {ntot}"
-                )
-            elif dic["summary"].has_key(name.upper()):
-                dic["vsum"] = dic["summary"][name.upper()].values
-                dic["time"] = dic["summary"]["TIME"].values
-                return
-        else:
-            if dic["init"].count(name.upper()):
-                dic[name] = np.array(dic["init"][name.upper()])
-            elif dic["unrst"].count(name.upper()):
-                nrst = (
-                    dic["restart"] - 1
-                    if dic["restart"] > 0
-                    else dic["unrst"].count(name.upper()) - 1
-                )
-                dic[name] = np.array(dic["unrst"][name.upper(), nrst])
-                ntot = dic["unrst"].count(name.upper())
-                dic["dtitle"] = (
-                    f", rst {ntot if dic['restart']==0 else dic['restart']} out of {ntot}"
-                )
-            elif name.upper() in dic["summary"].keys():
-                dic["vsum"] = dic["summary"][name.upper()]
-                dic["time"] = dic["summary"]["TIME"]
-                return
+            else:
+                dic[name] = np.array(
+                    dic["unrst"][0].iget_kw(name.upper())[dic["restart"] - 1]
+                ) - np.array(dic["unrst"][1].iget_kw(name.upper())[dic["restart"] - 1])
+            ntot = len(dic["unrst"][0].iget_kw(name.upper()))
+            dic["dtitle"] = (
+                f", rst {ntot if dic['restart']==0 else dic['restart']} out of {ntot}"
+            )
+        elif dic["summary"][0].has_key(name.upper()):
+            for i, _ in enumerate(dic["names"]):
+                dic["vsum"].append(dic["summary"][i][name.upper()].values)
+                dic["time"].append(dic["summary"][i]["TIME"].values)
+            return
         dic[name + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-    if dic["use"] == "opm":
-        dic["porv"] = np.array(dic["init"]["PORV"])
-    else:
-        dic["porv"] = np.array(dic["init"].iget_kw("PORV")[0])
+    dic["porv"] = np.array(dic["init"].iget_kw("PORV")[0])
+    dic["porva"] = np.ones(dic["mx"] * dic["my"]) * np.nan
+    dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
+
+
+def get_kws_opm(dic):
+    """
+    Get the static properties from the INIT file using Opm
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    for name in dic["props"]:
+        if dic["init"].count(name.upper()):
+            dic[name] = np.array(dic["init"][name.upper()])
+        elif dic["unrst"][0].count(name.upper()):
+            nrst = (
+                dic["restart"] - 1
+                if dic["restart"] > 0
+                else dic["unrst"][0].count(name.upper()) - 1
+            )
+            if len(dic["names"]) == 1:
+                dic[name] = np.array(dic["unrst"][0][name.upper(), nrst])
+            else:
+                dic[name] = np.array(dic["unrst"][0][name.upper(), nrst]) - np.array(
+                    dic["unrst"][1][name.upper(), nrst]
+                )
+            ntot = dic["unrst"][0].count(name.upper())
+            dic["dtitle"] = (
+                f", rst {ntot if dic['restart']==0 else dic['restart']} out of {ntot}"
+            )
+        elif name.upper() in dic["summary"][0].keys():
+            for i, _ in enumerate(dic["names"]):
+                dic["vsum"].append(dic["summary"][i][name.upper()])
+                dic["time"].append(dic["summary"][i]["TIME"])
+            return
+        dic[name + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
+    dic["porv"] = np.array(dic["init"]["PORV"])
     dic["porva"] = np.ones(dic["mx"] * dic["my"]) * np.nan
     dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
 

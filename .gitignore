@@ -170,6 +170,7 @@ examples/poro_*,1,*.png
 examples/porv_*,1,*.png
 examples/satnum_*,1,*.png
 examples/sgas_*,1,*.png
+examples/rsw_*,1,*.png
 examples/fgip.png
 tests/generic_deck
 
