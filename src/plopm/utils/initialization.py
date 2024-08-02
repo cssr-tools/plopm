@@ -60,7 +60,7 @@ def ini_dic(cmdargs):
     dic["grid"], dic["summary"], dic["vsum"], dic["time"] = [], [], [], []
     dic["unrst"] = []
     dic["dtitle"] = ""
-    if len((cmdargs["restart"].strip()).split(",")) == 1:
+    if len((cmdargs["restart"].strip()).split(",")) == 1 and dic["mode"] != "vtk":
         dic["restart"] = int(cmdargs["restart"])
     else:
         dic["restart"] = (cmdargs["restart"].strip()).split(",")
