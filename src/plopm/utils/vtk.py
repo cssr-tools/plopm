@@ -90,7 +90,7 @@ def opmtovtk_resdata(dic):
                 skip = True
             if not skip:
                 base_vtk.append(line)
-    i, n = int(dic["restart"][0]), 0
+    i, n, inc = int(dic["restart"][0]), 0, 0
     base_vtk.insert(4, "\t\t\t\t<CellData Scalars='porosity'>")
     for n, var in enumerate(dic["variable"].split(",")):
         if var.upper() in dic["UInt16"]:
@@ -245,7 +245,7 @@ def opmtovtk_opm(dic):
                 skip = True
             if not skip:
                 base_vtk.append(line)
-    i, n = int(dic["restart"][0]), 0
+    i, n, inc = int(dic["restart"][0]), 0, 0
     base_vtk.insert(4, "\t\t\t\t<CellData Scalars='porosity'>")
     for n, var in enumerate(dic["variable"].split(",")):
         if var.upper() in dic["UInt16"]:
