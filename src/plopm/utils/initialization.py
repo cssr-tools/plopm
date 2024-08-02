@@ -54,11 +54,16 @@ def ini_dic(cmdargs):
     dic["numbers"] = cmdargs["numbers"].strip()
     dic["linsty"] = cmdargs["linsty"].strip()
     dic["colormap"] = cmdargs["colormap"].strip()
+    dic["mode"] = cmdargs["mode"].strip()
+    dic["flow"] = cmdargs["path"].strip()
     dic["xlim"], dic["ylim"], dic["wells"], dic["vsum"] = [], [], [], []
     dic["grid"], dic["summary"], dic["vsum"], dic["time"] = [], [], [], []
     dic["unrst"] = []
     dic["dtitle"] = ""
-    dic["restart"] = int(cmdargs["restart"])
+    if len((cmdargs["restart"].strip()).split(",")) == 1:
+        dic["restart"] = int(cmdargs["restart"])
+    else:
+        dic["restart"] = (cmdargs["restart"].strip()).split(",")
     dic["well"] = int(cmdargs["wells"])
     dic["grid"] = int(cmdargs["grid"])
     if dic["restart"] == -1:

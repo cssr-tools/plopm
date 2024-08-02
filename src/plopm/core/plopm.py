@@ -21,6 +21,7 @@ from plopm.utils.readers import (
     get_yzcoords_opm,
 )
 from plopm.utils.mapping import map_xycoords, map_xzcoords, map_yzcoords
+from plopm.utils.vtk import make_vtks
 from plopm.utils.write import make_summary, make_2dmaps
 
 
@@ -28,6 +29,9 @@ def plopm():
     """Main function for the plopm executable"""
     cmdargs = load_parser()
     dic = ini_dic(cmdargs)
+    if dic["mode"] == "vtk":
+        make_vtks(dic)
+        return
     ini_properties(dic)
     ini_readers(dic)
     if dic["use"] == "resdata":
@@ -222,7 +226,7 @@ def load_parser():
         "-l",
         "--legend",
         default="",
-        help="Specify the units (e.g., \"[m\$^2\$]\") ('' by "
+        help="Specify the units (e.g., \"[m\\$^2\\$]\") ('' by "
         "default, i.e., set by plopm).",
     )
     parser.add_argument(
@@ -251,6 +255,20 @@ def load_parser():
         default=0,
         help="Plot information about the number of cells in the x, y, and z "
         " directions and number of active grid cells ('0' by default).",
+    )
+    parser.add_argument(
+        "-p",
+        "--path",
+        default="flow",
+        help="Path to flow (e.g., \\home\\build\\bin\\flow')."
+        " This is used to generate the grid for the vtk files ('flow' by "
+        "default, make sure to write inside ' ').",
+    )
+    parser.add_argument(
+        "-m",
+        "--mode",
+        default="png",
+        help="Generate 'png' or 'vtk' files ('png' by default).",
     )
     return vars(parser.parse_known_args()[0])
 

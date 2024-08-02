@@ -172,6 +172,7 @@ examples/satnum_*,1,*.png
 examples/sgas_*,1,*.png
 examples/rsw_*,1,*.png
 examples/fgip.png
+examples/SPE11B-*.vtu
 tests/generic_deck
 
 # Python environment
