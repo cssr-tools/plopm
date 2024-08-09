@@ -117,3 +117,23 @@ To changue the colormap and setting the clorbar limits manually, this can be ach
     plopm -i spe11b/SPE11B,spe11b_larger_inj/SPE11B -v sgas -r 3 -c tab20c -b '[-0.8,0]'
 
 .. image:: ./figs/sgas_diff_edit.png
+
+==============
+Convert to VTK 
+==============
+Inside the `examples folder <https://github.com/cssr-tools/plopm/blob/main/examples>`_, then we can create VTKs from the
+OPM Flow simulation results (i.e., .EGRID, .INIT, .UNRST). For example, to create VTKS for the temperature from the restart 
+files from the initial (0) to the number 5 restart, using a OPM Flow build from source in a given path, this can be achieved by:
+
+.. code-block:: bash
+    
+    plopm -i SPE11B -v temp -r 0,5 -m vtk -p /Users/dmar/build/opm-simulators/bin/flow
+
+.. figure:: ./figs/vtk_temp.png
+
+    Visualization using paraview of the grid and temperature after 25 years of CO2 injection.
+
+.. note::
+
+    It is possible to write directly VTKs from OPM Flow simulations by adding the flag **--enable-vtk-output=true**.
+    However, there are quantities that are not written (e.g., fipnum, flores). This is when **plopm** can be helpful.

@@ -7,6 +7,7 @@ Welcome to plopm's documentation!
    :maxdepth: 4
 
    introduction
+   installation
    examples
    api
    related

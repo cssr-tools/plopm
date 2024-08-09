@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/cssr-tools/plopm/actions/workflows/CI.yml/badge.svg)](https://github.com/cssr-tools/plopm/actions/workflows/CI.yml)
-<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10%20|%203.11%20|%203.12-blue.svg"></a>
+<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20to%203.12-blue.svg"></a>
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <img src="docs/text/figs/plopm.png" width="1100" height="300">
@@ -16,8 +16,7 @@ To install the _plopm_ executable in an existing Python environment:
 pip install git+https://github.com/cssr-tools/plopm.git
 ```
 
-If you are interested in modifying the source code, then you can clone the repository and 
-install the Python requirements in a virtual environment with the following commands:
+If you are interested in modifying the source code, then you can clone the repository and install the Python requirements in a virtual environment with the following commands:
 
 ```bash
 # Clone the repo
@@ -36,6 +35,8 @@ pip install -e .
 pip install -r dev-requirements.txt
 ``` 
 
+To use the conversion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) to VTK (e.g, to use [_paraview_](https://www.paraview.org) for visualization/postprocessing), [_OPM Flow_](https://opm-project.org) is needed. Then see the [_installation_](https://cssr-tools.github.io/plopm/installation.html) for further details on installing binaries or building OPM Flow from the master branches in Linux, Windows, and macOS, as well as the opm Python package.
+
 ## Running plopm
 You can run _plopm_ as a single command line:
 ```
@@ -45,3 +46,9 @@ Run `plopm --help` to see all possible command line argument options.
 
 ## Getting started
 See the [_examples_](https://cssr-tools.github.io/plopm/examples.html) in the [_documentation_](https://cssr-tools.github.io/plopm/introduction.html).
+
+## About plopm
+The _plopm_ package is being funded by the [_HPC Simulation Software for the Gigatonne Storage Challenge project_](https://www.norceresearch.no/en/projects/hpc-simulation-software-for-the-gigatonne-storage-challenge) [project number 622059] and [_Center for Sustainable Subsurface Resources (CSSR)_](https://cssr.no) 
+[project no. 331841].
+This is work in progress.
+Contributions are more than welcome using the fork and pull request approach.
