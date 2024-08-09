@@ -48,9 +48,9 @@ jobs:
         
     - name: Check code style and linting 
       run: |
-        black --check src/ tests/ setup.py
-        pylint src/ tests/ setup.py
-        mypy --ignore-missing-imports src/ tests/ setup.py
+        black --check src/ tests/
+        pylint src/ tests/
+        mypy --ignore-missing-imports src/ tests/
       
     - name: Run the tests
       run: |

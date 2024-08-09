@@ -22,7 +22,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="next" title="Installation" href="installation.html" />
     <link rel="prev" title="Welcome to plopm’s documentation!" href="index.html" /> 
 </head>
 
@@ -50,10 +50,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#concept">Concept</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">plopm Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
@@ -90,13 +89,14 @@
 <p>This documentation describes the content of the <strong>plopm</strong> tool.</p>
 <section id="concept">
 <h2>Concept<a class="headerlink" href="#concept" title="Link to this heading"></a></h2>
-<p>Simplified and flexible framework for quick visualization of OPM Flow geological models.
+<p>Simplified and flexible framework for quick visualization of <a class="reference external" href="https://www.paraview.org">OPM Flow</a> geological models.
 The approach is the generation of PNG figures from static (e.g, porosity, pore volume fluid in place numbers)
 and dynamic (e.g., pressure, fluid saturations) properties given any 2D slide (e.g., the middle part of a reservoir in the xy plane),
 as well as plotting any given summary vector (e.g., field gas in place a.k.a fgip).</p>
 <p>The <strong>plopm</strong> tool can be useful for quick inspection of geological models, as well as for generation of nice
-figures for papers/presentations. In addition, <strong>plopm</strong> can plot summary results from different simulation cases in the same figure,
-as well as the difference between given dynamic variables (e.g., pressure) for two different simulations cases.</p>
+figures for papers/presentations. Also, <strong>plopm</strong> can plot summary results from different simulation cases in the same figure,
+as well as the difference between given dynamic variables (e.g., pressure) for two different simulations cases. In addition, <strong>plopm</strong> can
+convert OPM Flow output files to vtk, which allows to use other visualization/postprocessing tools (e.g., <a class="reference external" href="https://www.paraview.org">paraview</a>)</p>
 </section>
 <section id="overview">
 <span id="id1"></span><h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
@@ -126,23 +126,9 @@ as well as the difference between given dynamic variables (e.g., pressure) for t
 <li><p>-d: Specify the dimensions  of the Figure (e.g., ‘5,5’) (‘8,16’ by default).</p></li>
 <li><p>-t: Specify the figure title (e.g., ‘Final saturation map’) (’’ by default, i.e., set by plopm).</p></li>
 <li><p>-r: Restart number to plot the dynamic variable, where 1 corresponds to the initial one (‘-1’ by default, i.e., the last restart file).</p></li>
+<li><p>-p: Path to flow (e.g., ‘homebuildbinflow’). This is used to generate the grid for the vtk files (‘flow’ by default).</p></li>
+<li><p>-m: Generate ‘png’ or ‘vtk’ files (‘png’ by default).</p></li>
 </ul>
-</section>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
-<p>See the <a class="reference external" href="https://github.com/cssr-tools/plopm">Github page</a>.</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Check the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml">CI.yml</a> file.</p>
-</div>
-</section>
-<section id="getting-started">
-<h2>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h2>
-<p>See the <a class="reference internal" href="examples.html"><span class="doc">examples</span></a>.</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Check the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests">tests</a>.</p>
-</div>
 </section>
 </section>
 
@@ -151,7 +137,7 @@ as well as the difference between given dynamic variables (e.g., pressure) for t
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to plopm’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

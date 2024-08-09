@@ -8,14 +8,15 @@ This documentation describes the content of the **plopm** tool.
 
 Concept
 -------
-Simplified and flexible framework for quick visualization of OPM Flow geological models.
+Simplified and flexible framework for quick visualization of `OPM Flow <https://www.paraview.org>`_ geological models.
 The approach is the generation of PNG figures from static (e.g, porosity, pore volume fluid in place numbers)
 and dynamic (e.g., pressure, fluid saturations) properties given any 2D slide (e.g., the middle part of a reservoir in the xy plane),
 as well as plotting any given summary vector (e.g., field gas in place a.k.a fgip). 
 
 The **plopm** tool can be useful for quick inspection of geological models, as well as for generation of nice
-figures for papers/presentations. In addition, **plopm** can plot summary results from different simulation cases in the same figure,
-as well as the difference between given dynamic variables (e.g., pressure) for two different simulations cases. 
+figures for papers/presentations. Also, **plopm** can plot summary results from different simulation cases in the same figure,
+as well as the difference between given dynamic variables (e.g., pressure) for two different simulations cases. In addition, **plopm** can
+convert OPM Flow output files to vtk, which allows to use other visualization/postprocessing tools (e.g., `paraview <https://www.paraview.org>`_)
 
 .. _overview:
 
@@ -49,17 +50,5 @@ where
 - \-d: Specify the dimensions  of the Figure (e.g., '5,5') ('8,16' by default).
 - \-t: Specify the figure title (e.g., 'Final saturation map') ('' by default, i.e., set by plopm).
 - \-r: Restart number to plot the dynamic variable, where 1 corresponds to the initial one ('-1' by default, i.e., the last restart file).
-
-Installation
-------------
-See the `Github page <https://github.com/cssr-tools/plopm>`_.
-
-.. tip::
-    Check the `CI.yml <https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml>`_ file.
-
-Getting started
----------------
-See the :doc:`examples <./examples>`.
-
-.. tip::
-    Check the `tests <https://github.com/cssr-tools/plopm/blob/main/tests>`_.
+- \-p: Path to flow (e.g., '\home\build\bin\flow'). This is used to generate the grid for the vtk files ('flow' by default).
+- \-m: Generate 'png' or 'vtk' files ('png' by default).
