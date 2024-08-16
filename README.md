@@ -7,7 +7,7 @@
 # plopm: Simplified and flexible tool to visualize OPM Flow geological models
 
 ## Main feature
-Quick generation of PNG figures from a simulation model given any 2D slide.
+Quick generation of PNG figures and VTKs from a OPM Flow type model.
 
 ## Installation
 To install the _plopm_ executable in an existing Python environment: 
@@ -40,7 +40,7 @@ To use the conversion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) t
 ## Running plopm
 You can run _plopm_ as a single command line:
 ```
-plopm -i some_input -o some_output_folder
+plopm -i name(s)_of_input_file(s)
 ```
 Run `plopm --help` to see all possible command line argument options.
 
@@ -51,4 +51,4 @@ See the [_examples_](https://cssr-tools.github.io/plopm/examples.html) in the [_
 The _plopm_ package is being funded by the [_HPC Simulation Software for the Gigatonne Storage Challenge project_](https://www.norceresearch.no/en/projects/hpc-simulation-software-for-the-gigatonne-storage-challenge) [project number 622059] and [_Center for Sustainable Subsurface Resources (CSSR)_](https://cssr.no) 
 [project no. 331841].
 This is work in progress.
-Contributions are more than welcome using the fork and pull request approach.
+Contributions are more than welcome using the fork and pull request approach. For new features, please request them raising an issue.

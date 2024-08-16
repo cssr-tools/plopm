@@ -16,7 +16,7 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
@@ -36,7 +36,7 @@
           
           <a href="index.html">
             
-              <img src="_static/fipnum_norne.png" class="logo" alt="Logo"/>
+              <img src="_static/permx_log.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -86,10 +86,10 @@
   <section id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
 <img alt="_images/plopm.png" src="_images/plopm.png" />
-<p>This documentation describes the content of the <strong>plopm</strong> tool.</p>
+<p>This documentation describes the <strong>plopm</strong> tool hosted in <a class="reference external" href="https://github.com/cssr-tools/plopm">https://github.com/cssr-tools/plopm</a>.</p>
 <section id="concept">
 <h2>Concept<a class="headerlink" href="#concept" title="Link to this heading"></a></h2>
-<p>Simplified and flexible framework for quick visualization of <a class="reference external" href="https://www.paraview.org">OPM Flow</a> geological models.
+<p>Simplified and flexible framework for quick visualization of <a class="reference external" href="https://opm-project.org">OPM Flow</a> geological models.
 The approach is the generation of PNG figures from static (e.g, porosity, pore volume fluid in place numbers)
 and dynamic (e.g., pressure, fluid saturations) properties given any 2D slide (e.g., the middle part of a reservoir in the xy plane),
 as well as plotting any given summary vector (e.g., field gas in place a.k.a fgip).</p>
@@ -101,34 +101,148 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <section id="overview">
 <span id="id1"></span><h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>The current implementation supports the following executable with the argument options:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>some_input<span class="w"> </span>-o<span class="w"> </span>some_output_folder
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>name<span class="o">(</span>s<span class="o">)</span>_of_input_file<span class="o">(</span>s<span class="o">)</span>
 </pre></div>
 </div>
 <p>where</p>
-<ul class="simple">
-<li><p>-i: The base name of the input files; if more than one is given, separate them by ‘,’ (e.g, ‘SPE11B,SPE11B_TUNED’) (<cite>SPE11B</cite> by default).</p></li>
-<li><p>-o: The base name of the output folder (<cite>.</cite> by default).</p></li>
-<li><p>-f: The font size (<cite>14</cite> by default).</p></li>
-<li><p>-s: The slide for the 2D maps of the static variables, e.g, <cite>10,,</cite> to plot the xz plane on all cells with i=10 (<cite>,1,</cite> by default, i.e., the xz surface at j=1).</p></li>
-<li><p>-x: Option to set the lower and upper bounds in the 2D map along x (’’ by default).</p></li>
-<li><p>-y: Option to set the lower and upper bounds in the 2D map along y (’’ by default).</p></li>
-<li><p>-z: The option to scale the axis in the 2D maps (<cite>yes</cite> by default).</p></li>
-<li><p>-u: Use resdata or opm Python libraries (<cite>resdata</cite> by default).</p></li>
-<li><p>-v: Specify the name of the static vairable to plot (e.g., <cite>depth</cite>) (’’ by default, i.e., plotting: porv, permx, permz, poro, fipnum, and satnum).</p></li>
-<li><p>-c: Specify the colormap (e.g., <cite>jet</cite>) (’’ by default, i.e., set by plopm).</p></li>
-<li><p>-n: Specify the format for the numbers in the colormap (e.g., “lambda x, _: f’{x:.0f}’”) (’’ by default, i.e., set by plopm).</p></li>
-<li><p>-l: Specify the units (e.g., &quot;[m\$^2\$]&quot;) (’’ by default, i.e., set by plopm).</p></li>
-<li><p>-r: Restart number to plot the dynamic variable, where 1 corresponds to the initial one (‘-1’ by default, i.e., the last restart file).</p></li>
-<li><p>-w: Plot the positions of the wells or sources (‘0’ by default).</p></li>
-<li><p>-g: Plot information about the number of cells in the x, y, and z directions and number of active grid cells (‘0’ by default).</p></li>
-<li><p>-e: Specify the linestyles separated by ‘;’ (e.g., ‘solid;:’) (’’ by default, i.e., set by plopm).</p></li>
-<li><p>-b: Specify the upper and lower bounds for the color map (e.g., ‘[-0.1,11]’) (’’ by default, i.e., set by matplotlib).</p></li>
-<li><p>-d: Specify the dimensions  of the Figure (e.g., ‘5,5’) (‘8,16’ by default).</p></li>
-<li><p>-t: Specify the figure title (e.g., ‘Final saturation map’) (’’ by default, i.e., set by plopm).</p></li>
-<li><p>-r: Restart number to plot the dynamic variable, where 1 corresponds to the initial one (‘-1’ by default, i.e., the last restart file).</p></li>
-<li><p>-p: Path to flow (e.g., ‘homebuildbinflow’). This is used to generate the grid for the vtk files (‘flow’ by default).</p></li>
-<li><p>-m: Generate ‘png’ or ‘vtk’ files (‘png’ by default).</p></li>
-</ul>
+<dl class="option-list">
+<dt><kbd><span class="option">-i</span></kbd></dt>
+<dd><p>The base name (or full path) of the input files; if more than one is given, separate them by ‘,’ (e.g, ‘SPE11B,\home\user\SPE11B_TUNED’) (‘SPE11B’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-o</span></kbd></dt>
+<dd><p>The base name (or full path) of the output folder (‘.’ by default, i.e., the folder where plopm is executed).</p>
+</dd>
+<dt><kbd><span class="option">-v</span></kbd></dt>
+<dd><p>Specify the name of the vairable to plot, e.g., ‘pressure’, in addition to special extensive quantities for the mass such as ‘gasm’, ‘dism’, ‘liqm’, ‘vapm’, ‘co2m’, ‘h2om’, ‘fwcdm’, and ‘fgipm’ (’’ by default, i.e., plotting: porv, permx, permz, poro, fipnum, and satnum).</p>
+</dd>
+<dt><kbd><span class="option">-m</span></kbd></dt>
+<dd><p>Generate ‘png’ or ‘vtk’ files (‘png’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-s</span></kbd></dt>
+<dd><p>The slide in the 3D model to plot the 2D maps, e.g, ‘10,,’ to plot the xz plane on all cells with i=10 (‘,1,’ by default, i.e., the xz surface at j=1).</p>
+</dd>
+<dt><kbd><span class="option">-p</span></kbd></dt>
+<dd><p>Path to flow, e.g., ‘\home\build\bin\flow’. This is used to generate the grid for the vtk files (‘flow’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-z</span></kbd></dt>
+<dd><p>Scale the axis in the 2D maps (‘1’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-f</span></kbd></dt>
+<dd><p>The font size (‘14’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-x</span></kbd></dt>
+<dd><p>Set the lower and upper bounds along x, e.g., ‘[-100,200]’ (’’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-y</span></kbd></dt>
+<dd><p>Set the lower and upper bounds along y, e.g., ‘[-10,300]’ (’’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-u</span></kbd></dt>
+<dd><p>Use resdata or opm Python libraries (‘resdata’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-c</span></kbd></dt>
+<dd><p>Specify the colormap, e.g., ‘jet’, or color(s) for the summary, e.g., ‘b,r’ (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-e</span></kbd></dt>
+<dd><p>Specify the linestyles separated by ‘;’, e.g., ‘solid;:’ (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-n</span></kbd></dt>
+<dd><p>Specify the format for the numbers in the colormap, e.g., “lambda x, _    f’{x:.0f}’” (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-b</span></kbd></dt>
+<dd><p>Specify the upper and lower bounds for the color map, e.g., ‘[-0.1,11]’ (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-d</span></kbd></dt>
+<dd><p>Specify the dimensions in inches generated png, e.g., ‘5,5’ (‘8,16’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-l</span></kbd></dt>
+<dd><p>Specify the units of the variable, e.g., &quot;[m\$^2\$]&quot; (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-t</span></kbd></dt>
+<dd><p>Specify the figure title, e.g., ‘Final saturation map’ (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-r</span></kbd></dt>
+<dd><p>Restart number to plot the dynamic variable, where 1 corresponds to the initial one (‘-1’ by default, i.e., the last restart file).</p>
+</dd>
+<dt><kbd><span class="option">-w</span></kbd></dt>
+<dd><p>Plot the positions of the wells or sources (‘0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-g</span></kbd></dt>
+<dd><p>Plot information about the number of cells in the x, y, and z directions and number of active grid cells (‘0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-a</span></kbd></dt>
+<dd><p>Scale the mass variable, e.g., 1e-9 for the color bar for the CO2 mass to be in Mt (‘1’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-t<var>ime</var></span></kbd></dt>
+<dd><p>For the x axis in the summary use seconds ‘s’, minutes ‘m’, hours ‘h’, days ‘d’, weeks ‘w’, years ‘y’, or dates ‘dates’ (‘s’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-y<var>label</var></span></kbd></dt>
+<dd><p>Text for the y axis (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-x<var>label</var></span></kbd></dt>
+<dd><p>Text for the x axis (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-y<var>lnum</var></span></kbd></dt>
+<dd><p>Number of y axis labels (‘4’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-x<var>lnum</var></span></kbd></dt>
+<dd><p>Number of x axis labels (‘4’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-c<var>num</var></span></kbd></dt>
+<dd><p>Number of color labels (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-c<var>label</var></span></kbd></dt>
+<dd><p>Text for the colorbar (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-l<var>abels</var></span></kbd></dt>
+<dd><p>Legend in the summary plot, separated by commas if more than one (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-a<var>xgrid</var></span></kbd></dt>
+<dd><p>Set axis.grid to True for the summary plots (‘1’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-d<var>pi</var></span></kbd></dt>
+<dd><p>Dots per inch for the figure (‘300’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-x<var>format</var></span></kbd></dt>
+<dd><p>Format for the x numbers, e.g., .2e for exponential notation (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-y<var>format</var></span></kbd></dt>
+<dd><p>Format for the y numbers, e.g., .1f for one decimal (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-x<var>units</var></span></kbd></dt>
+<dd><p>For the x axis in the spatial maps meters ‘m’, kilometers ‘km’, centimeters ‘cm’, or milimeters ‘mm’ (‘m’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-y<var>units</var></span></kbd></dt>
+<dd><p>For the y axis in the spatial maps meters ‘m’, kilometers ‘km’, centimeters ‘cm’, or milimeters ‘mm’ (‘m’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-r<var>emove</var></span></kbd></dt>
+<dd><p>Set the entries to 1 to remove in the spatial maps the left axis, bottom axis, colorbar, and title (‘0,0,0,0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-f<var>acecolor</var></span></kbd></dt>
+<dd><p>Color outside the spatial map (‘w’ by default, i.e., white).</p>
+</dd>
+<dt><kbd><span class="option">-s<var>ave</var></span></kbd></dt>
+<dd><p>Name of the output files (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-l<var>og</var></span></kbd></dt>
+<dd><p>Log scale for the color map (‘0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-r<var>otate</var></span></kbd></dt>
+<dd><p>Grades to rotate the grid in the 2D maps (‘0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-t<var>ranslate</var></span></kbd></dt>
+<dd><p>Translate the grid in the 2D maps x,y directions (‘[0,0]’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-g<var>lobal</var></span></kbd></dt>
+<dd><p>Min and max in the colorbars from the current 2D slide values (0) or whole 3D model ‘1’ (‘0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-n<var>color</var></span></kbd></dt>
+<dd><p>Color for the inactive cells in the 2D maps (‘w’ by default, i.e., white).</p>
+</dd>
+</dl>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Type in the terminal <strong>plopm –help</strong> to show these argument options.</p>
+</div>
 </section>
 </section>
 
