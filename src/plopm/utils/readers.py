@@ -6,7 +6,12 @@ Utiliy functions to read the OPM Flow simulator type output files.
 """
 
 import csv
+import sys
+import datetime
 import numpy as np
+
+GAS_DEN_REF = 1.86843
+WAT_DEN_REF = 998.108
 
 
 def get_yzcoords_resdata(dic):
@@ -254,6 +259,10 @@ def get_kws_resdata(dic):
         dic (dict): Modified global dictionary
 
     """
+    dic["porv"] = np.array(dic["init"].iget_kw("PORV")[0])
+    dic["porva"] = np.ones(dic["mx"] * dic["my"]) * np.nan
+    dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
+    dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
     for name in dic["props"]:
         if dic["init"].has_kw(name.upper()):
             dic[name] = np.array(dic["init"].iget_kw(name.upper())[0])
@@ -273,12 +282,125 @@ def get_kws_resdata(dic):
         elif dic["summary"][0].has_key(name.upper()):
             for i, _ in enumerate(dic["names"]):
                 dic["vsum"].append(dic["summary"][i][name.upper()].values)
-                dic["time"].append(dic["summary"][i]["TIME"].values)
+                if dic["times"] == "dates":
+                    dic["time"].append(dic["summary"][i].dates)
+                else:
+                    dic["time"].append(dic["summary"][i]["TIME"].values * dic["tskl"])
             return
+        elif name.lower() in dic["mass"] + dic["smass"]:
+            handle_mass_resdata(dic, name)
+        else:
+            print(f"Unknow -v variable ({name}).")
+            sys.exit()
         dic[name + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-    dic["porv"] = np.array(dic["init"].iget_kw("PORV")[0])
-    dic["porva"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-    dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
+
+
+def handle_mass_resdata(dic, name):
+    """
+    Mass using resdata.
+
+    Args:
+        dic (dict): Global dictionary\n
+        name (str): Name of the variable for the mass spatial map
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    if name.lower() in dic["mass"]:
+        if len(dic["names"]) == 1:
+            dic[name] = handle_mass(dic, name, 0, dic["restart"])
+        else:
+            dic[name] = handle_mass(dic, name, 0, dic["restart"]) - handle_mass(
+                dic, name, 1, dic["restart"]
+            )
+        ntot = len(dic["unrst"][0]["SGAS"])
+        dic["dtitle"] = (
+            f", rst {ntot if dic['restart']==0 else dic['restart']} out of {ntot},"
+            + f" total sum={sum(dic[name]):.2E}"
+        )
+        dic[name] *= dic["skl"]
+    else:
+        for i, _ in enumerate(dic["names"]):
+            dic["vsum"].append(
+                dic["summary"][i][name[:-1].upper()].values * GAS_DEN_REF * dic["skl"]
+            )
+            if dic["times"] == "dates":
+                dic["time"].append(dic["summary"][i].dates)
+            else:
+                dic["time"].append(dic["summary"][i]["TIME"].values * dic["tskl"])
+
+
+def handle_mass(dic, name, i, nrst):
+    """
+    Compute the mass (intensive quantities).
+
+    Args:
+        dic (dict): Global dictionary\n
+        name (str): Name of the variable for the mass spatial map\n
+        i (int): Number of the geological model\n
+        nrst (int): Number of restart step
+
+    Returns:
+        mass (array): Floats with the computed mass
+
+    """
+    if dic["use"] == "resdata":
+        sgas = abs(np.array(dic["unrst"][i]["SGAS"][nrst - 1]))
+        rhog = np.array(dic["unrst"][i]["GAS_DEN"][nrst - 1])
+        rhow = np.array(dic["unrst"][i]["WAT_DEN"][nrst - 1])
+        if dic["unrst"][i].has_kw("RSW"):
+            rsw = np.array(dic["unrst"][i]["RSW"][nrst - 1])
+        else:
+            rsw = 0.0 * sgas
+        if dic["unrst"][i].has_kw("RVW"):
+            rvw = np.array(dic["unrst"][i]["RVW"][nrst - 1])
+        else:
+            rvw = 0.0 * sgas
+    else:
+        nrst = nrst - 1 if nrst > 0 else dic["unrst"][0].count("SGAS") - 1
+        sgas = abs(np.array(dic["unrst"][i]["SGAS", nrst]))
+        rhog = np.array(dic["unrst"][i]["GAS_DEN", nrst])
+        rhow = np.array(dic["unrst"][i]["WAT_DEN", nrst])
+        if dic["unrst"][i].count("RSW"):
+            rsw = np.array(dic["unrst"][i]["RSW", nrst])
+        else:
+            rsw = 0.0 * sgas
+        if dic["unrst"][i].count("RVW"):
+            rvw = np.array(dic["unrst"][i]["RVW", nrst])
+        else:
+            rvw = 0.0 * sgas
+    co2_g = sgas * rhog * dic["pv"]
+    co2_d = rsw * rhow * (1.0 - sgas) * dic["pv"] * GAS_DEN_REF / WAT_DEN_REF
+    h2o_l = (1 - sgas) * rhow * dic["pv"]
+    h2o_v = rvw * rhog * sgas * dic["pv"] * WAT_DEN_REF / GAS_DEN_REF
+    return type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v)
+
+
+def type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v):
+    """
+    From the given variable return the associated mass
+
+    Args:
+        name (str): Name of the variable for the mass spatial map\n
+        co2_g: Mass of CO2 in the gas phase\n
+        co2_d: Mass of CO2 in the liquid phase\n
+        h2o_l: Mass of H2O in the liquid phase\n
+        h2o_v: Mass of H2O in the gas phase
+
+    Returns:
+        mass (array): Floats with the computed mass
+
+    """
+    if name == "gasm":
+        return co2_g
+    if name == "dism":
+        return co2_d
+    if name == "liqm":
+        return h2o_l
+    if name == "vapm":
+        return h2o_v
+    return co2_g + co2_d
 
 
 def get_kws_opm(dic):
@@ -292,6 +414,10 @@ def get_kws_opm(dic):
         dic (dict): Modified global dictionary
 
     """
+    dic["porv"] = np.array(dic["init"]["PORV"])
+    dic["porva"] = np.ones(dic["mx"] * dic["my"]) * np.nan
+    dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
+    dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
     for name in dic["props"]:
         if dic["init"].count(name.upper()):
             dic[name] = np.array(dic["init"][name.upper()])
@@ -314,12 +440,64 @@ def get_kws_opm(dic):
         elif name.upper() in dic["summary"][0].keys():
             for i, _ in enumerate(dic["names"]):
                 dic["vsum"].append(dic["summary"][i][name.upper()])
-                dic["time"].append(dic["summary"][i]["TIME"])
+                if dic["times"] == "dates":
+                    smsp_dates = 86400 * dic["summary"][i]["TIME"]
+                    smsp_dates = [
+                        dic["summary"][i].start_date
+                        + datetime.timedelta(seconds=seconds)
+                        for seconds in smsp_dates
+                    ]
+                    dic["time"].append(smsp_dates)
+                else:
+                    dic["time"].append(dic["summary"][i]["TIME"] * dic["tskl"])
             return
+        elif name.lower() in dic["mass"] + dic["smass"]:
+            handle_mass_opm(dic, name)
+        else:
+            print(f"Unknow -v variable ({name}).")
+            sys.exit()
         dic[name + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-    dic["porv"] = np.array(dic["init"]["PORV"])
-    dic["porva"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-    dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
+
+
+def handle_mass_opm(dic, name):
+    """
+    Mass using opm.
+
+    Args:
+        dic (dict): Global dictionary\n
+        name (str): Name of the variable for the mass spatial map
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    if name.lower() in dic["mass"]:
+        if len(dic["names"]) == 1:
+            dic[name] = handle_mass(dic, name, 0, dic["restart"])
+        else:
+            dic[name] = handle_mass(dic, name, 0, dic["restart"]) - handle_mass(
+                dic, name, 1, dic["restart"]
+            )
+        ntot = dic["unrst"][0].count("SGAS")
+        dic["dtitle"] = (
+            f", rst {ntot if dic['restart']==0 else dic['restart']} out of {ntot},"
+            + f" total sum={sum(dic[name]):.2E}"
+        )
+        dic[name] *= dic["skl"]
+    else:
+        for i, _ in enumerate(dic["names"]):
+            dic["vsum"].append(
+                dic["summary"][i][name[:-1].upper()] * GAS_DEN_REF * dic["skl"]
+            )
+            if dic["times"] == "dates":
+                smsp_dates = 86400 * dic["summary"][i]["TIME"]
+                smsp_dates = [
+                    dic["summary"][i].start_date + datetime.timedelta(seconds=seconds)
+                    for seconds in smsp_dates
+                ]
+                dic["time"].append(smsp_dates)
+            else:
+                dic["time"].append(dic["summary"][i]["TIME"] * dic["tskl"])
 
 
 def get_wells(dic):

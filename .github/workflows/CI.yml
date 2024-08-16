@@ -37,10 +37,11 @@ jobs:
         sudo apt-get install libopm-simulators-bin
         sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super
         
-    - name: Install test dependecies
+    - name: Install dependecies
       run: |
         pip install --upgrade pip setuptools wheel
         pip install -r dev-requirements.txt
+        pip install opm
         
     - name: Install plopm
       run: |

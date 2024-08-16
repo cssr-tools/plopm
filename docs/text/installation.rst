@@ -34,6 +34,7 @@ install the Python requirements in a virtual environment with the following comm
 .. note::
 
     For not macOS users, to install the Python opm package, execute in the terminal **pip install opm**.
+    In addition, to install the dependencies used for the figure's formatting, execute **sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super**.
     For macOS, see :ref:`macOS`.
 
 OPM Flow
@@ -84,7 +85,7 @@ in the terminal the following lines (which in turn should build flow in the fold
     You can create a .sh file (e.g., build_opm_mpi.sh), copy the previous lines, and run in the terminal **source build_opm_mpi.sh**
 
 Regarding the reading of from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST), it is possible to use the opm python package instead of resdata (e.g., it seems the opm Python package
-is faster than resdata to read large simulation files). To use opm, you first need to install it, by executing in the terminal **pip install opm**.  
+is faster than resdata to read large simulation files). To use opm, you first need to install it, by executing in the terminal **pip install opm** and when executing plopm adding the flag **-u opm**.  
 
 .. _macOS:
 

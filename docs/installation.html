@@ -16,7 +16,7 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
@@ -36,7 +36,7 @@
           
           <a href="index.html">
             
-              <img src="_static/fipnum_norne.png" class="logo" alt="Logo"/>
+              <img src="_static/permx_log.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -116,6 +116,7 @@ install the Python requirements in a virtual environment with the following comm
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For not macOS users, to install the Python opm package, execute in the terminal <strong>pip install opm</strong>.
+In addition, to install the dependencies used for the figure’s formatting, execute <strong>sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super</strong>.
 For macOS, see <a class="reference internal" href="#macos"><span class="std std-ref">Source build in macOS</span></a>.</p>
 </div>
 </section>
@@ -164,7 +165,7 @@ in the terminal the following lines (which in turn should build flow in the fold
 <p>You can create a .sh file (e.g., build_opm_mpi.sh), copy the previous lines, and run in the terminal <strong>source build_opm_mpi.sh</strong></p>
 </div>
 <p>Regarding the reading of from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST), it is possible to use the opm python package instead of resdata (e.g., it seems the opm Python package
-is faster than resdata to read large simulation files). To use opm, you first need to install it, by executing in the terminal <strong>pip install opm</strong>.</p>
+is faster than resdata to read large simulation files). To use opm, you first need to install it, by executing in the terminal <strong>pip install opm</strong> and when executing plopm adding the flag <strong>-u opm</strong>.</p>
 </section>
 <section id="source-build-in-macos">
 <span id="macos"></span><h3>Source build in macOS<a class="headerlink" href="#source-build-in-macos" title="Link to this heading"></a></h3>

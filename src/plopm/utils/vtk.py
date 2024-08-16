@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W3301
+# pylint: disable=W3301,R0912
 
 """
 Utiliy functions to write the vtks.
@@ -10,6 +10,7 @@ import os
 import csv
 from subprocess import PIPE, Popen
 import numpy as np
+from plopm.utils.readers import handle_mass
 
 try:
     from resdata.resfile import ResdataFile
@@ -55,16 +56,21 @@ def make_vtks(dic):
         os.system(f"cd .. && rm -rf plopm_vtks_temporal {deck[4:]}")
         os.chdir(cwd)
     for ext in ["init", "unrst"]:
+        dic[ext] = []
         if os.path.isfile(f"{dic['name']}.{ext.upper()}"):
             if dic["use"] == "resdata":
-                dic[ext] = ResdataFile(f"{dic['name']}.{ext.upper()}")
+                dic[ext].append(ResdataFile(f"{dic['name']}.{ext.upper()}"))
             else:
-                dic[ext] = OpmFile(f"{dic['name']}.{ext.upper()}")
+                dic[ext].append(OpmFile(f"{dic['name']}.{ext.upper()}"))
     if not "init" in dic.keys() or not "unrst" in dic.keys():
         return
     if dic["use"] == "resdata":
+        dic["porv"] = np.array(dic["init"][0]["PORV"][0])
+        dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
         opmtovtk_resdata(dic)
     else:
+        dic["porv"] = np.array(dic["init"][0]["PORV"])
+        dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
         opmtovtk_opm(dic)
 
 
@@ -101,12 +107,27 @@ def opmtovtk_resdata(dic):
                 f"\n\t\t\t\t\t<DataArray type='UInt16' Name='{var.lower()}' "
                 + "NumberOfComponents='1' format='ascii'>\n",
             )
-            if dic["init"].has_kw(var.upper()):
+            if dic["init"][0].has_kw(var.upper()):
                 base_vtk.insert(
                     6 + 2 * n,
                     " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(int(val) + inc) for val in dic["init"][var.upper()][0]]
+                        + [
+                            str(int(val) + inc)
+                            for val in dic["init"][0][var.upper()][0]
+                        ]
+                        + ["\n\t\t\t\t\t</DataArray>"]
+                    ),
+                )
+            elif var.lower() in dic["mass"]:
+                base_vtk.insert(
+                    6 + 2 * n,
+                    " ".join(
+                        ["\t\t\t\t\t "]
+                        + [
+                            str(int(val) + inc)
+                            for val in handle_mass(dic, var.lower(), 0, i)
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
                 )
@@ -115,7 +136,10 @@ def opmtovtk_resdata(dic):
                     6 + 2 * n,
                     " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(int(val) + inc) for val in dic["unrst"][var.upper()][i]]
+                        + [
+                            str(int(val) + inc)
+                            for val in dic["unrst"][0][var.upper()][i]
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
                 )
@@ -125,12 +149,27 @@ def opmtovtk_resdata(dic):
                 f"\n\t\t\t\t\t<DataArray type='Float32' Name='{var.lower()}' "
                 + "NumberOfComponents='1' format='ascii'>\n",
             )
-            if dic["init"].has_kw(var.upper()):
+            if dic["init"][0].has_kw(var.upper()):
                 base_vtk.insert(
                     6 + 2 * n,
                     " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(np.float16(val)) for val in dic["init"][var.upper()][0]]
+                        + [
+                            str(np.float16(val))
+                            for val in dic["init"][0][var.upper()][0]
+                        ]
+                        + ["\n\t\t\t\t\t</DataArray>"]
+                    ),
+                )
+            elif var.lower() in dic["mass"]:
+                base_vtk.insert(
+                    6 + 2 * n,
+                    " ".join(
+                        ["\t\t\t\t\t "]
+                        + [
+                            str(np.float16(val))
+                            for val in handle_mass(dic, var.lower(), 0, i)
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
                 )
@@ -139,14 +178,18 @@ def opmtovtk_resdata(dic):
                     6 + 2 * n,
                     " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(np.float16(val)) for val in dic["unrst"][var.upper()][i]]
+                        + [
+                            str(np.float16(val))
+                            for val in dic["unrst"][0][var.upper()][i]
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
                 )
 
     base_vtk.insert(7 + 2 * n, "\n\t\t\t\t</CellData>\n")
     with open(
-        f"{dic['name']}-{0 if i<1000 else ''}{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
+        f"{dic['save'] if dic['save'] else dic['name']}"
+        + f"-{0 if i<1000 else ''}{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
         "w",
         encoding="utf8",
     ) as file:
@@ -167,6 +210,7 @@ def additional_vtks_resdata(dic, base_vtk):
         None
 
     """
+    inc = 0
     if int(dic["restart"][0]) == 0 and len(dic["restart"]) == 2:
         dic["restart"] = range(0, int(dic["restart"][1]) + 1)
     for i in dic["restart"][1:]:
@@ -179,10 +223,22 @@ def additional_vtks_resdata(dic, base_vtk):
                     f"\n\t\t\t\t\t<DataArray type='UInt16' Name='{var.lower()}' "
                     + "NumberOfComponents='1' format='ascii'>\n"
                 )
-                if dic["init"].has_kw(var.upper()):
+                if dic["init"][0].has_kw(var.upper()):
                     base_vtk[6 + 2 * n] = " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(int(val) + inc) for val in dic["init"][var.upper()][0]]
+                        + [
+                            str(int(val) + inc)
+                            for val in dic["init"][0][var.upper()][0]
+                        ]
+                        + ["\n\t\t\t\t\t</DataArray>"]
+                    )
+                elif var.lower() in dic["mass"]:
+                    base_vtk[6 + 2 * n] = " ".join(
+                        ["\t\t\t\t\t "]
+                        + [
+                            str(int(val) + inc)
+                            for val in handle_mass(dic, var.lower(), 0, i_i)
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
                 else:
@@ -190,7 +246,7 @@ def additional_vtks_resdata(dic, base_vtk):
                         ["\t\t\t\t\t "]
                         + [
                             str(int(val) + inc)
-                            for val in dic["unrst"][var.upper()][i_i]
+                            for val in dic["unrst"][0][var.upper()][i_i]
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
@@ -199,10 +255,22 @@ def additional_vtks_resdata(dic, base_vtk):
                     f"\n\t\t\t\t\t<DataArray type='Float32' Name='{var.lower()}' "
                     + "NumberOfComponents='1' format='ascii'>\n"
                 )
-                if dic["init"].has_kw(var.upper()):
+                if dic["init"][0].has_kw(var.upper()):
                     base_vtk[6 + 2 * n] = " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(np.float16(val)) for val in dic["init"][var.upper()][0]]
+                        + [
+                            str(np.float16(val))
+                            for val in dic["init"][0][var.upper()][0]
+                        ]
+                        + ["\n\t\t\t\t\t</DataArray>"]
+                    )
+                elif var.lower() in dic["mass"]:
+                    base_vtk[6 + 2 * n] = " ".join(
+                        ["\t\t\t\t\t "]
+                        + [
+                            str(np.float16(val))
+                            for val in handle_mass(dic, var.lower(), 0, i_i)
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
                 else:
@@ -210,12 +278,13 @@ def additional_vtks_resdata(dic, base_vtk):
                         ["\t\t\t\t\t "]
                         + [
                             str(np.float16(val))
-                            for val in dic["unrst"][var.upper()][i_i]
+                            for val in dic["unrst"][0][var.upper()][i_i]
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
         with open(
-            f"{dic['name']}-{0 if i_i<1000 else ''}{0 if i_i<100 else ''}"
+            f"{dic['save'] if dic['save'] else dic['name']}"
+            + f"-{0 if i_i<1000 else ''}{0 if i_i<100 else ''}"
             + f"{0 if i_i<10 else ''}{i_i}.vtu",
             "w",
             encoding="utf8",
@@ -256,12 +325,24 @@ def opmtovtk_opm(dic):
                 f"\n\t\t\t\t\t<DataArray type='UInt16' Name='{var.lower()}' "
                 + "NumberOfComponents='1' format='ascii'>\n",
             )
-            if dic["init"].count(var.upper()):
+            if dic["init"][0].count(var.upper()):
                 base_vtk.insert(
                     6 + 2 * n,
                     " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(int(val) + inc) for val in dic["init"][var.upper()]]
+                        + [str(int(val) + inc) for val in dic["init"][0][var.upper()]]
+                        + ["\n\t\t\t\t\t</DataArray>"]
+                    ),
+                )
+            elif var.lower() in dic["mass"]:
+                base_vtk.insert(
+                    6 + 2 * n,
+                    " ".join(
+                        ["\t\t\t\t\t "]
+                        + [
+                            str(int(val) + inc)
+                            for val in handle_mass(dic, var.lower(), 0, i)
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
                 )
@@ -270,7 +351,10 @@ def opmtovtk_opm(dic):
                     6 + 2 * n,
                     " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(int(val) + inc) for val in dic["unrst"][var.upper(), i]]
+                        + [
+                            str(int(val) + inc)
+                            for val in dic["unrst"][0][var.upper(), i]
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
                 )
@@ -280,12 +364,24 @@ def opmtovtk_opm(dic):
                 f"\n\t\t\t\t\t<DataArray type='Float32' Name='{var.lower()}' "
                 + "NumberOfComponents='1' format='ascii'>\n",
             )
-            if dic["init"].count(var.upper()):
+            if dic["init"][0].count(var.upper()):
                 base_vtk.insert(
                     6 + 2 * n,
                     " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(np.float16(val)) for val in dic["init"][var.upper()]]
+                        + [str(np.float16(val)) for val in dic["init"][0][var.upper()]]
+                        + ["\n\t\t\t\t\t</DataArray>"]
+                    ),
+                )
+            elif var.lower() in dic["mass"]:
+                base_vtk.insert(
+                    6 + 2 * n,
+                    " ".join(
+                        ["\t\t\t\t\t "]
+                        + [
+                            str(np.float16(val))
+                            for val in handle_mass(dic, var.lower(), 0, i)
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
                 )
@@ -294,13 +390,17 @@ def opmtovtk_opm(dic):
                     6 + 2 * n,
                     " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(np.float16(val)) for val in dic["unrst"][var.upper(), i]]
+                        + [
+                            str(np.float16(val))
+                            for val in dic["unrst"][0][var.upper(), i]
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
                 )
     base_vtk.insert(7 + 2 * n, "\n\t\t\t\t</CellData>\n")
     with open(
-        f"{dic['name']}-{0 if i<1000 else ''}{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
+        f"{dic['save'] if dic['save'] else dic['name']}-{0 if i<1000 else ''}"
+        + f"{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
         "w",
         encoding="utf8",
     ) as file:
@@ -321,6 +421,7 @@ def additional_vtks_opm(dic, base_vtk):
         None
 
     """
+    inc = 0
     if int(dic["restart"][0]) == 0 and len(dic["restart"]) == 2:
         dic["restart"] = range(0, int(dic["restart"][1]) + 1)
     for i in dic["restart"][1:]:
@@ -333,10 +434,19 @@ def additional_vtks_opm(dic, base_vtk):
                     f"\n\t\t\t\t\t<DataArray type='UInt16' Name='{var.lower()}' "
                     + "NumberOfComponents='1' format='ascii'>\n"
                 )
-                if dic["init"].count(var.upper()):
+                if dic["init"][0].count(var.upper()):
                     base_vtk[6 + 2 * n] = " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(int(val) + inc) for val in dic["init"][var.upper()]]
+                        + [str(int(val) + inc) for val in dic["init"][0][var.upper()]]
+                        + ["\n\t\t\t\t\t</DataArray>"]
+                    )
+                elif var.lower() in dic["mass"]:
+                    base_vtk[6 + 2 * n] = " ".join(
+                        ["\t\t\t\t\t "]
+                        + [
+                            str(int(val) + inc)
+                            for val in handle_mass(dic, var.lower(), 0, i_i)
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
                 else:
@@ -344,7 +454,7 @@ def additional_vtks_opm(dic, base_vtk):
                         ["\t\t\t\t\t "]
                         + [
                             str(int(val) + inc)
-                            for val in dic["unrst"][var.upper(), i_i]
+                            for val in dic["unrst"][0][var.upper(), i_i]
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
@@ -353,10 +463,19 @@ def additional_vtks_opm(dic, base_vtk):
                     f"\n\t\t\t\t\t<DataArray type='Float32' Name='{var.lower()}' "
                     + "NumberOfComponents='1' format='ascii'>\n"
                 )
-                if dic["init"].count(var.upper()):
+                if dic["init"][0].count(var.upper()):
                     base_vtk[6 + 2 * n] = " ".join(
                         ["\t\t\t\t\t "]
-                        + [str(np.float16(val)) for val in dic["init"][var.upper()]]
+                        + [str(np.float16(val)) for val in dic["init"][0][var.upper()]]
+                        + ["\n\t\t\t\t\t</DataArray>"]
+                    )
+                elif var.lower() in dic["mass"]:
+                    base_vtk[6 + 2 * n] = " ".join(
+                        ["\t\t\t\t\t "]
+                        + [
+                            str(np.float16(val))
+                            for val in handle_mass(dic, var.lower(), 0, i_i)
+                        ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
                 else:
@@ -364,12 +483,13 @@ def additional_vtks_opm(dic, base_vtk):
                         ["\t\t\t\t\t "]
                         + [
                             str(np.float16(val))
-                            for val in dic["unrst"][var.upper(), i_i]
+                            for val in dic["unrst"][0][var.upper(), i_i]
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
         with open(
-            f"{dic['name']}-{0 if i_i<1000 else ''}{0 if i_i<100 else ''}"
+            f"{dic['save'] if dic['save'] else dic['name']}-{0 if i_i<1000 else ''}"
+            + f"{0 if i_i<100 else ''}"
             + f"{0 if i_i<10 else ''}{i_i}.vtu",
             "w",
             encoding="utf8",

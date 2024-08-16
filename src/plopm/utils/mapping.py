@@ -5,6 +5,44 @@
 Utiliy function for the grid and locations in the geological models.
 """
 
+import numpy as np
+
+
+def rotate_grid(dic):
+    """
+    Rotate the grid if requiered.
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    xc, yc = [], []
+    length = dic["xc"][-1][-1] - dic["xc"][0][0]
+    width = dic["yc"][0][-1] - dic["yc"][-1][0]
+    x_dis = float(dic["translate"][0][1:])
+    y_dis = float(dic["translate"][1][:-1])
+    for rowx, rowy in zip(dic["xc"], dic["yc"]):
+        xc.append([])
+        yc.append([])
+        for i, j in zip(rowx, rowy):
+            xc[-1].append(
+                1.5 * length
+                + x_dis
+                + (i - 1.5 * length) * np.cos(dic["rotate"] * np.pi / 180)
+                - (j - 1.5 * width) * np.sin(dic["rotate"] * np.pi / 180)
+            )
+            yc[-1].append(
+                1.5 * width
+                + y_dis
+                + (j - 1.5 * width) * np.cos(dic["rotate"] * np.pi / 180)
+                + (i - 1.5 * length) * np.sin(dic["rotate"] * np.pi / 180)
+            )
+    dic["xc"] = xc
+    dic["yc"] = yc
+
 
 def map_yzcoords(dic):
     """

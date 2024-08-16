@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W0123
+# pylint: disable=W0123,R0915,R0912
 
 """
 Utiliy functions to set the requiried input values by plopm.
@@ -43,7 +43,7 @@ def ini_dic(cmdargs):
     if len(names) > 1:
         dic["names"] = names
     dic["coords"] = ["x", "y", "z"]
-    dic["scale"] = cmdargs["scale"].strip()
+    dic["scale"] = int(cmdargs["scale"])
     dic["use"] = cmdargs["use"].strip()
     dic["variable"] = cmdargs["variable"].strip()
     dic["size"] = float(cmdargs["size"])
@@ -56,9 +56,38 @@ def ini_dic(cmdargs):
     dic["colormap"] = cmdargs["colormap"].strip()
     dic["mode"] = cmdargs["mode"].strip()
     dic["flow"] = cmdargs["path"].strip()
-    dic["xlim"], dic["ylim"], dic["wells"], dic["vsum"] = [], [], [], []
-    dic["grid"], dic["summary"], dic["vsum"], dic["time"] = [], [], [], []
-    dic["unrst"] = []
+    dic["fc"] = cmdargs["facecolor"].strip()
+    dic["ncolor"] = cmdargs["ncolor"].strip()
+    dic["cnum"] = cmdargs["cnum"].strip()
+    dic["clabel"] = cmdargs["clabel"].strip()
+    dic["labels"] = (cmdargs["labels"].strip()).split(",")
+    dic["rm"] = (cmdargs["remove"].strip()).split(",")
+    dic["rm"] = [int(val) for val in dic["rm"]]
+    dic["times"] = cmdargs["time"].strip()
+    dic["skl"] = float(cmdargs["adjust"])
+    dic["axgrid"] = int(cmdargs["axgrid"])
+    dic["dpi"] = int(cmdargs["dpi"])
+    dic["log"] = int(cmdargs["log"])
+    dic["rotate"] = int(cmdargs["rotate"])
+    dic["global"] = int(cmdargs["global"])
+    dic["save"] = cmdargs["save"].strip()
+    dic["translate"] = (cmdargs["translate"].strip()).split(",")
+    for i in ["x", "y"]:
+        dic[f"{i}label"] = cmdargs[f"{i}label"].strip()
+        dic[f"{i}format"] = cmdargs[f"{i}format"].strip()
+        dic[f"{i}lnum"] = int(cmdargs[f"{i}lnum"])
+        dic[f"{i}units"] = cmdargs[f"{i}units"].strip()
+        dic[f"{i}lim"] = (cmdargs[f"{i}lim"].strip()).split(",")
+    for name in [
+        "wells",
+        "vsum",
+        "grid",
+        "summary",
+        "vsum",
+        "time",
+        "unrst",
+    ]:
+        dic[name] = []
     dic["dtitle"] = ""
     if len((cmdargs["restart"].strip()).split(",")) == 1 and dic["mode"] != "vtk":
         dic["restart"] = int(cmdargs["restart"])
@@ -71,14 +100,7 @@ def ini_dic(cmdargs):
     dic["slide"] = (
         np.genfromtxt(StringIO(cmdargs["slide"]), delimiter=",", dtype=int) - 1
     )
-    if cmdargs["xlim"]:
-        dic["xlim"] = np.genfromtxt(
-            StringIO(cmdargs["xlim"]), delimiter=",", dtype=float
-        )
-    if cmdargs["ylim"]:
-        dic["ylim"] = np.genfromtxt(
-            StringIO(cmdargs["ylim"]), delimiter=",", dtype=float
-        )
+    dic["mass"] = ["gasm", "dism", "liqm", "vapm", "co2m", "h2om"]
     return dic
 
 
@@ -189,6 +211,7 @@ def ini_properties(dic):
     ]
     if dic["variable"]:
         initialize_variable(dic)
+        initialize_mass(dic)
     else:
         dic["props"] = [
             "porv",
@@ -244,6 +267,60 @@ def ini_properties(dic):
         }
     )
     dic["xc"], dic["yc"] = [], []
+    dic["tskl"], dic["tunit"] = initialize_time(dic["times"])
+    dic["xskl"], dic["xunit"] = initialize_spatial(dic["xunits"])
+    dic["yskl"], dic["yunit"] = initialize_spatial(dic["yunits"])
+
+
+def initialize_spatial(unit):
+    """
+    Handle the units for the axis in the spatial maps
+
+    Args:
+        unit (str): Type for the axis unit
+
+    Returns:
+        scale (float): Scale for the coordinates\n
+        unit (str): Units for the axis
+
+    """
+    if unit == "m":
+        return 1, " [m]"
+    if unit == "km":
+        return 1e-3, " [km]"
+    if unit == "cm":
+        return 1e2, " [cm]"
+    return 1e3, " [mm]"
+
+
+def initialize_time(times):
+    """
+    Handle the time units for the x axis in the summary
+
+    Args:
+        times (str): Type for the time to plot
+
+    Returns:
+        scale (float): Scale for the times\n
+        unit (str): Units for the x label
+
+    """
+    scale, unit = 1.0 * 86400, "Time [seconds]"
+    if times == "s":
+        scale, unit = 1.0 * 86400, "Time [seconds]"
+    if times == "m":
+        scale, unit = 1.0 * 86400 / 60, "Time [minutes]"
+    if times == "h":
+        scale, unit = 1.0 * 86400 / 3600, "Time [hours]"
+    if times == "d":
+        scale, unit = 1.0 * 86400 / 86400, "Time [days]"
+    if times == "w":
+        scale, unit = 1.0 * 86400 / 604800, "Time [weeks]"
+    if times == "y":
+        scale, unit = 1.0 * 86400 / 31557600, "Time [years]"
+    if times == "dates":
+        scale, unit = 1, "Dates"
+    return scale, unit
 
 
 def initialize_variable(dic):
@@ -284,6 +361,8 @@ def initialize_variable(dic):
         dic["cmaps"] = ["seismic"]
     if dic["variable"].lower() in ["pressure"]:
         dic["units"] = [" [bar]"]
+    if dic["variable"].lower() in ["fgip", "fgit"]:
+        dic["units"] = [" [sm$^3$]"]
     if dic["variable"].lower() in ["sgas", "rsw"]:
         dic["format"] = [lambda x, _: f"{x:.2f}"]
     if dic["variable"].lower() in ["rvw"]:
@@ -292,3 +371,29 @@ def initialize_variable(dic):
         dic["cmaps"] = [dic["colormap"]]
     if dic["numbers"]:
         dic["format"] = [eval(dic["numbers"])]
+
+
+def initialize_mass(dic):
+    """
+    Initialize the mass properties according to the given variable
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    dic["smass"] = ["fwcdm", "fgipm"]
+    if dic["variable"].lower() in dic["mass"] + dic["smass"]:
+        dic["units"] = [" [kg]"]
+        if dic["skl"] == 1e-3:
+            dic["units"] = [" [t]"]
+        elif dic["skl"] == 1e-6:
+            dic["units"] = [" [Kt]"]
+        elif dic["skl"] == 1e-9:
+            dic["units"] = [" [Mt]"]
+        elif dic["skl"] == 1e3:
+            dic["units"] = [" [g]"]
+        elif dic["skl"] == 1e6:
+            dic["units"] = [" [mg]"]
