@@ -30,12 +30,12 @@ The current implementation supports the following executable with the argument o
 
 where 
 
--i    The base name (or full path) of the input files; if more than one is given, separate them by ',' (e.g, 'SPE11B,\\home\\user\\SPE11B_TUNED') ('SPE11B' by default).
+-i    The base name (or full path) of the input files; if more than one is given, separate them by ',' (e.g, 'SPE11B,/home/user/SPE11B_TUNED') ('SPE11B' by default).
 -o    The base name (or full path) of the output folder ('.' by default, i.e., the folder where plopm is executed).
 -v    Specify the name of the vairable to plot, e.g., 'pressure', in addition to special extensive quantities for the mass such as 'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'fwcdm', and 'fgipm' ('' by default, i.e., plotting: porv, permx, permz, poro, fipnum, and satnum).
 -m    Generate 'png' or 'vtk' files ('png' by default).
 -s    The slide in the 3D model to plot the 2D maps, e.g, '10,,' to plot the xz plane on all cells with i=10 (',1,' by default, i.e., the xz surface at j=1).
--p    Path to flow, e.g., '\\home\\build\\bin\\flow'. This is used to generate the grid for the vtk files ('flow' by default).
+-p    Path to flow, e.g., '/home/build/bin/flow'. This is used to generate the grid for the vtk files ('flow' by default).
 -z    Scale the axis in the 2D maps ('1' by default).
 -f    The font size ('14' by default).
 -x    Set the lower and upper bounds along x, e.g., '[-100,200]' ('' by default).

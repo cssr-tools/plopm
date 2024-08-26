@@ -370,10 +370,12 @@ def handle_mass(dic, name, i, nrst):
             rvw = np.array(dic["unrst"][i]["RVW", nrst])
         else:
             rvw = 0.0 * sgas
-    co2_g = sgas * rhog * dic["pv"]
-    co2_d = rsw * rhow * (1.0 - sgas) * dic["pv"] * GAS_DEN_REF / WAT_DEN_REF
-    h2o_l = (1 - sgas) * rhow * dic["pv"]
-    h2o_v = rvw * rhog * sgas * dic["pv"] * WAT_DEN_REF / GAS_DEN_REF
+    x_l_co2 = np.divide(rsw, rsw + WAT_DEN_REF / GAS_DEN_REF)
+    x_g_h2o = np.divide(rvw, rvw + GAS_DEN_REF / WAT_DEN_REF)
+    co2_g = (1 - x_g_h2o) * sgas * rhog * dic["pv"]
+    co2_d = x_l_co2 * (1.0 - sgas) * rhow * dic["pv"]
+    h2o_l = (1 - x_l_co2) * (1 - sgas) * rhow * dic["pv"]
+    h2o_v = x_g_h2o * sgas * rhog * dic["pv"]
     return type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v)
 
 
@@ -400,6 +402,8 @@ def type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v):
         return h2o_l
     if name == "vapm":
         return h2o_v
+    if name == "h2om":
+        return h2o_v + h2o_l
     return co2_g + co2_d
 
 

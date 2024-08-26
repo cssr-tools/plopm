@@ -33,26 +33,33 @@ def make_vtks(dic):
         None
 
     """
+    dic["deck"] = dic["name"]
+    if len(dic["name"].split("/")) > 1:
+        dic["deck"] = dic["name"].split("/")[-1]
     dic["dry"] = "_DRYRUN"
     dic["UInt16"] = ["MPI_RANK", "SATNUM", "FIPNUM", "PVTNUM"]
-    if not os.path.isfile(f"{dic['name']}-GRID.vtu"):
+    if not os.path.isfile(f"{dic['output']}/{dic['name']}-GRID.vtu"):
         cwd = os.getcwd()
+        if len(dic["name"].split("/")) > 1:
+            os.chdir("/".join(dic["name"].split("/")[:-1]))
         flags, thermal = get_flags()
         with Popen(args=f"{dic['flow']} --version", stdout=PIPE, shell=True) as process:
             dic["flow_version"] = str(process.communicate()[0])[7:-3]
         if dic["flow_version"] == "2024.04":
             make_dry_deck(dic)
         else:
-            os.system(f"cp {dic['name']}.DATA {dic['name']+dic['dry']}.DATA")
+            os.system(f"cp {dic['deck']}.DATA {dic['deck']+dic['dry']}.DATA")
             flags += " --enable-dry-run=1"
         os.system("mkdir plopm_vtks_temporal")
-        deck = f" ../{dic['name']+dic['dry']}.DATA"
+        deck = f" ../{dic['deck']+dic['dry']}.DATA"
         os.chdir("plopm_vtks_temporal")
         if "SPE11B" in dic["name"] or "SPE11C" in dic["name"]:
             os.system(dic["flow"] + deck + flags + thermal)
         else:
             os.system(dic["flow"] + deck + flags)
-        os.system(f"mv {dic['name']+dic['dry']}-00000.vtu ../{dic['name']}-GRID.vtu")
+        os.system(
+            f"mv {dic['deck']+dic['dry']}-00000.vtu {cwd}/{dic['output']}/{dic['deck']}-GRID.vtu"
+        )
         os.system(f"cd .. && rm -rf plopm_vtks_temporal {deck[4:]}")
         os.chdir(cwd)
     for ext in ["init", "unrst"]:
@@ -66,11 +73,15 @@ def make_vtks(dic):
         return
     if dic["use"] == "resdata":
         dic["porv"] = np.array(dic["init"][0]["PORV"][0])
+        dic["nxyz"] = len(dic["porv"])
         dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
+        dic["actind"] = list(i for i, p_v in enumerate(dic["porv"]) if p_v > 0)
         opmtovtk_resdata(dic)
     else:
         dic["porv"] = np.array(dic["init"][0]["PORV"])
+        dic["nxyz"] = len(dic["porv"])
         dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
+        dic["actind"] = list(i for i, p_v in enumerate(dic["porv"]) if p_v > 0)
         opmtovtk_opm(dic)
 
 
@@ -87,7 +98,7 @@ def opmtovtk_resdata(dic):
     """
     base_vtk = []
     skip = False
-    with open(f"{dic['name']}-GRID.vtu", encoding="utf8") as file:
+    with open(f"{dic['output']}/{dic['deck']}-GRID.vtu", encoding="utf8") as file:
         for line in file:
             if skip and "CellData" in line:
                 skip = False
@@ -126,7 +137,7 @@ def opmtovtk_resdata(dic):
                         ["\t\t\t\t\t "]
                         + [
                             str(int(val) + inc)
-                            for val in handle_mass(dic, var.lower(), 0, i)
+                            for val in handle_mass(dic, var.lower(), 0, i + 1)
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
@@ -168,7 +179,7 @@ def opmtovtk_resdata(dic):
                         ["\t\t\t\t\t "]
                         + [
                             str(np.float16(val))
-                            for val in handle_mass(dic, var.lower(), 0, i)
+                            for val in handle_mass(dic, var.lower(), 0, i + 1)
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
@@ -188,7 +199,7 @@ def opmtovtk_resdata(dic):
 
     base_vtk.insert(7 + 2 * n, "\n\t\t\t\t</CellData>\n")
     with open(
-        f"{dic['save'] if dic['save'] else dic['name']}"
+        f"{dic['output']}/{dic['save'] if dic['save'] else dic['deck']}"
         + f"-{0 if i<1000 else ''}{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
         "w",
         encoding="utf8",
@@ -237,7 +248,7 @@ def additional_vtks_resdata(dic, base_vtk):
                         ["\t\t\t\t\t "]
                         + [
                             str(int(val) + inc)
-                            for val in handle_mass(dic, var.lower(), 0, i_i)
+                            for val in handle_mass(dic, var.lower(), 0, i_i + 1)
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
@@ -269,7 +280,7 @@ def additional_vtks_resdata(dic, base_vtk):
                         ["\t\t\t\t\t "]
                         + [
                             str(np.float16(val))
-                            for val in handle_mass(dic, var.lower(), 0, i_i)
+                            for val in handle_mass(dic, var.lower(), 0, i_i + 1)
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
@@ -283,7 +294,7 @@ def additional_vtks_resdata(dic, base_vtk):
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
         with open(
-            f"{dic['save'] if dic['save'] else dic['name']}"
+            f"{dic['output']}/{dic['save'] if dic['save'] else dic['deck']}"
             + f"-{0 if i_i<1000 else ''}{0 if i_i<100 else ''}"
             + f"{0 if i_i<10 else ''}{i_i}.vtu",
             "w",
@@ -305,7 +316,7 @@ def opmtovtk_opm(dic):
     """
     base_vtk = []
     skip = False
-    with open(f"{dic['name']}-GRID.vtu", encoding="utf8") as file:
+    with open(f"{dic['output']}/{dic['deck']}-GRID.vtu", encoding="utf8") as file:
         for line in file:
             if skip and "CellData" in line:
                 skip = False
@@ -341,7 +352,7 @@ def opmtovtk_opm(dic):
                         ["\t\t\t\t\t "]
                         + [
                             str(int(val) + inc)
-                            for val in handle_mass(dic, var.lower(), 0, i)
+                            for val in handle_mass(dic, var.lower(), 0, i + 1)
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
@@ -380,7 +391,7 @@ def opmtovtk_opm(dic):
                         ["\t\t\t\t\t "]
                         + [
                             str(np.float16(val))
-                            for val in handle_mass(dic, var.lower(), 0, i)
+                            for val in handle_mass(dic, var.lower(), 0, i + 1)
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     ),
@@ -399,7 +410,7 @@ def opmtovtk_opm(dic):
                 )
     base_vtk.insert(7 + 2 * n, "\n\t\t\t\t</CellData>\n")
     with open(
-        f"{dic['save'] if dic['save'] else dic['name']}-{0 if i<1000 else ''}"
+        f"{dic['output']}/{dic['save'] if dic['save'] else dic['deck']}-{0 if i<1000 else ''}"
         + f"{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
         "w",
         encoding="utf8",
@@ -445,7 +456,7 @@ def additional_vtks_opm(dic, base_vtk):
                         ["\t\t\t\t\t "]
                         + [
                             str(int(val) + inc)
-                            for val in handle_mass(dic, var.lower(), 0, i_i)
+                            for val in handle_mass(dic, var.lower(), 0, i_i + 1)
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
@@ -474,7 +485,7 @@ def additional_vtks_opm(dic, base_vtk):
                         ["\t\t\t\t\t "]
                         + [
                             str(np.float16(val))
-                            for val in handle_mass(dic, var.lower(), 0, i_i)
+                            for val in handle_mass(dic, var.lower(), 0, i_i + 1)
                         ]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
@@ -488,7 +499,7 @@ def additional_vtks_opm(dic, base_vtk):
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
         with open(
-            f"{dic['save'] if dic['save'] else dic['name']}-{0 if i_i<1000 else ''}"
+            f"{dic['output']}/{dic['save'] if dic['save'] else dic['deck']}-{0 if i_i<1000 else ''}"
             + f"{0 if i_i<100 else ''}"
             + f"{0 if i_i<10 else ''}{i_i}.vtu",
             "w",
@@ -509,7 +520,7 @@ def make_dry_deck(dic):
 
     """
     dic["lol"] = []
-    with open(dic["name"] + ".DATA", "r", encoding="utf8") as file:
+    with open(dic["deck"] + ".DATA", "r", encoding="utf8") as file:
         for row in csv.reader(file):
             nrwo = str(row)[2:-2].strip()
             if nrwo == "SCHEDULE":
@@ -519,7 +530,7 @@ def make_dry_deck(dic):
                 break
             dic["lol"].append(nrwo)
     with open(
-        dic["name"] + "_DRYRUN.DATA",
+        dic["deck"] + "_DRYRUN.DATA",
         "w",
         encoding="utf8",
     ) as file:

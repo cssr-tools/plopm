@@ -101,6 +101,8 @@ def ini_dic(cmdargs):
         np.genfromtxt(StringIO(cmdargs["slide"]), delimiter=",", dtype=int) - 1
     )
     dic["mass"] = ["gasm", "dism", "liqm", "vapm", "co2m", "h2om"]
+    if not os.path.exists(dic["output"]):
+        os.system(f"mkdir {dic['output']}")
     return dic
 
 
@@ -139,8 +141,6 @@ def ini_readers(dic):
         if os.path.isfile(f"{dic['name']}.SMSPEC"):
             for name in dic["names"]:
                 dic["summary"].append(OpmSummary(f"{name}.SMSPEC"))
-    if not os.path.exists(dic["output"]):
-        os.system(f"mkdir {dic['output']}")
     ini_slides(dic)
 
 

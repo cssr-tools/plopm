@@ -163,7 +163,16 @@ def make_2dmaps(dic):
         cmap = matplotlib.colormaps.get_cmap(dic["cmaps"][n])
         if dic["ncolor"] != "w":
             cmap.set_bad(color=dic["ncolor"])
-        if dic["log"] == 0:
+        if dic["grid"] == 1 and dic["well"] != 1:
+            imag = axis.pcolormesh(
+                dic["xc"],
+                dic["yc"],
+                maps,
+                facecolors="none",
+                edgecolors="black",
+                lw=0.001,
+            )
+        elif dic["log"] == 0:
             imag = axis.pcolormesh(
                 dic["xc"],
                 dic["yc"],
