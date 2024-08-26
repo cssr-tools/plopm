@@ -137,7 +137,7 @@ def load_parser():
         default="SPE11B",
         help="The base name (or full path) of the input files; if more than"
         " one is given, separate them by ',' (e.g, "
-        "'SPE11B,\\home\\user\\SPE11B_TUNED') ('SPE11B' by default).",
+        "'SPE11B,/home/user/SPE11B_TUNED') ('SPE11B' by default).",
     )
     parser.add_argument(
         "-o",
@@ -173,7 +173,7 @@ def load_parser():
         "-p",
         "--path",
         default="flow",
-        help="Path to flow, e.g., \\home\\build\\bin\\flow'."
+        help="Path to flow, e.g., /home/build/bin/flow'."
         " This is used to generate the grid for the vtk files ('flow' by "
         "default).",
     )
