@@ -8,7 +8,7 @@
 # plopm: Simplified and flexible tool to visualize OPM Flow geological models
 
 ## Main feature
-Quick generation of PNG figures and VTKs from a OPM Flow type model.
+Quick generation of PNG figures, GIFs, and VTKs from a OPM Flow type model.
 
 ## Installation
 To install the _plopm_ executable in an existing Python environment: 

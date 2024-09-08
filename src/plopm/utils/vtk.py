@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W3301,R0912
+# pylint: disable=W3301,R0912,R0915
 
 """
 Utiliy functions to write the vtks.
@@ -8,18 +8,10 @@ Utiliy functions to write the vtks.
 
 import os
 import csv
+import sys
 from subprocess import PIPE, Popen
 import numpy as np
-from plopm.utils.readers import handle_mass
-
-try:
-    from resdata.resfile import ResdataFile
-except ImportError:
-    print("The resdata Python package was not found, using opm")
-try:
-    from opm.io.ecl import EclFile as OpmFile
-except ImportError:
-    print("The Python package opm was not found, using resdata")
+from plopm.utils.readers import get_quantity, get_readers
 
 
 def make_vtks(dic):
@@ -33,64 +25,85 @@ def make_vtks(dic):
         None
 
     """
-    dic["deck"] = dic["name"]
-    if len(dic["name"].split("/")) > 1:
-        dic["deck"] = dic["name"].split("/")[-1]
-    dic["dry"] = "_DRYRUN"
-    dic["UInt16"] = ["MPI_RANK", "SATNUM", "FIPNUM", "PVTNUM"]
-    if not os.path.isfile(f"{dic['output']}/{dic['name']}-GRID.vtu"):
-        cwd = os.getcwd()
-        if len(dic["name"].split("/")) > 1:
-            os.chdir("/".join(dic["name"].split("/")[:-1]))
-        flags, thermal = get_flags()
-        with Popen(args=f"{dic['flow']} --version", stdout=PIPE, shell=True) as process:
-            dic["flow_version"] = str(process.communicate()[0])[7:-3]
-        if dic["flow_version"] == "2024.04":
-            make_dry_deck(dic)
-        else:
-            os.system(f"cp {dic['deck']}.DATA {dic['deck']+dic['dry']}.DATA")
-            flags += " --enable-dry-run=1"
-        os.system("mkdir plopm_vtks_temporal")
-        deck = f" ../{dic['deck']+dic['dry']}.DATA"
-        os.chdir("plopm_vtks_temporal")
-        if "SPE11B" in dic["name"] or "SPE11C" in dic["name"]:
-            os.system(dic["flow"] + deck + flags + thermal)
-        else:
-            os.system(dic["flow"] + deck + flags)
-        os.system(
-            f"mv {dic['deck']+dic['dry']}-00000.vtu {cwd}/{dic['output']}/{dic['deck']}-GRID.vtu"
+    for k, case in enumerate(dic["names"][0]):
+        dic["deck"] = case
+        if len(dic["deck"].split("/")) > 1:
+            dic["deck"] = dic["deck"].split("/")[-1]
+        if not os.path.isfile(f"{dic['output']}/{dic['deck']}-GRID.vtu"):
+            cwd = os.getcwd()
+            if len(case.split("/")) > 1:
+                os.chdir("/".join(case.split("/")[:-1]))
+            flags, thermal = get_flags()
+            with Popen(
+                args=f"{dic['flow']} --version", stdout=PIPE, shell=True
+            ) as process:
+                dic["flow_version"] = str(process.communicate()[0])[7:-3]
+            if dic["flow_version"] == "2024.04":
+                make_dry_deck(dic)
+            else:
+                os.system(f"cp {dic['deck']}.DATA {dic['deck']}_DRYRUN.DATA")
+                flags += " --enable-dry-run=1"
+            os.system("mkdir plopm_vtks_temporal")
+            deck = f" ../{dic['deck']}_DRYRUN.DATA"
+            os.chdir("plopm_vtks_temporal")
+            if "SPE11B" in dic["deck"] or "SPE11C" in dic["deck"]:
+                os.system(dic["flow"] + deck + flags + thermal)
+            else:
+                os.system(dic["flow"] + deck + flags)
+            os.system(
+                f"mv {dic['deck']}_DRYRUN-00000.vtu "
+                + f"{cwd}/{dic['output']}/{dic['deck']}-GRID.vtu"
+            )
+            os.system(f"cd .. && rm -rf plopm_vtks_temporal {deck[4:]}")
+            os.chdir(cwd)
+        get_readers(dic)
+        opmtovtk(dic, k)
+        writepvd(dic, k)
+
+
+def writepvd(dic, k):
+    """
+    Generate the pvd file\n
+    k (int): Index of the geological model
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        None
+
+    """
+    where = dic["save"][k] if dic["save"][k] else dic["deck"]
+    base_pvd = []
+    base_pvd.append(
+        "<?xml version='1.0'?>\n"
+        + "<VTKFile type='Collection'\n"
+        + "         version='0.1'\n"
+        + "         byte_order='LittleEndian'\n"
+        + "         compressor='vtkZLibDataCompressor'>\n"
+        + " <Collection>\n"
+    )
+    for i in dic["restart"]:
+        base_pvd.append(
+            f"   <DataSet timestep='{dic['tnrst'][i]}' file='{where}-{0 if i<1000 else ''}"
+            + f"{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu'/>\n"
         )
-        os.system(f"cd .. && rm -rf plopm_vtks_temporal {deck[4:]}")
-        os.chdir(cwd)
-    for ext in ["init", "unrst"]:
-        dic[ext] = []
-        if os.path.isfile(f"{dic['name']}.{ext.upper()}"):
-            if dic["use"] == "resdata":
-                dic[ext].append(ResdataFile(f"{dic['name']}.{ext.upper()}"))
-            else:
-                dic[ext].append(OpmFile(f"{dic['name']}.{ext.upper()}"))
-    if not "init" in dic.keys() or not "unrst" in dic.keys():
-        return
-    if dic["use"] == "resdata":
-        dic["porv"] = np.array(dic["init"][0]["PORV"][0])
-        dic["nxyz"] = len(dic["porv"])
-        dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
-        dic["actind"] = list(i for i, p_v in enumerate(dic["porv"]) if p_v > 0)
-        opmtovtk_resdata(dic)
-    else:
-        dic["porv"] = np.array(dic["init"][0]["PORV"])
-        dic["nxyz"] = len(dic["porv"])
-        dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
-        dic["actind"] = list(i for i, p_v in enumerate(dic["porv"]) if p_v > 0)
-        opmtovtk_opm(dic)
+    base_pvd.append(" </Collection>\n</VTKFile>")
+    with open(
+        f"{dic['output']}/{where}.pvd",
+        "w",
+        encoding="utf8",
+    ) as file:
+        file.write("".join(base_pvd))
 
 
-def opmtovtk_resdata(dic):
+def opmtovtk(dic, k):
     """
-    Use resdata to generate the vtks
+    Generate the vtks
 
     Args:
-        dic (dict): Global dictionary
+        dic (dict): Global dictionary\n
+        k (int): Index of the geological model
 
     Returns:
         None
@@ -107,401 +120,77 @@ def opmtovtk_resdata(dic):
                 skip = True
             if not skip:
                 base_vtk.append(line)
-    i, n, inc = int(dic["restart"][0]), 0, 0
-    base_vtk.insert(4, "\t\t\t\t<CellData Scalars='porosity'>")
-    for n, var in enumerate(dic["variable"].split(",")):
-        if var.upper() in dic["UInt16"]:
-            if var.upper() == "MPI_RANK":
-                inc = 1
-            base_vtk.insert(
-                5 + 2 * n,
-                f"\n\t\t\t\t\t<DataArray type='UInt16' Name='{var.lower()}' "
-                + "NumberOfComponents='1' format='ascii'>\n",
-            )
-            if dic["init"][0].has_kw(var.upper()):
+    base_vtk.insert(
+        4,
+        "\t\t\t\t<CellData Scalars='File created by https://github.com/cssr-tools/plopm'>",
+    )
+    for i in dic["restart"]:
+        for n, var in enumerate(dic["vrs"]):
+            unit, quan = get_quantity(dic, var.upper(), n, i)
+            if i == 0:
                 base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(int(val) + inc)
-                            for val in dic["init"][0][var.upper()][0]
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
+                    5 + 2 * n,
+                    f"\n\t\t\t\t\t<DataArray type='{dic['vtkformat'][n]}' Name="
+                    + f"'{dic['vtknames'][n] if dic['vtknames'][n] else var.lower()+unit}' "
+                    + "NumberOfComponents='1' format='ascii'>\n",
                 )
-            elif var.lower() in dic["mass"]:
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(int(val) + inc)
-                            for val in handle_mass(dic, var.lower(), 0, i + 1)
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-            else:
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(int(val) + inc)
-                            for val in dic["unrst"][0][var.upper()][i]
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-        else:
-            base_vtk.insert(
-                5 + 2 * n,
-                f"\n\t\t\t\t\t<DataArray type='Float32' Name='{var.lower()}' "
-                + "NumberOfComponents='1' format='ascii'>\n",
-            )
-            if dic["init"][0].has_kw(var.upper()):
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(np.float16(val))
-                            for val in dic["init"][0][var.upper()][0]
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-            elif var.lower() in dic["mass"]:
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(np.float16(val))
-                            for val in handle_mass(dic, var.lower(), 0, i + 1)
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-            else:
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(np.float16(val))
-                            for val in dic["unrst"][0][var.upper()][i]
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-
-    base_vtk.insert(7 + 2 * n, "\n\t\t\t\t</CellData>\n")
-    with open(
-        f"{dic['output']}/{dic['save'] if dic['save'] else dic['deck']}"
-        + f"-{0 if i<1000 else ''}{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
-        "w",
-        encoding="utf8",
-    ) as file:
-        file.write("".join(base_vtk))
-    additional_vtks_resdata(dic, base_vtk)
-
-
-def additional_vtks_resdata(dic, base_vtk):
-    """
-    Use resdata to generate the additional vtks
-
-    Args:
-        dic (dict): Global dictionary
-        base_vtk (list): Body text of the vtk template
-        i (int):
-
-    Returns:
-        None
-
-    """
-    inc = 0
-    if int(dic["restart"][0]) == 0 and len(dic["restart"]) == 2:
-        dic["restart"] = range(0, int(dic["restart"][1]) + 1)
-    for i in dic["restart"][1:]:
-        i_i = int(i)
-        for n, var in enumerate(dic["variable"].split(",")):
-            if var.upper() in dic["UInt16"]:
-                if var.upper() == "MPI_RANK":
-                    inc = 1
-                base_vtk[5 + 2 * n] = (
-                    f"\n\t\t\t\t\t<DataArray type='UInt16' Name='{var.lower()}' "
-                    + "NumberOfComponents='1' format='ascii'>\n"
-                )
-                if dic["init"][0].has_kw(var.upper()):
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(int(val) + inc)
-                            for val in dic["init"][0][var.upper()][0]
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-                elif var.lower() in dic["mass"]:
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(int(val) + inc)
-                            for val in handle_mass(dic, var.lower(), 0, i_i + 1)
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
+            if dic["vtkformat"][n] == "Float64":
+                if i == 0:
+                    base_vtk.insert(
+                        6 + 2 * n,
+                        " ".join(
+                            ["\t\t\t\t\t "]
+                            + [str(np.float32(val)) for val in quan]
+                            + ["\n\t\t\t\t\t</DataArray>"]
+                        ),
                     )
                 else:
                     base_vtk[6 + 2 * n] = " ".join(
                         ["\t\t\t\t\t "]
-                        + [
-                            str(int(val) + inc)
-                            for val in dic["unrst"][0][var.upper()][i_i]
-                        ]
+                        + [str(np.float32(val)) for val in quan]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
-            else:
-                base_vtk[5 + 2 * n] = (
-                    f"\n\t\t\t\t\t<DataArray type='Float32' Name='{var.lower()}' "
-                    + "NumberOfComponents='1' format='ascii'>\n"
-                )
-                if dic["init"][0].has_kw(var.upper()):
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(np.float16(val))
-                            for val in dic["init"][0][var.upper()][0]
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-                elif var.lower() in dic["mass"]:
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(np.float16(val))
-                            for val in handle_mass(dic, var.lower(), 0, i_i + 1)
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
+            elif dic["vtkformat"][n] == "Float32":
+                if i == 0:
+                    base_vtk.insert(
+                        6 + 2 * n,
+                        " ".join(
+                            ["\t\t\t\t\t "]
+                            + [str(np.float16(val)) for val in quan]
+                            + ["\n\t\t\t\t\t</DataArray>"]
+                        ),
                     )
                 else:
                     base_vtk[6 + 2 * n] = " ".join(
                         ["\t\t\t\t\t "]
-                        + [
-                            str(np.float16(val))
-                            for val in dic["unrst"][0][var.upper()][i_i]
-                        ]
+                        + [str(np.float16(val)) for val in quan]
                         + ["\n\t\t\t\t\t</DataArray>"]
                     )
+            elif dic["vtkformat"][n] == "UInt16":
+                if i == 0:
+                    base_vtk.insert(
+                        6 + 2 * n,
+                        " ".join(
+                            ["\t\t\t\t\t "]
+                            + [str(int(val)) for val in quan]
+                            + ["\n\t\t\t\t\t</DataArray>"]
+                        ),
+                    )
+                else:
+                    base_vtk[6 + 2 * n] = " ".join(
+                        ["\t\t\t\t\t "]
+                        + [str(int(val)) for val in quan]
+                        + ["\n\t\t\t\t\t</DataArray>"]
+                    )
+            else:
+                print(f"Unknow format ({dic['vtkformat'][n]}).")
+                sys.exit()
+        if i == 0:
+            base_vtk.insert(7 + 2 * (len(dic["vrs"]) - 1), "\n\t\t\t\t</CellData>\n")
+        where = dic["save"][k] if dic["save"][k] else dic["deck"]
         with open(
-            f"{dic['output']}/{dic['save'] if dic['save'] else dic['deck']}"
-            + f"-{0 if i_i<1000 else ''}{0 if i_i<100 else ''}"
-            + f"{0 if i_i<10 else ''}{i_i}.vtu",
-            "w",
-            encoding="utf8",
-        ) as file:
-            file.write("".join(base_vtk))
-
-
-def opmtovtk_opm(dic):
-    """
-    Use opm to generate the vtks
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        None
-
-    """
-    base_vtk = []
-    skip = False
-    with open(f"{dic['output']}/{dic['deck']}-GRID.vtu", encoding="utf8") as file:
-        for line in file:
-            if skip and "CellData" in line:
-                skip = False
-                continue
-            if "CellData" in line:
-                skip = True
-            if not skip:
-                base_vtk.append(line)
-    i, n, inc = int(dic["restart"][0]), 0, 0
-    base_vtk.insert(4, "\t\t\t\t<CellData Scalars='porosity'>")
-    for n, var in enumerate(dic["variable"].split(",")):
-        if var.upper() in dic["UInt16"]:
-            if var.upper() == "MPI_RANK":
-                inc = 1
-            base_vtk.insert(
-                5 + 2 * n,
-                f"\n\t\t\t\t\t<DataArray type='UInt16' Name='{var.lower()}' "
-                + "NumberOfComponents='1' format='ascii'>\n",
-            )
-            if dic["init"][0].count(var.upper()):
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [str(int(val) + inc) for val in dic["init"][0][var.upper()]]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-            elif var.lower() in dic["mass"]:
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(int(val) + inc)
-                            for val in handle_mass(dic, var.lower(), 0, i + 1)
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-            else:
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(int(val) + inc)
-                            for val in dic["unrst"][0][var.upper(), i]
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-        else:
-            base_vtk.insert(
-                5 + 2 * n,
-                f"\n\t\t\t\t\t<DataArray type='Float32' Name='{var.lower()}' "
-                + "NumberOfComponents='1' format='ascii'>\n",
-            )
-            if dic["init"][0].count(var.upper()):
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [str(np.float16(val)) for val in dic["init"][0][var.upper()]]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-            elif var.lower() in dic["mass"]:
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(np.float16(val))
-                            for val in handle_mass(dic, var.lower(), 0, i + 1)
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-            else:
-                base_vtk.insert(
-                    6 + 2 * n,
-                    " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(np.float16(val))
-                            for val in dic["unrst"][0][var.upper(), i]
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    ),
-                )
-    base_vtk.insert(7 + 2 * n, "\n\t\t\t\t</CellData>\n")
-    with open(
-        f"{dic['output']}/{dic['save'] if dic['save'] else dic['deck']}-{0 if i<1000 else ''}"
-        + f"{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
-        "w",
-        encoding="utf8",
-    ) as file:
-        file.write("".join(base_vtk))
-    additional_vtks_opm(dic, base_vtk)
-
-
-def additional_vtks_opm(dic, base_vtk):
-    """
-    Use opm to generate the additional vtks
-
-    Args:
-        dic (dict): Global dictionary
-        base_vtk (list): Body text of the vtk template
-        i (int):
-
-    Returns:
-        None
-
-    """
-    inc = 0
-    if int(dic["restart"][0]) == 0 and len(dic["restart"]) == 2:
-        dic["restart"] = range(0, int(dic["restart"][1]) + 1)
-    for i in dic["restart"][1:]:
-        i_i = int(i)
-        for n, var in enumerate(dic["variable"].split(",")):
-            if var.upper() in dic["UInt16"]:
-                if var.upper() == "MPI_RANK":
-                    inc = 1
-                base_vtk[5 + 2 * n] = (
-                    f"\n\t\t\t\t\t<DataArray type='UInt16' Name='{var.lower()}' "
-                    + "NumberOfComponents='1' format='ascii'>\n"
-                )
-                if dic["init"][0].count(var.upper()):
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [str(int(val) + inc) for val in dic["init"][0][var.upper()]]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-                elif var.lower() in dic["mass"]:
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(int(val) + inc)
-                            for val in handle_mass(dic, var.lower(), 0, i_i + 1)
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-                else:
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(int(val) + inc)
-                            for val in dic["unrst"][0][var.upper(), i_i]
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-            else:
-                base_vtk[5 + 2 * n] = (
-                    f"\n\t\t\t\t\t<DataArray type='Float32' Name='{var.lower()}' "
-                    + "NumberOfComponents='1' format='ascii'>\n"
-                )
-                if dic["init"][0].count(var.upper()):
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [str(np.float16(val)) for val in dic["init"][0][var.upper()]]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-                elif var.lower() in dic["mass"]:
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(np.float16(val))
-                            for val in handle_mass(dic, var.lower(), 0, i_i + 1)
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-                else:
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [
-                            str(np.float16(val))
-                            for val in dic["unrst"][0][var.upper(), i_i]
-                        ]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-        with open(
-            f"{dic['output']}/{dic['save'] if dic['save'] else dic['deck']}-{0 if i_i<1000 else ''}"
-            + f"{0 if i_i<100 else ''}"
-            + f"{0 if i_i<10 else ''}{i_i}.vtu",
+            f"{dic['output']}/{where}-{0 if i<1000 else ''}"
+            + f"{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
             "w",
             encoding="utf8",
         ) as file:

@@ -91,10 +91,10 @@
 <h2>Concept<a class="headerlink" href="#concept" title="Link to this heading"></a></h2>
 <p>Simplified and flexible framework for quick visualization of <a class="reference external" href="https://opm-project.org">OPM Flow</a> geological models.
 The approach is the generation of PNG figures from static (e.g, porosity, pore volume fluid in place numbers)
-and dynamic (e.g., pressure, fluid saturations) properties given any 2D slide (e.g., the middle part of a reservoir in the xy plane),
+and dynamic (e.g., pressure, fluid saturations) properties given any 2D slide with the option to generate GIFs (e.g., the middle part of a reservoir in the xy plane),
 as well as plotting any given summary vector (e.g., field gas in place a.k.a fgip).</p>
 <p>The <strong>plopm</strong> tool can be useful for quick inspection of geological models, as well as for generation of nice
-figures for papers/presentations. Also, <strong>plopm</strong> can plot summary results from different simulation cases in the same figure,
+figures for papers/presentations. Also, <strong>plopm</strong> can plot summary results from different simulation cases in the same figure (e.g., using subplots),
 as well as the difference between given dynamic variables (e.g., pressure) for two different simulations cases. In addition, <strong>plopm</strong> can
 convert OPM Flow output files to vtk, which allows to use other visualization/postprocessing tools (e.g., <a class="reference external" href="https://www.paraview.org">paraview</a>)</p>
 </section>
@@ -107,16 +107,16 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <p>where</p>
 <dl class="option-list">
 <dt><kbd><span class="option">-i</span></kbd></dt>
-<dd><p>The base name (or full path) of the input files; if more than one is given, separate them by ‘,’ (e.g, ‘SPE11B,/home/user/SPE11B_TUNED’) (‘SPE11B’ by default).</p>
+<dd><p>The base name (or full path) of the input files; if more than one is given, separate them by ‘ ‘ (e.g, ‘SPE11B /home/user/SPE11B_TUNED’) (‘SPE11B’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-o</span></kbd></dt>
 <dd><p>The base name (or full path) of the output folder (‘.’ by default, i.e., the folder where plopm is executed).</p>
 </dd>
 <dt><kbd><span class="option">-v</span></kbd></dt>
-<dd><p>Specify the name of the vairable to plot, e.g., ‘pressure’, in addition to special extensive quantities for the mass such as ‘gasm’, ‘dism’, ‘liqm’, ‘vapm’, ‘co2m’, ‘h2om’, ‘fwcdm’, and ‘fgipm’ (’’ by default, i.e., plotting: porv, permx, permz, poro, fipnum, and satnum).</p>
+<dd><p>Specify the name of the vairable to plot, e.g., ‘pressure’, in addition to special extensive quantities for the mass such as ‘grid’, ‘wells’, ‘gasm’, ‘dism’, ‘liqm’, ‘vapm’, ‘co2m’, ‘h2om’, ‘xco2l’, ‘xh2ov’, ‘xco2v’, ‘xh2ol’, ‘fwcdm’, and ‘fgipm’ (‘poro,permx,permz,porv,fipnum,satnum’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-m</span></kbd></dt>
-<dd><p>Generate ‘png’ or ‘vtk’ files (‘png’ by default).</p>
+<dd><p>Generate ‘png’, ‘gif’, or ‘vtk’ files (‘png’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-s</span></kbd></dt>
 <dd><p>The slide in the 3D model to plot the 2D maps, e.g, ‘10,,’ to plot the xz plane on all cells with i=10 (‘,1,’ by default, i.e., the xz surface at j=1).</p>
@@ -128,7 +128,7 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dd><p>Scale the axis in the 2D maps (‘1’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-f</span></kbd></dt>
-<dd><p>The font size (‘14’ by default).</p>
+<dd><p>The font size (‘12’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-x</span></kbd></dt>
 <dd><p>Set the lower and upper bounds along x, e.g., ‘[-100,200]’ (’’ by default).</p>
@@ -143,10 +143,7 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dd><p>Specify the colormap, e.g., ‘jet’, or color(s) for the summary, e.g., ‘b,r’ (’’ by default, i.e., set by plopm).</p>
 </dd>
 <dt><kbd><span class="option">-e</span></kbd></dt>
-<dd><p>Specify the linestyles separated by ‘;’, e.g., ‘solid;:’ (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-n</span></kbd></dt>
-<dd><p>Specify the format for the numbers in the colormap, e.g., “lambda x, _    f’{x:.0f}’” (’’ by default, i.e., set by plopm).</p>
+<dd><p>Specify the linestyles, e.g., ‘solid,dotted’ (’’ by default, i.e., set by plopm).</p>
 </dd>
 <dt><kbd><span class="option">-b</span></kbd></dt>
 <dd><p>Specify the upper and lower bounds for the color map, e.g., ‘[-0.1,11]’ (’’ by default, i.e., set by plopm).</p>
@@ -154,25 +151,16 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dt><kbd><span class="option">-d</span></kbd></dt>
 <dd><p>Specify the dimensions in inches generated png, e.g., ‘5,5’ (‘8,16’ by default).</p>
 </dd>
-<dt><kbd><span class="option">-l</span></kbd></dt>
-<dd><p>Specify the units of the variable, e.g., &quot;[m\$^2\$]&quot; (’’ by default, i.e., set by plopm).</p>
-</dd>
 <dt><kbd><span class="option">-t</span></kbd></dt>
 <dd><p>Specify the figure title, e.g., ‘Final saturation map’ (’’ by default, i.e., set by plopm).</p>
 </dd>
 <dt><kbd><span class="option">-r</span></kbd></dt>
-<dd><p>Restart number to plot the dynamic variable, where 1 corresponds to the initial one (‘-1’ by default, i.e., the last restart file).</p>
-</dd>
-<dt><kbd><span class="option">-w</span></kbd></dt>
-<dd><p>Plot the positions of the wells or sources (‘0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-g</span></kbd></dt>
-<dd><p>Plot information about the number of cells in the x, y, and z directions and number of active grid cells (‘0’ by default).</p>
+<dd><p>Restart number to plot the dynamic variable, where 0 corresponds to the initial one (‘-1’ by default, i.e., the last restart file).</p>
 </dd>
 <dt><kbd><span class="option">-a</span></kbd></dt>
 <dd><p>Scale the mass variable, e.g., 1e-9 for the color bar for the CO2 mass to be in Mt (‘1’ by default).</p>
 </dd>
-<dt><kbd><span class="option">-t<var>ime</var></span></kbd></dt>
+<dt><kbd><span class="option">-t<var>units</var></span></kbd></dt>
 <dd><p>For the x axis in the summary use seconds ‘s’, minutes ‘m’, hours ‘h’, days ‘d’, weeks ‘w’, years ‘y’, or dates ‘dates’ (‘s’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-y<var>label</var></span></kbd></dt>
@@ -190,6 +178,12 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dt><kbd><span class="option">-c<var>num</var></span></kbd></dt>
 <dd><p>Number of color labels (’’ by default, i.e., set by plopm).</p>
 </dd>
+<dt><kbd><span class="option">-x<var>log</var></span></kbd></dt>
+<dd><p>Use log scale for the x axis (‘0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-y<var>log</var></span></kbd></dt>
+<dd><p>Use log scale for the y axis (‘0’ by default).</p>
+</dd>
 <dt><kbd><span class="option">-c<var>label</var></span></kbd></dt>
 <dd><p>Text for the colorbar (’’ by default, i.e., set by plopm).</p>
 </dd>
@@ -200,13 +194,16 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dd><p>Set axis.grid to True for the summary plots (‘1’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-d<var>pi</var></span></kbd></dt>
-<dd><p>Dots per inch for the figure (‘300’ by default).</p>
+<dd><p>Dots per inch for the figure (‘1200’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-x<var>format</var></span></kbd></dt>
 <dd><p>Format for the x numbers, e.g., .2e for exponential notation (’’ by default, i.e., set by plopm).</p>
 </dd>
 <dt><kbd><span class="option">-y<var>format</var></span></kbd></dt>
 <dd><p>Format for the y numbers, e.g., .1f for one decimal (’’ by default, i.e., set by plopm).</p>
+</dd>
+<dt><kbd><span class="option">-c<var>format</var></span></kbd></dt>
+<dd><p>Specify the format for the numbers in the colormap, e.g., .2f for two decimals (’’ by default, i.e., set by plopm).</p>
 </dd>
 <dt><kbd><span class="option">-x<var>units</var></span></kbd></dt>
 <dd><p>For the x axis in the spatial maps meters ‘m’, kilometers ‘km’, centimeters ‘cm’, or milimeters ‘mm’ (‘m’ by default).</p>
@@ -238,10 +235,58 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dt><kbd><span class="option">-n<var>color</var></span></kbd></dt>
 <dd><p>Color for the inactive cells in the 2D maps (‘w’ by default, i.e., white).</p>
 </dd>
+<dt><kbd><span class="option">-l<var>w</var></span></kbd></dt>
+<dd><p>Line width separated by commas if more than one (‘1’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-s<var>ubfigs</var></span></kbd></dt>
+<dd><p>Generate separated or a single Figure (e.g., ‘2,2’ for four subfigures) (’’ by default, i.e., separate figures).</p>
+</dd>
+<dt><kbd><span class="option">-l<var>oc</var></span></kbd></dt>
+<dd><p>Location of the legend (‘best’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-d<var>elax</var></span></kbd></dt>
+<dd><p>Delete aligned axis labels in subfigures (‘0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-p<var>rintv</var></span></kbd></dt>
+<dd><p>Print the avaiable variables to plot (‘0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-v<var>tkformat</var></span></kbd></dt>
+<dd><p>Format for each variable in the vtks, support for Float64, Float32, and UInt16 (‘Float64’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-v<var>tknames</var></span></kbd></dt>
+<dd><p>Label each variable in the written vtk (’’ by default, i.e., the names given in the -v argument).</p>
+</dd>
+<dt><kbd><span class="option">-m<var>ask</var></span></kbd></dt>
+<dd><p>Static variable to use as 2D map background (’’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-d<var>iff</var></span></kbd></dt>
+<dd><p>The base name (or full path) of the input file to substract (’’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-s<var>uptitle</var></span></kbd></dt>
+<dd><p>Title for the subfigures (’’ by default, i.e., set by plopm, if 0, then it is removed; otherwise, write the text).</p>
+</dd>
+<dt><kbd><span class="option">-c<var>bsfax</var></span></kbd></dt>
+<dd><p>Set the global axis position and size for the colorbar (‘0.40,0.01,0.2,0.02’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-v<var>min</var></span></kbd></dt>
+<dd><p>Set a minimum threshold to remove values in the variable (’’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-v<var>max</var></span></kbd></dt>
+<dd><p>Set a maximum threshold to remove values in the variable (’’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-m<var>askthr</var></span></kbd></dt>
+<dd><p>Set the threshold for the variable to mask “ “(‘1e-3’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-i<var>nterval</var></span></kbd></dt>
+<dd><p>Time for the frames in the GIF in milli second (‘1000’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-l<var>oop</var></span></kbd></dt>
+<dd><p>Set to 1 for infinity loop in the GIF (‘0’ by default).</p>
+</dd>
 </dl>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Type in the terminal <strong>plopm –help</strong> to show these argument options.</p>
+<p>Type in the terminal <strong>plopm -h</strong> to show these argument options.</p>
 </div>
 </section>
 </section>

@@ -37,12 +37,29 @@ def test_generic_deck():
     os.system(
         "flow SPE10_MODEL2.DATA --parsing-strictness=low --enable-dry-run=true & wait\n"
     )
-    for slide, name, nslide in zip(
-        ["4,,", ",8,", ",,20"], ["poro", "porv", "permx"], ["4,*,*", "*,8,*", "*,*,20"]
+    for slide, name, nslide, logs in zip(
+        ["4,,", ",8,", ",,20"],
+        ["poro", "porv", "permx"],
+        ["4,*,*", "*,8,*", "*,*,20"],
+        ["0", "0", "1"],
     ):
         subprocess.run(
-            ["plopm", "-i", "SPE10_MODEL2", "-s", slide, "-u", "opm"],
+            [
+                "plopm",
+                "-i",
+                "SPE10_MODEL2",
+                "-v",
+                name,
+                "-s",
+                slide,
+                "-u",
+                "resdata",
+                "-log",
+                logs,
+            ],
             check=True,
         )
-        assert os.path.exists(f"{cwd}/tests/generic_deck/{name}_{nslide}.png")
+        assert os.path.exists(
+            f"{cwd}/tests/generic_deck/spe10_model2_{name}_{nslide}_t0.png"
+        )
     os.chdir(cwd)

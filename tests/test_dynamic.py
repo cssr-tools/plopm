@@ -21,10 +21,14 @@ def test_dynamic():
             ",1,",
             "-r",
             "-1",
-            "-l",
-            "[-]",
+            "-clabel",
+            "gas saturation [-]",
+            "-f",
+            "8",
+            "-remove",
+            "0,0,0,1",
         ],
         check=True,
     )
-    assert os.path.exists(f"{cwd}/examples/sgas_*,1,*.png")
+    assert os.path.exists(f"{cwd}/examples/spe11b_sgas_*,1,*_t5.png")
     os.chdir(cwd)

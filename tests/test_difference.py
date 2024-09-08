@@ -9,8 +9,8 @@ def test_difference():
     cwd = os.getcwd()
     os.chdir(f"{os.getcwd()}/examples")
     subprocess.run(
-        ["plopm", "-i", "SPE11B,SPE11B", "-o", ".", "-v", "rsw"],
+        ["plopm", "-i", "SPE11B", "-o", ".", "-v", "rsw", "-diff", "SPE11B"],
         check=True,
     )
-    assert os.path.exists(f"{cwd}/examples/rsw_*,1,*.png")
+    assert os.path.exists(f"{cwd}/examples/spe11b_rsw_*,1,*_t5.png")
     os.chdir(cwd)

@@ -28,4 +28,5 @@ def test_convert_to_vtk():
     )
     assert os.path.exists(f"{cwd}/examples/SPE11B-GRID.vtu")
     assert os.path.exists(f"{cwd}/examples/SPE11B-0005.vtu")
+    assert os.path.exists(f"{cwd}/examples/SPE11B.pvd")
     os.chdir(cwd)
