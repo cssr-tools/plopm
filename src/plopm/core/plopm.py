@@ -1,28 +1,20 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R1702, W0123, W1401
+# pylint: disable=R1702,W0123,W1401,R0915
 
 """
 Script to plot 2D maps of OPM Flow geological models.
 """
 
 import argparse
-import numpy as np
-from plopm.utils.initialization import ini_dic, ini_properties, ini_readers
-from plopm.utils.readers import (
-    get_kws_resdata,
-    get_kws_opm,
-    get_wells,
-    get_xycoords_resdata,
-    get_xycoords_opm,
-    get_xzcoords_resdata,
-    get_xzcoords_opm,
-    get_yzcoords_resdata,
-    get_yzcoords_opm,
+from plopm.utils.initialization import (
+    ini_dic,
+    ini_properties,
+    is_summary,
+    ini_summary,
 )
-from plopm.utils.mapping import map_xycoords, map_xzcoords, map_yzcoords, rotate_grid
 from plopm.utils.vtk import make_vtks
-from plopm.utils.write import make_summary, make_2dmaps
+from plopm.utils.write import make_summary, make_maps
 
 
 def plopm():
@@ -32,97 +24,12 @@ def plopm():
     if dic["mode"] == "vtk":
         make_vtks(dic)
         return
-    ini_properties(dic)
-    ini_readers(dic)
-    if dic["use"] == "resdata":
-        get_kws_resdata(dic)
-    else:
-        get_kws_opm(dic)
-    if len(dic["vsum"]) > 0:
+    if is_summary(dic):
+        ini_summary(dic)
         make_summary(dic)
         return
-    if dic["well"] == 1:
-        get_wells(dic)
-    if dic["grid"] == 1:
-        dic["grida"] = np.ones((dic["mx"]) * (dic["my"])) * np.nan
-    if dic["slide"][0] > -1:
-        handle_slide_x(dic)
-    elif dic["slide"][1] > -1:
-        handle_slide_y(dic)
-    else:
-        handle_slide_z(dic)
-    if dic["rotate"] != 0 or dic["translate"] != ["[0", "0]"]:
-        rotate_grid(dic)
-    make_2dmaps(dic)
-
-
-def handle_slide_x(dic):
-    """
-    Processing the selected yz slide to obtain the grid properties
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    dic["tslide"] = f", slide i={dic['slide'][0]+1}"
-    dic["nslide"] = f"{dic['slide'][0]+1},*,*"
-    for well in reversed(dic["wells"]):
-        if well[0] != dic["slide"][0]:
-            dic["wells"].remove(well)
-    if dic["use"] == "resdata":
-        get_yzcoords_resdata(dic)
-    else:
-        get_yzcoords_opm(dic)
-    map_yzcoords(dic)
-
-
-def handle_slide_y(dic):
-    """
-    Processing the selected xz slide to obtain the grid properties
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    dic["tslide"] = f", slide j={dic['slide'][1]+1}"
-    dic["nslide"] = f"*,{dic['slide'][1]+1},*"
-    for well in reversed(dic["wells"]):
-        if well[1] != dic["slide"][1]:
-            dic["wells"].remove(well)
-    if dic["use"] == "resdata":
-        get_xzcoords_resdata(dic)
-    else:
-        get_xzcoords_opm(dic)
-    map_xzcoords(dic)
-
-
-def handle_slide_z(dic):
-    """
-    Processing the selected xy slide to obtain the grid properties
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    dic["tslide"] = f", slide k={dic['slide'][2]+1}"
-    dic["nslide"] = f"*,*,{dic['slide'][2]+1}"
-    for well in reversed(dic["wells"]):
-        if dic["slide"][2] not in range(well[2], well[3] + 1):
-            dic["wells"].remove(well)
-    if dic["use"] == "resdata":
-        get_xycoords_resdata(dic)
-    else:
-        get_xycoords_opm(dic)
-    map_xycoords(dic)
+    ini_properties(dic)
+    make_maps(dic)
 
 
 def load_parser():
@@ -136,8 +43,8 @@ def load_parser():
         "--input",
         default="SPE11B",
         help="The base name (or full path) of the input files; if more than"
-        " one is given, separate them by ',' (e.g, "
-        "'SPE11B,/home/user/SPE11B_TUNED') ('SPE11B' by default).",
+        " one is given, separate them by spaces ' ' (e.g, "
+        "'SPE11B /home/user/SPE11B_TUNED') ('SPE11B' by default).",
     )
     parser.add_argument(
         "-o",
@@ -149,17 +56,18 @@ def load_parser():
     parser.add_argument(
         "-v",
         "--variable",
-        default="",
+        default="poro,permx,permz,porv,fipnum,satnum",
         help="Specify the name of the vairable to plot, e.g., 'pressure', in "
-        "addition to special extensive quantities for the mass such as "
-        "'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'fwcdm', and 'fgipm' "
-        "('' by default, i.e., plotting: porv, permx, permz, poro, fipnum, and satnum).",
+        "addition to special variables such as 'grid', 'wells', "
+        "'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', "
+        "'xco2v', 'xh2ol', 'fwcdm', and 'fgipm' "
+        "('poro,permx,permz,porv,fipnum,satnum' by default.",
     )
     parser.add_argument(
         "-m",
         "--mode",
         default="png",
-        help="Generate 'png' or 'vtk' files ('png' by default).",
+        help="Generate 'png', 'gif', or 'vtk' files ('png' by default).",
     )
     parser.add_argument(
         "-s",
@@ -186,8 +94,8 @@ def load_parser():
     parser.add_argument(
         "-f",
         "--size",
-        default=14,
-        help="The font size ('14' by default)",
+        default=12,
+        help="The font size ('12' by default)",
     )
     parser.add_argument(
         "-x",
@@ -211,24 +119,17 @@ def load_parser():
     )
     parser.add_argument(
         "-c",
-        "--colormap",
+        "--colors",
         default="",
         help="Specify the colormap, e.g., 'jet', or color(s) for the summary, "
         "e.g., 'b,r' ('' by default, i.e., set by plopm).",
     )
     parser.add_argument(
         "-e",
-        "--linsty",
+        "--linestyle",
         default="",
-        help="Specify the linestyles for the summary plots separated by ';', "
-        "e.g., 'solid;:' ('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-n",
-        "--numbers",
-        default="",
-        help="Specify the format for the numbers in the colormap, e.g., "
-        "\"lambda x, _: f'{x:.0f}'\" ('' by default, i.e., set by plopm).",
+        help="Specify the linestyles for the summary plots, "
+        "e.g., 'solid,dotted' ('' by default, i.e., set by plopm).",
     )
     parser.add_argument(
         "-b",
@@ -245,49 +146,29 @@ def load_parser():
         "'5,5' ('8,16' by default).",
     )
     parser.add_argument(
-        "-l",
-        "--legend",
-        default="",
-        help='Specify the units of the variable, e.g., "[m\\$^2\\$]" '
-        "('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
         "-t",
         "--title",
-        default="",
+        default="0",
         help="Specify the figure title, e.g., 'Final saturation map' ('' by "
-        "default, i.e., set by plopm).",
+        "default, i.e., set by plopm, set to 0 to remove).",
     )
     parser.add_argument(
         "-r",
         "--restart",
         default="-1",
-        help="Restart number to plot the dynamic variable, where 1 corresponds to "
+        help="Restart number to plot the dynamic variable, where 0 corresponds to "
         "the initial one ('-1' by default, i.e., the last restart file).",
-    )
-    parser.add_argument(
-        "-w",
-        "--wells",
-        default=0,
-        help="Plot the positions of the wells or sources ('0' by default).",
-    )
-    parser.add_argument(
-        "-g",
-        "--grid",
-        default=0,
-        help="Plot information about the number of cells in the x, y, and z "
-        "directions and number of active grid cells ('0' by default).",
     )
     parser.add_argument(
         "-a",
         "--adjust",
-        default=1.0,
+        default="1.0",
         help="Scale the mass variable, e.g., 1e-9 for the color bar for "
         "the CO2 mass to be in Mt ('1' by default).",
     )
     parser.add_argument(
-        "-time",
-        "--time",
+        "-tunits",
+        "--tunits",
         default="s",
         help="For the x axis in the summary use seconds 's', minutes 'm', "
         "hours 'h', days 'd', weeks 'w', years 'y', or dates 'dates' ('s' "
@@ -308,13 +189,13 @@ def load_parser():
     parser.add_argument(
         "-ylnum",
         "--ylnum",
-        default=4,
+        default="4",
         help="Number of y axis labels ('4' by default).",
     )
     parser.add_argument(
         "-xlnum",
         "--xlnum",
-        default=4,
+        default="4",
         help="Number of x axis labels ('4' by default).",
     )
     parser.add_argument(
@@ -322,6 +203,18 @@ def load_parser():
         "--cnum",
         default="",
         help="Number of color labels ('' by default, i.e., set by plopm).",
+    )
+    parser.add_argument(
+        "-xlog",
+        "--xlog",
+        default="0",
+        help="Use log scale for the x axis ('0' by default).",
+    )
+    parser.add_argument(
+        "-ylog",
+        "--ylog",
+        default="0",
+        help="Use log scale for the y axis ('0' by default).",
     )
     parser.add_argument(
         "-clabel",
@@ -333,20 +226,20 @@ def load_parser():
         "-labels",
         "--labels",
         default="",
-        help="Legend in the summary plot, separated by commas if more than "
+        help="Legend in the summary plot, separated by two spaces if more than "
         "one ('' by default, i.e., set by plopm).",
     )
     parser.add_argument(
         "-axgrid",
         "--axgrid",
-        default=1,
+        default="1",
         help="Set axis.grid to True for the summary plots ('1' by default).",
     )
     parser.add_argument(
         "-dpi",
         "--dpi",
-        default=300,
-        help="Dots per inch for the figure ('300' by default).",
+        default="1200",
+        help="Dots per inch for the figure ('1200' by default).",
     )
     parser.add_argument(
         "-xformat",
@@ -361,6 +254,13 @@ def load_parser():
         default="",
         help="Format for the y numbers, e.g., .1f for one decimal "
         "('' by default, i.e., set by plopm).",
+    )
+    parser.add_argument(
+        "-cformat",
+        "--cformat",
+        default="",
+        help="Format for the numbers in the colormap, e.g., "
+        ".2f for two decimals ('' by default, i.e., set by plopm).",
     )
     parser.add_argument(
         "-xunits",
@@ -398,13 +298,13 @@ def load_parser():
     parser.add_argument(
         "-log",
         "--log",
-        default=0,
+        default="0",
         help="Log scale for the color map ('0' by default).",
     )
     parser.add_argument(
         "-rotate",
         "--rotate",
-        default=0,
+        default="0",
         help="Grades to rotate the grid in the 2D maps ('0' by default).",
     )
     parser.add_argument(
@@ -426,6 +326,110 @@ def load_parser():
         "--ncolor",
         default="w",
         help="Color for the inactive cells in the 2D maps ('w' by default, i.e., white).",
+    )
+    parser.add_argument(
+        "-lw",
+        "--lw",
+        default="",
+        help="Line width separated by commas if more than one ('1' by default).",
+    )
+    parser.add_argument(
+        "-subfigs",
+        "--subfigs",
+        default="",
+        help="Generate separated or a single Figure (e.g., '2,2' for four "
+        "subfigures) ('' by default, i.e., separate figures).",
+    )
+    parser.add_argument(
+        "-loc",
+        "--loc",
+        default="best",
+        help="Location of the legend ('best' by default).",
+    )
+    parser.add_argument(
+        "-delax",
+        "--delax",
+        default=0,
+        help="Delete aligned axis labels in subfigures ('0' by default).",
+    )
+    parser.add_argument(
+        "-printv",
+        "--printv",
+        default=0,
+        help="Print the avaiable variables to plot ('0' by default).",
+    )
+    parser.add_argument(
+        "-vtkformat",
+        "--vtkformat",
+        default="Float64",
+        help="Format for each variable in the vtks, support for Float64, "
+        "Float32, and UInt16 ('Float64' by default).",
+    )
+    parser.add_argument(
+        "-vtknames",
+        "--vtknames",
+        default="",
+        help="Label each variable in the written vtk ('' by default, "
+        "i.e., the names given in the -v argument).",
+    )
+    parser.add_argument(
+        "-mask",
+        "--mask",
+        default="",
+        help="Static variable to use as 2D map background ('' by default).",
+    )
+    parser.add_argument(
+        "-diff",
+        "--diff",
+        default="",
+        help="The base name (or full path) of the input file to substract"
+        " ('' by default).",
+    )
+    parser.add_argument(
+        "-suptitle",
+        "--suptitle",
+        default="",
+        help="Title for the subfigures ('' by default, i.e., set by plopm, "
+        "if 0, then it is removed; otherwise, write the text).",
+    )
+    parser.add_argument(
+        "-cbsfax",
+        "--cbsfax",
+        default="0.40,0.01,0.2,0.02",
+        help="Set the global axis position and size for the colorbar "
+        "('0.40,0.01,0.2,0.02' by default).",
+    )
+    parser.add_argument(
+        "-vmin",
+        "--vmin",
+        default="",
+        help="Set a minimum threshold to remove values in the variable "
+        "('' by default).",
+    )
+    parser.add_argument(
+        "-vmax",
+        "--vmax",
+        default="",
+        help="Set a maximum threshold to remove values in the variable "
+        "('' by default).",
+    )
+    parser.add_argument(
+        "-maskthr",
+        "--maskthr",
+        default=1e-3,
+        help="Set the threshold for the variable to mask " "('1e-3' by default).",
+    )
+    parser.add_argument(
+        "-interval",
+        "--interval",
+        default=1000,
+        help="Time for the frames in the GIF in milli second ('1000' by default).",
+    )
+    parser.add_argument(
+        "-loop",
+        "--loop",
+        default=0,
+        help="Set to 1 for infinity loop in the GIF ('0' by default).",
     )
     return vars(parser.parse_known_args()[0])
 

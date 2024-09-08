@@ -163,22 +163,27 @@ cython_debug/
 .DS_Store
 
 # Tests
-examples/fipnum_*,1,*.png
-examples/permx_*,1,*.png
-examples/permz_*,1,*.png
-examples/poro_*,1,*.png
-examples/porv_*,1,*.png
-examples/satnum_*,1,*.png
-examples/sgas_*,1,*.png
-examples/rsw_*,1,*.png
+examples/spe11b_fipnum_*,1,*_t5.png
+examples/spe11b_permx_*,1,*_t5.png
+examples/spe11b_permz_*,1,*_t5.png
+examples/spe11b_poro_*,1,*_t5.png
+examples/spe11b_porv_*,1,*_t5.png
+examples/spe11b_satnum_*,1,*_t5.png
+examples/spe11b_sgas_*,1,*_t4.png
+examples/spe11b_rsw_*,1,*_t5.png
+examples/spe11b_sgas_*,1,*_t5.png
+examples/subfigs_summary.png
+examples/spe11b_xco2l.gif
 examples/fgip.png
 examples/SPE11B-*.vtu
+examples/SPE11B.pvd
 tests/generic_deck
 
 # Python environment
 vplopm/
 
 # Developing
+debugging/
 developing/
 studies/
 prototyping/
