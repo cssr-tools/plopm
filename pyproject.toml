@@ -25,8 +25,9 @@ classifiers = [
     "Operating System :: OS Independent"
 ]
 dependencies = [
-    "resdata",
-    "matplotlib"
+    "colorcet",
+    "matplotlib",
+    "resdata"
 ]
 requires-python = ">=3.8"
 
