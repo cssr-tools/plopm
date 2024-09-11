@@ -1,12 +1,13 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702
+# pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611
 
 """
 Utiliy functions to write the PNGs figures.
 """
 
 import sys
+import colorcet
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
