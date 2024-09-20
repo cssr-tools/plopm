@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611
+# pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913
 
 """
 Utiliy functions to write the PNGs figures.
@@ -201,13 +201,13 @@ def prepare_maps(dic, n):
         dic["deckn"] = dic["deck"].lower()
     dic["xc"], dic["yc"] = [], []
     get_readers(dic)
-    ini_slides(dic)
-    if dic["slide"][0] > -1:
-        handle_slide_x(dic)
-    elif dic["slide"][1] > -1:
-        handle_slide_y(dic)
+    ini_slides(dic, n)
+    if dic["slide"][n][0] > -1:
+        handle_slide_x(dic, n)
+    elif dic["slide"][n][1] > -1:
+        handle_slide_y(dic, n)
     else:
-        handle_slide_z(dic)
+        handle_slide_z(dic, n)
     if int(dic["rotate"][n]) != 0 or dic["translate"][n] != ["[0", "0]"]:
         rotate_grid(dic, n)
 
@@ -372,12 +372,12 @@ def find_min_max(dic):
             prepare_maps(dic, 0)
             _, quan = get_quantity(dic, var.upper(), 0, dic["restart"][t])
             dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-            if dic["slide"][0] > -1:
-                map_yzcoords(dic, var, quan)
-            elif dic["slide"][1] > -1:
-                map_xzcoords(dic, var, quan)
+            if dic["slide"][0][0] > -1:
+                map_yzcoords(dic, var, quan, 0)
+            elif dic["slide"][0][1] > -1:
+                map_xzcoords(dic, var, quan, 0)
             else:
-                map_xycoords(dic, var, quan)
+                map_xycoords(dic, var, quan, 0)
             dic["diffa"].append(dic[var + "a"])
     for m, var in enumerate(dic["vrs"]):
         dic["minc"].append(dic["minc"][-1])
@@ -389,12 +389,12 @@ def find_min_max(dic):
                 prepare_maps(dic, n)
                 _, quan = get_quantity(dic, var.upper(), m, dic["restart"][t])
                 dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-                if dic["slide"][0] > -1:
-                    map_yzcoords(dic, var, quan)
-                elif dic["slide"][1] > -1:
-                    map_xzcoords(dic, var, quan)
+                if dic["slide"][n][0] > -1:
+                    map_yzcoords(dic, var, quan, n)
+                elif dic["slide"][n][1] > -1:
+                    map_xzcoords(dic, var, quan, n)
                 else:
-                    map_xycoords(dic, var, quan)
+                    map_xycoords(dic, var, quan, n)
                 if dic["diff"]:
                     dic[var + "a"] -= dic["diffa"][t]
                 dic["minc"][-2] = min(
@@ -412,12 +412,12 @@ def find_min_max(dic):
             prepare_maps(dic, n)
             _, quan = get_quantity(dic, var.upper(), 0, 0)
             dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-            if dic["slide"][0] > -1:
-                map_yzcoords(dic, var, quan)
-            elif dic["slide"][1] > -1:
-                map_xzcoords(dic, var, quan)
+            if dic["slide"][n][0] > -1:
+                map_yzcoords(dic, var, quan, n)
+            elif dic["slide"][n][1] > -1:
+                map_xzcoords(dic, var, quan, n)
             else:
-                map_xycoords(dic, var, quan)
+                map_xycoords(dic, var, quan, n)
             dic["maska"].append(dic[var + "a"])
 
 
@@ -460,7 +460,7 @@ def mapits(dic, t, n, k):
         dic (dict): Global dictionary\n
         t (int): Number of restart\n
         n (int): Number of variable\n
-        n (int): Number of subplot
+        k (int): Number of subplot
 
     Returns:
         dic (dict): Modified global dictionary
@@ -469,12 +469,15 @@ def mapits(dic, t, n, k):
     var = dic["vrs"][n]
     unit, quan = get_quantity(dic, var.upper(), n, dic["restart"][t])
     dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-    if dic["slide"][0] > -1:
-        map_yzcoords(dic, var, quan)
-    elif dic["slide"][1] > -1:
-        map_xzcoords(dic, var, quan)
+    n_s = 0
+    if dic["subfigs"][0] and len(dic["names"][0]) > 1:
+        n_s = k
+    if dic["slide"][n_s][0] > -1:
+        map_yzcoords(dic, var, quan, k)
+    elif dic["slide"][n_s][1] > -1:
+        map_xzcoords(dic, var, quan, k)
     else:
-        map_xycoords(dic, var, quan)
+        map_xycoords(dic, var, quan, k)
     maps = np.ones([dic["my"], dic["mx"]]) * np.nan
     if dic["diff"]:
         for i in np.arange(0, dic["my"]):
@@ -486,7 +489,7 @@ def mapits(dic, t, n, k):
         for i in np.arange(0, dic["my"]):
             maps[i, :] = dic[var + "a"][i * (dic["mx"]) : (i + 1) * (dic["mx"])]
     if dic["mask"]:
-        maxv = max(dic["maska"][k])
+        maxv = max(dic["maska"][k][~np.isnan(dic["maska"][k])])
         for i in np.arange(0, dic["my"]):
             maps[i, :] = [
                 (
@@ -683,7 +686,7 @@ def mapits(dic, t, n, k):
             minc - shc,
             maxc + shc,
         )
-    handle_axis(dic, var, n, t, k)
+    handle_axis(dic, var, n, t, k, n_s)
     if dic["xlabel"][n] and dic["rm"][1] == 0:
         dic["axis"].flat[k].set_xlabel(dic["xlabel"][n])
     elif (
@@ -798,7 +801,7 @@ def mapits(dic, t, n, k):
             )
 
 
-def handle_axis(dic, name, n, t, k):
+def handle_axis(dic, name, n, t, k, n_s):
     """
     Method to handle the figure axis
 
@@ -869,7 +872,7 @@ def handle_axis(dic, name, n, t, k):
         )
     if dic["titles"][k] != "0" and dic["rm"][3] == 0:
         dic["axis"].flat[k].set_title(dic["titles"][k])
-    if dic["slide"][2] == -2 and not dic["axis"].flat[k].yaxis_inverted():
+    if dic["slide"][n_s][2] == -2 and not dic["axis"].flat[k].yaxis_inverted():
         dic["axis"].flat[k].invert_yaxis()
     if len(dic["xlim"][n]) > 1 and dic["rm"][1] == 0:
         dic["axis"].flat[k].set_xlim(

@@ -8,8 +8,6 @@ Utiliy functions to set the requiried input values by plopm.
 
 import os
 import sys
-from io import StringIO
-import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -124,9 +122,10 @@ def ini_dic(cmdargs):
         dic["restart"] = list(range(0, int(dic["restart"][1]) + 1))
     else:
         dic["restart"] = [int(i) for i in dic["restart"]]
-    dic["slide"] = (
-        np.genfromtxt(StringIO(cmdargs["slide"]), delimiter=",", dtype=int) - 1
-    )
+    dic["slide"] = (cmdargs["slide"]).split(" ")
+    dic["slide"] = [
+        [int(val) - 1 if val else -2 for val in var.split(",")] for var in dic["slide"]
+    ]
     dic["mass"] = ["gasm", "dism", "liqm", "vapm", "co2m", "h2om"]
     dic["smass"] = ["FWCDM", "FGIPM"]
     dic["xmass"] = ["xco2l", "xh2ov", "xco2v", "xh2ol"]
@@ -195,6 +194,8 @@ def ini_dic(cmdargs):
         dic["translate"] = [dic["translate"][0]] * len(dic["names"][0])
     if len(dic["titles"]) < max(len(dic["names"][0]), len(dic["vrs"])):
         dic["titles"] = [dic["titles"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
+    if len(dic["slide"]) < max(len(dic["names"][0]), len(dic["vrs"])):
+        dic["slide"] = [dic["slide"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
     for val in [
         "xformat",
         "yformat",
@@ -314,7 +315,7 @@ def is_summary(dic):
     return False
 
 
-def ini_slides(dic):
+def ini_slides(dic, n):
     """
     Initialize dictionary entries used for the 2D maps
 
@@ -325,10 +326,10 @@ def ini_slides(dic):
         dic (dict): Modified global dictionary
 
     """
-    if dic["slide"][0] > -1:
+    if dic["slide"][n][0] > -1:
         dic["mx"], dic["my"] = 2 * dic["ny"] - 1, 2 * dic["nz"] - 1
         dic["xmeaning"], dic["ymeaning"] = "y", "z"
-    elif dic["slide"][1] > -1:
+    elif dic["slide"][n][1] > -1:
         dic["mx"], dic["my"] = 2 * dic["nx"] - 1, 2 * dic["nz"] - 1
         dic["xmeaning"], dic["ymeaning"] = "x", "z"
     else:
