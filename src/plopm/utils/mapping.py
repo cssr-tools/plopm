@@ -16,7 +16,7 @@ from plopm.utils.readers import (
 )
 
 
-def handle_slide_x(dic):
+def handle_slide_x(dic, n):
     """
     Processing the selected yz slide to obtain the grid properties
 
@@ -27,18 +27,18 @@ def handle_slide_x(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["tslide"] = f", slide i={dic['slide'][0]+1}"
-    dic["nslide"] = f"{dic['slide'][0]+1},*,*"
+    dic["tslide"] = f", slide i={dic['slide'][n][0]+1}"
+    dic["nslide"] = f"{dic['slide'][n][0]+1},*,*"
     for well in reversed(dic["wells"]):
-        if well[0] != dic["slide"][0]:
+        if well[0] != dic["slide"][n][0]:
             dic["wells"].remove(well)
     if dic["use"] == "resdata":
-        get_yzcoords_resdata(dic)
+        get_yzcoords_resdata(dic, n)
     else:
-        get_yzcoords_opm(dic)
+        get_yzcoords_opm(dic, n)
 
 
-def handle_slide_y(dic):
+def handle_slide_y(dic, n):
     """
     Processing the selected xz slide to obtain the grid properties
 
@@ -49,18 +49,18 @@ def handle_slide_y(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["tslide"] = f", slide j={dic['slide'][1]+1}"
-    dic["nslide"] = f"*,{dic['slide'][1]+1},*"
+    dic["tslide"] = f", slide j={dic['slide'][n][1]+1}"
+    dic["nslide"] = f"*,{dic['slide'][n][1]+1},*"
     for well in reversed(dic["wells"]):
-        if well[1] != dic["slide"][1]:
+        if well[1] != dic["slide"][n][1]:
             dic["wells"].remove(well)
     if dic["use"] == "resdata":
-        get_xzcoords_resdata(dic)
+        get_xzcoords_resdata(dic, n)
     else:
-        get_xzcoords_opm(dic)
+        get_xzcoords_opm(dic, n)
 
 
-def handle_slide_z(dic):
+def handle_slide_z(dic, n):
     """
     Processing the selected xy slide to obtain the grid properties
 
@@ -71,15 +71,15 @@ def handle_slide_z(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["tslide"] = f", slide k={dic['slide'][2]+1}"
-    dic["nslide"] = f"*,*,{dic['slide'][2]+1}"
+    dic["tslide"] = f", slide k={dic['slide'][n][2]+1}"
+    dic["nslide"] = f"*,*,{dic['slide'][n][2]+1}"
     for well in reversed(dic["wells"]):
-        if dic["slide"][2] not in range(well[2], well[3] + 1):
+        if dic["slide"][n][2] not in range(well[2], well[3] + 1):
             dic["wells"].remove(well)
     if dic["use"] == "resdata":
-        get_xycoords_resdata(dic)
+        get_xycoords_resdata(dic, n)
     else:
-        get_xycoords_opm(dic)
+        get_xycoords_opm(dic, n)
 
 
 def rotate_grid(dic, n):
@@ -119,7 +119,7 @@ def rotate_grid(dic, n):
     dic["yc"] = yc
 
 
-def map_xzcoords(dic, var, quan):
+def map_xzcoords(dic, var, quan, n):
     """
     Map the properties from the simulations to the 2D slide
 
@@ -132,7 +132,7 @@ def map_xzcoords(dic, var, quan):
     """
     for k in range(dic["nz"]):
         for i in range(dic["nx"]):
-            ind = i + dic["slide"][1] * dic["nx"] + k * dic["nx"] * dic["ny"]
+            ind = i + dic["slide"][n][1] * dic["nx"] + k * dic["nx"] * dic["ny"]
             if dic["porv"][ind] > 0:
                 if var.lower() == "grid":
                     dic["grida"][2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]] = 1
@@ -145,7 +145,7 @@ def map_xzcoords(dic, var, quan):
                 elif var.lower() == "index_j":
                     dic["index_ja"][2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]] = dic[
                         "slide"
-                    ][1]
+                    ][n][1]
                 elif var.lower() == "index_k":
                     dic["index_ka"][2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]] = k
                 else:
@@ -157,7 +157,7 @@ def map_xzcoords(dic, var, quan):
             dic["wellsa"][2 * well[0] + 2 * (dic["nz"] - k - 1) * dic["mx"]] = i
 
 
-def map_yzcoords(dic, var, quan):
+def map_yzcoords(dic, var, quan, n):
     """
     Map the properties from the simulations to the 2D slide
 
@@ -170,7 +170,7 @@ def map_yzcoords(dic, var, quan):
     """
     for k in range(dic["nz"]):
         for j in range(dic["ny"]):
-            ind = dic["slide"][0] + j * dic["nx"] + k * dic["nx"] * dic["ny"]
+            ind = dic["slide"][n][0] + j * dic["nx"] + k * dic["nx"] * dic["ny"]
             if dic["porv"][ind] > 0:
                 if var.lower() == "grid":
                     dic["grida"][2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]] = 1
@@ -181,7 +181,7 @@ def map_yzcoords(dic, var, quan):
                 elif var.lower() == "index_i":
                     dic[var + "a"][2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]] = dic[
                         "slide"
-                    ][0]
+                    ][n][0]
                 elif var.lower() == "index_j":
                     dic[var + "a"][2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]] = j
                 elif var.lower() == "index_k":
@@ -195,7 +195,7 @@ def map_yzcoords(dic, var, quan):
             dic["wellsa"][2 * well[1] + 2 * (dic["nz"] - k - 1) * dic["mx"]] = i
 
 
-def map_xycoords(dic, var, quan):
+def map_xycoords(dic, var, quan, n):
     """
     Map the properties from the simulations to the 2D slide
 
@@ -208,7 +208,7 @@ def map_xycoords(dic, var, quan):
     """
     for j in range(dic["ny"]):
         for i in range(dic["nx"]):
-            ind = i + j * dic["nx"] + dic["slide"][2] * dic["nx"] * dic["ny"]
+            ind = i + j * dic["nx"] + dic["slide"][n][2] * dic["nx"] * dic["ny"]
             if dic["porv"][ind] > 0:
                 if var.lower() == "grid":
                     dic["grida"][2 * i + 2 * j * dic["mx"]] = 1
@@ -219,7 +219,7 @@ def map_xycoords(dic, var, quan):
                 elif var.lower() == "index_j":
                     dic[var + "a"][2 * i + 2 * j * dic["mx"]] = j
                 elif var.lower() == "index_k":
-                    dic[var + "a"][2 * i + 2 * j * dic["mx"]] = dic["slide"][2]
+                    dic[var + "a"][2 * i + 2 * j * dic["mx"]] = dic["slide"][n][2]
                 else:
                     dic[var + "a"][2 * i + 2 * j * dic["mx"]] = quan[dic["actind"][ind]]
     for i, well in enumerate(dic["wells"]):
