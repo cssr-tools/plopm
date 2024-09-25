@@ -124,8 +124,18 @@ def ini_dic(cmdargs):
         dic["restart"] = [int(i) for i in dic["restart"]]
     dic["slide"] = (cmdargs["slide"]).split(" ")
     dic["slide"] = [
-        [int(val) - 1 if val else -2 for val in var.split(",")] for var in dic["slide"]
+        [val if val else [-2, -2] for val in var.split(",")] for var in dic["slide"]
     ]
+    for i, var in enumerate(dic["slide"]):
+        for j, val in enumerate(var):
+            if val[0] != -2:
+                if ":" in val:
+                    dic["slide"][i][j] = [
+                        int(val.split(":")[0]) - 1,
+                        int(val.split(":")[1]),
+                    ]
+                else:
+                    dic["slide"][i][j] = [int(val) - 1, int(val)]
     dic["mass"] = ["gasm", "dism", "liqm", "vapm", "co2m", "h2om"]
     dic["smass"] = ["FWCDM", "FGIPM"]
     dic["xmass"] = ["xco2l", "xh2ov", "xco2v", "xh2ol"]
@@ -188,13 +198,19 @@ def ini_dic(cmdargs):
         dic["save"] = [dic["save"][0]] * len(dic["vrs"])
     if len(dic["bounds"]) < len(dic["vrs"]):
         dic["bounds"] = [dic["bounds"][0]] * len(dic["vrs"])
-    if len(dic["rotate"]) < len(dic["names"][0]):
+    if dic["diff"] and len(dic["rotate"]) < 2:
+        dic["rotate"] = [dic["rotate"][0]] * 2
+    elif len(dic["rotate"]) < len(dic["names"][0]):
         dic["rotate"] = [dic["rotate"][0]] * len(dic["names"][0])
+    if dic["diff"] and len(dic["translate"]) < 2:
+        dic["translate"] = [dic["translate"][0]] * 2
     if len(dic["translate"]) < len(dic["names"][0]):
         dic["translate"] = [dic["translate"][0]] * len(dic["names"][0])
     if len(dic["titles"]) < max(len(dic["names"][0]), len(dic["vrs"])):
         dic["titles"] = [dic["titles"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
-    if len(dic["slide"]) < max(len(dic["names"][0]), len(dic["vrs"])):
+    if dic["diff"] and len(dic["slide"]) < 2:
+        dic["slide"] = [dic["slide"][0]] * 2
+    elif len(dic["slide"]) < max(len(dic["names"][0]), len(dic["vrs"])):
         dic["slide"] = [dic["slide"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
     for val in [
         "xformat",
@@ -326,10 +342,10 @@ def ini_slides(dic, n):
         dic (dict): Modified global dictionary
 
     """
-    if dic["slide"][n][0] > -1:
+    if dic["slide"][n][0][0] > -1:
         dic["mx"], dic["my"] = 2 * dic["ny"] - 1, 2 * dic["nz"] - 1
         dic["xmeaning"], dic["ymeaning"] = "y", "z"
-    elif dic["slide"][n][1] > -1:
+    elif dic["slide"][n][1][0] > -1:
         dic["mx"], dic["my"] = 2 * dic["nx"] - 1, 2 * dic["nz"] - 1
         dic["xmeaning"], dic["ymeaning"] = "x", "z"
     else:

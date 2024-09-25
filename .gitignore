@@ -177,6 +177,10 @@ examples/spe11b_xco2l.gif
 examples/fgip.png
 examples/SPE11B-*.vtu
 examples/SPE11B.pvd
+examples/pres_diff.png
+examples/pres_incr.png
+examples/tco2m_alongx.png
+examples/tco2m_alongz.png
 tests/generic_deck
 
 # Python environment

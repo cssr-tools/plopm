@@ -60,7 +60,8 @@ def load_parser():
         help="Specify the name of the vairable to plot, e.g., 'pressure', in "
         "addition to special variables such as 'grid', 'wells', "
         "'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', "
-        "'xco2v', 'xh2ol', 'fwcdm', and 'fgipm' "
+        "'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g "
+        "'pressure - 0pressure' to plot the pressure increase "
         "('poro,permx,permz,porv,fipnum,satnum' by default.",
     )
     parser.add_argument(
@@ -74,7 +75,8 @@ def load_parser():
         "--slide",
         default=",1,",
         help="The slide in the 3D model to plot the 2D maps, e.g,"
-        " '10,,' to plot the xz plane on all cells with i=10 (',1,' "
+        " '10,,' to plot the xz plane on all cells with i=10, or "
+        " ',,5:10' to plot the pv average weighted quantity (',1,' "
         " by default, i.e., the xz surface at j=1).",
     )
     parser.add_argument(
@@ -169,7 +171,7 @@ def load_parser():
     parser.add_argument(
         "-tunits",
         "--tunits",
-        default="s",
+        default="d",
         help="For the x axis in the summary use seconds 's', minutes 'm', "
         "hours 'h', days 'd', weeks 'w', years 'y', or dates 'dates' ('s' "
         "by default).",
