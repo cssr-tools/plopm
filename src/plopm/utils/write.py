@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913
+# pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913,R0917,C0302
 
 """
 Utiliy functions to write the PNGs figures.
@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib import colors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from plopm.utils.readers import read_summary, get_quantity, get_readers
+from plopm.utils.readers import read_summary, get_quantity, get_readers, initialize_time
 from plopm.utils.initialization import ini_slides
 from plopm.utils.mapping import (
     handle_slide_x,
@@ -199,12 +199,12 @@ def prepare_maps(dic, n):
         dic["deckn"] = (dic["deck"].split("/")[-1]).lower()
     else:
         dic["deckn"] = dic["deck"].lower()
-    dic["xc"], dic["yc"] = [], []
+    dic["xc"], dic["yc"], dic["abssum"] = [], [], 0.0
     get_readers(dic)
     ini_slides(dic, n)
-    if dic["slide"][n][0] > -1:
+    if dic["slide"][n][0][0] > -1:
         handle_slide_x(dic, n)
-    elif dic["slide"][n][1] > -1:
+    elif dic["slide"][n][1][0] > -1:
         handle_slide_y(dic, n)
     else:
         handle_slide_z(dic, n)
@@ -369,15 +369,15 @@ def find_min_max(dic):
         var = dic["vrs"][0]
         dic["diffa"] = []
         for t, _ in enumerate(dic["restart"]):
-            prepare_maps(dic, 0)
+            prepare_maps(dic, 1)
             _, quan = get_quantity(dic, var.upper(), 0, dic["restart"][t])
             dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-            if dic["slide"][0][0] > -1:
-                map_yzcoords(dic, var, quan, 0)
-            elif dic["slide"][0][1] > -1:
-                map_xzcoords(dic, var, quan, 0)
+            if dic["slide"][1][0][0] > -1:
+                map_yzcoords(dic, var, quan, 1)
+            elif dic["slide"][1][1][0] > -1:
+                map_xzcoords(dic, var, quan, 1)
             else:
-                map_xycoords(dic, var, quan, 0)
+                map_xycoords(dic, var, quan, 1)
             dic["diffa"].append(dic[var + "a"])
     for m, var in enumerate(dic["vrs"]):
         dic["minc"].append(dic["minc"][-1])
@@ -389,9 +389,9 @@ def find_min_max(dic):
                 prepare_maps(dic, n)
                 _, quan = get_quantity(dic, var.upper(), m, dic["restart"][t])
                 dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-                if dic["slide"][n][0] > -1:
+                if dic["slide"][n][0][0] > -1:
                     map_yzcoords(dic, var, quan, n)
-                elif dic["slide"][n][1] > -1:
+                elif dic["slide"][n][1][0] > -1:
                     map_xzcoords(dic, var, quan, n)
                 else:
                     map_xycoords(dic, var, quan, n)
@@ -412,9 +412,9 @@ def find_min_max(dic):
             prepare_maps(dic, n)
             _, quan = get_quantity(dic, var.upper(), 0, 0)
             dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-            if dic["slide"][n][0] > -1:
+            if dic["slide"][n][0][0] > -1:
                 map_yzcoords(dic, var, quan, n)
-            elif dic["slide"][n][1] > -1:
+            elif dic["slide"][n][1][0] > -1:
                 map_xzcoords(dic, var, quan, n)
             else:
                 map_xycoords(dic, var, quan, n)
@@ -472,9 +472,9 @@ def mapits(dic, t, n, k):
     n_s = 0
     if dic["subfigs"][0] and len(dic["names"][0]) > 1:
         n_s = k
-    if dic["slide"][n_s][0] > -1:
+    if dic["slide"][n_s][0][0] > -1:
         map_yzcoords(dic, var, quan, k)
-    elif dic["slide"][n_s][1] > -1:
+    elif dic["slide"][n_s][1][0] > -1:
         map_xzcoords(dic, var, quan, k)
     else:
         map_xycoords(dic, var, quan, k)
@@ -485,6 +485,7 @@ def mapits(dic, t, n, k):
                 dic[var + "a"][i * (dic["mx"]) : (i + 1) * (dic["mx"])]
                 - dic["diffa"][t][i * (dic["mx"]) : (i + 1) * (dic["mx"])]
             )
+        dic["abssum"] = sum(abs(maps[~np.isnan(maps)]))
     else:
         for i in np.arange(0, dic["my"]):
             maps[i, :] = dic[var + "a"][i * (dic["mx"]) : (i + 1) * (dic["mx"])]
@@ -554,7 +555,7 @@ def mapits(dic, t, n, k):
             shc = 1
         from_list = matplotlib.colors.LinearSegmentedColormap.from_list
         cmap = from_list(
-            None, plt.cm.get_cmap(dic["cmaps"][n])(range(0, ntick + shc)), ntick
+            None, matplotlib.colormaps[dic["cmaps"][n]](range(0, ntick + shc)), ntick
         )
         shc = 0.5
     if var.lower() == "grid" and var.lower() != "wells":
@@ -637,16 +638,15 @@ def mapits(dic, t, n, k):
                 and dic["subfigs"][0]
                 and len(dic["names"][0]) == 1
             ):
-                if k == 0:
-                    dic["cb"][0] = dic["fig"].colorbar(
-                        imag,
-                        cax=dic["fig"].add_axes(dic["cbsfax"]),
-                        ticks=vect,
-                        label=ncolor,
-                        format=eval(func),
-                        shrink=0.2,
-                        location="top",
-                    )
+                dic["cb"][0] = dic["fig"].colorbar(
+                    imag,
+                    cax=dic["fig"].add_axes(dic["cbsfax"]),
+                    ticks=vect,
+                    label=ncolor,
+                    format=eval(func),
+                    shrink=0.2,
+                    location="top",
+                )
             elif not dic["subfigs"][0] or len(dic["names"][0]) == 1:
                 dic["cb"][k] = dic["fig"].colorbar(
                     imag,
@@ -686,7 +686,7 @@ def mapits(dic, t, n, k):
             minc - shc,
             maxc + shc,
         )
-    handle_axis(dic, var, n, t, k, n_s)
+    handle_axis(dic, var, n, t, k, n_s, unit)
     if dic["xlabel"][n] and dic["rm"][1] == 0:
         dic["axis"].flat[k].set_xlabel(dic["xlabel"][n])
     elif (
@@ -801,7 +801,7 @@ def mapits(dic, t, n, k):
             )
 
 
-def handle_axis(dic, name, n, t, k, n_s):
+def handle_axis(dic, name, n, t, k, n_s, unit):
     """
     Method to handle the figure axis
 
@@ -813,30 +813,41 @@ def handle_axis(dic, name, n, t, k, n_s):
         dic (dict): Modified global dictionary
 
     """
-    time = f", time={dic['tnrst'][dic['restart'][t]]} days"
+    if dic["tunits"][0] == "dates":
+        if dic["use"] == "opm":
+            print(
+                "For 2D spatial mapsIt is not possible to use -tunits dates"
+                " and -u opm. Try with -u resdata or different -tunits."
+            )
+            sys.exit()
+        time = f"{dic['unrst'].dates[dic['restart'][t]].date()}"
+    else:
+        tskl, tunit = initialize_time(dic["tunits"][0])
+        tunit = tunit[5:]
+        time = f"{tskl*dic['tnrst'][dic['restart'][t]]:.0f} {tunit}"
     if dic["scale"] == 1:
         dic["axis"].flat[k].axis("scaled")
     extra = ""
     if name == "porv":
-        extra = f" (sum={sum(dic[name]):.3e})"
+        extra = f", sum={sum(dic[name]):.3e}"
+    elif name in dic["mass"] and dic["diff"]:
+        extra = f", |sum|={dic['abssum']:.3e} {unit}"
+    elif name in dic["mass"]:
+        extra = f", sum={sum(dic[name + 'a'][~np.isnan(dic[name + 'a'])]):.3e} {unit}"
+    elif dic["diff"]:
+        extra = f", |sum|={dic['abssum']:.3e}"
     if dic["subfigs"][0] and len(dic["names"][0]) > 1 and dic["titles"][k] == "0":
         dic["axis"].flat[k].set_title(dic["deckn"])
         if k == 0 and dic["suptitle"] != "0":
-            dic["fig"].suptitle(f"{dic['tnrst'][dic['restart'][t]]} days")
+            dic["fig"].suptitle(f"{time}")
     elif dic["subfigs"][0] and len(dic["vrs"]) > 1 and dic["titles"][k] == "0":
         if k == 0 and dic["suptitle"] != "0":
-            dic["fig"].suptitle(
-                f"{dic['deckn']}, {dic['tnrst'][dic['restart'][t]]} days"
-            )
+            dic["fig"].suptitle(f"{dic['deckn']}, {time}")
     elif dic["mode"] == "gif" and len(dic["vrs"]) == 1 and dic["titles"][k] == "0":
         if dic["diff"]:
-            dic["axis"].flat[k].set_title(
-                f"{dic['deckn']}-{dic['deckd']}, {dic['tnrst'][dic['restart'][t]]} days"
-            )
+            dic["axis"].flat[k].set_title(f"{dic['deckn']}-{dic['deckd']}, {time}")
         else:
-            dic["axis"].flat[k].set_title(
-                f"{dic['deckn']}, {dic['tnrst'][dic['restart'][t]]} days"
-            )
+            dic["axis"].flat[k].set_title(f"{dic['deckn']}, {time}")
     elif (
         len(dic["restart"]) > 1
         and dic["subfigs"][0]
@@ -856,11 +867,12 @@ def handle_axis(dic, name, n, t, k, n_s):
                 + dic["tslide"]
                 + dic["dtitle"]
                 + extra
+                + ", "
                 + time
             )
         else:
             dic["axis"].flat[k].set_title(
-                name + dic["tslide"] + dic["dtitle"] + extra + time
+                name + dic["tslide"] + dic["dtitle"] + extra + ", " + time
             )
     elif dic["subfigs"][0] and len(dic["names"][0]) > 1:
         if k == 0 and dic["suptitle"] != "0":
@@ -872,15 +884,15 @@ def handle_axis(dic, name, n, t, k, n_s):
         )
     if dic["titles"][k] != "0" and dic["rm"][3] == 0:
         dic["axis"].flat[k].set_title(dic["titles"][k])
-    if dic["slide"][n_s][2] == -2 and not dic["axis"].flat[k].yaxis_inverted():
+    if dic["slide"][n_s][2][0] == -2 and not dic["axis"].flat[k].yaxis_inverted():
         dic["axis"].flat[k].invert_yaxis()
     if len(dic["xlim"][n]) > 1 and dic["rm"][1] == 0:
         dic["axis"].flat[k].set_xlim(
             [float(dic["xlim"][n][0][1:]), float(dic["xlim"][n][1][:-1])]
         )
         xlabels = np.linspace(
-            float(dic["xlim"][k][0][1:]),
-            float(dic["xlim"][k][1][:-1]),
+            float(dic["xlim"][n][0][1:]),
+            float(dic["xlim"][n][1][:-1]),
             int(dic["xlnum"][n]),
         )
     else:
