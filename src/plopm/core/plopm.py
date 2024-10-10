@@ -58,7 +58,7 @@ def load_parser():
         "--variable",
         default="poro,permx,permz,porv,fipnum,satnum",
         help="Specify the name of the vairable to plot, e.g., 'pressure', in "
-        "addition to special variables such as 'grid', 'wells', "
+        "addition to special variables such as 'grid', 'wells', 'faults', "
         "'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', "
         "'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g "
         "'pressure - 0pressure' to plot the pressure increase "

@@ -508,7 +508,11 @@ def get_quantity(dic, name, n, nrst):
         elif names[0].lower() == "wells":
             quan = np.array(dic["init"]["SATNUM"][0]) * 0
             dic["wells"] = []
-            get_wells(dic)
+            get_wells(dic, n)
+        elif names[0].lower() == "faults":
+            quan = np.array(dic["init"]["SATNUM"][0]) * 0
+            dic["faults"] = []
+            get_faults(dic, n)
         elif "index" in names[0].lower():
             quan = np.array(dic["init"]["SATNUM"][0]) * 0
         elif dic["unrst"].has_kw(names[0]):
@@ -543,7 +547,11 @@ def get_quantity(dic, name, n, nrst):
         elif names[0].lower() == "wells":
             quan = np.array(dic["init"]["SATNUM"]) * 0
             dic["wells"] = []
-            get_wells(dic)
+            get_wells(dic, n)
+        elif names[0].lower() == "faults":
+            quan = np.array(dic["init"]["SATNUM"]) * 0
+            dic["faults"] = []
+            get_faults(dic, n)
         elif "index" in names[0].lower():
             quan = np.array(dic["init"]["SATNUM"]) * 0
         elif dic["unrst"].count(names[0]):
@@ -659,7 +667,7 @@ def type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v, x_l_co2, x_g_h2o):
     return co2_g + co2_d
 
 
-def get_wells(dic):
+def get_wells(dic, n):
     """
     Using the input deck (.DATA) to read the i,j well locations
 
@@ -702,3 +710,77 @@ def get_wells(dic):
                 wells = True
             if nrwo == "SOURCE":
                 sources = True
+    if dic["slide"][n][0][0] > -1:
+        for i, well in enumerate(dic["wells"]):
+            for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
+                if well[0] != sld:
+                    dic["wells"][i] = []
+    elif dic["slide"][n][1][0] > -1:
+        for i, well in enumerate(dic["wells"]):
+            for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
+                if well[1] != sld:
+                    dic["wells"][i] = []
+    else:
+        for i, well in enumerate(dic["wells"]):
+            for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
+                if sld not in range(well[2], well[3] + 1):
+                    dic["wells"][i] = []
+
+
+def get_faults(dic, n):
+    """
+    Using the input deck (.DATA) to read the i,j fault locations
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    dic["lfaults"] = []
+    dic["faultsa"] = np.ones((dic["mx"]) * (dic["my"])) * np.nan
+    dic["grida"] = np.ones((dic["mx"]) * (dic["my"])) * np.nan
+    faults = False
+    with open(f"{dic['name']}.DATA", "r", encoding="utf8") as file:
+        for row in csv.reader(file):
+            nrwo = str(row)[2:-2]
+            if faults:
+                if len(nrwo.split()) < 2:
+                    if nrwo == "/":
+                        break
+                    continue
+                if nrwo.split()[0] == "--":
+                    continue
+                if nrwo.split()[0] not in dic["lfaults"]:
+                    dic["lfaults"].append(nrwo.split()[0])
+                    dic["faults"].append([])
+                dic["faults"][dic["lfaults"].index(nrwo.split()[0])].append(
+                    [
+                        int(nrwo.split()[1]) - 1,
+                        int(nrwo.split()[3]) - 1,
+                        int(nrwo.split()[5]) - 1,
+                        int(nrwo.split()[6]) - 1,
+                    ]
+                )
+            if nrwo == "FAULTS":
+                faults = True
+    dic["nfaults"] = len(dic["lfaults"]) + 1
+    if dic["slide"][n][0][0] > -1:
+        for i, faults in enumerate(dic["faults"]):
+            for j, fault in enumerate(faults):
+                for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
+                    if fault[0] != sld:
+                        dic["faults"][i][j] = []
+    elif dic["slide"][n][1][0] > -1:
+        for i, faults in enumerate(dic["faults"]):
+            for j, fault in enumerate(faults):
+                for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
+                    if fault[1] != sld:
+                        dic["faults"][i][j] = []
+    else:
+        for i, faults in enumerate(dic["faults"]):
+            for j, fault in enumerate(faults):
+                for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
+                    if sld not in range(fault[2], fault[3] + 1):
+                        dic["faults"][i][j] = []
