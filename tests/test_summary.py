@@ -15,7 +15,8 @@ def test_summary():
     assert os.path.exists(f"{cwd}/examples/fgip.png")
     os.system(
         "plopm -i 'SPE11B SPE11B' -v 'fgip,fgipm,RGIP:3 / 2' "
-        "-loc empty,empty,empty,center -subfigs 2,2 -save subfigs_summary -d 6,5"
+        "-loc empty,empty,empty,center -subfigs 2,2 -save subfigs_summary "
+        "-d 6,5 -ylabel 'gas in place  mass in place  halfmass region 3'"
     )
     assert os.path.exists(f"{cwd}/examples/subfigs_summary.png")
     os.chdir(cwd)

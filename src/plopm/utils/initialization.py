@@ -84,7 +84,6 @@ def ini_dic(cmdargs):
     dic["rm"] = (cmdargs["remove"].strip()).split(",")
     dic["rm"] = [int(val) for val in dic["rm"]]
     dic["tunits"] = (cmdargs["tunits"].strip()).split(",")
-    # dic["skl"] = float(cmdargs["adjust"])
     dic["avar"] = (cmdargs["adjust"].strip()).split(",")
     dic["axgrid"] = (cmdargs["axgrid"].strip()).split(",")
     dic["dpi"] = (cmdargs["dpi"].strip()).split(",")
@@ -101,7 +100,7 @@ def ini_dic(cmdargs):
     dic["cbsfax"] = [float(val) for val in (cmdargs["cbsfax"].strip()).split(",")]
     for i in ["x", "y"]:
         dic[f"{i}units"] = cmdargs[f"{i}units"].strip()
-        dic[f"{i}label"] = (cmdargs[f"{i}label"].strip()).split(" ")
+        dic[f"{i}label"] = (cmdargs[f"{i}label"].strip()).split("  ")
         dic[f"{i}format"] = (cmdargs[f"{i}format"].strip()).split(",")
         dic[f"{i}lnum"] = (cmdargs[f"{i}lnum"].strip()).split(",")
         dic[f"{i}log"] = (cmdargs[f"{i}log"].strip()).split(",")
@@ -113,6 +112,7 @@ def ini_dic(cmdargs):
         "vsum",
         "time",
         "wells",
+        "faults",
     ]:
         dic[name] = []
     dic["dtitle"] = ""
@@ -394,8 +394,8 @@ def ini_properties(dic):
         dic["cmaps"] = ["RdYlGn"]
     elif dic["mask"]:
         dic["cmaps"] = ["RdGy_r"]
-    if dic["vrs"]:  # dic["well"] == 1
-        if dic["vrs"][0] == "wells":
+    if dic["vrs"]:
+        if dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults" and not dic["colors"]:
             dic["units"] = [" [-]"]
             dic["cmaps"] = ["nipy_spectral"]
             dic["cformat"] = [".0f"]

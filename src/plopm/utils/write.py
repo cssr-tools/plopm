@@ -505,7 +505,7 @@ def mapits(dic, t, n, k):
             ]
     ntick = 3
     ncolor = var + " " + unit
-    if var.lower() != "wells" and var.lower() != "grid":
+    if var.lower() != "wells" and var.lower() != "grid" and var.lower() != "faults":
         if len(dic["names"][0]) > 1 and dic["subfigs"][0]:
             minc = dic["minc"][n]
             maxc = dic["maxc"][n]
@@ -539,23 +539,36 @@ def mapits(dic, t, n, k):
             ntick = int(maxc - minc + 1)
         if dic["mask"]:
             minc = -maxc
+    elif var.lower() == "faults":
+        minc = 1
+        maxc = dic["nfaults"]
     else:
         minc = 0
         maxc = len(dic["wells"])
     if dic["cnum"][n]:
         ntick = int(dic["cnum"][n])
+    nlc = ntick
+    if var.lower() in ["faults"]:
+        nlc = dic["nfaults"]
     if dic["clabel"]:
         ncolor = dic["clabel"]
     cmap = matplotlib.colormaps.get_cmap(dic["cmaps"][n])
     if dic["ncolor"] != "w":
         cmap.set_bad(color=dic["ncolor"])
     shc = 0
-    if "num" in var.lower():
+    # minc = 0.
+    if (
+        "num" in var.lower()
+        or var.lower() in ["faults"]
+        and dic["cmaps"][n] != "nipy_spectral"
+    ):
         if maxc == 1:
             shc = 1
         from_list = matplotlib.colors.LinearSegmentedColormap.from_list
         cmap = from_list(
-            None, matplotlib.colormaps[dic["cmaps"][n]](range(0, ntick + shc)), ntick
+            None,
+            matplotlib.colormaps[dic["cmaps"][n]](range(int(minc), nlc + shc)),
+            nlc,
         )
         shc = 0.5
     if var.lower() == "grid" and var.lower() != "wells":
@@ -673,12 +686,21 @@ def mapits(dic, t, n, k):
                     " since there are 0 values. Try without log."
                 )
                 sys.exit()
-            dic["cb"][k] = dic["fig"].colorbar(
-                imag,
-                cax=divider.append_axes("right", size="5%", pad=0.05),
-                orientation="vertical",
-                label=ncolor,
-            )
+            if dic["subfigs"][0]:
+                dic["cb"][k] = dic["fig"].colorbar(
+                    imag,
+                    cax=dic["fig"].add_axes(dic["cbsfax"]),
+                    label=ncolor,
+                    shrink=0.2,
+                    location="top",
+                )
+            else:
+                dic["cb"][k] = dic["fig"].colorbar(
+                    imag,
+                    cax=divider.append_axes("right", size="5%", pad=0.05),
+                    orientation="vertical",
+                    label=ncolor,
+                )
     else:
         handle_well_or_grid(dic, imag, divider, vect)
     if dic["rm"][2] == 0:
@@ -813,6 +835,7 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         dic (dict): Modified global dictionary
 
     """
+    namet = name
     if dic["tunits"][0] == "dates":
         if dic["use"] == "opm":
             print(
@@ -820,11 +843,11 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
                 " and -u opm. Try with -u resdata or different -tunits."
             )
             sys.exit()
-        time = f"{dic['unrst'].dates[dic['restart'][t]].date()}"
+        time = f", {dic['unrst'].dates[dic['restart'][t]].date()}"
     else:
         tskl, tunit = initialize_time(dic["tunits"][0])
         tunit = tunit[5:]
-        time = f"{tskl*dic['tnrst'][dic['restart'][t]]:.0f} {tunit}"
+        time = f", {tskl*dic['tnrst'][dic['restart'][t]]:.0f} {tunit}"
     if dic["scale"] == 1:
         dic["axis"].flat[k].axis("scaled")
     extra = ""
@@ -836,18 +859,22 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         extra = f", sum={sum(dic[name + 'a'][~np.isnan(dic[name + 'a'])]):.3e} {unit}"
     elif dic["diff"]:
         extra = f", |sum|={dic['abssum']:.3e}"
+    elif dic["faults"]:
+        time = ""
+        namet = ""
+        dic["tslide"] = dic["tslide"][2:]
     if dic["subfigs"][0] and len(dic["names"][0]) > 1 and dic["titles"][k] == "0":
         dic["axis"].flat[k].set_title(dic["deckn"])
         if k == 0 and dic["suptitle"] != "0":
-            dic["fig"].suptitle(f"{time}")
+            dic["fig"].suptitle(f"{time[1:]}")
     elif dic["subfigs"][0] and len(dic["vrs"]) > 1 and dic["titles"][k] == "0":
         if k == 0 and dic["suptitle"] != "0":
-            dic["fig"].suptitle(f"{dic['deckn']}, {time}")
+            dic["fig"].suptitle(f"{dic['deckn']}{time}")
     elif dic["mode"] == "gif" and len(dic["vrs"]) == 1 and dic["titles"][k] == "0":
         if dic["diff"]:
-            dic["axis"].flat[k].set_title(f"{dic['deckn']}-{dic['deckd']}, {time}")
+            dic["axis"].flat[k].set_title(f"{dic['deckn']}-{dic['deckd']}{time}")
         else:
-            dic["axis"].flat[k].set_title(f"{dic['deckn']}, {time}")
+            dic["axis"].flat[k].set_title(f"{dic['deckn']}{time}")
     elif (
         len(dic["restart"]) > 1
         and dic["subfigs"][0]
@@ -867,12 +894,11 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
                 + dic["tslide"]
                 + dic["dtitle"]
                 + extra
-                + ", "
                 + time
             )
         else:
             dic["axis"].flat[k].set_title(
-                name + dic["tslide"] + dic["dtitle"] + extra + ", " + time
+                namet + dic["tslide"] + dic["dtitle"] + extra + time
             )
     elif dic["subfigs"][0] and len(dic["names"][0]) > 1:
         if k == 0 and dic["suptitle"] != "0":
@@ -963,39 +989,41 @@ def handle_well_or_grid(dic, imag, divider, vect):
     colour = cmap(np.linspace(0, 1, len(dic["wells"]) + 1))
     if len(dic["wells"]) < 20:
         for i, well in enumerate(dic["wells"]):
-            if well[2] != well[3]:
-                plt.text(
-                    0,
-                    i,
-                    f"{i}-({well[0]+1},{well[1]+1},{well[2]+1}-{well[3]+1})",
-                    c=colour[i],
-                    fontweight="bold",
-                )
-            else:
-                plt.text(
-                    0,
-                    i,
-                    f"{i}-({well[0]+1},{well[1]+1},{well[2]+1})",
-                    c=colour[i],
-                    fontweight="bold",
-                )
+            if well:
+                if well[2] != well[3]:
+                    plt.text(
+                        0,
+                        i,
+                        f"{i}-({well[0]+1},{well[1]+1},{well[2]+1}-{well[3]+1})",
+                        c=colour[i],
+                        fontweight="bold",
+                    )
+                else:
+                    plt.text(
+                        0,
+                        i,
+                        f"{i}-({well[0]+1},{well[1]+1},{well[2]+1})",
+                        c=colour[i],
+                        fontweight="bold",
+                    )
     else:
         for i, well in zip(
             [0, len(dic["wells"]) - 1], [dic["wells"][0], dic["wells"][-1]]
         ):
-            if well[2] != well[3]:
-                plt.text(
-                    0,
-                    i,
-                    f"{i}-({well[0]+1},{well[1]+1},{well[2]+1}-{well[3]+1})",
-                    c=colour[i],
-                    fontweight="bold",
-                )
-            else:
-                plt.text(
-                    0,
-                    i,
-                    f"{i}-({well[0]+1},{well[1]+1},{well[2]+1})",
-                    c=colour[i],
-                    fontweight="bold",
-                )
+            if well:
+                if well[2] != well[3]:
+                    plt.text(
+                        0,
+                        i,
+                        f"{i}-({well[0]+1},{well[1]+1},{well[2]+1}-{well[3]+1})",
+                        c=colour[i],
+                        fontweight="bold",
+                    )
+                else:
+                    plt.text(
+                        0,
+                        i,
+                        f"{i}-({well[0]+1},{well[1]+1},{well[2]+1})",
+                        c=colour[i],
+                        fontweight="bold",
+                    )
