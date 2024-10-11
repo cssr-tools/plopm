@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,18 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Examples &mdash; plopm  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -115,7 +113,8 @@ summary, init, and restart available variables given an input deck.</p>
 </pre></div>
 </div>
 <figure class="align-default">
-<a class="reference internal image-reference" href="_images/fgip.png"><img alt="_images/fgip.png" src="_images/fgip.png" style="width: 429.73px; height: 429.73px;" /></a>
+<a class="reference internal image-reference" href="_images/fgip.png"><img alt="_images/fgip.png" src="_images/fgip.png" style="width: 429.73px; height: 429.73px;" />
+</a>
 </figure>
 </section>
 <section id="generic-deck">
@@ -152,6 +151,16 @@ download the files in that folder, then by using the <strong>plopm</strong> tool
 </pre></div>
 </div>
 <img alt="_images/norne_transformed.png" src="_images/norne_transformed.png" />
+<p>To show the faults on the top layer and the ones connected all along the z direction, this can be achieved by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>faults<span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456835.5,-3474500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,6200]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,13000]&#39;</span>
+plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>faults<span class="w"> </span>-s<span class="w"> </span>,,1:22<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456835.5,-3474500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,6200]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,13000]&#39;</span>
+</pre></div>
+</div>
+<img alt="_images/norne_faults.png" src="_images/norne_faults.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For plotting the faults and wells, they must be specified in the input deck (no via include files).</p>
+</div>
 </section>
 <section id="convert-to-vtk">
 <h2>Convert to VTK<a class="headerlink" href="#convert-to-vtk" title="Link to this heading"></a></h2>
@@ -182,7 +191,8 @@ called spe11b_larger_inj. Then, to plot the summary vector for both runs we can 
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;spe11b/SPE11B spe11b_larger_inj/SPE11B&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;fgip,fgipm,RGIP:3 / 2&#39;</span><span class="w"> </span>-a<span class="w"> </span><span class="m">1</span>,1e-6<span class="w"> </span>-tunits<span class="w"> </span>w<span class="w"> </span>-d<span class="w"> </span><span class="m">10</span>,5<span class="w"> </span>-c<span class="w"> </span>r,b<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;solid,dashed&#39;</span><span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Field gas in place  Comparing the total mass  Half gas in place in fipnum 3&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">14</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">2</span>,2<span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-loc<span class="w"> </span>empty,empty,empty,center<span class="w"> </span>-save<span class="w"> </span>comparison
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/comparison.png"><img alt="_images/comparison.png" src="_images/comparison.png" style="width: 728.3399999999999px; height: 368.34px;" /></a>
+<a class="reference internal image-reference" href="_images/comparison.png"><img alt="_images/comparison.png" src="_images/comparison.png" style="width: 728.3399999999999px; height: 368.34px;" />
+</a>
 <p>Here, using subplots, we plot the gas in place, injected mass and scaled to kilo tons, the regional gas in place in fipnum 3 divided by 2, and the time is shown in weeks.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
