@@ -90,6 +90,19 @@ In order to reduce the white space outside the active cells, as well as to rotat
 
 .. image:: ./figs/norne_transformed.png
 
+To show the faults on the top layer and the ones connected all along the z direction, this can be achieved by:
+
+.. code-block:: bash
+
+    plopm -i NORNE_ATW2013 -v faults -s ,,1 -rotate 65 -translate '[6456835.5,-3474500]' -x '[0,6200]' -y '[0,13000]'
+    plopm -i NORNE_ATW2013 -v faults -s ,,1:22 -rotate 65 -translate '[6456835.5,-3474500]' -x '[0,6200]' -y '[0,13000]'
+
+.. image:: ./figs/norne_faults.png
+
+.. note::
+
+    For plotting the faults and wells, they must be specified in the input deck (no via include files).
+
 ==============
 Convert to VTK 
 ==============

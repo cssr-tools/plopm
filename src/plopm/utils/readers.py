@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R0911,R0912,R0913,R0915,R0917
+# pylint: disable=R0911,R0912,R0913,R0915,R0917,R1702
 
 """
 Utiliy functions to read the OPM Flow simulator type output files.
@@ -710,21 +710,22 @@ def get_wells(dic, n):
                 wells = True
             if nrwo == "SOURCE":
                 sources = True
-    if dic["slide"][n][0][0] > -1:
-        for i, well in enumerate(dic["wells"]):
-            for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
-                if well[0] != sld:
-                    dic["wells"][i] = []
-    elif dic["slide"][n][1][0] > -1:
-        for i, well in enumerate(dic["wells"]):
-            for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
-                if well[1] != sld:
-                    dic["wells"][i] = []
-    else:
-        for i, well in enumerate(dic["wells"]):
-            for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
-                if sld not in range(well[2], well[3] + 1):
-                    dic["wells"][i] = []
+    if dic["global"] == 0:
+        if dic["slide"][n][0][0] > -1:
+            for i, well in enumerate(dic["wells"]):
+                for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
+                    if well[0] != sld:
+                        dic["wells"][i] = []
+        elif dic["slide"][n][1][0] > -1:
+            for i, well in enumerate(dic["wells"]):
+                for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
+                    if well[1] != sld:
+                        dic["wells"][i] = []
+        else:
+            for i, well in enumerate(dic["wells"]):
+                for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
+                    if sld not in range(well[2], well[3] + 1):
+                        dic["wells"][i] = []
 
 
 def get_faults(dic, n):
@@ -766,21 +767,22 @@ def get_faults(dic, n):
             if nrwo == "FAULTS":
                 faults = True
     dic["nfaults"] = len(dic["lfaults"]) + 1
-    if dic["slide"][n][0][0] > -1:
-        for i, faults in enumerate(dic["faults"]):
-            for j, fault in enumerate(faults):
-                for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
-                    if fault[0] != sld:
-                        dic["faults"][i][j] = []
-    elif dic["slide"][n][1][0] > -1:
-        for i, faults in enumerate(dic["faults"]):
-            for j, fault in enumerate(faults):
-                for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
-                    if fault[1] != sld:
-                        dic["faults"][i][j] = []
-    else:
-        for i, faults in enumerate(dic["faults"]):
-            for j, fault in enumerate(faults):
-                for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
-                    if sld not in range(fault[2], fault[3] + 1):
-                        dic["faults"][i][j] = []
+    if dic["global"] == 0:
+        if dic["slide"][n][0][0] > -1:
+            for i, faults in enumerate(dic["faults"]):
+                for j, fault in enumerate(faults):
+                    for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
+                        if fault[0] != sld:
+                            dic["faults"][i][j] = []
+        elif dic["slide"][n][1][0] > -1:
+            for i, faults in enumerate(dic["faults"]):
+                for j, fault in enumerate(faults):
+                    for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
+                        if fault[1] != sld:
+                            dic["faults"][i][j] = []
+        else:
+            for i, faults in enumerate(dic["faults"]):
+                for j, fault in enumerate(faults):
+                    for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
+                        if sld not in range(fault[2], fault[3] + 1):
+                            dic["faults"][i][j] = []

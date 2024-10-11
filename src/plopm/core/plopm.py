@@ -143,9 +143,9 @@ def load_parser():
     parser.add_argument(
         "-d",
         "--dimensions",
-        default="8,16",
+        default="5,5",
         help="Specify the dimensions in inches of the generated png, e.g., "
-        "'5,5' ('8,16' by default).",
+        "'8,16' ('5,5' by default).",
     )
     parser.add_argument(
         "-t",
