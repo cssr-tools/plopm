@@ -543,11 +543,12 @@ def mapits(dic, t, n, k):
         minc = 1
         maxc = dic["nfaults"]
     else:
-        minc = 0
-        maxc = len(dic["wells"])
-    if dic["cnum"][n]:
-        ntick = int(dic["cnum"][n])
+        minc = 1
+        maxc = dic["nwells"]
     nlc = ntick
+    if dic["cnum"][n] and ntick > 1:
+        ntick = int(dic["cnum"][n])
+        nlc = 2
     if var.lower() in ["faults"]:
         nlc = dic["nfaults"]
     if dic["clabel"]:
@@ -562,8 +563,8 @@ def mapits(dic, t, n, k):
         or var.lower() in ["faults"]
         and dic["cmaps"][n] != "nipy_spectral"
     ):
-        if maxc == 1:
-            shc = 1
+        if maxc == minc:
+            shc = 2
         from_list = matplotlib.colors.LinearSegmentedColormap.from_list
         cmap = from_list(
             None,
@@ -643,7 +644,12 @@ def mapits(dic, t, n, k):
             ntick,
             endpoint=True,
         )
-    if var.lower() != "wells" and var.lower() != "grid" and dic["rm"][2] == 0:
+    if (
+        var.lower() != "wells"
+        and var.lower() != "faults"
+        and var.lower() != "grid"
+        and dic["rm"][2] == 0
+    ):
         if int(dic["log"][n]) == 0:
             func = "lambda x, _: f'{x:" + dic["cformat"][n] + "}'"
             if (
@@ -702,7 +708,7 @@ def mapits(dic, t, n, k):
                     label=ncolor,
                 )
     else:
-        handle_well_or_grid(dic, imag, divider, vect)
+        handle_well_or_grid_or_fault(dic, imag, divider, vect, n, var.lower())
     if dic["rm"][2] == 0:
         imag.set_clim(
             minc - shc,
@@ -859,9 +865,13 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         extra = f", sum={sum(dic[name + 'a'][~np.isnan(dic[name + 'a'])]):.3e} {unit}"
     elif dic["diff"]:
         extra = f", |sum|={dic['abssum']:.3e}"
-    elif dic["faults"]:
+    elif dic["faults"] or dic["wells"]:
+        time = ""
+        namet = f"Total no. {name} = {dic[f'n{name}']-1}"
+    elif "num" in name:
         time = ""
         namet = ""
+    elif dic["faults"] or dic["wells"] or "num" in name:
         dic["tslide"] = dic["tslide"][2:]
     if dic["subfigs"][0] and len(dic["names"][0]) > 1 and dic["titles"][k] == "0":
         dic["axis"].flat[k].set_title(dic["deckn"])
@@ -964,7 +974,7 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
             dic["axis"].flat[k].set_yticklabels(ylabels)
 
 
-def handle_well_or_grid(dic, imag, divider, vect):
+def handle_well_or_grid_or_fault(dic, imag, divider, vect, n, var):
     """
     Method to create the 2d maps using pcolormesh
 
@@ -985,45 +995,68 @@ def handle_well_or_grid(dic, imag, divider, vect):
         ticks=vect,
         format=lambda x, _: "",
     )
-    cmap = matplotlib.colormaps["nipy_spectral"]
-    colour = cmap(np.linspace(0, 1, len(dic["wells"]) + 1))
-    if len(dic["wells"]) < 20:
-        for i, well in enumerate(dic["wells"]):
-            if well:
-                if well[2] != well[3]:
+    if var in ["faults", "wells"]:
+        cmap = matplotlib.colormaps[dic["cmaps"][n]]
+        colour = cmap(np.linspace(0, 1, dic[f"n{var}"]))
+        # shi = 1
+        if dic[f"n{var}"] < 70:
+            for i, wells in enumerate(dic[f"l{var}"]):
+                well = dic[var][dic[f"l{var}"].index(wells)]
+                if well[0]:
                     plt.text(
                         0,
-                        i,
-                        f"{i}-({well[0]+1},{well[1]+1},{well[2]+1}-{well[3]+1})",
+                        i + 1,
+                        f"{wells}",
                         c=colour[i],
                         fontweight="bold",
                     )
-                else:
+                    # shi += 1
+                    # if well[0][2] != well[0][3]:
+                    #     plt.text(
+                    #         0,
+                    #         i,
+                    #         f"{wells}-({well[0][0]+1},{well[0][1]+1},
+                    # {well[0][2]+1}-{well[0][3]+1})",
+                    #         c=colour[i],
+                    #         fontweight="bold",
+                    #     )
+                    # else:
+                    #     plt.text(
+                    #         0,
+                    #         i,
+                    #         f"{wells}-({well[0][0]+1},
+                    # {well[0][1]+1},{well[0][2]+1})",
+                    #         c=colour[i],
+                    #         fontweight="bold",
+                    #     )
+        else:
+            for i, wells in zip(
+                [0, len(dic[var]) - 1], [dic[f"l{var}"][0], dic[f"l{var}"][-1]]
+            ):
+                well = dic[var][dic[f"l{var}"].index(wells)]
+                if well:
                     plt.text(
                         0,
-                        i,
-                        f"{i}-({well[0]+1},{well[1]+1},{well[2]+1})",
+                        i + 1,
+                        f"{wells}",
                         c=colour[i],
                         fontweight="bold",
                     )
-    else:
-        for i, well in zip(
-            [0, len(dic["wells"]) - 1], [dic["wells"][0], dic["wells"][-1]]
-        ):
-            if well:
-                if well[2] != well[3]:
-                    plt.text(
-                        0,
-                        i,
-                        f"{i}-({well[0]+1},{well[1]+1},{well[2]+1}-{well[3]+1})",
-                        c=colour[i],
-                        fontweight="bold",
-                    )
-                else:
-                    plt.text(
-                        0,
-                        i,
-                        f"{i}-({well[0]+1},{well[1]+1},{well[2]+1})",
-                        c=colour[i],
-                        fontweight="bold",
-                    )
+                    # if well[2] != well[3]:
+                    #     plt.text(
+                    #         0,
+                    #         i,
+                    #         f"{wells}-({well[0][0]+1},{well[0][1]+1},
+                    # {well[0][2]+1}-{well[0][3]+1})",
+                    #         c=colour[i],
+                    #         fontweight="bold",
+                    #     )
+                    # else:
+                    #     plt.text(
+                    #         0,
+                    #         i,
+                    #         f"{wells}-({well[0][0]+1},
+                    # {well[0][1]+1},{well[0][2]+1})",
+                    #         c=colour[i],
+                    #         fontweight="bold",
+                    #     )

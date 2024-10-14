@@ -90,14 +90,23 @@ In order to reduce the white space outside the active cells, as well as to rotat
 
 .. image:: ./figs/norne_transformed.png
 
-To show the faults on the top layer and the ones connected all along the z direction, this can be achieved by:
+To show all faults in the model and to only show the ones connected all along the z direction, this can be achieved by:
 
 .. code-block:: bash
 
-    plopm -i NORNE_ATW2013 -v faults -s ,,1 -rotate 65 -translate '[6456835.5,-3474500]' -x '[0,6200]' -y '[0,13000]'
-    plopm -i NORNE_ATW2013 -v faults -s ,,1:22 -rotate 65 -translate '[6456835.5,-3474500]' -x '[0,6200]' -y '[0,13000]'
+    plopm -i NORNE_ATW2013 -v faults -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 -global 1
+    plopm -i NORNE_ATW2013 -v faults -s ,,1:22 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8
 
 .. image:: ./figs/norne_faults.png
+
+To show all wells in the model and to only show the ones with at least one perforation on the top layer, this can be achieved by:
+
+.. code-block:: bash
+
+    plopm -i NORNE_ATW2013 -v wells -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 -global 1
+    plopm -i NORNE_ATW2013 -v wells -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 
+
+.. image:: ./figs/norne_wells.png
 
 .. note::
 

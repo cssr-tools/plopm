@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R1702,R0912,C0325
+# pylint: disable=R1702,R0912,C0325,R0914
 
 """
 Utiliy function for the grid and locations in the geological models.
@@ -148,7 +148,7 @@ def map_xzcoords(dic, var, quan, n):
                         val = 1
                     elif var.lower() == "wells":
                         p_v = 1
-                        val = len(dic["wells"])
+                        val = dic["nwells"]
                     elif var.lower() == "index_i":
                         p_v = 1
                         val = i
@@ -167,17 +167,40 @@ def map_xzcoords(dic, var, quan, n):
             dic[var + "a"][2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]] = (
                 np.nan if p_v == 0 else val / p_v
             )
-    for i, well in enumerate(dic["wells"]):
-        if well:
-            for k in range(well[2], well[3] + 1):
-                dic["wellsa"][2 * well[0] + 2 * (dic["nz"] - k - 1) * dic["mx"]] = i
+    for i, wells in enumerate(dic["wells"]):
+        for well in wells:
+            if well:
+                for k in range(well[2], well[3] + 1):
+                    ind = well[0] + well[1] * dic["nx"] + k * dic["nx"] * dic["ny"]
+                    if dic["global"] == 0:
+                        if dic["porv"][ind] > 0 and well[1] in range(
+                            dic["slide"][n][1][0], dic["slide"][n][1][1]
+                        ):
+                            dic["wellsa"][
+                                2 * well[0] + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = i
+                    else:
+                        if dic["porv"][ind] > 0:
+                            dic["wellsa"][
+                                2 * well[0] + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = i
     for i, faults in enumerate(dic["faults"]):
         for fault in faults:
             if fault:
                 for k in range(fault[2], fault[3] + 1):
-                    dic["faultsa"][
-                        2 * fault[0] + 2 * (dic["nz"] - k - 1) * dic["mx"]
-                    ] = (i + 1)
+                    ind = fault[0] + fault[1] * dic["nx"] + k * dic["nx"] * dic["ny"]
+                    if dic["global"] == 0:
+                        if dic["porv"][ind] > 0 and fault[1] in range(
+                            dic["slide"][n][1][0], dic["slide"][n][1][1]
+                        ):
+                            dic["faultsa"][
+                                2 * fault[0] + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = (i + 1)
+                    else:
+                        if dic["porv"][ind] > 0:
+                            dic["faultsa"][
+                                2 * fault[0] + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = (i + 1)
 
 
 def map_yzcoords(dic, var, quan, n):
@@ -205,7 +228,7 @@ def map_yzcoords(dic, var, quan, n):
                         val = 1
                     elif var.lower() == "wells":
                         p_v = 1
-                        val = len(dic["wells"])
+                        val = dic["nwells"]
                     elif var.lower() == "index_i":
                         p_v = 1
                         val = sld
@@ -224,17 +247,40 @@ def map_yzcoords(dic, var, quan, n):
             dic[var + "a"][2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]] = (
                 np.nan if p_v == 0 else val / p_v
             )
-    for i, well in enumerate(dic["wells"]):
-        if well:
-            for k in range(well[2], well[3] + 1):
-                dic["wellsa"][2 * well[1] + 2 * (dic["nz"] - k - 1) * dic["mx"]] = i
+    for i, wells in enumerate(dic["wells"]):
+        for well in wells:
+            if well:
+                for k in range(well[2], well[3] + 1):
+                    ind = well[0] + well[1] * dic["nx"] + k * dic["nx"] * dic["ny"]
+                    if dic["global"] == 0:
+                        if dic["porv"][ind] > 0 and well[0] in range(
+                            dic["slide"][n][0][0], dic["slide"][n][0][1]
+                        ):
+                            dic["wellsa"][
+                                2 * well[1] + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = (i + 1)
+                    else:
+                        if dic["porv"][ind] > 0:
+                            dic["wellsa"][
+                                2 * well[1] + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = (i + 1)
     for i, faults in enumerate(dic["faults"]):
         for fault in faults:
             if fault:
                 for k in range(fault[2], fault[3] + 1):
-                    dic["faultsa"][
-                        2 * fault[1] + 2 * (dic["nz"] - k - 1) * dic["mx"]
-                    ] = (i + 1)
+                    ind = fault[0] + fault[1] * dic["nx"] + k * dic["nx"] * dic["ny"]
+                    if dic["global"] == 0:
+                        if dic["porv"][ind] > 0 and fault[0] in range(
+                            dic["slide"][n][0][0], dic["slide"][n][0][1]
+                        ):
+                            dic["faultsa"][
+                                2 * fault[1] + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = (i + 1)
+                    else:
+                        if dic["porv"][ind] > 0:
+                            dic["faultsa"][
+                                2 * fault[1] + 2 * (dic["nz"] - k - 1) * dic["mx"]
+                            ] = (i + 1)
 
 
 def map_xycoords(dic, var, quan, n):
@@ -262,7 +308,7 @@ def map_xycoords(dic, var, quan, n):
                         val = 1
                     elif var.lower() == "wells":
                         p_v = 1
-                        val = len(dic["wells"])
+                        val = dic["nwells"]
                     elif var.lower() == "index_i":
                         p_v = 1
                         val = i
@@ -281,10 +327,33 @@ def map_xycoords(dic, var, quan, n):
             dic[var + "a"][2 * i + 2 * j * dic["mx"]] = (
                 np.nan if p_v == 0 else val / p_v
             )
-    for i, well in enumerate(dic["wells"]):
-        if well:
-            dic["wellsa"][2 * well[0] + 2 * well[1] * dic["mx"]] = i
+    for i, wells in enumerate(dic["wells"]):
+        for _, well in enumerate(wells):
+            if well:
+                for k in range(well[2], well[3] + 1):
+                    ind = well[0] + well[1] * dic["nx"] + k * dic["nx"] * dic["ny"]
+                    if dic["global"] == 0:
+                        if dic["porv"][ind] > 0 and k in range(
+                            dic["slide"][n][2][0], dic["slide"][n][2][1]
+                        ):
+                            dic["wellsa"][2 * well[0] + 2 * well[1] * dic["mx"]] = i + 1
+                    else:
+                        if dic["porv"][ind] > 0:
+                            dic["wellsa"][2 * well[0] + 2 * well[1] * dic["mx"]] = i + 1
     for i, faults in enumerate(dic["faults"]):
-        for fault in faults:
+        for _, fault in enumerate(faults):
             if fault:
-                dic["faultsa"][2 * fault[0] + 2 * fault[1] * dic["mx"]] = i + 1
+                for k in range(fault[2], fault[3] + 1):
+                    ind = fault[0] + fault[1] * dic["nx"] + k * dic["nx"] * dic["ny"]
+                    if dic["global"] == 0:
+                        if dic["porv"][ind] > 0 and k in range(
+                            dic["slide"][n][2][0], dic["slide"][n][2][1]
+                        ):
+                            dic["faultsa"][2 * fault[0] + 2 * fault[1] * dic["mx"]] = (
+                                i + 1
+                            )
+                    else:
+                        if dic["porv"][ind] > 0:
+                            dic["faultsa"][2 * fault[0] + 2 * fault[1] * dic["mx"]] = (
+                                i + 1
+                            )
