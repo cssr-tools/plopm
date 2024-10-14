@@ -98,6 +98,7 @@ def ini_dic(cmdargs):
     dic["translate"] = [var.split(",") for var in dic["translate"]]
     dic["restart"] = (cmdargs["restart"].strip()).split(",")
     dic["cbsfax"] = [float(val) for val in (cmdargs["cbsfax"].strip()).split(",")]
+    dic["nwells"], dic["lwells"] = 0, []
     for i in ["x", "y"]:
         dic[f"{i}units"] = cmdargs[f"{i}units"].strip()
         dic[f"{i}label"] = (cmdargs[f"{i}label"].strip()).split("  ")
@@ -395,7 +396,9 @@ def ini_properties(dic):
     elif dic["mask"]:
         dic["cmaps"] = ["RdGy_r"]
     if dic["vrs"]:
-        if dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults" and not dic["colors"]:
+        if (dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults") and not dic[
+            "colors"
+        ]:
             dic["units"] = [" [-]"]
             dic["cmaps"] = ["nipy_spectral"]
             dic["cformat"] = [".0f"]

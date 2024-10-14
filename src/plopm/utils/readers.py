@@ -678,6 +678,7 @@ def get_wells(dic, n):
         dic (dict): Modified global dictionary
 
     """
+    dic["lwells"] = []
     dic["wellsa"] = np.ones((dic["mx"]) * (dic["my"])) * np.nan
     dic["grida"] = np.ones((dic["mx"]) * (dic["my"])) * np.nan
     wells, sources = False, False
@@ -686,8 +687,15 @@ def get_wells(dic, n):
             nrwo = str(row)[2:-2]
             if wells:
                 if len(nrwo.split()) < 2:
-                    break
-                dic["wells"].append(
+                    if nrwo == "/":
+                        wells = False
+                    continue
+                if nrwo.split()[0] == "--" or nrwo.split()[0][:2] == "--":
+                    continue
+                if nrwo.split()[0] not in dic["lwells"]:
+                    dic["lwells"].append(str(nrwo.split()[0]))
+                    dic["wells"].append([])
+                dic["wells"][dic["lwells"].index(nrwo.split()[0])].append(
                     [
                         int(nrwo.split()[1]) - 1,
                         int(nrwo.split()[2]) - 1,
@@ -697,8 +705,15 @@ def get_wells(dic, n):
                 )
             if sources:
                 if len(nrwo.split()) < 2:
-                    break
-                dic["wells"].append(
+                    if nrwo == "/":
+                        wells = False
+                    continue
+                if nrwo.split()[0] == "--" or nrwo.split()[0][:2] == "--":
+                    continue
+                if nrwo.split()[0] not in dic["lwells"]:
+                    dic["lwells"].append(nrwo.split()[0])
+                    dic["wells"].append([])
+                dic["wells"][dic["lwells"].index(nrwo.split()[0])].append(
                     [
                         int(nrwo.split()[0]) - 1,
                         int(nrwo.split()[1]) - 1,
@@ -706,26 +721,36 @@ def get_wells(dic, n):
                         int(nrwo.split()[2]) - 1,
                     ]
                 )
-            if nrwo == "COMPDAT":
-                wells = True
-            if nrwo == "SOURCE":
-                sources = True
+            if len(nrwo.split()) < 1:
+                if nrwo == "COMPDAT":
+                    wells = True
+                if nrwo == "SOURCE":
+                    sources = True
+            else:
+                if nrwo.split()[0] == "COMPDAT":
+                    wells = True
+                if nrwo.split()[0] == "SOURCE":
+                    sources = True
+    dic["nwells"] = len(dic["lwells"]) + 1
     if dic["global"] == 0:
         if dic["slide"][n][0][0] > -1:
-            for i, well in enumerate(dic["wells"]):
-                for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
-                    if well[0] != sld:
-                        dic["wells"][i] = []
+            for i, wells in enumerate(dic["wells"]):
+                for j, well in enumerate(wells):
+                    for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
+                        if well[0] != sld:
+                            dic["wells"][i][j] = []
         elif dic["slide"][n][1][0] > -1:
-            for i, well in enumerate(dic["wells"]):
-                for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
-                    if well[1] != sld:
-                        dic["wells"][i] = []
+            for i, wells in enumerate(dic["wells"]):
+                for j, well in enumerate(wells):
+                    for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
+                        if well[1] != sld:
+                            dic["wells"][i][j] = []
         else:
-            for i, well in enumerate(dic["wells"]):
-                for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
-                    if sld not in range(well[2], well[3] + 1):
-                        dic["wells"][i] = []
+            for i, wells in enumerate(dic["wells"]):
+                for j, well in enumerate(wells):
+                    for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
+                        if sld not in range(well[2], well[3] + 1):
+                            dic["wells"][i][j] = []
 
 
 def get_faults(dic, n):
@@ -748,10 +773,10 @@ def get_faults(dic, n):
             nrwo = str(row)[2:-2]
             if faults:
                 if len(nrwo.split()) < 2:
-                    if nrwo == "/":
+                    if nrwo == "/" or "/" in nrwo:
                         break
                     continue
-                if nrwo.split()[0] == "--":
+                if nrwo.split()[0] == "--" or nrwo.split()[0][:2] == "--":
                     continue
                 if nrwo.split()[0] not in dic["lfaults"]:
                     dic["lfaults"].append(nrwo.split()[0])
@@ -764,8 +789,12 @@ def get_faults(dic, n):
                         int(nrwo.split()[6]) - 1,
                     ]
                 )
-            if nrwo == "FAULTS":
-                faults = True
+            if len(nrwo.split()) < 1:
+                if nrwo == "FAULTS":
+                    faults = True
+            else:
+                if nrwo.split()[0] == "FAULTS":
+                    faults = True
     dic["nfaults"] = len(dic["lfaults"]) + 1
     if dic["global"] == 0:
         if dic["slide"][n][0][0] > -1:
