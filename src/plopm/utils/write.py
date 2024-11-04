@@ -1002,7 +1002,7 @@ def handle_well_or_grid_or_fault(dic, imag, divider, vect, n, var):
         if dic[f"n{var}"] < 70:
             for i, wells in enumerate(dic[f"l{var}"]):
                 well = dic[var][dic[f"l{var}"].index(wells)]
-                if well[0]:
+                if any(well):
                     plt.text(
                         0,
                         i + 1,

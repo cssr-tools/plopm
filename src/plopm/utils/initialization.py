@@ -93,6 +93,7 @@ def ini_dic(cmdargs):
     dic["log"] = (cmdargs["log"].strip()).split(",")
     dic["rotate"] = (cmdargs["rotate"].strip()).split(",")
     dic["global"] = int(cmdargs["global"])
+    dic["how"] = cmdargs["how"].strip()
     dic["save"] = (cmdargs["save"].strip()).split("  ")
     dic["translate"] = (cmdargs["translate"]).split(" ")
     dic["translate"] = [var.split(",") for var in dic["translate"]]

@@ -736,21 +736,48 @@ def get_wells(dic, n):
         if dic["slide"][n][0][0] > -1:
             for i, wells in enumerate(dic["wells"]):
                 for j, well in enumerate(wells):
-                    for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
-                        if well[0] != sld:
+                    if dic["how"] == "min":
+                        count = 0
+                        for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
+                            if well[0] == sld:
+                                count = 1
+                                break
+                        if count == 0:
                             dic["wells"][i][j] = []
+                    else:
+                        for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
+                            if well[0] != sld:
+                                dic["wells"][i][j] = []
         elif dic["slide"][n][1][0] > -1:
             for i, wells in enumerate(dic["wells"]):
                 for j, well in enumerate(wells):
-                    for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
-                        if well[1] != sld:
+                    if dic["how"] == "min":
+                        count = 0
+                        for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
+                            if well[1] == sld:
+                                count = 1
+                                break
+                        if count == 0:
                             dic["wells"][i][j] = []
+                    else:
+                        for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
+                            if well[1] != sld:
+                                dic["wells"][i][j] = []
         else:
             for i, wells in enumerate(dic["wells"]):
                 for j, well in enumerate(wells):
-                    for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
-                        if sld not in range(well[2], well[3] + 1):
+                    if dic["how"] == "min":
+                        count = 0
+                        for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
+                            if sld in range(well[2], well[3] + 1):
+                                count = 1
+                                break
+                        if count == 0:
                             dic["wells"][i][j] = []
+                    else:
+                        for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
+                            if sld not in range(well[2], well[3] + 1):
+                                dic["wells"][i][j] = []
 
 
 def get_faults(dic, n):
@@ -800,18 +827,45 @@ def get_faults(dic, n):
         if dic["slide"][n][0][0] > -1:
             for i, faults in enumerate(dic["faults"]):
                 for j, fault in enumerate(faults):
-                    for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
-                        if fault[0] != sld:
+                    if dic["how"] == "min":
+                        count = 0
+                        for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
+                            if fault[0] == sld:
+                                count = 1
+                                break
+                        if count == 0:
                             dic["faults"][i][j] = []
+                    else:
+                        for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
+                            if fault[0] != sld:
+                                dic["faults"][i][j] = []
         elif dic["slide"][n][1][0] > -1:
             for i, faults in enumerate(dic["faults"]):
                 for j, fault in enumerate(faults):
-                    for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
-                        if fault[1] != sld:
+                    if dic["how"] == "min":
+                        count = 0
+                        for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
+                            if fault[1] == sld:
+                                count = 1
+                                break
+                        if count == 0:
                             dic["faults"][i][j] = []
+                    else:
+                        for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
+                            if fault[1] != sld:
+                                dic["faults"][i][j] = []
         else:
             for i, faults in enumerate(dic["faults"]):
                 for j, fault in enumerate(faults):
-                    for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
-                        if sld not in range(fault[2], fault[3] + 1):
+                    if dic["how"] == "min":
+                        count = 0
+                        for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
+                            if sld in range(fault[2], fault[3] + 1):
+                                count = 1
+                                break
+                        if count == 0:
                             dic["faults"][i][j] = []
+                    else:
+                        for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
+                            if sld not in range(fault[2], fault[3] + 1):
+                                dic["faults"][i][j] = []
