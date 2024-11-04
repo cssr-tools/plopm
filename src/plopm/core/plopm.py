@@ -324,6 +324,14 @@ def load_parser():
         " (0) or whole 3D model '1' ('0' by default).",
     )
     parser.add_argument(
+        "-how",
+        "--how",
+        default="min",
+        help="Show the cells for the wells/faults when at least one cell contains them "
+        "('min') or when all cells are part of the given slide/slides range ('max') "
+        "('min' by default).",
+    )
+    parser.add_argument(
         "-ncolor",
         "--ncolor",
         default="w",

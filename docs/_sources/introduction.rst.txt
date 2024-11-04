@@ -72,6 +72,7 @@ where
 -rotate     Grades to rotate the grid in the 2D maps ('0' by default).
 -translate  Translate the grid in the 2D maps x,y directions ('[0,0]' by default).
 -global     Min and max in the colorbars from the current 2D slide values (0) or whole 3D model '1' ('0' by default).
+-how        Show the cells for the wells/faults when at least one cell contains them ('min') or when all cells are part of the given slides range ('max') ('min' by default).
 -ncolor     Color for the inactive cells in the 2D maps ('w' by default, i.e., white).
 -lw         Line width separated by commas if more than one ('1' by default).
 -subfigs    Generate separated or a single Figure (e.g., '2,2' for four subfigures) ('' by default, i.e., separate figures).
