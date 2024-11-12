@@ -326,7 +326,8 @@ def is_summary(dic):
             print(summary)
             sys.exit()
         for name in dic["vrs"]:
-            if name.upper() in summary + dic["smass"]:
+            names = name.split(" ")
+            if names[0].upper() in summary + dic["smass"]:
                 return True
     if dic["printv"] == 1:
         sys.exit()
