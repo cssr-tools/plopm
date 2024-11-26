@@ -51,21 +51,25 @@ def make_summary(dic):
             k = 0
         dic["axis"].flat[k].grid(int(dic["axgrid"][j]))
         for i, name in enumerate(dic["names"][j]):
+            jj = j
+            if len(dic["vrs"]) == len(dic["names"][0]) and not dic["subfigs"][0]:
+                jj = i
+                quan = dic["vrs"][i]
             time, var, tunit, vunit = read_summary(
-                dic, name, quan, dic["tunits"][j], float(dic["avar"][j])
+                dic, name, quan, dic["tunits"][jj], float(dic["avar"][jj])
             )
             label = name
             if len(name.split("/")) > 1:
                 label = name.split("/")[-2] + "/" + name.split("/")[-1]
             if dic["labels"][0][0]:
-                label = dic["labels"][j][i]
+                label = dic["labels"][jj][i]
             dic["axis"].flat[k].step(
                 time,
                 var,
-                color=dic["colors"][j][i],
-                ls=dic["linestyle"][j][i],
+                color=dic["colors"][jj][i],
+                ls=dic["linestyle"][jj][i],
                 label=label,
-                lw=float(dic["lw"][j][i]),
+                lw=float(dic["lw"][jj][i]),
             )
             if i == 0:
                 min_t, min_v = min(time), min(var)
@@ -142,7 +146,16 @@ def make_summary(dic):
             dic["axis"].flat[k].tick_params(
                 axis="x", which="both", bottom=False, labelbottom=False
             )
-        if not dic["subfigs"][0] or j == len(dic["vrs"]) - 1:
+        if len(dic["vrs"]) == len(dic["names"][0]) and not dic["subfigs"][0]:
+            dic["fig"].savefig(
+                f"{dic['output']}/{dic['save'][j] if dic['save'][j] else quan}.png",
+                bbox_inches="tight",
+                dpi=int(dic["dpi"][j]),
+            )
+            sys.exit()
+        elif (
+            not dic["subfigs"][0] and len(dic["vrs"]) != len(dic["names"][0])
+        ) or j == len(dic["vrs"]) - 1:
             if (
                 len(dic["loc"]) == j + 2
                 and j != 0
@@ -265,9 +278,11 @@ def make_maps(dic):
             repeat=False,
         )
         if dic["loop"] == 0:
-            im_ani.save(f"{dic['vrs'][0]}.gif", extra_args=["-loop", "-1"])
+            im_ani.save(
+                f"{dic['output']}/{dic['vrs'][0]}.gif", extra_args=["-loop", "-1"]
+            )
         else:
-            im_ani.save(f"{dic['vrs'][0]}.gif")
+            im_ani.save(f"{dic['output']}/{dic['vrs'][0]}.gif")
     elif dic["subfigs"][0] and dic["mode"] == "gif" and len(dic["vrs"]) > 1:
         find_min_max(dic)
         if len(dic["restart"]) > 1:
@@ -294,9 +309,11 @@ def make_maps(dic):
             repeat=False,
         )
         if dic["loop"] == 0:
-            im_ani.save(f"{dic['deckn']}.gif", extra_args=["-loop", "-1"])
+            im_ani.save(
+                f"{dic['output']}/{dic['deckn']}.gif", extra_args=["-loop", "-1"]
+            )
         else:
-            im_ani.save(f"{dic['deckn']}.gif")
+            im_ani.save(f"{dic['output']}/{dic['deckn']}.gif")
     else:
         find_min_max(dic)
         dic["deck"] = dic["names"][0][0]
@@ -333,9 +350,12 @@ def make_maps(dic):
                     repeat=False,
                 )
                 if dic["loop"] == 0:
-                    im_ani.save(f"{dic['deckn']}_{var}.gif", extra_args=["-loop", "-1"])
+                    im_ani.save(
+                        f"{dic['output']}/{dic['deckn']}_{var}.gif",
+                        extra_args=["-loop", "-1"],
+                    )
                 else:
-                    im_ani.save(f"{dic['deckn']}_{var}.gif")
+                    im_ani.save(f"{dic['output']}/{dic['deckn']}_{var}.gif")
             else:
                 if len(dic["names"][0]) > 1:
                     for l in range(len(dic["axis"].flat) - len(dic["names"][0])):

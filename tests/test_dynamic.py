@@ -1,20 +1,24 @@
 """Test the default settings"""
 
 import os
+import pathlib
 import subprocess
+
+dirname: pathlib.Path = pathlib.Path(__file__).parents[1]
 
 
 def test_dynamic():
-    """See examples/SPE11B"""
-    cwd = os.getcwd()
-    os.chdir(f"{os.getcwd()}/examples")
+    """See examples/SPE11B files"""
+    os.chdir(f"{dirname}/examples")
     subprocess.run(
         [
             "plopm",
+            "-remove",
+            "0,0,0,1",
             "-i",
             "SPE11B",
             "-o",
-            ".",
+            "output",
             "-v",
             "sgas",
             "-s",
@@ -25,10 +29,9 @@ def test_dynamic():
             "gas saturation [-]",
             "-f",
             "8",
-            "-remove",
-            "0,0,0,1",
+            "-warnings",
+            "1",
         ],
         check=True,
     )
-    assert os.path.exists(f"{cwd}/examples/spe11b_sgas_*,1,*_t5.png")
-    os.chdir(cwd)
+    assert os.path.exists(f"{dirname}/examples/output/spe11b_sgas_*,1,*_t5.png")

@@ -17,10 +17,10 @@ To install the _plopm_ executable in an existing Python environment:
 pip install git+https://github.com/cssr-tools/plopm.git
 ```
 
-If you are interested in modifying the source code, then you can clone the repository and install the Python requirements in a virtual environment with the following commands:
+If you are interested in a specific version (e.g., v2024.10) or in modifying the source code, then you can clone the repository and install the Python requirements in a virtual environment with the following commands:
 
 ```bash
-# Clone the repo
+# Clone the repo (to get a specifc version, add the flag --branch, e.g., --branch v2024.10)
 git clone https://github.com/cssr-tools/plopm.git
 # Get inside the folder
 cd plopm
@@ -36,7 +36,7 @@ pip install -e .
 pip install -r dev-requirements.txt
 ``` 
 
-To use the conversion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) to VTK (e.g, to use [_paraview_](https://www.paraview.org) for visualization/postprocessing), [_OPM Flow_](https://opm-project.org) is needed. Then see the [_installation_](https://cssr-tools.github.io/plopm/installation.html) for further details on installing binaries or building OPM Flow from the master branches in Linux, Windows, and macOS, as well as the opm Python package.
+To use the conversion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) to VTK (e.g, to use [_paraview_](https://www.paraview.org) for visualization/postprocessing), [_OPM Flow_](https://opm-project.org) is needed. See the [_installation_](https://cssr-tools.github.io/plopm/installation.html) for further details on installing binaries or building OPM Flow from the master branches in Linux, Windows, and macOS, as well as the opm Python package and LaTeX dependencies. 
 
 ## Running plopm
 You can run _plopm_ as a single command line:
@@ -51,7 +51,7 @@ See the [_examples_](https://cssr-tools.github.io/plopm/examples.html) in the [_
 ## Citing
 If you would like to cite this repository:
 
-* Landa-Marbán, D. 2024. plopm: Quick generation of PNGs, GIFs, and VTKs from a OPM Flow type model. V2024.04. https://doi.org/10.5281/zenodo.13332415.
+* Landa-Marbán, D. 2024. plopm: Quick generation of PNGs, GIFs, and VTKs from a OPM Flow type model. v2024.04. https://doi.org/10.5281/zenodo.13332415.
 
 ## About plopm
 The _plopm_ package is being funded by the [_HPC Simulation Software for the Gigatonne Storage Challenge project_](https://www.norceresearch.no/en/projects/hpc-simulation-software-for-the-gigatonne-storage-challenge) [project number 622059] and [_Center for Sustainable Subsurface Resources (CSSR)_](https://cssr.no) 

@@ -7,7 +7,7 @@ name = "plopm"
 description = "Simplified and flexible framework for plotting OPM Flow geological models"
 authors = [{ name = "David Landa-Marbán", email = "dmar@norceresearch.no" }]
 maintainers = [{ name = "David Landa-Marbán", email = "dmar@norceresearch.no" }]
-version = "2024.04"
+dynamic = ["version"]
 readme = {file = "README.md", content-type = "text/markdown"}
 license = {text = "GPL-3.0"}
 keywords = ["opm", "flow", "egrid", "corner-point", "geosciences", "paraview", "vtk"]
@@ -30,6 +30,9 @@ dependencies = [
     "resdata"
 ]
 requires-python = ">=3.8"
+
+[tool.setuptools.dynamic]
+version = {attr = "plopm.__version__"}
 
 [project.scripts]
 plopm = "plopm.core.plopm:main"

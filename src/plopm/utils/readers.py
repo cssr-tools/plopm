@@ -11,18 +11,15 @@ import csv
 import sys
 import datetime
 import numpy as np
+from resdata.resfile import ResdataFile
+from resdata.grid import Grid
+from resdata.summary import Summary
 from plopm.utils.initialization import initialize_mass
 
 try:
     from opm.io.ecl import EclFile as OpmFile
     from opm.io.ecl import EGrid as OpmGrid
     from opm.io.ecl import ESmry as OpmSummary
-except ImportError:
-    pass
-try:
-    from resdata.resfile import ResdataFile
-    from resdata.summary import Summary
-    from resdata.grid import Grid
 except ImportError:
     pass
 

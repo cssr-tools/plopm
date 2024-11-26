@@ -2,21 +2,24 @@
 Installation
 ============
 
+The following steps work installing the dependencies in Linux via apt-get or in macOS using brew or macports.
+While using packages managers such as Anaconda, Miniforge, or Mamba might work, these are not tested.
+
 Python package
 --------------
 
-To install the **plopm** executable in an existing Python environment: 
+To install the **plopm** executable from the development version in an existing Python environment: 
 
 .. code-block:: bash
 
     pip install git+https://github.com/cssr-tools/plopm.git
 
-If you are interested in modifying the source code, then you can clone the repository and 
+If you are interested in a specific version (e.g., v2024.10) or in modifying the source code, then you can clone the repository and 
 install the Python requirements in a virtual environment with the following commands:
 
 .. code-block:: console
 
-    # Clone the repo
+    # Clone the repo (to get a specifc version, add the flag --branch, e.g., --branch v2024.10)
     git clone https://github.com/cssr-tools/plopm.git
     # Get inside the folder
     cd plopm
@@ -33,20 +36,28 @@ install the Python requirements in a virtual environment with the following comm
 
 .. note::
 
-    For not macOS users, to install the Python opm package, execute in the terminal **pip install opm**.
-    In addition, to install the dependencies used for the figure's formatting, execute **sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super**.
-    For macOS, see :ref:`macOS`.
+    For not macOS users, to install the Python opm package (this is an alternative
+    to `resdata <https://github.com/equinor/resdata>`_, both are use to read OPM output files; while resdata is easier to
+    install in macOS, opm seems to be faster), execute in the terminal
+
+    **pip install opm**
+
+    For not macOS users, to install the dependencies used for the figure's LaTeX formatting, execute 
+    
+    **sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super**
+
+    For macOS users, see :ref:`macOS`.
 
 OPM Flow
 --------
 To use the convertion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) to vtk, you also need to install:
 
-* OPM Flow (https://opm-project.org, Release 2024.04 or current master branches)
+* OPM Flow (https://opm-project.org, Release 2024.10 or current master branches)
 
 .. tip::
 
     See the `CI.yml <https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml>`_ script 
-    for installation of OPM Flow (binary packages) and the plopm package in Linux. 
+    for installation of OPM Flow (binary packages) and the plopm package in Ubuntu. 
 
 Source build in Linux/Windows
 +++++++++++++++++++++++++++++
@@ -136,5 +147,7 @@ package (see the `prerequisites <https://opm-project.org/?page_id=239>`_, which 
 This builds OPM Flow as well as the opm Python package, and it exports the required PYTHONPATH. Then after execution, deactivate and activate the Python virtual environment.
 
 Regarding the resdata Python package, it might not be available depending on the Python version (e.g., it is not found using Python 3.9, but it is installed using Python 3.10).
-Then, it is recommended to use a Python version equal or higher than 3.10; otherwise, remove resdata from the requirements in the `pyproject.toml <https://github.com/cssr-tools/plopm/blob/main/pyproject.toml>`_,
-and set the flag to use the opm Python package (see the :ref:`overview`).
+Then, for macOS users, you need to use a Python version equal or higher than 3.10.
+
+For macOS, the LaTeX dependency can be installed from https://www.tug.org/mactex/. If after installation you still face an error due to LaTeX 
+when executing plopm, then  add the flag **-latex 0** to plopm.

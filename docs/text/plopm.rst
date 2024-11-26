@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    plopm.core
+   plopm.utils
 
 Module contents
 ---------------

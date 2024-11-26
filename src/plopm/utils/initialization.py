@@ -10,17 +10,14 @@ import os
 import sys
 import matplotlib
 import matplotlib.pyplot as plt
+from resdata.resfile import ResdataFile
+from resdata.summary import Summary
 
 try:
     from opm.io.ecl import EclFile as OpmFile
     from opm.io.ecl import ESmry as OpmSummary
 except ImportError:
-    print("The Python package opm was not found, using resdata")
-try:
-    from resdata.resfile import ResdataFile
-    from resdata.summary import Summary
-except ImportError:
-    print("The resdata Python package was not found, using opm")
+    pass
 
 
 def ini_dic(cmdargs):
@@ -93,6 +90,7 @@ def ini_dic(cmdargs):
     dic["log"] = (cmdargs["log"].strip()).split(",")
     dic["rotate"] = (cmdargs["rotate"].strip()).split(",")
     dic["global"] = int(cmdargs["global"])
+    dic["latex"] = int(cmdargs["latex"])
     dic["how"] = cmdargs["how"].strip()
     dic["save"] = (cmdargs["save"].strip()).split("  ")
     dic["translate"] = (cmdargs["translate"]).split(" ")
@@ -182,7 +180,7 @@ def ini_dic(cmdargs):
     matplotlib.rc("font", **font)
     plt.rcParams.update(
         {
-            "text.usetex": True,
+            "text.usetex": dic["latex"],
             "font.family": "monospace",
             "legend.columnspacing": 0.9,
             "legend.handlelength": 3.5,
