@@ -20,10 +20,12 @@ pip install git+https://github.com/cssr-tools/plopm.git
 If you are interested in a specific version (e.g., v2024.10) or in modifying the source code, then you can clone the repository and install the Python requirements in a virtual environment with the following commands:
 
 ```bash
-# Clone the repo (to get a specifc version, add the flag --branch, e.g., --branch v2024.10)
+# Clone the repo
 git clone https://github.com/cssr-tools/plopm.git
 # Get inside the folder
 cd plopm
+# For a specific version (e.g., v2024.10); otherwhise (i.e., latest version), skip this step
+git checkout v2024.10
 # Create virtual environment (for macOS, use a Python version >= 3.10)
 python3 -m venv vplopm
 # Activate virtual environment
