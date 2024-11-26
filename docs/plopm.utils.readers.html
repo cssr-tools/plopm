@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>plopm.utils.readers module &mdash; plopm  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="plopm.utils.vtk module" href="plopm.utils.vtk.html" />
+    <link rel="prev" title="plopm.utils.mapping module" href="plopm.utils.mapping.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #aaaaaa" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/troll_faults.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">plopm Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About plopm</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #aaaaaa" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">plopm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api.html">plopm Python API</a></li>
+          <li class="breadcrumb-item"><a href="plopm.html">plopm package</a></li>
+          <li class="breadcrumb-item"><a href="plopm.utils.html">plopm.utils package</a></li>
+      <li class="breadcrumb-item active">plopm.utils.readers module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/plopm.utils.readers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-plopm.utils.readers">
+<span id="plopm-utils-readers-module"></span><h1>plopm.utils.readers module<a class="headerlink" href="#module-plopm.utils.readers" title="Link to this heading"></a></h1>
+<p>Utiliy functions to read the OPM Flow simulator type output files.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_faults">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_faults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_faults" title="Link to this definition"></a></dt>
+<dd><p>Using the input deck (.DATA) to read the i,j fault locations</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_quantity">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_quantity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_quantity" title="Link to this definition"></a></dt>
+<dd><p>Compute the mass (intensive quantities).</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>name (str): Name of the variable</p>
+<p>skl (float): Scaling for the mass quantity</p>
+<p>nrst (int): Number of restart step</p>
+</dd>
+<dt>Returns:</dt><dd><p>unit (str): Corresponding physical unit</p>
+<p>quan (array): Floats with the requested quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_readers">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_readers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_readers" title="Link to this definition"></a></dt>
+<dd><p>Load the opm/resdata methods</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_unit">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_unit" title="Link to this definition"></a></dt>
+<dd><p>Get the variable unit</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>name (str): Variable</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_wells">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_wells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_wells" title="Link to this definition"></a></dt>
+<dd><p>Using the input deck (.DATA) to read the i,j well locations</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_xycoords_opm">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_xycoords_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_xycoords_opm" title="Link to this definition"></a></dt>
+<dd><p>Handle the coordinates from the OPM Grid to the 2D xy-mesh using opm</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_xycoords_resdata">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_xycoords_resdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_xycoords_resdata" title="Link to this definition"></a></dt>
+<dd><p>Handle the coordinates from the OPM Grid to the 2D xy-mesh using resdata</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_xzcoords_opm">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_xzcoords_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_xzcoords_opm" title="Link to this definition"></a></dt>
+<dd><p>Handle the coordinates from the OPM Grid to the 2D xz-mesh using opm</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_xzcoords_resdata">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_xzcoords_resdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_xzcoords_resdata" title="Link to this definition"></a></dt>
+<dd><p>Handle the coordinates from the OPM Grid to the 2D xz-mesh using resdata</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_yzcoords_opm">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_yzcoords_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_yzcoords_opm" title="Link to this definition"></a></dt>
+<dd><p>Handle the coordinates from the OPM Grid to the 2D yz-mesh using opm</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_yzcoords_resdata">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_yzcoords_resdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_yzcoords_resdata" title="Link to this definition"></a></dt>
+<dd><p>Handle the coordinates from the OPM Grid to the 2D yz-mesh using resdata</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.handle_mass">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">handle_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.handle_mass" title="Link to this definition"></a></dt>
+<dd><p>Compute the mass (intensive quantities).</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>name (str): Name of the variable for the mass spatial map</p>
+<p>nrst (int): Number of restart step</p>
+</dd>
+<dt>Returns:</dt><dd><p>mass (array): Floats with the computed mass</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.initialize_time">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">initialize_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.initialize_time" title="Link to this definition"></a></dt>
+<dd><p>Handle the time units for the x axis in the summary</p>
+<dl>
+<dt>Args:</dt><dd><p>times (str): Type for the time to plot</p>
+</dd>
+<dt>Returns:</dt><dd><p>scale (float): Scale for the times</p>
+<p>unit (str): Units for the x label</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.operate">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">operate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quan1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oper</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.operate" title="Link to this definition"></a></dt>
+<dd><p>Applied the requested operation</p>
+<dl>
+<dt>Args:</dt><dd><p>var (array): Floats with the current values</p>
+<p>quan1 (array): Value(s) to operate</p>
+<p>i (int): Index of the operator</p>
+<p>oper (list): Input operators</p>
+</dd>
+<dt>Returns:</dt><dd><p>var (array): Modified values after applying the operator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.read_summary">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">read_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qskl</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.read_summary" title="Link to this definition"></a></dt>
+<dd><p>Handle the summary vectors</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.type_of_mass">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">type_of_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2o_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2o_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l_co2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_g_h2o</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.type_of_mass" title="Link to this definition"></a></dt>
+<dd><p>From the given variable return the associated mass</p>
+<dl>
+<dt>Args:</dt><dd><p>name (str): Name of the variable for the mass spatial map</p>
+<p>co2_g: Mass of CO2 in the gas phase</p>
+<p>co2_d: Mass of CO2 in the liquid phase</p>
+<p>h2o_l: Mass of H2O in the liquid phase</p>
+<p>h2o_v: Mass of H2O in the gas phase</p>
+</dd>
+<dt>Returns:</dt><dd><p>mass (array): Floats with the computed mass</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="plopm.utils.mapping.html" class="btn btn-neutral float-left" title="plopm.utils.mapping module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plopm.utils.vtk.html" class="btn btn-neutral float-right" title="plopm.utils.vtk module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, NORCE Norwegian Research Centre AS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

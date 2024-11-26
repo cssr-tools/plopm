@@ -7,6 +7,7 @@ Script to plot 2D maps of OPM Flow geological models.
 """
 
 import argparse
+import warnings
 from plopm.utils.initialization import (
     ini_dic,
     ini_properties,
@@ -20,6 +21,8 @@ from plopm.utils.write import make_summary, make_maps
 def plopm():
     """Main function for the plopm executable"""
     cmdargs = load_parser()
+    if int(cmdargs["warnings"]) == 0:
+        warnings.warn = lambda *args, **kwargs: None
     dic = ini_dic(cmdargs)
     if dic["mode"] == "vtk":
         make_vtks(dic)
@@ -440,6 +443,18 @@ def load_parser():
         "--loop",
         default=0,
         help="Set to 1 for infinity loop in the GIF ('0' by default).",
+    )
+    parser.add_argument(
+        "-warnings",
+        "--warnings",
+        default=0,
+        help="Set to 1 to print warnings ('0' by default).",
+    )
+    parser.add_argument(
+        "-latex",
+        "--latex",
+        default=1,
+        help="Set to 0 to not use LaTeX formatting ('1' by default).",
     )
     return vars(parser.parse_known_args()[0])
 

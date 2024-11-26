@@ -1,16 +1,29 @@
 """Test the difference functionality"""
 
 import os
+import pathlib
 import subprocess
+
+dirname: pathlib.Path = pathlib.Path(__file__).parents[1]
 
 
 def test_difference():
     """See examples/SPE11B"""
-    cwd = os.getcwd()
-    os.chdir(f"{os.getcwd()}/examples")
+    os.chdir(f"{dirname}/examples")
     subprocess.run(
-        ["plopm", "-i", "SPE11B", "-o", ".", "-v", "rsw", "-diff", "SPE11B"],
+        [
+            "plopm",
+            "-o",
+            "output",
+            "-i",
+            "SPE11B",
+            "-v",
+            "rsw",
+            "-diff",
+            "SPE11B",
+            "-warnings",
+            "1",
+        ],
         check=True,
     )
-    assert os.path.exists(f"{cwd}/examples/spe11b_rsw_*,1,*_t5.png")
-    os.chdir(cwd)
+    assert os.path.exists(f"{dirname}/examples/output/spe11b_rsw_*,1,*_t5.png")

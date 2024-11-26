@@ -10,6 +10,7 @@ Welcome to plopm's documentation!
    installation
    examples
    api
+   contributing
    related
    about
 

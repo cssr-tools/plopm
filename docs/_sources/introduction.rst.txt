@@ -90,6 +90,8 @@ where
 -maskthr    Set the threshold for the variable to mask " "('1e-3' by default).
 -interval   Time for the frames in the GIF in milli second ('1000' by default).
 -loop       Set to 1 for infinity loop in the GIF ('0' by default).
+-warnings   Set to 1 to print warnings ('0' by default).
+-latex      Set to 0 to not use LaTeX formatting ('1' by default).
  
 .. tip::
 

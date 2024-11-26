@@ -1,13 +1,15 @@
 """Test the mask, gid, and subplot functionality"""
 
 import os
+import pathlib
 import subprocess
+
+dirname: pathlib.Path = pathlib.Path(__file__).parents[1]
 
 
 def test_difference():
     """See examples/SPE11B"""
-    cwd = os.getcwd()
-    os.chdir(f"{os.getcwd()}/examples")
+    os.chdir(f"{dirname}/examples")
     subprocess.run(
         [
             "plopm",
@@ -21,14 +23,17 @@ def test_difference():
             "satnum",
             "-r",
             "0,5",
+            "-warnings",
+            "1",
             "-interval",
             "1000",
             "-loop",
             "1",
             "-d",
             "8,5",
+            "-o",
+            "output",
         ],
         check=True,
     )
-    assert os.path.exists(f"{cwd}/examples/spe11b_xco2l.gif")
-    os.chdir(cwd)
+    assert os.path.exists(f"{dirname}/examples/output/spe11b_xco2l.gif")

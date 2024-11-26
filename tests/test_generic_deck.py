@@ -4,15 +4,17 @@
 """Test the plopm generic functionality"""
 
 import os
+import pathlib
 import subprocess
+
+dirname: pathlib.Path = pathlib.Path(__file__).parent
 
 
 def test_generic_deck():
     """plopm application given an input deck"""
-    cwd = os.getcwd()
-    os.chdir(f"{cwd}/tests")
+    os.chdir(dirname)
     os.system("mkdir generic_deck")
-    os.chdir(f"{cwd}/tests/generic_deck")
+    os.chdir(f"{dirname}/generic_deck")
     for name in ["PERM", "PHI", "TOPS"]:
         subprocess.run(
             [
@@ -56,10 +58,11 @@ def test_generic_deck():
                 "resdata",
                 "-log",
                 logs,
+                "-warnings",
+                "1",
             ],
             check=True,
         )
         assert os.path.exists(
-            f"{cwd}/tests/generic_deck/spe10_model2_{name}_{nslide}_t0.png"
+            f"{dirname}/generic_deck/spe10_model2_{name}_{nslide}_t0.png"
         )
-    os.chdir(cwd)
