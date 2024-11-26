@@ -23,7 +23,7 @@ install the Python requirements in a virtual environment with the following comm
     git clone https://github.com/cssr-tools/plopm.git
     # Get inside the folder
     cd plopm
-    # For a specific version (e.g., v2024.10); otherwhise (i.e., latest version), skip this step
+    # For a specific version (e.g., v2024.10), or else skip this step (i.e., edge version)
     git checkout v2024.10
     # Create virtual environment
     python3 -m venv vplopm
