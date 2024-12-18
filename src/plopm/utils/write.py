@@ -417,6 +417,8 @@ def find_min_max(dic):
                     map_xycoords(dic, var, quan, n)
                 if dic["diff"]:
                     dic[var + "a"] -= dic["diffa"][t]
+                if int(dic["log"][m]) == 1:
+                    dic[var + "a"][dic[var + "a"] <= 0] = np.nan
                 dic["minc"][-2] = min(
                     dic["minc"][-2], dic[var + "a"][~np.isnan(dic[var + "a"])].min()
                 )
@@ -537,7 +539,7 @@ def mapits(dic, t, n, k):
         ):
             minc = dic["minc"][n]
             maxc = dic["maxc"][n]
-        elif dic["mode"] == "gif" and not dic["subfigs"][0]:
+        elif dic["mode"] == "gif" and not dic["subfigs"][0] or int(dic["log"][n]) == 1:
             minc = dic["minc"][n]
             maxc = dic["maxc"][n]
         elif dic["global"] == 0:
@@ -549,7 +551,7 @@ def mapits(dic, t, n, k):
         if dic["bounds"][n][0]:
             minc = float(dic["bounds"][n][0][1:])
             maxc = float(dic["bounds"][n][1][:-1])
-        elif dic["diff"]:
+        elif dic["diff"] and int(dic["log"][n]) == 0:
             minmax = max(abs(maxc), abs(minc))
             minc = -minmax
             maxc = minmax
@@ -706,12 +708,6 @@ def mapits(dic, t, n, k):
                     location="top",
                 )
         else:
-            if minc == 0:
-                print(
-                    f"It is not possible to plot {var} in log scale"
-                    " since there are 0 values. Try without log."
-                )
-                sys.exit()
             if dic["subfigs"][0]:
                 dic["cb"][k] = dic["fig"].colorbar(
                     imag,
@@ -947,8 +943,8 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
             [float(dic["xlim"][n][0][1:]), float(dic["xlim"][n][1][:-1])]
         )
         xlabels = np.linspace(
-            float(dic["xlim"][n][0][1:]),
-            float(dic["xlim"][n][1][:-1]),
+            float(dic["xlim"][n][0][1:]) * dic["xskl"],
+            float(dic["xlim"][n][1][:-1]) * dic["xskl"],
             int(dic["xlnum"][n]),
         )
     else:
@@ -972,8 +968,8 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
             [float(dic["ylim"][n][0][1:]), float(dic["ylim"][n][1][:-1])]
         )
         ylabels = np.linspace(
-            float(dic["ylim"][n][0][1:]),
-            float(dic["ylim"][n][1][:-1]),
+            float(dic["ylim"][n][0][1:]) * dic["yskl"],
+            float(dic["ylim"][n][1][:-1]) * dic["yskl"],
             int(dic["ylnum"][n]),
         )
     else:

@@ -91,13 +91,13 @@ def ini_dic(cmdargs):
     dic["rotate"] = (cmdargs["rotate"].strip()).split(",")
     dic["global"] = int(cmdargs["global"])
     dic["latex"] = int(cmdargs["latex"])
-    dic["how"] = cmdargs["how"].strip()
     dic["save"] = (cmdargs["save"].strip()).split("  ")
     dic["translate"] = (cmdargs["translate"]).split(" ")
     dic["translate"] = [var.split(",") for var in dic["translate"]]
     dic["restart"] = (cmdargs["restart"].strip()).split(",")
     dic["cbsfax"] = [float(val) for val in (cmdargs["cbsfax"].strip()).split(",")]
     dic["nwells"], dic["lwells"] = 0, []
+    dic["how"] = (cmdargs["how"].strip()).split(",")
     for i in ["x", "y"]:
         dic[f"{i}units"] = cmdargs[f"{i}units"].strip()
         dic[f"{i}label"] = (cmdargs[f"{i}label"].strip()).split("  ")
@@ -212,6 +212,10 @@ def ini_dic(cmdargs):
         dic["slide"] = [dic["slide"][0]] * 2
     elif len(dic["slide"]) < max(len(dic["names"][0]), len(dic["vrs"])):
         dic["slide"] = [dic["slide"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
+    if len(dic["how"]) < max(len(dic["names"][0]), len(dic["vrs"])):
+        dic["how"] = [dic["how"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
+    if dic["diff"]:
+        dic["how"] = [dic["how"][0]] * 2
     for val in [
         "xformat",
         "yformat",
@@ -395,6 +399,16 @@ def ini_properties(dic):
         dic["cmaps"] = ["RdYlGn"]
     elif dic["mask"]:
         dic["cmaps"] = ["RdGy_r"]
+    if dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults":
+        if dic["how"][0]:
+            if dic["how"][0] not in ["min", "max"]:
+                print(f"Unsuported value -how '{dic['how'][0]}' for wells/faults. ")
+                print("Supported values are 'min' and 'max'.")
+                sys.exit()
+            else:
+                dic["whow"] = dic["how"][0]
+        else:
+            dic["whow"] = "min"
     if dic["vrs"]:
         if (dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults") and not dic[
             "colors"

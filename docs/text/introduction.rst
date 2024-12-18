@@ -59,7 +59,7 @@ where
 -clabel     Text for the colorbar ('' by default, i.e., set by plopm).
 -labels     Legend in the summary plot, separated by commas if more than one ('' by default, i.e., set by plopm).
 -axgrid     Set axis.grid to True for the summary plots ('1' by default).
--dpi        Dots per inch for the figure ('1200' by default).
+-dpi        Dots per inch for the figure ('500' by default).
 -xformat    Format for the x numbers, e.g., .2e for exponential notation ('' by default, i.e., set by plopm).
 -yformat    Format for the y numbers, e.g., .1f for one decimal ('' by default, i.e., set by plopm).
 -cformat    Specify the format for the numbers in the colormap, e.g., .2f for two decimals ('' by default, i.e., set by plopm).
@@ -72,7 +72,7 @@ where
 -rotate     Grades to rotate the grid in the 2D maps ('0' by default).
 -translate  Translate the grid in the 2D maps x,y directions ('[0,0]' by default).
 -global     Min and max in the colorbars from the current 2D slide values (0) or whole 3D model '1' ('0' by default).
--how        Show the cells for the wells/faults when at least one cell contains them ('min') or when all cells are part of the given slides range ('max') ('min' by default).
+-how        Select how to project the given variable (-v) in a slide range (-s). By default the variables are pore volume weighted averaged along the range except for mass quantities, porv, trans, and cell dims (e.g., dz) which are summed; cell indices (e.g., index_i) which show the discrete value; harmonic average and arithmetic average for permeabilities depending on the slide range direction using the cell dim along the slide (e.g., -s ,,1:2 -v permz [harmonic averaged]); for wells/faults, 'min' show the cells when at least one cell contains them or 'max' when all cells are part of the given slide/slides range. The supported options are 'min', 'max', 'sum', 'mean', 'pvmean', 'harmonic', 'arithmetic'. ('' by default, i.e., the defaults as described above).
 -ncolor     Color for the inactive cells in the 2D maps ('w' by default, i.e., white).
 -lw         Line width separated by commas if more than one ('1' by default).
 -subfigs    Generate separated or a single Figure (e.g., '2,2' for four subfigures) ('' by default, i.e., separate figures).

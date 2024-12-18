@@ -243,8 +243,8 @@ def load_parser():
     parser.add_argument(
         "-dpi",
         "--dpi",
-        default="1200",
-        help="Dots per inch for the figure ('1200' by default).",
+        default="500",
+        help="Dots per inch for the figure ('500' by default).",
     )
     parser.add_argument(
         "-xformat",
@@ -329,10 +329,17 @@ def load_parser():
     parser.add_argument(
         "-how",
         "--how",
-        default="min",
-        help="Show the cells for the wells/faults when at least one cell contains them "
-        "('min') or when all cells are part of the given slide/slides range ('max') "
-        "('min' by default).",
+        default="",
+        help="Select how to project the given variable (-v) in a slide range (-s). "
+        "By default the variables are pore volume weighted averaged along the range "
+        "except for mass quantities, porv, trans, and cell dims (e.g., dz) which are summed; "
+        "cell indices (e.g., index_i) which show the discrete value; harmonic average and "
+        "arithmetic average for permeabilities depending on the slide range direction using "
+        "the cell dim along the slide (e.g., -s ,,1:2 -v permz [harmonic averaged]); "
+        "for wells/faults, 'min' show the cells when at least one cell contains them "
+        "or 'max' when all cells are part of the given slide/slides range. The supported "
+        "options are 'min', 'max', 'sum', 'mean', 'pvmean', 'harmonic', 'arithmetic'. ('' by "
+        "default, i.e., the defaults as described above).",
     )
     parser.add_argument(
         "-ncolor",
