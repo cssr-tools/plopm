@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R1702,R0912,C0325,R0914
+# pylint: disable=R1702,R0912,C0325,R0914,R0915
 
 """
 Utiliy function for the grid and locations in the geological models.
@@ -136,13 +136,57 @@ def map_xzcoords(dic, var, quan, n):
     """
     for k in range(dic["nz"]):
         for i in range(dic["nx"]):
-            p_v, val = 0.0, 0.0
+            p_v, val, d_y = 0.0, 0.0, 0.0
+            if dic["how"][n] == "min":
+                val = np.inf
+            if dic["how"][n] == "max":
+                val = -np.inf
             for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
                 ind = i + sld * dic["nx"] + k * dic["nx"] * dic["ny"]
                 if dic["porv"][ind] > 0:
-                    if var.lower() in dic["mass"] or var.lower() == "porv":
+                    if dic["how"][n] and not (
+                        dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults"
+                    ):
+                        if dic["how"][n] == "min":
+                            p_v = 1.0
+                            val = min(val, quan[dic["actind"][ind]])
+                        elif dic["how"][n] == "max":
+                            p_v = 1.0
+                            val = max(val, quan[dic["actind"][ind]])
+                        elif dic["how"][n] == "sum":
+                            p_v = 1.0
+                            val += quan[dic["actind"][ind]]
+                        elif dic["how"][n] == "mean":
+                            p_v += 1.0
+                            val += quan[dic["actind"][ind]]
+                        elif dic["how"][n] == "pvmean":
+                            p_v += dic["porv"][ind]
+                            val += quan[dic["actind"][ind]] * dic["porv"][ind]
+                        elif dic["how"][n] == "harmonic":
+                            d_y += dic["dy"][dic["actind"][ind]]
+                            val += (
+                                dic["dy"][dic["actind"][ind]] / quan[dic["actind"][ind]]
+                            )
+                        elif dic["how"][n] == "arithmetic":
+                            p_v += dic["dy"][dic["actind"][ind]]
+                            val += (
+                                quan[dic["actind"][ind]] * dic["dy"][dic["actind"][ind]]
+                            )
+                    elif var.lower() in dic["mass"] or var.lower() in [
+                        "porv",
+                        "dy",
+                        "tranx",
+                        "tranz",
+                    ]:
                         p_v = 1.0
                         val += quan[dic["actind"][ind]]
+                    elif var.lower() in ["permx", "permz"]:
+                        p_v += dic["dy"][dic["actind"][ind]]
+                        val += quan[dic["actind"][ind]] * dic["dy"][dic["actind"][ind]]
+                    elif var.lower() == "permy":
+                        p_v = 1
+                        d_z += dic["dy"][dic["actind"][ind]]
+                        val += dic["dy"][dic["actind"][ind]] / quan[dic["actind"][ind]]
                     elif var.lower() == "grid":
                         p_v = 1
                         val = 1
@@ -164,9 +208,16 @@ def map_xzcoords(dic, var, quan, n):
                     else:
                         p_v += dic["porv"][ind]
                         val += quan[dic["actind"][ind]] * dic["porv"][ind]
-            dic[var + "a"][2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]] = (
-                np.nan if p_v == 0 else val / p_v
-            )
+            if dic["how"][n] == "harmonic" or (
+                not dic["how"][n] and var.lower() == "permy"
+            ):
+                dic[var + "a"][2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]] = (
+                    np.nan if p_v == 0 else d_y / val
+                )
+            else:
+                dic[var + "a"][2 * i + 2 * (dic["nz"] - k - 1) * dic["mx"]] = (
+                    np.nan if p_v == 0 else val / p_v
+                )
     for i, wells in enumerate(dic["wells"]):
         for well in wells:
             if well:
@@ -216,13 +267,57 @@ def map_yzcoords(dic, var, quan, n):
     """
     for k in range(dic["nz"]):
         for j in range(dic["ny"]):
-            p_v, val = 0.0, 0.0
+            p_v, val, d_x = 0.0, 0.0, 0.0
+            if dic["how"][n] == "min":
+                val = np.inf
+            if dic["how"][n] == "max":
+                val = -np.inf
             for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
                 ind = sld + j * dic["nx"] + k * dic["nx"] * dic["ny"]
                 if dic["porv"][ind] > 0:
-                    if var.lower() in dic["mass"] or var.lower() == "porv":
+                    if dic["how"][n] and not (
+                        dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults"
+                    ):
+                        if dic["how"][n] == "min":
+                            p_v = 1.0
+                            val = min(val, quan[dic["actind"][ind]])
+                        elif dic["how"][n] == "max":
+                            p_v = 1.0
+                            val = max(val, quan[dic["actind"][ind]])
+                        elif dic["how"][n] == "sum":
+                            p_v = 1.0
+                            val += quan[dic["actind"][ind]]
+                        elif dic["how"][n] == "mean":
+                            p_v += 1.0
+                            val += quan[dic["actind"][ind]]
+                        elif dic["how"][n] == "pvmean":
+                            p_v += dic["porv"][ind]
+                            val += quan[dic["actind"][ind]] * dic["porv"][ind]
+                        elif dic["how"][n] == "harmonic":
+                            d_x += dic["dx"][dic["actind"][ind]]
+                            val += (
+                                dic["dx"][dic["actind"][ind]] / quan[dic["actind"][ind]]
+                            )
+                        elif dic["how"][n] == "arithmetic":
+                            p_v += dic["dx"][dic["actind"][ind]]
+                            val += (
+                                quan[dic["actind"][ind]] * dic["dx"][dic["actind"][ind]]
+                            )
+                    elif var.lower() in dic["mass"] or var.lower() in [
+                        "porv",
+                        "dx",
+                        "trany",
+                        "tranz",
+                    ]:
                         p_v = 1.0
                         val += quan[dic["actind"][ind]]
+                    elif var.lower() in ["permy", "permz"]:
+                        p_v += dic["dx"][dic["actind"][ind]]
+                        val += quan[dic["actind"][ind]] * dic["dx"][dic["actind"][ind]]
+                    elif var.lower() == "permx":
+                        p_v = 1
+                        d_x += dic["dx"][dic["actind"][ind]]
+                        val += dic["dx"][dic["actind"][ind]] / quan[dic["actind"][ind]]
                     elif var.lower() == "grid":
                         p_v = 1
                         val = 1
@@ -244,9 +339,16 @@ def map_yzcoords(dic, var, quan, n):
                     else:
                         p_v += dic["porv"][ind]
                         val += quan[dic["actind"][ind]] * dic["porv"][ind]
-            dic[var + "a"][2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]] = (
-                np.nan if p_v == 0 else val / p_v
-            )
+            if dic["how"][n] == "harmonic" or (
+                not dic["how"][n] and var.lower() == "permx"
+            ):
+                dic[var + "a"][2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]] = (
+                    np.nan if p_v == 0 else d_x / val
+                )
+            else:
+                dic[var + "a"][2 * j + 2 * (dic["nz"] - k - 1) * dic["mx"]] = (
+                    np.nan if p_v == 0 else val / p_v
+                )
     for i, wells in enumerate(dic["wells"]):
         for well in wells:
             if well:
@@ -296,13 +398,57 @@ def map_xycoords(dic, var, quan, n):
     """
     for j in range(dic["ny"]):
         for i in range(dic["nx"]):
-            p_v, val = 0.0, 0.0
+            p_v, val, d_z = 0.0, 0.0, 0.0
+            if dic["how"][n] == "min":
+                val = np.inf
+            if dic["how"][n] == "max":
+                val = -np.inf
             for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
                 ind = i + j * dic["nx"] + sld * dic["nx"] * dic["ny"]
                 if dic["porv"][ind] > 0:
-                    if var.lower() in dic["mass"] or var.lower() == "porv":
+                    if dic["how"][n] and not (
+                        dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults"
+                    ):
+                        if dic["how"][n] == "min":
+                            p_v = 1.0
+                            val = min(val, quan[dic["actind"][ind]])
+                        elif dic["how"][n] == "max":
+                            p_v = 1.0
+                            val = max(val, quan[dic["actind"][ind]])
+                        elif dic["how"][n] == "sum":
+                            p_v = 1.0
+                            val += quan[dic["actind"][ind]]
+                        elif dic["how"][n] == "mean":
+                            p_v += 1.0
+                            val += quan[dic["actind"][ind]]
+                        elif dic["how"][n] == "pvmean":
+                            p_v += dic["porv"][ind]
+                            val += quan[dic["actind"][ind]] * dic["porv"][ind]
+                        elif dic["how"][n] == "harmonic":
+                            d_z += dic["dz"][dic["actind"][ind]]
+                            val += (
+                                dic["dz"][dic["actind"][ind]] / quan[dic["actind"][ind]]
+                            )
+                        elif dic["how"][n] == "arithmetic":
+                            p_v += dic["dz"][dic["actind"][ind]]
+                            val += (
+                                quan[dic["actind"][ind]] * dic["dz"][dic["actind"][ind]]
+                            )
+                    elif var.lower() in dic["mass"] or var.lower() in [
+                        "porv",
+                        "dz",
+                        "tranx",
+                        "trany",
+                    ]:
                         p_v = 1.0
                         val += quan[dic["actind"][ind]]
+                    elif var.lower() in ["permx", "permy"]:
+                        p_v += dic["dz"][dic["actind"][ind]]
+                        val += quan[dic["actind"][ind]] * dic["dz"][dic["actind"][ind]]
+                    elif var.lower() == "permz":
+                        p_v = 1
+                        d_z += dic["dz"][dic["actind"][ind]]
+                        val += dic["dz"][dic["actind"][ind]] / quan[dic["actind"][ind]]
                     elif var.lower() == "grid":
                         p_v = 1
                         val = 1
@@ -324,9 +470,16 @@ def map_xycoords(dic, var, quan, n):
                     else:
                         p_v += dic["porv"][ind]
                         val += quan[dic["actind"][ind]] * dic["porv"][ind]
-            dic[var + "a"][2 * i + 2 * j * dic["mx"]] = (
-                np.nan if p_v == 0 else val / p_v
-            )
+            if dic["how"][n] == "harmonic" or (
+                not dic["how"][n] and var.lower() == "permz"
+            ):
+                dic[var + "a"][2 * i + 2 * j * dic["mx"]] = (
+                    np.nan if p_v == 0 else d_z / val
+                )
+            else:
+                dic[var + "a"][2 * i + 2 * j * dic["mx"]] = (
+                    np.nan if p_v == 0 else val / p_v
+                )
     for i, wells in enumerate(dic["wells"]):
         for _, well in enumerate(wells):
             if well:

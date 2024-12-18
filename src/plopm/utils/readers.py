@@ -421,6 +421,9 @@ def get_readers(dic):
     dic["ntot"] = 1
     if dic["use"] == "resdata":
         dic["porv"] = np.array(dic["init"]["PORV"][0])
+        dic["dx"] = np.array(dic["init"]["DX"][0])
+        dic["dy"] = np.array(dic["init"]["DY"][0])
+        dic["dz"] = np.array(dic["init"]["DZ"][0])
         dic["nxyz"] = len(dic["porv"])
         dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
         dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
@@ -434,6 +437,9 @@ def get_readers(dic):
             dic["nz"] = dic["egrid"].nz
     else:
         dic["porv"] = np.array(dic["init"]["PORV"])
+        dic["dx"] = np.array(dic["init"]["DX"])
+        dic["dy"] = np.array(dic["init"]["DY"])
+        dic["dz"] = np.array(dic["init"]["DZ"])
         dic["nxyz"] = len(dic["porv"])
         dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
         dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
@@ -465,10 +471,12 @@ def get_unit(name):
     if name.lower() in ["disperc", "depth", "dx", "dy", "dz"]:
         unit = " [m]"
     elif name.lower() in ["porv"]:
-        unit = r" [m$^3$]"
+        unit = r" [sm$^3$]"
     elif name.lower() in ["permx", "permy", "permz"]:
         unit = " [mD]"
-    elif name.lower() in ["pressure"]:
+    elif name.lower() in ["tranx", "trany", "tranz"]:
+        unit = " [cP rm$^3$/ (day bar)]"
+    elif name.lower() in ["pressure", "rpr", "fpr", "fprr", "wbhp"]:
         unit = " [bar]"
     elif name.lower() in ["fgip", "fgit"]:
         unit = " [sm$^3$]"
@@ -733,7 +741,7 @@ def get_wells(dic, n):
         if dic["slide"][n][0][0] > -1:
             for i, wells in enumerate(dic["wells"]):
                 for j, well in enumerate(wells):
-                    if dic["how"] == "min":
+                    if dic["whow"] == "min":
                         count = 0
                         for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
                             if well[0] == sld:
@@ -748,7 +756,7 @@ def get_wells(dic, n):
         elif dic["slide"][n][1][0] > -1:
             for i, wells in enumerate(dic["wells"]):
                 for j, well in enumerate(wells):
-                    if dic["how"] == "min":
+                    if dic["whow"] == "min":
                         count = 0
                         for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
                             if well[1] == sld:
@@ -763,7 +771,7 @@ def get_wells(dic, n):
         else:
             for i, wells in enumerate(dic["wells"]):
                 for j, well in enumerate(wells):
-                    if dic["how"] == "min":
+                    if dic["whow"] == "min":
                         count = 0
                         for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
                             if sld in range(well[2], well[3] + 1):
@@ -824,7 +832,7 @@ def get_faults(dic, n):
         if dic["slide"][n][0][0] > -1:
             for i, faults in enumerate(dic["faults"]):
                 for j, fault in enumerate(faults):
-                    if dic["how"] == "min":
+                    if dic["whow"] == "min":
                         count = 0
                         for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
                             if fault[0] == sld:
@@ -839,7 +847,7 @@ def get_faults(dic, n):
         elif dic["slide"][n][1][0] > -1:
             for i, faults in enumerate(dic["faults"]):
                 for j, fault in enumerate(faults):
-                    if dic["how"] == "min":
+                    if dic["whow"] == "min":
                         count = 0
                         for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
                             if fault[1] == sld:
@@ -854,7 +862,7 @@ def get_faults(dic, n):
         else:
             for i, faults in enumerate(dic["faults"]):
                 for j, fault in enumerate(faults):
-                    if dic["how"] == "min":
+                    if dic["whow"] == "min":
                         count = 0
                         for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
                             if sld in range(fault[2], fault[3] + 1):
