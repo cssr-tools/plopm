@@ -88,6 +88,7 @@ def ini_dic(cmdargs):
     dic["vtkformat"] = (cmdargs["vtkformat"].strip()).split(",")
     dic["vtknames"] = (cmdargs["vtknames"].strip()).split("  ")
     dic["log"] = (cmdargs["log"].strip()).split(",")
+    dic["clogthks"] = cmdargs["clogthks"].strip()
     dic["rotate"] = (cmdargs["rotate"].strip()).split(",")
     dic["global"] = int(cmdargs["global"])
     dic["latex"] = int(cmdargs["latex"])
@@ -116,6 +117,8 @@ def ini_dic(cmdargs):
     ]:
         dic[name] = []
     dic["dtitle"] = ""
+    if dic["clogthks"]:
+        dic["clogthks"] = [float(val) for val in dic["clogthks"][1:-1].split(",")]
     if dic["restart"][0] == "-1":
         dic["restart"] = [-1]
     elif int(dic["restart"][0]) == 0 and len(dic["restart"]) == 2:
@@ -175,6 +178,11 @@ def ini_dic(cmdargs):
         (0, (3, 1, 1, 1, 1, 1)),
         (0, ()),
     ]
+    dic["discrete"] = True
+    for val in dic["vrs"]:
+        for oper in ["=", "<", ">"]:
+            if oper in val:
+                dic["discrete"] = False
     dic["LW"] = ["1"] * len(dic["names"][0])
     font = {"family": "normal", "weight": "normal", "size": dic["size"]}
     matplotlib.rc("font", **font)
@@ -393,6 +401,32 @@ def ini_properties(dic):
         "tab20b",
         "tab20b",
     ]
+    dic["cmdisc"] = []
+    cmdisc = [
+        "Pastel1",
+        "Pastel2",
+        "Paired",
+        "Accent",
+        "Dark2",
+        "Set1",
+        "Set2",
+        "Set3",
+        "tab10",
+        "tab20",
+        "tab20b",
+        "tab20c",
+        "cet_glasbey_bw",
+        "cet_glasbey",
+        "cet_glasbey_cool",
+        "cet_glasbey_warm",
+        "cet_glasbey_dark",
+        "cet_glasbey_light",
+        "cet_glasbey_category10",
+        "cet_glasbey_hv",
+    ]
+    for color in cmdisc:
+        dic["cmdisc"].insert(0, color + "_r")
+    dic["cmdisc"] += cmdisc
     if dic["colors"]:
         dic["cmaps"] = dic["colors"].split(",")
     elif dic["diff"]:
@@ -430,7 +464,13 @@ def ini_properties(dic):
             dic["cformat"] = [".0f"]
     if dic["cf"]:
         dic["cformat"] = dic["cf"].split(",")
-    if len(dic["cmaps"]) < len(dic["vrs"]):
+    elif len(dic["vrs"]) == 1 and "num" in dic["vrs"][0]:
+        dic["cformat"] = [".0f"]
+    if len(dic["cmaps"]) < len(dic["vrs"]) or (
+        len(dic["vrs"]) == len(dic["names"][0])
+        and len(dic["names"][0]) > 1
+        and not dic["colors"]
+    ):
         dic["cmaps"] = [dic["cmaps"][0]] * len(dic["vrs"])
     if len(dic["xlim"]) < len(dic["vrs"]):
         dic["xlim"] = [dic["xlim"][0]] * len(dic["vrs"])

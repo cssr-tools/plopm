@@ -354,6 +354,30 @@ def operate(var, quan1, i, oper):
         var *= quan1
     elif oper[i] == "/":
         var /= quan1
+    elif oper[i] == "==":
+        var[~np.isnan(var)] = [
+            1 if val == quan1 else np.nan for val in var[~np.isnan(var)]
+        ]
+    elif oper[i] == ">=":
+        var[~np.isnan(var)] = [
+            1 if val >= quan1 else np.nan for val in var[~np.isnan(var)]
+        ]
+    elif oper[i] == "<=":
+        var[~np.isnan(var)] = [
+            1 if val <= quan1 else np.nan for val in var[~np.isnan(var)]
+        ]
+    elif oper[i] == "<":
+        var[~np.isnan(var)] = [
+            1 if val < quan1 else np.nan for val in var[~np.isnan(var)]
+        ]
+    elif oper[i] == ">":
+        var[~np.isnan(var)] = [
+            1 if val > quan1 else np.nan for val in var[~np.isnan(var)]
+        ]
+    elif oper[i] == "!=":
+        var[~np.isnan(var)] = [
+            1 if val != quan1 else np.nan for val in var[~np.isnan(var)]
+        ]
     else:
         print(f"Unknow operation ({oper[i]}).")
         sys.exit()
@@ -531,16 +555,16 @@ def get_quantity(dic, name, n, nrst):
             sys.exit()
         if len(names) > 1:
             for j, val in enumerate(names[2::2]):
-                if (val[0]).isdigit():
+                if (val[0]).isdigit() and not val[-1].isdigit():
                     quan1 = np.array(dic["unrst"][val[1:]][int(val[0])]) * 1.0
+                elif (val[0]).isdigit() and val[-1].isdigit():
+                    quan1 = float(val)
                 elif dic["init"].has_kw(val):
                     quan1 = np.array(dic["init"][val][0]) * 1.0
                 elif dic["unrst"].has_kw(val):
                     quan1 = np.array(dic["unrst"][val][nrst]) * 1.0
                 elif val.lower() in dic["mass"] + dic["xmass"]:
                     quan1 = handle_mass(dic, val.lower(), nrst) * skl
-                else:
-                    quan1 = float(val)
                 quan = operate(quan, quan1, j, names[1::2])
     else:
         if dic["init"].count(names[0]):
@@ -570,16 +594,16 @@ def get_quantity(dic, name, n, nrst):
             sys.exit()
         if len(names) > 1:
             for j, val in enumerate(names[2::2]):
-                if (val[0]).isdigit():
+                if (val[0]).isdigit() and not val[-1].isdigit():
                     quan1 = dic["unrst"][val[1:], int(val[0])]
+                elif (val[0]).isdigit() and val[-1].isdigit():
+                    quan1 = float(val)
                 elif dic["init"].count(val):
                     quan1 = dic["init"][val]
                 elif dic["unrst"].count(val):
                     quan1 = dic["unrst"][val, nrst]
                 elif val.lower() in dic["mass"] + dic["xmass"]:
                     quan1 = handle_mass(dic, val.lower(), nrst) * skl
-                else:
-                    quan1 = float(val)
                 quan = operate(quan, quan1, j, names[1::2])
     if dic["vmin"][n]:
         quan = np.array(quan)
