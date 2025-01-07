@@ -86,7 +86,7 @@ In order to reduce the white space outside the active cells, as well as to rotat
 
 .. code-block:: bash
 
-    plopm -i NORNE_ATW2013 -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,7600]' -f 30
+    plopm -i NORNE_ATW2013 -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,7600]' -f 8
 
 .. image:: ./figs/norne_transformed.png
 
@@ -95,7 +95,7 @@ To show all faults in the model and to only show the ones connected all along th
 .. code-block:: bash
 
     plopm -i NORNE_ATW2013 -v faults -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 -global 1
-    plopm -i NORNE_ATW2013 -v faults -s ,,1:22 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8
+    plopm -i NORNE_ATW2013 -v faults -s ,,1:22 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 -how max
 
 .. image:: ./figs/norne_faults.png
 
@@ -164,7 +164,7 @@ To changue the colormap and setting the colorbar limits manually, this can be ac
 
 .. code-block:: bash
     
-    plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -diff spe11b/SPE11B -remove 0,0,0,1 -c tab20c_r -b '[0,0.8]' -cformat .3 -cnum 9
+    plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -diff spe11b/SPE11B -remove 0,0,0,1 -c tab20c_r -b '[0,0.8]' -cnum 9
 
 .. image:: ./figs/sgas_diff_edit.png
 

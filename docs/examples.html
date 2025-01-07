@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Examples &mdash; plopm  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -148,13 +148,13 @@ download the files in that folder, then by using the <strong>plopm</strong> tool
 <p>these are some of the generated figures:</p>
 <img alt="_images/norne.png" src="_images/norne.png" />
 <p>In order to reduce the white space outside the active cells, as well as to rotate the grid and translate it, this can be ahieved by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,7600]&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">30</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,7600]&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">8</span>
 </pre></div>
 </div>
 <img alt="_images/norne_transformed.png" src="_images/norne_transformed.png" />
 <p>To show all faults in the model and to only show the ones connected all along the z direction, this can be achieved by:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>faults<span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">8</span><span class="w"> </span>-global<span class="w"> </span><span class="m">1</span>
-plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>faults<span class="w"> </span>-s<span class="w"> </span>,,1:22<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">8</span>
+plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>faults<span class="w"> </span>-s<span class="w"> </span>,,1:22<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">8</span><span class="w"> </span>-how<span class="w"> </span>max
 </pre></div>
 </div>
 <img alt="_images/norne_faults.png" src="_images/norne_faults.png" />
@@ -211,7 +211,7 @@ called spe11b_larger_inj. Then, to plot the summary vector for both runs we can 
 </div>
 <img alt="_images/sgas_diff.png" src="_images/sgas_diff.png" />
 <p>To changue the colormap and setting the colorbar limits manually, this can be achieved by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>spe11b_larger_inj/SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span><span class="w"> </span>-diff<span class="w"> </span>spe11b/SPE11B<span class="w"> </span>-remove<span class="w"> </span><span class="m">0</span>,0,0,1<span class="w"> </span>-c<span class="w"> </span>tab20c_r<span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[0,0.8]&#39;</span><span class="w"> </span>-cformat<span class="w"> </span>.3<span class="w"> </span>-cnum<span class="w"> </span><span class="m">9</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>spe11b_larger_inj/SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span><span class="w"> </span>-diff<span class="w"> </span>spe11b/SPE11B<span class="w"> </span>-remove<span class="w"> </span><span class="m">0</span>,0,0,1<span class="w"> </span>-c<span class="w"> </span>tab20c_r<span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[0,0.8]&#39;</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">9</span>
 </pre></div>
 </div>
 <img alt="_images/sgas_diff_edit.png" src="_images/sgas_diff_edit.png" />

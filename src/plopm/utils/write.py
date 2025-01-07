@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913,R0917,C0302
+# pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913,R0917,C0302,C0115
 
 """
 Utiliy functions to write the PNGs figures.
@@ -13,6 +13,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib import colors
+from matplotlib.ticker import LogFormatter
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from plopm.utils.readers import read_summary, get_quantity, get_readers, initialize_time
 from plopm.utils.initialization import ini_slides
@@ -188,6 +189,7 @@ def make_summary(dic):
             else:
                 for l in range(len(dic["axis"].flat) - len(dic["vrs"])):
                     dic["fig"].delaxes(dic["axis"].flat[-1 - l])
+            quan = quan.replace(" / ", "_over_")
             dic["fig"].savefig(
                 f"{dic['output']}/{dic['save'][j] if dic['save'][j] else quan}.png",
                 bbox_inches="tight",
@@ -462,11 +464,20 @@ def mapit(t, dic, n):
     elif len(dic["restart"]) == 1:
         k = n
     if dic["subfigs"][0] and len(dic["names"][0]) > 1:
-        for nn, deck in enumerate(dic["names"][0]):
-            dic["deck"] = deck
-            dic["ndeck"] = nn
-            prepare_maps(dic, nn)
-            mapits(dic, t, 0, nn)
+        if len(dic["vrs"]) > 1:
+            dic["maxc"] = [max(dic["maxc"])] * len(dic["maxc"])
+            dic["minc"] = [min(dic["minc"])] * len(dic["minc"])
+            for nn, deck in enumerate(dic["names"][0]):
+                dic["deck"] = deck
+                dic["ndeck"] = nn
+                prepare_maps(dic, nn)
+                mapits(dic, t, nn, nn)
+        else:
+            for nn, deck in enumerate(dic["names"][0]):
+                dic["deck"] = deck
+                dic["ndeck"] = nn
+                prepare_maps(dic, nn)
+                mapits(dic, t, 0, nn)
     elif dic["subfigs"][0] and len(dic["vrs"]) > 1 and dic["skip"] == 0:
         for nn, _ in enumerate(dic["vrs"]):
             mapits(dic, t, nn, nn)
@@ -557,7 +568,11 @@ def mapits(dic, t, n, k):
             maxc = minmax
         if maxc == minc:
             ntick = 1
-        elif "num" in var.lower():
+        elif (
+            "num" in var.lower()
+            and dic["cmaps"][n] in dic["cmdisc"]
+            and dic["discrete"]
+        ):
             ntick = int(maxc - minc + 1)
         if dic["mask"]:
             minc = -maxc
@@ -581,7 +596,7 @@ def mapits(dic, t, n, k):
     shc = 0
     # minc = 0.
     if (
-        "num" in var.lower()
+        ("num" in var.lower() and dic["cmaps"][n] in dic["cmdisc"] and dic["discrete"])
         or var.lower() in ["faults"]
         and dic["cmaps"][n] != "nipy_spectral"
     ):
@@ -666,6 +681,7 @@ def mapits(dic, t, n, k):
             ntick,
             endpoint=True,
         )
+    func = "lambda x, _: f'{x:" + dic["cformat"][n] + "}'"
     if (
         var.lower() != "wells"
         and var.lower() != "faults"
@@ -673,7 +689,6 @@ def mapits(dic, t, n, k):
         and dic["rm"][2] == 0
     ):
         if int(dic["log"][n]) == 0:
-            func = "lambda x, _: f'{x:" + dic["cformat"][n] + "}'"
             if (
                 len(dic["restart"]) > 1
                 and dic["subfigs"][0]
@@ -708,21 +723,48 @@ def mapits(dic, t, n, k):
                     location="top",
                 )
         else:
+            if dic["clogthks"]:
+
+                class MF(LogFormatter):
+                    def set_locs(self, locs=None):
+                        self._sublabels = set(dic["clogthks"])
+
             if dic["subfigs"][0]:
-                dic["cb"][k] = dic["fig"].colorbar(
-                    imag,
-                    cax=dic["fig"].add_axes(dic["cbsfax"]),
-                    label=ncolor,
-                    shrink=0.2,
-                    location="top",
-                )
+                if dic["clogthks"]:
+                    dic["cb"][k] = dic["fig"].colorbar(
+                        imag,
+                        cax=dic["fig"].add_axes(dic["cbsfax"]),
+                        label=ncolor,
+                        shrink=0.2,
+                        location="top",
+                        ticks=dic["clogthks"],
+                        format=MF(),
+                    )
+                else:
+                    dic["cb"][k] = dic["fig"].colorbar(
+                        imag,
+                        cax=dic["fig"].add_axes(dic["cbsfax"]),
+                        label=ncolor,
+                        shrink=0.2,
+                        location="top",
+                    )
             else:
-                dic["cb"][k] = dic["fig"].colorbar(
-                    imag,
-                    cax=divider.append_axes("right", size="5%", pad=0.05),
-                    orientation="vertical",
-                    label=ncolor,
-                )
+                if dic["clogthks"]:
+                    dic["cb"][k] = dic["fig"].colorbar(
+                        imag,
+                        cax=divider.append_axes("right", size="5%", pad=0.05),
+                        orientation="vertical",
+                        label=ncolor,
+                        ticks=dic["clogthks"],
+                        format=MF(),
+                    )
+                else:
+                    dic["cb"][k] = dic["fig"].colorbar(
+                        imag,
+                        cax=divider.append_axes("right", size="5%", pad=0.05),
+                        orientation="vertical",
+                        label=ncolor,
+                    )
     else:
         handle_well_or_grid_or_fault(dic, imag, divider, vect, n, var.lower())
     if dic["rm"][2] == 0:
@@ -749,6 +791,13 @@ def mapits(dic, t, n, k):
         and (k + dic["sub1"] >= len(dic["vrs"]) or not dic["subfigs"][0])
     ):
         dic["axis"].flat[k].set_xlabel(f"{dic['xmeaning']+dic['xunit']}")
+    elif (
+        dic["rm"][1] == 0
+        and len(dic["names"][0]) == len(dic["vrs"])
+        and len(dic["vrs"]) > 1
+        and (k + dic["sub1"] >= len(dic["vrs"]) or not dic["subfigs"][0])
+    ):
+        dic["axis"].flat[k].set_xlabel(f"{dic['xmeaning']+dic['xunit']}")
     if dic["ylabel"][n] and dic["rm"][0] == 0:
         dic["axis"].flat[k].set_ylabel(dic["ylabel"][n])
     elif dic["rm"][0] == 0 and (k % dic["sub1"] == 0 or not dic["subfigs"][0]):
@@ -759,6 +808,7 @@ def mapits(dic, t, n, k):
         k + dic["sub1"] < len(dic["names"][0])
         and dic["subfigs"][0]
         and len(dic["vrs"]) == 1
+        and dic["delax"] == 1
     ):
         dic["axis"].flat[k].tick_params(
             axis="x", which="both", bottom=False, labelbottom=False
@@ -767,6 +817,7 @@ def mapits(dic, t, n, k):
         k + dic["sub1"] < len(dic["vrs"])
         and dic["subfigs"][0]
         and len(dic["names"][0]) == 1
+        and dic["delax"] == 1
     ):
         dic["axis"].flat[k].tick_params(
             axis="x", which="both", bottom=False, labelbottom=False
@@ -776,11 +827,14 @@ def mapits(dic, t, n, k):
         and len(dic["restart"]) > 1
         and dic["subfigs"][0]
         and len(dic["names"][0]) == 1
+        and dic["delax"] == 1
     ):
         dic["axis"].flat[k].tick_params(
             axis="x", which="both", bottom=False, labelbottom=False
         )
-    if dic["rm"][0] == 1 or (k % dic["sub1"] > 0 and dic["subfigs"][0]):
+    if dic["rm"][0] == 1 or (
+        k % dic["sub1"] > 0 and dic["subfigs"][0] and dic["delax"] == 1
+    ):
         dic["axis"].flat[k].tick_params(
             axis="y", which="both", left=False, labelleft=False
         )
@@ -791,6 +845,7 @@ def mapits(dic, t, n, k):
             if t == len(dic["restart"]) - 1 and len(dic["restart"]) > 1:
                 dic["fig"].set_facecolor(dic["fc"])
                 name = f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
+                name = name.replace(" / ", "_over_")
                 dic["fig"].savefig(
                     f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                     bbox_inches="tight",
@@ -799,6 +854,7 @@ def mapits(dic, t, n, k):
             elif n == len(dic["vrs"]) - 1 and len(dic["vrs"]) > 1:
                 dic["fig"].set_facecolor(dic["fc"])
                 name = f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
+                name = name.replace(" / ", "_over_")
                 dic["fig"].savefig(
                     f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                     bbox_inches="tight",
@@ -811,6 +867,7 @@ def mapits(dic, t, n, k):
                         name = (
                             f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
                         )
+                        name = name.replace(" / ", "_over_")
                         dic["fig"].savefig(
                             f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                             bbox_inches="tight",
@@ -822,6 +879,7 @@ def mapits(dic, t, n, k):
                         name = (
                             f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
                         )
+                        name = name.replace(" / ", "_over_")
                         dic["fig"].savefig(
                             f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                             bbox_inches="tight",
@@ -830,6 +888,7 @@ def mapits(dic, t, n, k):
                 else:
                     dic["fig"].set_facecolor(dic["fc"])
                     name = f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
+                    name = name.replace(" / ", "_over_")
                     dic["fig"].savefig(
                         f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                         bbox_inches="tight",
@@ -838,6 +897,7 @@ def mapits(dic, t, n, k):
         else:
             dic["fig"].set_facecolor(dic["fc"])
             name = f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
+            name = name.replace(" / ", "_over_")
             dic["fig"].savefig(
                 f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                 bbox_inches="tight",
@@ -883,12 +943,18 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         extra = f", |sum|={dic['abssum']:.3e}"
     elif dic["faults"] or dic["wells"]:
         time = ""
-        namet = f"Total no. {name} = {dic[f'n{name}']-1}"
-    elif "num" in name:
+        namet = f"Total no. {name} = {dic[f'n{name}']-1}, "
+    elif "num" in name and dic["cmaps"][n] in dic["cmdisc"] and dic["discrete"]:
         time = ""
         namet = ""
-    elif dic["faults"] or dic["wells"] or "num" in name:
-        dic["tslide"] = dic["tslide"][2:]
+    if (
+        dic["faults"]
+        or dic["wells"]
+        or ("num" in name and dic["cmaps"][n] in dic["cmdisc"] and dic["discrete"])
+    ):
+        tslide = dic["tslide"][2:]
+    else:
+        tslide = dic["tslide"]
     if dic["subfigs"][0] and len(dic["names"][0]) > 1 and dic["titles"][k] == "0":
         dic["axis"].flat[k].set_title(dic["deckn"])
         if k == 0 and dic["suptitle"] != "0":
@@ -916,16 +982,10 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
     elif dic["rm"][3] == 0 and dic["titles"][k] == "0":
         if dic["diff"]:
             dic["axis"].flat[k].set_title(
-                f"{dic['deckn']}-{dic['deckd']}"
-                + dic["tslide"]
-                + dic["dtitle"]
-                + extra
-                + time
+                f"{dic['deckn']}-{dic['deckd']}" + tslide + dic["dtitle"] + extra + time
             )
         else:
-            dic["axis"].flat[k].set_title(
-                namet + dic["tslide"] + dic["dtitle"] + extra + time
-            )
+            dic["axis"].flat[k].set_title(namet + tslide + dic["dtitle"] + extra + time)
     elif dic["subfigs"][0] and len(dic["names"][0]) > 1:
         if k == 0 and dic["suptitle"] != "0":
             dic["fig"].suptitle(f"{dic['tnrst'][dic['restart'][t]]} days")

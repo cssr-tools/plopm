@@ -44,7 +44,7 @@ where
 -c    Specify the colormap, e.g., 'jet', or color(s) for the summary, e.g., 'b,r' ('' by default, i.e., set by plopm).
 -e    Specify the linestyles, e.g., 'solid,dotted' ('' by default, i.e., set by plopm).
 -b    Specify the upper and lower bounds for the color map, e.g., '[-0.1,11]' ('' by default, i.e., set by plopm).
--d    Specify the dimensions in inches generated png, e.g., '8,16' ('5,5' by default).
+-d    Specify the dimensions in inches generated png, e.g., '8,16' ('7,5' by default).
 -t    Specify the figure title, e.g., 'Final saturation map' ('' by default, i.e., set by plopm).
 -r    Restart number to plot the dynamic variable, where 0 corresponds to the initial one ('-1' by default, i.e., the last restart file).
 -a    Scale the mass variable, e.g., 1e-9 for the color bar for the CO2 mass to be in Mt ('1' by default).
@@ -69,6 +69,7 @@ where
 -facecolor  Color outside the spatial map ('w' by default, i.e., white).
 -save       Name of the output files ('' by default, i.e., set by plopm).
 -log        Log scale for the color map ('0' by default).
+-clogthks   Set the thicks for the color maps with log scale, e.g., '[1,2,3]' ('' by default).
 -rotate     Grades to rotate the grid in the 2D maps ('0' by default).
 -translate  Translate the grid in the 2D maps x,y directions ('[0,0]' by default).
 -global     Min and max in the colorbars from the current 2D slide values (0) or whole 3D model '1' ('0' by default).

@@ -146,9 +146,9 @@ def load_parser():
     parser.add_argument(
         "-d",
         "--dimensions",
-        default="5,5",
+        default="7,5",
         help="Specify the dimensions in inches of the generated png, e.g., "
-        "'8,16' ('5,5' by default).",
+        "'8,16' ('7,5' by default).",
     )
     parser.add_argument(
         "-t",
@@ -305,6 +305,13 @@ def load_parser():
         "--log",
         default="0",
         help="Log scale for the color map ('0' by default).",
+    )
+    parser.add_argument(
+        "-clogthks",
+        "--clogthks",
+        default="",
+        help="Set the thicks for the color maps with log scale, e.g., '[1,2,3]' "
+        "('' by default).",
     )
     parser.add_argument(
         "-rotate",
