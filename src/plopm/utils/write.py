@@ -401,22 +401,22 @@ def find_min_max(dic):
             else:
                 map_xycoords(dic, var, quan, 1)
             dic["diffa"].append(dic[var + "a"])
-    for m, var in enumerate(dic["vrs"]):
-        dic["minc"].append(dic["minc"][-1])
-        dic["maxc"].append(dic["maxc"][-1])
-        for n, deck in enumerate(dic["names"][0]):
+    if len(dic["vrs"]) == len(dic["names"][0]) and len(dic["names"][0]) > 1:
+        for m, var in enumerate(dic["vrs"]):
+            dic["minc"].append(dic["minc"][-1])
+            dic["maxc"].append(dic["maxc"][-1])
             for t, _ in enumerate(dic["restart"]):
-                dic["deck"] = deck
-                dic["ndeck"] = n
-                prepare_maps(dic, n)
+                dic["deck"] = dic["names"][0][m]
+                dic["ndeck"] = m
+                prepare_maps(dic, m)
                 _, quan = get_quantity(dic, var.upper(), m, dic["restart"][t])
                 dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-                if dic["slide"][n][0][0] > -1:
-                    map_yzcoords(dic, var, quan, n)
-                elif dic["slide"][n][1][0] > -1:
-                    map_xzcoords(dic, var, quan, n)
+                if dic["slide"][m][0][0] > -1:
+                    map_yzcoords(dic, var, quan, m)
+                elif dic["slide"][m][1][0] > -1:
+                    map_xzcoords(dic, var, quan, m)
                 else:
-                    map_xycoords(dic, var, quan, n)
+                    map_xycoords(dic, var, quan, m)
                 if dic["diff"]:
                     dic[var + "a"] -= dic["diffa"][t]
                 if int(dic["log"][m]) == 1:
@@ -427,6 +427,33 @@ def find_min_max(dic):
                 dic["maxc"][-2] = max(
                     dic["maxc"][-2], dic[var + "a"][~np.isnan(dic[var + "a"])].max()
                 )
+    else:
+        for m, var in enumerate(dic["vrs"]):
+            dic["minc"].append(dic["minc"][-1])
+            dic["maxc"].append(dic["maxc"][-1])
+            for n, deck in enumerate(dic["names"][0]):
+                for t, _ in enumerate(dic["restart"]):
+                    dic["deck"] = deck
+                    dic["ndeck"] = n
+                    prepare_maps(dic, n)
+                    _, quan = get_quantity(dic, var.upper(), m, dic["restart"][t])
+                    dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
+                    if dic["slide"][n][0][0] > -1:
+                        map_yzcoords(dic, var, quan, n)
+                    elif dic["slide"][n][1][0] > -1:
+                        map_xzcoords(dic, var, quan, n)
+                    else:
+                        map_xycoords(dic, var, quan, n)
+                    if dic["diff"]:
+                        dic[var + "a"] -= dic["diffa"][t]
+                    if int(dic["log"][m]) == 1:
+                        dic[var + "a"][dic[var + "a"] <= 0] = np.nan
+                    dic["minc"][-2] = min(
+                        dic["minc"][-2], dic[var + "a"][~np.isnan(dic[var + "a"])].min()
+                    )
+                    dic["maxc"][-2] = max(
+                        dic["maxc"][-2], dic[var + "a"][~np.isnan(dic[var + "a"])].max()
+                    )
     if dic["mask"]:
         var = dic["mask"]
         dic["maska"] = []

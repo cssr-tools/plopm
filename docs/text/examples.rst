@@ -2,9 +2,9 @@
 Examples
 ********
 
-======
-SPE11B 
-======
+===========
+Hello world 
+===========
 
 The simulation files located in the `examples folder <https://github.com/cssr-tools/plopm/blob/main/examples>`_ were generated using 
 `pyopmspe11 <https://github.com/OPM/pyopmspe11>`_ by running this `configuration file <https://github.com/OPM/pyopmspe11/blob/main/examples/hello_world/spe11b.txt>`_. 
@@ -12,7 +12,7 @@ Then, if you succeed in installing **plopm**, inside the `examples folder <https
 
 .. code-block:: bash
 
-    plopm
+    plopm -i SPE11B
 
 the following figure should be generated (this example is used in the `tests <https://github.com/cssr-tools/plopm/blob/main/tests>`_, then it runs with the default terminal argument options).
 
