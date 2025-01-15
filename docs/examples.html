@@ -51,6 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#hello-world">Hello world</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generic-deck">Generic deck</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#rotation-translation-and-zoom">Rotation, translation, and zoom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#projections-and-subfigures">Projections and subfigures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convert-to-vtk">Convert to VTK</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#different-input-files">Different input files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gif-and-mask">GIF and mask</a></li>
@@ -117,6 +118,14 @@ summary, init, and restart available variables given an input deck.</p>
 <a class="reference internal image-reference" href="_images/fgip.png"><img alt="_images/fgip.png" src="_images/fgip.png" style="width: 429.73px; height: 429.73px;" />
 </a>
 </figure>
+<p>To plot cell values over time, this can be achieved by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;SPE11B SPE11B SPE11B&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;pressure - 0pressure&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;1,1,1 41,1,29 83,1,58&#39;</span><span class="w"> </span>-labels<span class="w"> </span><span class="s1">&#39;Top left corner  Middle  Right lower corner&#39;</span><span class="w"> </span>-ylabel<span class="w"> </span><span class="s1">&#39;Pressure increase at the sensor locations [bar]&#39;</span><span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">11</span><span class="w"> </span>-tunits<span class="w"> </span>dates
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/spe11b_pressure-0pressure.png"><img alt="_images/spe11b_pressure-0pressure.png" src="_images/spe11b_pressure-0pressure.png" style="width: 711.6px; height: 511.6px;" />
+</a>
+</figure>
 </section>
 <section id="generic-deck">
 <h2>Generic deck<a class="headerlink" href="#generic-deck" title="Link to this heading"></a></h2>
@@ -168,6 +177,14 @@ plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class=
 <p class="admonition-title">Note</p>
 <p>For plotting the faults and wells, they must be specified in the input deck (no via include files).</p>
 </div>
+</section>
+<section id="projections-and-subfigures">
+<h2>Projections and subfigures<a class="headerlink" href="#projections-and-subfigures" title="Link to this heading"></a></h2>
+<p>Here is an example of making a single figure plotting subfigures and using different approaches to project the quantities:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;index_k,permx,poro&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:22 ,,1:22 ,,1:22&#39;</span><span class="w"> </span>-how<span class="w"> </span><span class="s1">&#39;first,arithmetic,max&#39;</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,3<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">24</span>,10<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;PuOr,vanimo,jet&#39;</span><span class="w"> </span>-cformat<span class="w"> </span><span class="s1">&#39;.0f,.0f,.2f&#39;</span><span class="w"> </span>-cnum<span class="w"> </span><span class="s1">&#39;2,4,8&#39;</span><span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;Top k values using first  Averaged permx using arithmetic  Values of porosity using max&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">18</span>
+</pre></div>
+</div>
+<img alt="_images/norne_atw2013_poro_i%2Cj%2C1%3A22_t64.png" src="_images/norne_atw2013_poro_i%2Cj%2C1%3A22_t64.png" />
 </section>
 <section id="convert-to-vtk">
 <h2>Convert to VTK<a class="headerlink" href="#convert-to-vtk" title="Link to this heading"></a></h2>

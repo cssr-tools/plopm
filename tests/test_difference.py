@@ -26,4 +26,4 @@ def test_difference():
         ],
         check=True,
     )
-    assert os.path.exists(f"{dirname}/examples/output/spe11b_rsw_*,1,*_t5.png")
+    assert os.path.exists(f"{dirname}/examples/output/spe11b_rsw_i,1,k_t5.png")

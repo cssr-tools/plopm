@@ -77,16 +77,18 @@ def load_parser():
         "-s",
         "--slide",
         default=",1,",
-        help="The slide in the 3D model to plot the 2D maps, e.g,"
-        " '10,,' to plot the xz plane on all cells with i=10, or "
-        " ',,5:10' to plot the pv average weighted quantity (',1,' "
-        " by default, i.e., the xz surface at j=1).",
+        help="The slide in the 3D model to plot the 2D maps, e.g, "
+        "'10,,' to plot the xz plane on all cells with i=10, or "
+        "',,5:10' to plot the pv average weighted quantity. If the three "
+        "values are given, e.g., '2,4,9', then the variable is plotted "
+        "over time at that location (',1,' by default, i.e., the xz surface "
+        "at j=1).",
     )
     parser.add_argument(
         "-p",
         "--path",
         default="flow",
-        help="Path to flow, e.g., /home/build/bin/flow'."
+        help="Path to flow, e.g., '/home/build/bin/flow'."
         " This is used to generate the grid for the vtk files ('flow' by "
         "default).",
     )
@@ -345,8 +347,8 @@ def load_parser():
         "the cell dim along the slide (e.g., -s ,,1:2 -v permz [harmonic averaged]); "
         "for wells/faults, 'min' show the cells when at least one cell contains them "
         "or 'max' when all cells are part of the given slide/slides range. The supported "
-        "options are 'min', 'max', 'sum', 'mean', 'pvmean', 'harmonic', 'arithmetic'. ('' by "
-        "default, i.e., the defaults as described above).",
+        "options are 'min', 'max', 'sum', 'mean', 'pvmean', 'harmonic', 'arithmetic', "
+        "'first', and 'last' ('' by default, i.e., the defaults as described above).",
     )
     parser.add_argument(
         "-ncolor",

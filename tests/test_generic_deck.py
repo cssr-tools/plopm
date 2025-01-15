@@ -42,7 +42,7 @@ def test_generic_deck():
     for slide, name, nslide, logs in zip(
         ["4,,", ",8,", ",,20"],
         ["poro", "porv", "permx"],
-        ["4,*,*", "*,8,*", "*,*,20"],
+        ["4,j,k", "i,8,k", "i,j,20"],
         ["0", "0", "1"],
     ):
         subprocess.run(

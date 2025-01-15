@@ -16,5 +16,5 @@ def test_wells_grid():
             check=True,
         )
         assert os.path.exists(
-            f"{dirname}/generic_deck/spe10_model2_{name}_*,1,*_t0.png"
+            f"{dirname}/generic_deck/spe10_model2_{name}_i,1,k_t0.png"
         )
