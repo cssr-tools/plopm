@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R0911,R0912,R0913,R0915,R0917,R1702
+# pylint: disable=R0911,R0912,R0913,R0915,R0917,R1702,R0914
 
 """
 Utiliy functions to read the OPM Flow simulator type output files.
@@ -269,7 +269,7 @@ def get_xycoords_opm(dic, n):
                 )
 
 
-def read_summary(dic, case, quan, tunit, qskl):
+def read_summary(dic, case, quan, tunit, qskl, n):
     """
     Handle the summary vectors
 
@@ -283,7 +283,71 @@ def read_summary(dic, case, quan, tunit, qskl):
     vunit = ""
     tskl, tunit = initialize_time(tunit)
     quans = quan.split(" ")
-    if dic["use"] == "resdata":
+    if dic["sensor"]:
+        dic["deck"] = case
+        get_readers(dic)
+        var = 0.0 * np.ones(dic["ntot"])
+        if dic["use"] == "resdata":
+            ind = dic["egrid"].get_active_index(ijk=dic["slide"][n])
+            for nrst in range(dic["ntot"]):
+                if dic["unrst"].has_kw(quans[0].upper()):
+                    var[nrst] = 1.0 * dic["unrst"][quans[0].upper()][nrst][ind]
+                elif quans[0].lower() in dic["mass"] + dic["xmass"]:
+                    var[nrst] = handle_mass(dic, quans[0].lower(), nrst)[ind]
+                else:
+                    print(f"Unknow -v variable ({quans[0]}).")
+                if len(quans) > 1:
+                    for j, val in enumerate(quans[2::2]):
+                        if (val[0]).isdigit() and not val[-1].isdigit():
+                            quan1 = (
+                                1.0 * dic["unrst"][val[1:].upper()][int(val[0])][ind]
+                            )
+                        elif (val[0]).isdigit() and val[-1].isdigit():
+                            quan1 = float(val)
+                        elif dic["init"].has_kw(val.upper()):
+                            quan1 = 1.0 * dic["init"][val.upper()][0][ind]
+                        elif dic["unrst"].has_kw(val.upper()):
+                            quan1 = 1.0 * dic["unrst"][val.upper()][nrst][ind]
+                        elif val.lower() in dic["mass"] + dic["xmass"]:
+                            quan1 = handle_mass(dic, val.lower(), nrst)[ind]
+                        var[nrst] = operate(var[nrst], quan1, j, quans[1::2])
+            time = np.array(dic["tnrst"]) * tskl
+            if tunit == "Dates":
+                time = dic["unrst"].dates
+        else:
+            ind = dic["egrid"].active_index(
+                dic["slide"][n][0], dic["slide"][n][1], dic["slide"][n][2]
+            )
+            for nrst in range(dic["ntot"]):
+                if dic["unrst"].count(quans[0].upper()):
+                    var[nrst] = 1.0 * dic["unrst"][quans[0].upper(), nrst][ind]
+                elif quans[0].lower() in dic["mass"] + dic["xmass"]:
+                    var[nrst] = handle_mass(dic, quans[0].lower(), nrst)[ind]
+                else:
+                    print(f"Unknow -v variable ({quans[0]}).")
+                if len(quans) > 1:
+                    for j, val in enumerate(quans[2::2]):
+                        if (val[0]).isdigit() and not val[-1].isdigit():
+                            quan1 = (
+                                1.0 * dic["unrst"][val[1:].upper(), int(val[0])][ind]
+                            )
+                        elif (val[0]).isdigit() and val[-1].isdigit():
+                            quan1 = float(val)
+                        elif dic["init"].count(val.upper()):
+                            quan1 = 1.0 * dic["init"][val.upper(), 0][ind]
+                        elif dic["unrst"].count(val.upper()):
+                            quan1 = 1.0 * dic["unrst"][val.upper()][nrst, ind]
+                        elif val.lower() in dic["mass"] + dic["xmass"]:
+                            quan1 = handle_mass(dic, val.lower(), nrst)[ind]
+                        var[nrst] = operate(var[nrst], quan1, j, quans[1::2])
+            time = np.array(dic["tnrst"]) * tskl
+            if tunit == "Dates":
+                print(
+                    "For sensor values it is currently no possible to use -tunits dates"
+                    " and -u opm. Try with -u resdata or different -tunits."
+                )
+                sys.exit()
+    elif dic["use"] == "resdata":
         summary = Summary(f"{case}.SMSPEC")
         if quans[0].upper() in dic["smass"]:
             var = summary[quans[0][:-1].upper()].values

@@ -12,4 +12,4 @@ def test_static():
     os.chdir(f"{dirname}/examples")
     main()
     for name in ["porv", "poro", "permx", "permz", "satnum", "fipnum"]:
-        assert os.path.exists(f"{dirname}/examples/spe11b_{name}_*,1,*_t5.png")
+        assert os.path.exists(f"{dirname}/examples/spe11b_{name}_i,1,k_t5.png")

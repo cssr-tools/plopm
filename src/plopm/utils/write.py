@@ -39,6 +39,10 @@ def make_summary(dic):
         None
 
     """
+    if len(dic["names"][0][0].split("/")) > 1:
+        dic["deckn"] = (dic["names"][0][0].split("/")[-1]).lower()
+    else:
+        dic["deckn"] = dic["names"][0][0].lower()
     dic["fig"], dic["axis"] = [], []
     if dic["subfigs"][0]:
         dic["fig"], dic["axis"] = plt.subplots(
@@ -57,21 +61,31 @@ def make_summary(dic):
                 jj = i
                 quan = dic["vrs"][i]
             time, var, tunit, vunit = read_summary(
-                dic, name, quan, dic["tunits"][jj], float(dic["avar"][jj])
+                dic, name, quan, dic["tunits"][jj], float(dic["avar"][jj]), i
             )
             label = name
             if len(name.split("/")) > 1:
                 label = name.split("/")[-2] + "/" + name.split("/")[-1]
             if dic["labels"][0][0]:
                 label = dic["labels"][jj][i]
-            dic["axis"].flat[k].step(
-                time,
-                var,
-                color=dic["colors"][jj][i],
-                ls=dic["linestyle"][jj][i],
-                label=label,
-                lw=float(dic["lw"][jj][i]),
-            )
+            if dic["sensor"]:
+                dic["axis"].flat[k].plot(
+                    time,
+                    var,
+                    color=dic["colors"][jj][i],
+                    ls=dic["linestyle"][jj][i],
+                    label=label,
+                    lw=float(dic["lw"][jj][i]),
+                )
+            else:
+                dic["axis"].flat[k].step(
+                    time,
+                    var,
+                    color=dic["colors"][jj][i],
+                    ls=dic["linestyle"][jj][i],
+                    label=label,
+                    lw=float(dic["lw"][jj][i]),
+                )
             if i == 0:
                 min_t, min_v = min(time), min(var)
                 max_t, max_v = max(time), max(var)
@@ -88,7 +102,7 @@ def make_summary(dic):
                 dic["axis"].flat[k].set_xlabel(dic["xlabel"][j])
         if dic["ylabel"][0]:
             dic["axis"].flat[k].set_ylabel(dic["ylabel"][j])
-        if len(dic["xlim"]) > 1:
+        if len(dic["xlim"][0]) > 1:
             dic["axis"].flat[k].set_xlim(
                 [float(dic["xlim"][j][0][1:]), float(dic["xlim"][j][1][:-1])]
             )
@@ -104,7 +118,7 @@ def make_summary(dic):
                 max_t,
                 int(dic["xlnum"][j]),
             )
-        if len(dic["ylim"]) > 1:
+        if len(dic["ylim"][0]) > 1:
             dic["axis"].flat[k].set_ylim(
                 [float(dic["ylim"][j][0][1:]), float(dic["ylim"][j][1][:-1])]
             )
@@ -148,6 +162,9 @@ def make_summary(dic):
                 axis="x", which="both", bottom=False, labelbottom=False
             )
         if len(dic["vrs"]) == len(dic["names"][0]) and not dic["subfigs"][0]:
+            quan = f"{dic['deckn']}_{quan}"
+            quan = quan.replace(" / ", "_over_")
+            quan = quan.replace(" ", "")
             dic["fig"].savefig(
                 f"{dic['output']}/{dic['save'][j] if dic['save'][j] else quan}.png",
                 bbox_inches="tight",
@@ -165,21 +182,31 @@ def make_summary(dic):
                 for jj, qua in enumerate(dic["vrs"][: dic["numc"]]):
                     for i, name in enumerate(dic["names"][jj]):
                         time, var, tunit, vunit = read_summary(
-                            dic, name, qua, dic["tunits"][jj], float(dic["avar"][jj])
+                            dic, name, qua, dic["tunits"][jj], float(dic["avar"][jj]), i
                         )
                         label = name
                         if len(name.split("/")) > 1:
                             label = name.split("/")[-2] + "/" + name.split("/")[-1]
                         if dic["labels"][0][0]:
                             label = dic["labels"][jj][i]
-                        dic["axis"].flat[-1].step(
-                            time,
-                            var,
-                            color=dic["colors"][jj][i],
-                            ls=dic["linestyle"][jj][i],
-                            label=label,
-                            lw=float(dic["lw"][jj][i]),
-                        )
+                        if dic["sensor"]:
+                            dic["axis"].flat[-1].plot(
+                                time,
+                                var,
+                                color=dic["colors"][jj][i],
+                                ls=dic["linestyle"][jj][i],
+                                label=label,
+                                lw=float(dic["lw"][jj][i]),
+                            )
+                        else:
+                            dic["axis"].flat[-1].step(
+                                time,
+                                var,
+                                color=dic["colors"][jj][i],
+                                ls=dic["linestyle"][jj][i],
+                                label=label,
+                                lw=float(dic["lw"][jj][i]),
+                            )
                 dic["axis"].flat[-1].axis("off")
                 dic["axis"].flat[-1].legend(loc=dic["loc"][-1])
                 for line in dic["axis"].flat[-1].get_lines():
@@ -189,7 +216,9 @@ def make_summary(dic):
             else:
                 for l in range(len(dic["axis"].flat) - len(dic["vrs"])):
                     dic["fig"].delaxes(dic["axis"].flat[-1 - l])
+            quan = f"{dic['deckn']}_{quan}"
             quan = quan.replace(" / ", "_over_")
+            quan = quan.replace(" ", "")
             dic["fig"].savefig(
                 f"{dic['output']}/{dic['save'][j] if dic['save'][j] else quan}.png",
                 bbox_inches="tight",
@@ -873,6 +902,7 @@ def mapits(dic, t, n, k):
                 dic["fig"].set_facecolor(dic["fc"])
                 name = f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
                 name = name.replace(" / ", "_over_")
+                name = name.replace(" ", "")
                 dic["fig"].savefig(
                     f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                     bbox_inches="tight",
@@ -882,6 +912,7 @@ def mapits(dic, t, n, k):
                 dic["fig"].set_facecolor(dic["fc"])
                 name = f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
                 name = name.replace(" / ", "_over_")
+                name = name.replace(" ", "")
                 dic["fig"].savefig(
                     f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                     bbox_inches="tight",
@@ -895,6 +926,7 @@ def mapits(dic, t, n, k):
                             f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
                         )
                         name = name.replace(" / ", "_over_")
+                        name = name.replace(" ", "")
                         dic["fig"].savefig(
                             f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                             bbox_inches="tight",
@@ -907,6 +939,7 @@ def mapits(dic, t, n, k):
                             f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
                         )
                         name = name.replace(" / ", "_over_")
+                        name = name.replace(" ", "")
                         dic["fig"].savefig(
                             f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                             bbox_inches="tight",
@@ -916,6 +949,7 @@ def mapits(dic, t, n, k):
                     dic["fig"].set_facecolor(dic["fc"])
                     name = f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
                     name = name.replace(" / ", "_over_")
+                    name = name.replace(" ", "")
                     dic["fig"].savefig(
                         f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                         bbox_inches="tight",
@@ -925,6 +959,7 @@ def mapits(dic, t, n, k):
             dic["fig"].set_facecolor(dic["fc"])
             name = f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
             name = name.replace(" / ", "_over_")
+            name = name.replace(" ", "")
             dic["fig"].savefig(
                 f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
                 bbox_inches="tight",
@@ -948,8 +983,8 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
     if dic["tunits"][0] == "dates":
         if dic["use"] == "opm":
             print(
-                "For 2D spatial mapsIt is not possible to use -tunits dates"
-                " and -u opm. Try with -u resdata or different -tunits."
+                "For 2D spatial maps it is currently no possible to use -tunits "
+                "dates and -u opm. Try with -u resdata or different -tunits."
             )
             sys.exit()
         time = f", {dic['unrst'].dates[dic['restart'][t]].date()}"

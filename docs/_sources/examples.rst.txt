@@ -38,6 +38,15 @@ and for the gas in place summary vector given a color, line style, font size, di
 .. figure:: figs/fgip.png
     :scale: 7%
 
+To plot cell values over time, this can be achieved by:
+
+.. code-block:: bash
+
+    plopm -i 'SPE11B SPE11B SPE11B' -v 'pressure - 0pressure' -s '1,1,1 41,1,29 83,1,58' -labels 'Top left corner  Middle  Right lower corner' -ylabel 'Pressure increase at the sensor locations [bar]' -yformat .0f -xlnum 11 -tunits dates
+
+.. figure:: figs/spe11b_pressure-0pressure.png
+    :scale: 20%
+
 ============
 Generic deck 
 ============
@@ -111,6 +120,18 @@ To show all wells in the model and to only show the ones with at least one perfo
 .. note::
 
     For plotting the faults and wells, they must be specified in the input deck (no via include files).
+
+==========================
+Projections and subfigures
+==========================
+
+Here is an example of making a single figure plotting subfigures and using different approaches to project the quantities:
+
+.. code-block:: bash
+
+    plopm -i NORNE_ATW2013 -v 'index_k,permx,poro' -s ',,1:22 ,,1:22 ,,1:22' -how 'first,arithmetic,max' -subfigs 1,3 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -d 24,10 -c 'PuOr,vanimo,jet' -cformat '.0f,.0f,.2f' -cnum '2,4,8' -suptitle 0 -t "Top k values using first  Averaged permx using arithmetic  Values of porosity using max" -f 18
+
+.. image:: ./figs/norne_atw2013_poro_i,j,1:22_t64.png
 
 ==============
 Convert to VTK 

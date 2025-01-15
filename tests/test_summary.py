@@ -26,7 +26,7 @@ def test_summary():
         ],
         check=True,
     )
-    assert os.path.exists(f"{dirname}/examples/output/fgip.png")
+    assert os.path.exists(f"{dirname}/examples/output/spe11b_fgip.png")
     subprocess.run(
         [
             "plopm",
@@ -75,3 +75,34 @@ def test_summary():
         check=True,
     )
     assert os.path.exists(f"{dirname}/examples/output/summary.png")
+    subprocess.run(
+        [
+            "plopm",
+            "-i",
+            "SPE11B SPE11B SPE11B",
+            "-v",
+            "pressure - 0pressure",
+            "-s",
+            "1,1,1 41,1,29 83,1,58",
+            "-ylabel",
+            "Pressure increase at the sensor locations [bar]",
+            "-labels",
+            "Left corner  Middle  Right corner",
+            "-xformat",
+            ".0f",
+            "-yformat",
+            ".0f",
+            "-xlnum",
+            "11",
+            "-tunits",
+            "y",
+            "-warnings",
+            "1",
+            "-u",
+            "opm",
+            "-o",
+            "output",
+        ],
+        check=True,
+    )
+    assert os.path.exists(f"{dirname}/examples/output/spe11b_pressure-0pressure.png")

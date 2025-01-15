@@ -34,7 +34,7 @@ where
 -o    The base name (or full path) of the output folder ('.' by default, i.e., the folder where plopm is executed).
 -v    Specify the name of the vairable to plot, e.g., 'pressure', in addition to special extensive quantities for the mass such as 'grid', 'wells', 'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', 'xco2v', 'xh2ol', 'fwcdm', and 'fgipm' ('poro,permx,permz,porv,fipnum,satnum' by default).
 -m    Generate 'png', 'gif', or 'vtk' files ('png' by default).
--s    The slide in the 3D model to plot the 2D maps, e.g, '10,,' to plot the xz plane on all cells with i=10 (',1,' by default, i.e., the xz surface at j=1).
+-s    The slide in the 3D model to plot the 2D maps, e.g, '10,,' to plot the xz plane on all cells with i=10, or ',,5:10' to plot the pv average weighted quantity. If the three values are given, e.g., '2,4,9', then the variable is plotted over time at that location (',1,' by default, i.e., the xz surface at j=1).
 -p    Path to flow, e.g., '/home/build/bin/flow'. This is used to generate the grid for the vtk files ('flow' by default).
 -z    Scale the axis in the 2D maps ('1' by default).
 -f    The font size ('12' by default).
@@ -73,7 +73,7 @@ where
 -rotate     Grades to rotate the grid in the 2D maps ('0' by default).
 -translate  Translate the grid in the 2D maps x,y directions ('[0,0]' by default).
 -global     Min and max in the colorbars from the current 2D slide values (0) or whole 3D model '1' ('0' by default).
--how        Select how to project the given variable (-v) in a slide range (-s). By default the variables are pore volume weighted averaged along the range except for mass quantities, porv, trans, and cell dims (e.g., dz) which are summed; cell indices (e.g., index_i) which show the discrete value; harmonic average and arithmetic average for permeabilities depending on the slide range direction using the cell dim along the slide (e.g., -s ,,1:2 -v permz [harmonic averaged]); for wells/faults, 'min' show the cells when at least one cell contains them or 'max' when all cells are part of the given slide/slides range. The supported options are 'min', 'max', 'sum', 'mean', 'pvmean', 'harmonic', 'arithmetic'. ('' by default, i.e., the defaults as described above).
+-how        Select how to project the given variable (-v) in a slide range (-s). By default the variables are pore volume weighted averaged along the range except for mass quantities, porv, trans, and cell dims (e.g., dz) which are summed; cell indices (e.g., index_i) which show the discrete value; harmonic average and arithmetic average for permeabilities depending on the slide range direction using the cell dim along the slide (e.g., -s ,,1:2 -v permz [harmonic averaged]); for wells/faults, 'min' show the cells when at least one cell contains them or 'max' when all cells are part of the given slide/slides range. The supported options are 'min', 'max', 'sum', 'mean', 'pvmean', 'harmonic', 'arithmetic', 'first', and 'last' ('' by default, i.e., the defaults as described above).
 -ncolor     Color for the inactive cells in the 2D maps ('w' by default, i.e., white).
 -lw         Line width separated by commas if more than one ('1' by default).
 -subfigs    Generate separated or a single Figure (e.g., '2,2' for four subfigures) ('' by default, i.e., separate figures).

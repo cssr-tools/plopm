@@ -125,20 +125,27 @@ def ini_dic(cmdargs):
         dic["restart"] = list(range(0, int(dic["restart"][1]) + 1))
     else:
         dic["restart"] = [int(i) for i in dic["restart"]]
+    dic["sensor"] = False
     dic["slide"] = (cmdargs["slide"]).split(" ")
     dic["slide"] = [
         [val if val else [-2, -2] for val in var.split(",")] for var in dic["slide"]
     ]
-    for i, var in enumerate(dic["slide"]):
-        for j, val in enumerate(var):
-            if val[0] != -2:
-                if ":" in val:
-                    dic["slide"][i][j] = [
-                        int(val.split(":")[0]) - 1,
-                        int(val.split(":")[1]),
-                    ]
-                else:
-                    dic["slide"][i][j] = [int(val) - 1, int(val)]
+    if [-2, -2] in dic["slide"][0]:
+        for i, var in enumerate(dic["slide"]):
+            for j, val in enumerate(var):
+                if val[0] != -2:
+                    if ":" in val:
+                        dic["slide"][i][j] = [
+                            int(val.split(":")[0]) - 1,
+                            int(val.split(":")[1]),
+                        ]
+                    else:
+                        dic["slide"][i][j] = [int(val) - 1, int(val)]
+    else:
+        dic["sensor"] = True
+        for i, var in enumerate(dic["slide"]):
+            for j, val in enumerate(var):
+                dic["slide"][i][j] = int(val) - 1
     dic["mass"] = ["gasm", "dism", "liqm", "vapm", "co2m", "h2om"]
     dic["smass"] = ["FWCDM", "FGIPM"]
     dic["xmass"] = ["xco2l", "xh2ov", "xco2v", "xh2ol"]
@@ -326,6 +333,8 @@ def is_summary(dic):
                 if ext == "unrst":
                     print(f"The available restarts for {dic['name']} are:")
                     print(list(range(0, ntot)))
+    if dic["sensor"]:
+        return True
     if os.path.isfile(f"{dic['name']}.SMSPEC"):
         if dic["use"] == "resdata":
             summary = Summary(f"{dic['name']}.SMSPEC").keys()

@@ -30,10 +30,10 @@ def handle_slide_x(dic, n):
     """
     if dic["slide"][n][0][0] == dic["slide"][n][0][1] - 1:
         dic["tslide"] = f", slide i={dic['slide'][n][0][0]+1}"
-        dic["nslide"] = f"{dic['slide'][n][0][0]+1},*,*"
+        dic["nslide"] = f"{dic['slide'][n][0][0]+1},j,k"
     else:
         dic["tslide"] = f", slide i={dic['slide'][n][0][0]+1}:{dic['slide'][n][0][1]}"
-        dic["nslide"] = f"{dic['slide'][n][0][0]+1}:{dic['slide'][n][0][1]},*,*"
+        dic["nslide"] = f"{dic['slide'][n][0][0]+1}:{dic['slide'][n][0][1]},j,k"
     if dic["use"] == "resdata":
         get_yzcoords_resdata(dic, n)
     else:
@@ -53,10 +53,10 @@ def handle_slide_y(dic, n):
     """
     if dic["slide"][n][1][0] == dic["slide"][n][1][1] - 1:
         dic["tslide"] = f", slide j={dic['slide'][n][1][0]+1}"
-        dic["nslide"] = f"*,{dic['slide'][n][1][0]+1},*"
+        dic["nslide"] = f"i,{dic['slide'][n][1][0]+1},k"
     else:
         dic["tslide"] = f", slide j={dic['slide'][n][1][0]+1}:{dic['slide'][n][1][1]}"
-        dic["nslide"] = f"*,{dic['slide'][n][1][0]+1}:{dic['slide'][n][1][1]},*"
+        dic["nslide"] = f"i,{dic['slide'][n][1][0]+1}:{dic['slide'][n][1][1]},k"
     if dic["use"] == "resdata":
         get_xzcoords_resdata(dic, n)
     else:
@@ -76,10 +76,10 @@ def handle_slide_z(dic, n):
     """
     if dic["slide"][n][2][0] == dic["slide"][n][2][1] - 1:
         dic["tslide"] = f", slide k={dic['slide'][n][2][0]+1}"
-        dic["nslide"] = f"*,*,{dic['slide'][n][2][0]+1}"
+        dic["nslide"] = f"i,j,{dic['slide'][n][2][0]+1}"
     else:
         dic["tslide"] = f", slide k={dic['slide'][n][2][0]+1}:{dic['slide'][n][2][1]}"
-        dic["nslide"] = f"*,*,{dic['slide'][n][2][0]+1}:{dic['slide'][n][2][1]}"
+        dic["nslide"] = f"i,j,{dic['slide'][n][2][0]+1}:{dic['slide'][n][2][1]}"
     if dic["use"] == "resdata":
         get_xycoords_resdata(dic, n)
     else:
@@ -147,7 +147,28 @@ def map_xzcoords(dic, var, quan, n):
                     if dic["how"][n] and not (
                         dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults"
                     ):
-                        if dic["how"][n] == "min":
+                        if dic["how"][n] == "first":
+                            p_v = 1.0
+                            if var.lower() == "index_i":
+                                val = i + 1
+                            elif var.lower() == "index_j":
+                                val = sld + 1
+                            elif var.lower() == "index_k":
+                                val = k + 1
+                            else:
+                                val = quan[dic["actind"][ind]]
+                            break
+                        if dic["how"][n] == "last":
+                            p_v = 1.0
+                            if var.lower() == "index_i":
+                                val = i + 1
+                            elif var.lower() == "index_j":
+                                val = sld + 1
+                            elif var.lower() == "index_k":
+                                val = k + 1
+                            else:
+                                val = quan[dic["actind"][ind]]
+                        elif dic["how"][n] == "min":
                             p_v = 1.0
                             val = min(val, quan[dic["actind"][ind]])
                         elif dic["how"][n] == "max":
@@ -195,13 +216,13 @@ def map_xzcoords(dic, var, quan, n):
                         val = dic["nwells"]
                     elif var.lower() == "index_i":
                         p_v = 1
-                        val = i
+                        val = i + 1
                     elif var.lower() == "index_j":
                         p_v = 1
-                        val = sld
+                        val = sld + 1
                     elif var.lower() == "index_k":
                         p_v = 1
-                        val = k
+                        val = k + 1
                     elif var.lower() == "faults":
                         p_v = 1
                         val = dic["nfaults"]
@@ -278,7 +299,28 @@ def map_yzcoords(dic, var, quan, n):
                     if dic["how"][n] and not (
                         dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults"
                     ):
-                        if dic["how"][n] == "min":
+                        if dic["how"][n] == "first":
+                            p_v = 1.0
+                            if var.lower() == "index_i":
+                                val = sld + 1
+                            elif var.lower() == "index_j":
+                                val = j + 1
+                            elif var.lower() == "index_k":
+                                val = k + 1
+                            else:
+                                val = quan[dic["actind"][ind]]
+                            break
+                        if dic["how"][n] == "last":
+                            p_v = 1.0
+                            if var.lower() == "index_i":
+                                val = sld + 1
+                            elif var.lower() == "index_j":
+                                val = j + 1
+                            elif var.lower() == "index_k":
+                                val = k + 1
+                            else:
+                                val = quan[dic["actind"][ind]]
+                        elif dic["how"][n] == "min":
                             p_v = 1.0
                             val = min(val, quan[dic["actind"][ind]])
                         elif dic["how"][n] == "max":
@@ -326,13 +368,13 @@ def map_yzcoords(dic, var, quan, n):
                         val = dic["nwells"]
                     elif var.lower() == "index_i":
                         p_v = 1
-                        val = sld
+                        val = sld + 1
                     elif var.lower() == "index_j":
                         p_v = 1
-                        val = j
+                        val = j + 1
                     elif var.lower() == "index_k":
                         p_v = 1
-                        val = k
+                        val = k + 1
                     elif var.lower() == "faults":
                         p_v = 1
                         val = dic["nfaults"]
@@ -409,7 +451,28 @@ def map_xycoords(dic, var, quan, n):
                     if dic["how"][n] and not (
                         dic["vrs"][0] == "wells" or dic["vrs"][0] == "faults"
                     ):
-                        if dic["how"][n] == "min":
+                        if dic["how"][n] == "first":
+                            p_v = 1.0
+                            if var.lower() == "index_i":
+                                val = i + 1
+                            elif var.lower() == "index_j":
+                                val = j + 1
+                            elif var.lower() == "index_k":
+                                val = sld + 1
+                            else:
+                                val = quan[dic["actind"][ind]]
+                            break
+                        if dic["how"][n] == "last":
+                            p_v = 1.0
+                            if var.lower() == "index_i":
+                                val = i + 1
+                            elif var.lower() == "index_j":
+                                val = j + 1
+                            elif var.lower() == "index_k":
+                                val = sld + 1
+                            else:
+                                val = quan[dic["actind"][ind]]
+                        elif dic["how"][n] == "min":
                             p_v = 1.0
                             val = min(val, quan[dic["actind"][ind]])
                         elif dic["how"][n] == "max":
@@ -457,13 +520,13 @@ def map_xycoords(dic, var, quan, n):
                         val = dic["nwells"]
                     elif var.lower() == "index_i":
                         p_v = 1
-                        val = i
+                        val = i + 1
                     elif var.lower() == "index_j":
                         p_v = 1
-                        val = j
+                        val = j + 1
                     elif var.lower() == "index_k":
                         p_v = 1
-                        val = sld
+                        val = sld + 1
                     elif var.lower() == "faults":
                         p_v = 1
                         val = dic["nfaults"]
