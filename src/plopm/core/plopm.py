@@ -373,7 +373,9 @@ def load_parser():
         "-loc",
         "--loc",
         default="best",
-        help="Location of the legend ('best' by default).",
+        help="Location of the legend by passing the value to "
+        "matplotlib.pyplot.legend; set to 'empty' to remove it ('best' by "
+        "default).",
     )
     parser.add_argument(
         "-delax",
