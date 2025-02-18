@@ -703,6 +703,10 @@ def handle_mass(dic, name, nrst):
             rvw = np.array(dic["unrst"]["RVW"][nrst])
         else:
             rvw = 0.0 * sgas
+        if dic["unrst"].has_kw("RPORV"):
+            rpv = np.array(dic["unrst"]["RPORV"][nrst])
+        else:
+            rpv = dic["pv"]
     else:
         sgas = np.array(dic["unrst"]["SGAS", nrst])
         rhog = np.array(dic["unrst"]["GAS_DEN", nrst])
@@ -715,12 +719,16 @@ def handle_mass(dic, name, nrst):
             rvw = np.array(dic["unrst"]["RVW", nrst])
         else:
             rvw = 0.0 * sgas
+        if dic["unrst"].count("RPORV"):
+            rpv = np.array(dic["unrst"]["RPORV", nrst])
+        else:
+            rpv = dic["pv"]
     x_l_co2 = np.divide(rsw, rsw + WAT_DEN_REF / GAS_DEN_REF)
     x_g_h2o = np.divide(rvw, rvw + GAS_DEN_REF / WAT_DEN_REF)
-    co2_g = (1 - x_g_h2o) * sgas * rhog * dic["pv"]
-    co2_d = x_l_co2 * (1.0 - sgas) * rhow * dic["pv"]
-    h2o_l = (1 - x_l_co2) * (1 - sgas) * rhow * dic["pv"]
-    h2o_v = x_g_h2o * sgas * rhog * dic["pv"]
+    co2_g = (1 - x_g_h2o) * sgas * rhog * rpv
+    co2_d = x_l_co2 * (1.0 - sgas) * rhow * rpv
+    h2o_l = (1 - x_l_co2) * (1 - sgas) * rhow * rpv
+    h2o_v = x_g_h2o * sgas * rhog * rpv
     return type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v, x_l_co2, x_g_h2o)
 
 
