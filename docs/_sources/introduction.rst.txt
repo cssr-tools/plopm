@@ -16,7 +16,7 @@ as well as plotting any given summary vector (e.g., field gas in place a.k.a fgi
 The **plopm** tool can be useful for quick inspection of geological models, as well as for generation of nice
 figures for papers/presentations. Also, **plopm** can plot summary results from different simulation cases in the same figure (e.g., using subplots),
 as well as the difference between given dynamic variables (e.g., pressure) for two different simulations cases. In addition, **plopm** can
-convert OPM Flow output files to vtk, which allows to use other visualization/postprocessing tools (e.g., `paraview <https://www.paraview.org>`_)
+convert OPM Flow output files to vtk, which allows to use other visualization/postprocessing tools (e.g., `paraview <https://www.paraview.org>`_). 
 
 .. _overview:
 
@@ -32,7 +32,7 @@ where
 
 -i    The base name (or full path) of the input files; if more than one is given, separate them by ' ' (e.g, 'SPE11B /home/user/SPE11B_TUNED') ('SPE11B' by default).
 -o    The base name (or full path) of the output folder ('.' by default, i.e., the folder where plopm is executed).
--v    Specify the name of the vairable to plot, e.g., 'pressure', in addition to special extensive quantities for the mass such as 'grid', 'wells', 'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', 'xco2v', 'xh2ol', 'fwcdm', and 'fgipm' ('poro,permx,permz,porv,fipnum,satnum' by default).
+-v    Specify the name of the variable to plot, e.g., 'pressure', in addition to special extensive quantities for the mass such as 'grid', 'wells', 'faults', 'krw', 'krg', 'krow', 'krog', 'pcow', 'pcog', 'pcwg', 'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', 'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g, 'pressure - 0pressure' to plot the pressure increase ('poro,permx,permz,porv,fipnum,satnum' by default).
 -m    Generate 'png', 'gif', or 'vtk' files ('png' by default).
 -s    The slide in the 3D model to plot the 2D maps, e.g, '10,,' to plot the xz plane on all cells with i=10, or ',,5:10' to plot the pv average weighted quantity. If the three values are given, e.g., '2,4,9', then the variable is plotted over time at that location (',1,' by default, i.e., the xz surface at j=1).
 -p    Path to flow, e.g., '/home/build/bin/flow'. This is used to generate the grid for the vtk files ('flow' by default).
@@ -51,8 +51,8 @@ where
 -tunits     For the x axis in the summary use seconds 's', minutes 'm', hours 'h', days 'd', weeks 'w', years 'y', or dates 'dates' ('s' by default).
 -ylabel     Text for the y axis ('' by default, i.e., set by plopm).
 -xlabel     Text for the x axis ('' by default, i.e., set by plopm).
--ylnum      Number of y axis labels ('4' by default).
--xlnum      Number of x axis labels ('4' by default).
+-ylnum      Number of y axis labels ('5' by default).
+-xlnum      Number of x axis labels ('5' by default).
 -cnum       Number of color labels ('' by default, i.e., set by plopm).
 -xlog       Use log scale for the x axis ('0' by default).
 -ylog       Use log scale for the y axis ('0' by default).
@@ -73,6 +73,8 @@ where
 -rotate     Grades to rotate the grid in the 2D maps ('0' by default).
 -translate  Translate the grid in the 2D maps x,y directions ('[0,0]' by default).
 -global     Min and max in the colorbars from the current 2D slide values (0) or whole 3D model '1' ('0' by default).
+-ensemble   Set to '1' to plot the mean and error bands for the ensemble, '2' to plot the min, mean, and max values, and '3' to plot '1' and '2' ('0' by default).
+-bandprop   Set to color and alpha values for the matplotlib.pyplot.fill_between function when the flag -ensamble is used with values '1' or '3' , e.g., -bandprop 'r,0.1,g,0.2' ('' by default, i.e., set as the same color as the mean and alpha==0.2).
 -how        Select how to project the given variable (-v) in a slide range (-s). By default the variables are pore volume weighted averaged along the range except for mass quantities, porv, trans, and cell dims (e.g., dz) which are summed; cell indices (e.g., index_i) which show the discrete value; harmonic average and arithmetic average for permeabilities depending on the slide range direction using the cell dim along the slide (e.g., -s ,,1:2 -v permz [harmonic averaged]); for wells/faults, 'min' show the cells when at least one cell contains them or 'max' when all cells are part of the given slide/slides range. The supported options are 'min', 'max', 'sum', 'mean', 'pvmean', 'harmonic', 'arithmetic', 'first', and 'last' ('' by default, i.e., the defaults as described above).
 -ncolor     Color for the inactive cells in the 2D maps ('w' by default, i.e., white).
 -lw         Line width separated by commas if more than one ('1' by default).

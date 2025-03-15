@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R0911,R0912,R0913,R0915,R0917,R1702,R0914
+# pylint: disable=R0911,R0912,R0913,R0915,R0917,R1702,R0914,C0302
 
 """
 Utiliy functions to read the OPM Flow simulator type output files.
@@ -347,6 +347,193 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                     " and -u opm. Try with -u resdata or different -tunits."
                 )
                 sys.exit()
+    elif quans[0].lower()[:3] in ["krw", "krg"] or quans[0].lower()[:4] in [
+        "krog",
+        "krow",
+        "pcow",
+        "pcog",
+        "pcwg",
+    ]:
+        snu = 1
+        hyst = False
+        if quans[0].lower()[-1] == "h":
+            hyst = True
+            quans[0] = quans[0][:-1]
+        if len(quans[0].lower()) == 3:
+            what = quans[0].lower()[:3]
+        elif quans[0].lower() in ["krow", "krog", "pcow", "pcog", "pcwg"]:
+            what = quans[0].lower()[:4]
+        elif quans[0].lower()[:3] in ["krw", "krg"]:
+            what = quans[0].lower()[:3]
+            snu = int(quans[0][3:])
+        else:
+            what = quans[0].lower()[:4]
+            snu = int(quans[0][4:])
+        if os.path.isfile(f"{case}.INIT"):
+            if dic["use"] == "resdata":
+                dic["init"] = ResdataFile(f"{case}.INIT")
+            else:
+                dic["init"] = OpmFile(f"{case}.INIT")
+        tabdim = dic["init"].iget_kw("TABDIMS")
+        nswe = tabdim[0][24]
+        table = np.array(dic["init"].iget_kw("TAB"))
+        nsnum = tabdim[0][25]
+        vunit = ""
+        tskl = 1
+        if what == "krg":
+            tunit = "s$_g$ [-]"
+            sht = tabdim[0][23] - 1
+            time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
+            time = np.array([val for val in time if val <= 1.0])
+            n_v = len(time)
+            var = table[0][
+                sht + nswe * nsnum + (snu - 1) * nswe : sht + nswe * nsnum + snu * nswe
+            ][:n_v]
+            if hyst:
+                timeh = np.array(
+                    table[0][sht + (2 * snu - 1) * nswe : sht + 2 * snu * nswe]
+                )
+                timeh = np.array([val for val in timeh if val <= 1.0])
+                n_v = len(timeh)
+                var = np.append(
+                    var,
+                    np.flip(
+                        table[0][
+                            sht
+                            + nswe * nsnum
+                            + (2 * snu - 1) * nswe : sht
+                            + nswe * nsnum
+                            + 2 * snu * nswe
+                        ][:n_v]
+                    ),
+                )
+                time = np.append(time, np.flip(timeh))
+        elif what == "kro":
+            tunit = "s$_g$ [-]"
+            sht = tabdim[0][26] - 1
+            time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
+            time = np.array([val for val in time if val <= 1.0])
+            n_v = len(time)
+            var = np.flip(
+                table[0][
+                    sht
+                    + nswe * nsnum
+                    + (snu - 1) * nswe : sht
+                    + nswe * nsnum
+                    + snu * nswe
+                ][:n_v]
+            )
+            if hyst:
+                timeh = np.array(
+                    table[0][sht + (2 * snu - 1) * nswe : sht + 2 * snu * nswe]
+                )
+                timeh = np.array([val for val in timeh if val <= 1.0])
+                n_v = len(timeh)
+                var = np.append(
+                    var,
+                    table[0][
+                        sht
+                        + nswe * nsnum
+                        + (2 * snu - 1) * nswe : sht
+                        + nswe * nsnum
+                        + 2 * snu * nswe
+                    ][:n_v],
+                )
+                time = np.append(time, np.flip(timeh))
+        elif what == "krw":
+            tunit = "s$_w$ [-]"
+            sht = tabdim[0][20] - 1
+            time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
+            time = np.array([val for val in time if val <= 1.0])
+            n_v = len(time)
+            var = table[0][
+                sht + nswe * nsnum + (snu - 1) * nswe : sht + nswe * nsnum + snu * nswe
+            ][:n_v]
+            if hyst:
+                timeh = np.array(
+                    table[0][sht + (2 * snu - 1) * nswe : sht + 2 * snu * nswe]
+                )
+                timeh = np.array([val for val in timeh if val <= 1.0])
+                n_v = len(timeh)
+                var = np.append(
+                    var,
+                    np.flip(
+                        table[0][
+                            sht
+                            + nswe * nsnum
+                            + (2 * snu - 1) * nswe : sht
+                            + nswe * nsnum
+                            + 2 * snu * nswe
+                        ][:n_v]
+                    ),
+                )
+                time = np.append(time, np.flip(timeh))
+        elif what == "pcow":
+            tunit = "s$_w$ [-]"
+            sht = tabdim[0][20] - 1
+            time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
+            time = np.array([val for val in time if val <= 1.0])
+            time = 1 - time
+            n_v = len(time)
+            var = np.flip(
+                table[0][
+                    sht
+                    + 2 * nswe * nsnum
+                    + (snu - 1) * nswe : sht
+                    + 2 * nswe * nsnum
+                    + snu * nswe
+                ][:n_v]
+            )
+            if hyst:
+                timeh = np.array(
+                    table[0][sht + (2 * snu - 1) * nswe : sht + 2 * snu * nswe]
+                )
+                timeh = np.array([val for val in timeh if val <= 1.0])
+                timeh = 1 - timeh
+                n_v = len(timeh)
+                var = np.append(
+                    var,
+                    table[0][
+                        sht
+                        + 2 * nswe * nsnum
+                        + (2 * snu - 1) * nswe : sht
+                        + 2 * nswe * nsnum
+                        + 2 * snu * nswe
+                    ][:n_v],
+                )
+                time = np.append(time, np.flip(timeh))
+        else:
+            tunit = "s$_g$ [-]"
+            sht = tabdim[0][23] - 1
+            time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
+            time = np.array([val for val in time if val <= 1.0])
+            n_v = len(time)
+            var = table[0][
+                sht
+                + 2 * nswe * nsnum
+                + (snu - 1) * nswe : sht
+                + 2 * nswe * nsnum
+                + snu * nswe
+            ][:n_v]
+            if hyst:
+                timeh = np.array(
+                    table[0][sht + (2 * snu - 1) * nswe : sht + 2 * snu * nswe]
+                )
+                timeh = np.array([val for val in timeh if val <= 1.0])
+                n_v = len(timeh)
+                var = np.append(
+                    var,
+                    np.flip(
+                        table[0][
+                            sht
+                            + 2 * nswe * nsnum
+                            + (2 * snu - 1) * nswe : sht
+                            + 2 * nswe * nsnum
+                            + 2 * snu * nswe
+                        ][:n_v]
+                    ),
+                )
+                time = np.append(time, np.flip(timeh))
     elif dic["use"] == "resdata":
         summary = Summary(f"{case}.SMSPEC")
         if quans[0].upper() in dic["smass"]:

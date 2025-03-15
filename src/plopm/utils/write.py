@@ -11,6 +11,7 @@ import colorcet
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
 from matplotlib import animation
 from matplotlib import colors
 from matplotlib.ticker import LogFormatter
@@ -55,45 +56,52 @@ def make_summary(dic):
             dic["axis"] = np.array([dic["axis"]])
             k = 0
         dic["axis"].flat[k].grid(int(dic["axgrid"][j]))
-        for i, name in enumerate(dic["names"][j]):
-            jj = j
-            if len(dic["vrs"]) == len(dic["names"][0]) and not dic["subfigs"][0]:
-                jj = i
-                quan = dic["vrs"][i]
-            time, var, tunit, vunit = read_summary(
-                dic, name, quan, dic["tunits"][jj], float(dic["avar"][jj]), i
-            )
-            label = name
-            if len(name.split("/")) > 1:
-                label = name.split("/")[-2] + "/" + name.split("/")[-1]
-            if dic["labels"][0][0]:
-                label = dic["labels"][jj][i]
-            if dic["sensor"]:
-                dic["axis"].flat[k].plot(
-                    time,
-                    var,
-                    color=dic["colors"][jj][i],
-                    ls=dic["linestyle"][jj][i],
-                    label=label,
-                    lw=float(dic["lw"][jj][i]),
+        if dic["ensemble"] > 0:
+            tunit, vunit, min_t, max_t, min_v, max_v = handle_ensemble(dic)
+        else:
+            for i, name in enumerate(dic["names"][j]):
+                jj = j
+                if len(dic["vrs"]) == len(dic["names"][0]) and not dic["subfigs"][0]:
+                    jj = i
+                    quan = dic["vrs"][i]
+                time, var, tunit, vunit = read_summary(
+                    dic, name, quan, dic["tunits"][jj], float(dic["avar"][jj]), i
                 )
-            else:
-                dic["axis"].flat[k].step(
-                    time,
-                    var,
-                    color=dic["colors"][jj][i],
-                    ls=dic["linestyle"][jj][i],
-                    label=label,
-                    lw=float(dic["lw"][jj][i]),
-                )
-            if i == 0:
-                min_t, min_v = min(time), min(var)
-                max_t, max_v = max(time), max(var)
-            else:
-                min_t = min(min_t, min(time))
-                min_v = min(min_v, min(var))
-                max_t = max(max_t, max(time))
-                max_v = max(max_v, max(var))
+                label = name
+                if len(name.split("/")) > 1:
+                    label = name.split("/")[-2] + "/" + name.split("/")[-1]
+                if dic["labels"][0][0]:
+                    label = dic["labels"][jj][i]
+                if (
+                    dic["sensor"]
+                    or quan.lower()[:3] in ["krw", "krg"]
+                    or quan.lower()[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
+                ):
+                    dic["axis"].flat[k].plot(
+                        time,
+                        var,
+                        color=dic["colors"][jj][i % len(dic["colors"][jj])],
+                        ls=dic["linestyle"][jj][i % len(dic["linestyle"][jj])],
+                        label=label,
+                        lw=float(dic["lw"][jj][i]),
+                    )
+                else:
+                    dic["axis"].flat[k].step(
+                        time,
+                        var,
+                        color=dic["colors"][jj][i % len(dic["colors"][jj])],
+                        ls=dic["linestyle"][jj][i % len(dic["linestyle"][jj])],
+                        label=label,
+                        lw=float(dic["lw"][jj][i]),
+                    )
+                if i == 0:
+                    min_t, min_v = min(time), min(var)
+                    max_t, max_v = max(time), max(var)
+                else:
+                    min_t = min(min_t, min(time))
+                    min_v = min(min_v, min(var))
+                    max_t = max(max_t, max(time))
+                    max_v = max(max_v, max(var))
         dic["axis"].flat[k].set_ylabel(quan + vunit)
         dic["axis"].flat[k].set_ylim([min_v, max_v])
         if dic["delax"] == 0 or k + int(dic["subfigs"][1]) >= len(dic["vrs"]):
@@ -225,6 +233,132 @@ def make_summary(dic):
                 dpi=int(dic["dpi"][j]),
             )
     plt.close()
+
+
+def handle_ensemble(dic):
+    """
+    Compute the mean and create the band
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    thetime, timeeval = [0], [0]
+    min_v, max_v = np.inf, 0
+    hyst = 1
+    if dic["vrs"][0].lower()[:3] in ["krw", "krg"] or dic["vrs"][0].lower()[:4] in [
+        "krow",
+        "krog",
+        "pcow",
+        "pcog",
+        "pcwg",
+    ]:
+        if dic["vrs"][0].lower()[-1] == "h":
+            hyst = 2
+    for j in range(hyst):
+        for n, names in enumerate(dic["names"]):
+            label = dic["namens"][0][n] + " (mean)"
+            if len(label.split("/")) > 1:
+                label = label.split("/")[-2] + "/" + label.split("/")[-1]
+            if dic["labels"][0][0]:
+                label = dic["labels"][n][0]
+            values = []
+            for i, name in enumerate(names):
+                time, var, tunit, vunit = read_summary(
+                    dic, name, dic["vrs"][0], dic["tunits"][0], float(dic["avar"][0]), i
+                )
+                rng = int(1.0 * len(time) / hyst)
+                time = time[j * rng : (j + 1) * rng]
+                var = var[j * rng : (j + 1) * rng]
+                thetime = time if len(time) > len(thetime) else thetime
+                if tunit == "Dates":
+                    time = [float(value.timestamp()) for value in time]
+                    timeeval = time if len(time) > len(timeeval) else timeeval
+                else:
+                    timeeval = thetime
+                values.append(interp1d(time, var, bounds_error=False))
+            values = np.array([value(timeeval) for value in values])
+            means = np.nanmean(values, axis=0)
+            stdev = np.nanstd(values, axis=0)
+            if j == hyst - 1:
+                dic["axis"].flat[0].plot(
+                    thetime,
+                    means,
+                    color=dic["colors"][0][n],
+                    ls=dic["linestyle"][0][n],
+                    label=label,
+                    lw=float(dic["lw"][0][n]),
+                )
+            else:
+                dic["axis"].flat[0].plot(
+                    thetime,
+                    means,
+                    color=dic["colors"][0][n],
+                    ls=dic["linestyle"][0][n],
+                    lw=float(dic["lw"][0][n]),
+                )
+            if dic["ensemble"] in [1, 3]:
+                if dic["bandprop"]:
+                    color = dic["bandprop"].split(",")[2 * n]
+                    alpha = float(dic["bandprop"].split(",")[2 * n + 1])
+                else:
+                    color = dic["colors"][0][n]
+                    alpha = 0.2
+                dic["axis"].flat[0].fill_between(
+                    thetime, means - stdev, means + stdev, color=color, alpha=alpha
+                )
+                min_v = min(min_v, np.nanmin(means - stdev))
+                max_v = max(max_v, np.nanmax(means + stdev))
+            if dic["ensemble"] in [2, 3]:
+                m = len(dic["names"]) + n
+                maxs = np.nansum(values + means, axis=1)
+                mins = np.nansum(values - means, axis=1)
+                maxs = np.where(maxs == maxs.max())[0][0]
+                mins = np.where(mins == mins.min())[0][0]
+                labell = names[mins] + " (lower)"
+                labelu = names[maxs] + " (upper)"
+                if dic["labels"][0][0]:
+                    labell = dic["labels"][n][1]
+                    labelu = dic["labels"][n][2]
+                if j == hyst - 1:
+                    dic["axis"].flat[0].plot(
+                        thetime,
+                        values[mins],
+                        color=dic["colors"][0][m],
+                        ls=dic["linestyle"][0][m],
+                        label=labell,
+                        lw=float(dic["lw"][0][n]),
+                    )
+                    dic["axis"].flat[0].plot(
+                        thetime,
+                        values[maxs],
+                        color=dic["colors"][0][m],
+                        ls=dic["linestyle"][0][m],
+                        label=labelu,
+                        lw=float(dic["lw"][0][n]),
+                    )
+                else:
+                    dic["axis"].flat[0].plot(
+                        thetime,
+                        values[mins],
+                        color=dic["colors"][0][m],
+                        ls=dic["linestyle"][0][m],
+                        lw=float(dic["lw"][0][n]),
+                    )
+                    dic["axis"].flat[0].plot(
+                        thetime,
+                        values[maxs],
+                        color=dic["colors"][0][m],
+                        ls=dic["linestyle"][0][m],
+                        lw=float(dic["lw"][0][n]),
+                    )
+                min_v = min(min_v, np.nanmin(values[mins]))
+                max_v = max(max_v, np.nanmax(values[maxs]))
+    min_t, max_t = thetime[0], thetime[-1]
+    return tunit, vunit, min_t, max_t, min_v, max_v
 
 
 def prepare_maps(dic, n):
