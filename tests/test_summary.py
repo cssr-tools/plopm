@@ -10,23 +10,44 @@ dirname: pathlib.Path = pathlib.Path(__file__).parents[1]
 def test_summary():
     """See examples/SPE11B"""
     os.chdir(f"{dirname}/examples")
-    subprocess.run(
-        [
-            "plopm",
-            "-i",
-            "SPE11B",
-            "-v",
-            "fgip",
-            "-c",
-            "k",
-            "-warnings",
-            "1",
-            "-o",
-            "output",
-        ],
-        check=True,
-    )
-    assert os.path.exists(f"{dirname}/examples/output/spe11b_fgip.png")
+    for name in ["krw3", "krg2", "pcwg5"]:
+        subprocess.run(
+            [
+                "plopm",
+                "-i",
+                "SPE11B",
+                "-v",
+                name,
+                "-c",
+                "k",
+                "-warnings",
+                "1",
+                "-o",
+                "output",
+            ],
+            check=True,
+        )
+        assert os.path.exists(f"{dirname}/examples/output/spe11b_{name}.png")
+    for i in range(1, 4):
+        subprocess.run(
+            [
+                "plopm",
+                "-i",
+                "SPE11B",
+                "-v",
+                "tcpu",
+                "-ensemble",
+                str(i),
+                "-warnings",
+                "1",
+                "-o",
+                "output",
+                "-save",
+                f"spe11b_ens{i}",
+            ],
+            check=True,
+        )
+        assert os.path.exists(f"{dirname}/examples/output/spe11b_ens{i}.png")
     subprocess.run(
         [
             "plopm",

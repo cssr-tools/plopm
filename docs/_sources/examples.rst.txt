@@ -154,9 +154,9 @@ from the restart files from the initial (0) to the number 5 restart, using a OPM
     However, there are quantities that are not written (e.g., fipnum, flores), in addition to quantities not supported
     such as component mass (e.g., co2, h2o). This is when **plopm** can be helpful.
 
-=====================
-Different input files 
-=====================
+===================================
+Different input files and ensembles
+===================================
 Let us assume we have two different runs in different folders for the spe11b case, where the firsts results are save
 in a folder called spe11b, and simulation results where the injection rate has been increased are saved in a folder
 called spe11b_larger_inj. Then, to plot the summary vector for both runs we can execute:
@@ -188,6 +188,25 @@ To changue the colormap and setting the colorbar limits manually, this can be ac
     plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -diff spe11b/SPE11B -remove 0,0,0,1 -c tab20c_r -b '[0,0.8]' -cnum 9
 
 .. image:: ./figs/sgas_diff_edit.png
+
+The `ensemble folder <https://github.com/cssr-tools/plopm/blob/main/examples/ensemble>`_ provides a `Python file <https://github.com/cssr-tools/plopm/blob/main/examples/ensemble/run_ensemble.py>`_ to generate two different 
+ensembles using `pyopmnearwell <https://github.com/cssr-tools/pyopmnearwell>`_, where the residual gas saturation is randomly generated.
+
+.. tip::
+    You can install `pyopmnearwell <https://github.com/cssr-tools/pyopmnearwell>`_ by executing in the terminal: pip install git+https://github.com/cssr-tools/pyopmnearwell.git.
+
+Below are two of the generated figures after executing the script (additional figures are generated to show the functionality of the **-ensemble** flag):
+
+.. figure:: ./figs/ensemble.png
+
+    Example of visualizing ensembles using **plopm** (example0.png and example3_formated.png respectively).
+
+.. note::
+
+    As seen in this example, **plopm** supports the plotting of saturation functions using the '-v' flag, namely 'krw', 'krg', 'krow', 'krog', 'pcow', 'pcog', and 'pcwg'.
+    By default, the saturation function is plotted for SATNUM=1. For a different table, this can be achieved by adding the number at the end of the variable, e.g., 'pcog5'. 
+    In addition, if the model includes hysteresis, then to plot both drainage and imbibition curves this can be achieved by adding 'h' at the end of the variable, e.g., 'krg3h'. 
+
 
 ============
 GIF and mask 

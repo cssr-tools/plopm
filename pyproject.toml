@@ -27,7 +27,8 @@ classifiers = [
 dependencies = [
     "colorcet",
     "matplotlib",
-    "resdata"
+    "resdata",
+    "scipy"
 ]
 requires-python = ">=3.8"
 

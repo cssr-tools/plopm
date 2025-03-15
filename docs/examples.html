@@ -53,7 +53,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#rotation-translation-and-zoom">Rotation, translation, and zoom</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#projections-and-subfigures">Projections and subfigures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convert-to-vtk">Convert to VTK</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#different-input-files">Different input files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#different-input-files-and-ensembles">Different input files and ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gif-and-mask">GIF and mask</a></li>
 </ul>
 </li>
@@ -194,10 +194,10 @@ from the restart files from the initial (0) to the number 5 restart, using a OPM
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>temp,fipnum,co2m,xco2l<span class="w"> </span>-vtkformat<span class="w"> </span>Float32,UInt16,Float64,Float32<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>,5<span class="w"> </span>-m<span class="w"> </span>vtk
 </pre></div>
 </div>
-<figure class="align-default" id="id3">
+<figure class="align-default" id="id4">
 <img alt="_images/vtk_temp.png" src="_images/vtk_temp.png" />
 <figcaption>
-<p><span class="caption-text">Visualization using paraview of the grid and temperature after 25 years of CO2 injection.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+<p><span class="caption-text">Visualization using paraview of the grid and temperature after 25 years of CO2 injection.</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="admonition note">
@@ -207,8 +207,8 @@ However, there are quantities that are not written (e.g., fipnum, flores), in ad
 such as component mass (e.g., co2, h2o). This is when <strong>plopm</strong> can be helpful.</p>
 </div>
 </section>
-<section id="different-input-files">
-<h2>Different input files<a class="headerlink" href="#different-input-files" title="Link to this heading"></a></h2>
+<section id="different-input-files-and-ensembles">
+<h2>Different input files and ensembles<a class="headerlink" href="#different-input-files-and-ensembles" title="Link to this heading"></a></h2>
 <p>Let us assume we have two different runs in different folders for the spe11b case, where the firsts results are save
 in a folder called spe11b, and simulation results where the injection rate has been increased are saved in a folder
 called spe11b_larger_inj. Then, to plot the summary vector for both runs we can execute:</p>
@@ -232,6 +232,25 @@ called spe11b_larger_inj. Then, to plot the summary vector for both runs we can 
 </pre></div>
 </div>
 <img alt="_images/sgas_diff_edit.png" src="_images/sgas_diff_edit.png" />
+<p>The <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples/ensemble">ensemble folder</a> provides a <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples/ensemble/run_ensemble.py">Python file</a> to generate two different
+ensembles using <a class="reference external" href="https://github.com/cssr-tools/pyopmnearwell">pyopmnearwell</a>, where the residual gas saturation is randomly generated.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can install <a class="reference external" href="https://github.com/cssr-tools/pyopmnearwell">pyopmnearwell</a> by executing in the terminal: pip install git+https://github.com/cssr-tools/pyopmnearwell.git.</p>
+</div>
+<p>Below are two of the generated figures after executing the script (additional figures are generated to show the functionality of the <strong>-ensemble</strong> flag):</p>
+<figure class="align-default" id="id5">
+<img alt="_images/ensemble.png" src="_images/ensemble.png" />
+<figcaption>
+<p><span class="caption-text">Example of visualizing ensembles using <strong>plopm</strong> (example0.png and example3_formated.png respectively).</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As seen in this example, <strong>plopm</strong> supports the plotting of saturation functions using the ‘-v’ flag, namely ‘krw’, ‘krg’, ‘krow’, ‘krog’, ‘pcow’, ‘pcog’, and ‘pcwg’.
+By default, the saturation function is plotted for SATNUM=1. For a different table, this can be achieved by adding the number at the end of the variable, e.g., ‘pcog5’.
+In addition, if the model includes hysteresis, then to plot both drainage and imbibition curves this can be achieved by adding ‘h’ at the end of the variable, e.g., ‘krg3h’.</p>
+</div>
 </section>
 <section id="gif-and-mask">
 <h2>GIF and mask<a class="headerlink" href="#gif-and-mask" title="Link to this heading"></a></h2>

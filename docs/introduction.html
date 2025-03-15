@@ -95,7 +95,7 @@ as well as plotting any given summary vector (e.g., field gas in place a.k.a fgi
 <p>The <strong>plopm</strong> tool can be useful for quick inspection of geological models, as well as for generation of nice
 figures for papers/presentations. Also, <strong>plopm</strong> can plot summary results from different simulation cases in the same figure (e.g., using subplots),
 as well as the difference between given dynamic variables (e.g., pressure) for two different simulations cases. In addition, <strong>plopm</strong> can
-convert OPM Flow output files to vtk, which allows to use other visualization/postprocessing tools (e.g., <a class="reference external" href="https://www.paraview.org">paraview</a>)</p>
+convert OPM Flow output files to vtk, which allows to use other visualization/postprocessing tools (e.g., <a class="reference external" href="https://www.paraview.org">paraview</a>).</p>
 </section>
 <section id="overview">
 <span id="id1"></span><h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
@@ -112,7 +112,7 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dd><p>The base name (or full path) of the output folder (‘.’ by default, i.e., the folder where plopm is executed).</p>
 </dd>
 <dt><kbd><span class="option">-v</span></kbd></dt>
-<dd><p>Specify the name of the vairable to plot, e.g., ‘pressure’, in addition to special extensive quantities for the mass such as ‘grid’, ‘wells’, ‘gasm’, ‘dism’, ‘liqm’, ‘vapm’, ‘co2m’, ‘h2om’, ‘xco2l’, ‘xh2ov’, ‘xco2v’, ‘xh2ol’, ‘fwcdm’, and ‘fgipm’ (‘poro,permx,permz,porv,fipnum,satnum’ by default).</p>
+<dd><p>Specify the name of the variable to plot, e.g., ‘pressure’, in addition to special extensive quantities for the mass such as ‘grid’, ‘wells’, ‘faults’, ‘krw’, ‘krg’, ‘krow’, ‘krog’, ‘pcow’, ‘pcog’, ‘pcwg’, ‘gasm’, ‘dism’, ‘liqm’, ‘vapm’, ‘co2m’, ‘h2om’, ‘xco2l’, ‘xh2ov’, ‘xco2v’, ‘xh2ol’, ‘fwcdm’, and ‘fgipm’, as well as operations, e.g, ‘pressure - 0pressure’ to plot the pressure increase (‘poro,permx,permz,porv,fipnum,satnum’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-m</span></kbd></dt>
 <dd><p>Generate ‘png’, ‘gif’, or ‘vtk’ files (‘png’ by default).</p>
@@ -169,10 +169,10 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dd><p>Text for the x axis (’’ by default, i.e., set by plopm).</p>
 </dd>
 <dt><kbd><span class="option">-y<var>lnum</var></span></kbd></dt>
-<dd><p>Number of y axis labels (‘4’ by default).</p>
+<dd><p>Number of y axis labels (‘5’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-x<var>lnum</var></span></kbd></dt>
-<dd><p>Number of x axis labels (‘4’ by default).</p>
+<dd><p>Number of x axis labels (‘5’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-c<var>num</var></span></kbd></dt>
 <dd><p>Number of color labels (’’ by default, i.e., set by plopm).</p>
@@ -233,6 +233,12 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 </dd>
 <dt><kbd><span class="option">-g<var>lobal</var></span></kbd></dt>
 <dd><p>Min and max in the colorbars from the current 2D slide values (0) or whole 3D model ‘1’ (‘0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-e<var>nsemble</var></span></kbd></dt>
+<dd><p>Set to ‘1’ to plot the mean and error bands for the ensemble, ‘2’ to plot the min, mean, and max values, and ‘3’ to plot ‘1’ and ‘2’ (‘0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-b<var>andprop</var></span></kbd></dt>
+<dd><p>Set to color and alpha values for the matplotlib.pyplot.fill_between function when the flag -ensamble is used with values ‘1’ or ‘3’ , e.g., -bandprop ‘r,0.1,g,0.2’ (’’ by default, i.e., set as the same color as the mean and alpha==0.2).</p>
 </dd>
 <dt><kbd><span class="option">-h<var>ow</var></span></kbd></dt>
 <dd><p>Select how to project the given variable (-v) in a slide range (-s). By default the variables are pore volume weighted averaged along the range except for mass quantities, porv, trans, and cell dims (e.g., dz) which are summed; cell indices (e.g., index_i) which show the discrete value; harmonic average and arithmetic average for permeabilities depending on the slide range direction using the cell dim along the slide (e.g., -s ,,1:2 -v permz [harmonic averaged]); for wells/faults, ‘min’ show the cells when at least one cell contains them or ‘max’ when all cells are part of the given slide/slides range. The supported options are ‘min’, ‘max’, ‘sum’, ‘mean’, ‘pvmean’, ‘harmonic’, ‘arithmetic’, ‘first’, and ‘last’ (’’ by default, i.e., the defaults as described above).</p>

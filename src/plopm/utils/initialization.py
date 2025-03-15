@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W0123,R0915,R0912
+# pylint: disable=W0123,R0915,R0912,R1702
 
 """
 Utiliy functions to set the requiried input values by plopm.
@@ -34,23 +34,32 @@ def ini_dic(cmdargs):
     dic = {"output": cmdargs["output"].strip()}
     names = (cmdargs["input"].strip()).split("  ")
     names = [var.split(" ") for var in names]
+    dic["namens"] = names
     dic["mode"] = cmdargs["mode"].strip()
-    if names[0][0] == "." or names[0][0] == "./":
+    dic["ensemble"] = int(cmdargs["ensemble"])
+    if names[0][0][-1] in [".", "/"]:
+        folders = names[0]
         names = []
-        names.append([])
-        for root, _, files in os.walk("."):
-            for file in files:
-                if dic["mode"] == "vtk":
-                    if file.endswith(".DATA"):
-                        names[-1].append(os.path.join(root, file)[2:-5])
-                else:
-                    if file.endswith(".SMSPEC"):
-                        names[-1].append(os.path.join(root, file)[2:-7])
+        for i, folder in enumerate(folders):
+            if dic["ensemble"] > 0 or i == 0:
+                names.append([])
+            if folder[0] != ".":
+                folder = "./" + folder
+            for root, _, files in os.walk(folder):
+                for file in files:
+                    if dic["mode"] == "vtk":
+                        if file.endswith(".DATA"):
+                            names[-1].append(os.path.join(root, file)[2:-5])
+                    else:
+                        if file.endswith(".SMSPEC"):
+                            names[-1].append(os.path.join(root, file)[2:-7])
+            names[-1] = sorted(names[-1])
     dic["names"], dic["name"] = names, names[0][0]
     dic["coords"] = ["x", "y", "z"]
     dic["scale"] = int(cmdargs["scale"])
     dic["delax"] = int(cmdargs["delax"])
     dic["printv"] = int(cmdargs["printv"])
+    dic["bandprop"] = cmdargs["bandprop"]
     dic["subfigs"] = (cmdargs["subfigs"].strip()).split(",")
     dic["use"] = cmdargs["use"].strip()
     dic["vrs"] = (cmdargs["variable"].strip()).split(",")
@@ -333,7 +342,11 @@ def is_summary(dic):
                 if ext == "unrst":
                     print(f"The available restarts for {dic['name']} are:")
                     print(list(range(0, ntot)))
-    if dic["sensor"]:
+    if (
+        dic["sensor"]
+        or dic["vrs"][0].lower()[:3] in ["krw", "krg"]
+        or dic["vrs"][0].lower()[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
+    ):
         return True
     if os.path.isfile(f"{dic['name']}.SMSPEC"):
         if dic["use"] == "resdata":

@@ -26,10 +26,10 @@ pycopm
 pyopmnearwell
 *************
 
-.. image:: ./figs/pyopmnearwell.gif
-    :scale: 50%
+.. image:: ./figs/pyopmnearwell.png
+    :scale: 60%
 
-`A framework to simulate near well dynamics using OPM Flow <https://github.com/cssr-tools/pyopmnearwell>`_.
+`A Python framework to simulate near well dynamics using OPM Flow <https://github.com/cssr-tools/pyopmnearwell>`_.
 
 ********
 expreccs

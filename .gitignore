@@ -163,6 +163,7 @@ cython_debug/
 .DS_Store
 
 # Tests
+**/examples/ensemble/*/
 examples/output
 examples/spe11b_fipnum_*,1,*_t5.png
 examples/spe11b_permx_*,1,*_t5.png

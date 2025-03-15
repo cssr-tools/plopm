@@ -60,10 +60,11 @@ def load_parser():
         "-v",
         "--variable",
         default="poro,permx,permz,porv,fipnum,satnum",
-        help="Specify the name of the vairable to plot, e.g., 'pressure', in "
+        help="Specify the name of the variable to plot, e.g., 'pressure', in "
         "addition to special variables such as 'grid', 'wells', 'faults', "
+        "'krw', 'krg', 'krow', 'krog', 'pcow', 'pcog', 'pcwg', "
         "'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', "
-        "'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g "
+        "'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g, "
         "'pressure - 0pressure' to plot the pressure increase "
         "('poro,permx,permz,porv,fipnum,satnum' by default.",
     )
@@ -196,14 +197,14 @@ def load_parser():
     parser.add_argument(
         "-ylnum",
         "--ylnum",
-        default="4",
-        help="Number of y axis labels ('4' by default).",
+        default="5",
+        help="Number of y axis labels ('5' by default).",
     )
     parser.add_argument(
         "-xlnum",
         "--xlnum",
-        default="4",
-        help="Number of x axis labels ('4' by default).",
+        default="5",
+        help="Number of x axis labels ('5' by default).",
     )
     parser.add_argument(
         "-cnum",
@@ -332,8 +333,25 @@ def load_parser():
         "-global",
         "--global",
         default=0,
-        help="Min and max in the colorbars from the current 2D slide values"
-        " (0) or whole 3D model '1' ('0' by default).",
+        help="Min and max in the colorbars from the current 2D slide values "
+        "(0) or whole 3D model '1' ('0' by default).",
+    )
+    parser.add_argument(
+        "-ensemble",
+        "--ensemble",
+        default="0",
+        help="Set to '1' to plot the mean and error bands for the ensemble, "
+        "'2' to plot the min, mean, and max values, and '3' to plot '1' and '2' "
+        "('0' by default).",
+    )
+    parser.add_argument(
+        "-bandprop",
+        "--bandprop",
+        default="",
+        help="Set to color and alpha values for the matplotlib.pyplot.fill_between "
+        "function when the flag -ensamble is used with values '1' or '3' , e.g., "
+        "-bandprop 'r,0.1,g,0.2' ('' by default, i.e., set as the same color as "
+        "the mean and alpha==0.2).",
     )
     parser.add_argument(
         "-how",
