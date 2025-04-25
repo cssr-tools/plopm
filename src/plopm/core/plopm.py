@@ -449,6 +449,13 @@ def load_parser():
         "('0.40,0.01,0.2,0.02' by default).",
     )
     parser.add_argument(
+        "-grid",
+        "--grid",
+        default="",
+        help="Set the edgecolors and lw in the matplotlib.pyplot.pcolormesh "
+        "method, e.g., 'black,1e-3' ('' by default, i.e., no grid).",
+    )
+    parser.add_argument(
         "-vmin",
         "--vmin",
         default="",

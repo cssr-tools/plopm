@@ -78,6 +78,7 @@ def ini_dic(cmdargs):
     dic["vmin"] = (cmdargs["vmin"].strip()).split(",")
     dic["vmax"] = (cmdargs["vmax"].strip()).split(",")
     dic["flow"] = cmdargs["path"].strip()
+    dic["grid"] = (cmdargs["grid"].strip()).split(",")
     dic["fc"] = cmdargs["facecolor"].strip()
     dic["ncolor"] = cmdargs["ncolor"].strip()
     dic["cnum"] = (cmdargs["cnum"].strip()).split(",")
