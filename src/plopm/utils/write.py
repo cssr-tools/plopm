@@ -799,44 +799,88 @@ def mapits(dic, t, n, k):
             nlc,
         )
         shc = 0.5
-    if var.lower() == "grid" and var.lower() != "wells":
-        imag = (
-            dic["axis"]
-            .flat[k]
-            .pcolormesh(
-                dic["xc"],
-                dic["yc"],
-                maps,
-                facecolors="none",
-                edgecolors="black",
-                lw=0.001,
+    if len(dic["grid"]) > 1:
+        if var.lower() == "grid" and var.lower() != "wells":
+            imag = (
+                dic["axis"]
+                .flat[k]
+                .pcolormesh(
+                    dic["xc"],
+                    dic["yc"],
+                    maps,
+                    facecolors="none",
+                    edgecolors=dic["grid"][0],
+                    lw=float(dic["grid"][1]),
+                )
             )
-        )
-    elif int(dic["log"][n]) == 0:
-        imag = (
-            dic["axis"]
-            .flat[k]
-            .pcolormesh(
-                dic["xc"],
-                dic["yc"],
-                maps,
-                shading="flat",
-                cmap=cmap,
+        elif int(dic["log"][n]) == 0:
+            imag = (
+                dic["axis"]
+                .flat[k]
+                .pcolormesh(
+                    dic["xc"],
+                    dic["yc"],
+                    maps,
+                    shading="flat",
+                    cmap=cmap,
+                    edgecolors=dic["grid"][0],
+                    lw=float(dic["grid"][1]),
+                )
             )
-        )
+        else:
+            imag = (
+                dic["axis"]
+                .flat[k]
+                .pcolormesh(
+                    dic["xc"],
+                    dic["yc"],
+                    maps,
+                    shading="flat",
+                    cmap=cmap,
+                    norm=colors.LogNorm(vmin=minc, vmax=maxc),
+                    edgecolors=dic["grid"][0],
+                    lw=float(dic["grid"][1]),
+                )
+            )
     else:
-        imag = (
-            dic["axis"]
-            .flat[k]
-            .pcolormesh(
-                dic["xc"],
-                dic["yc"],
-                maps,
-                shading="flat",
-                cmap=cmap,
-                norm=colors.LogNorm(vmin=minc, vmax=maxc),
+        if var.lower() == "grid" and var.lower() != "wells":
+            imag = (
+                dic["axis"]
+                .flat[k]
+                .pcolormesh(
+                    dic["xc"],
+                    dic["yc"],
+                    maps,
+                    facecolors="none",
+                    edgecolors="black",
+                    lw=0.001,
+                )
             )
-        )
+        elif int(dic["log"][n]) == 0:
+            imag = (
+                dic["axis"]
+                .flat[k]
+                .pcolormesh(
+                    dic["xc"],
+                    dic["yc"],
+                    maps,
+                    shading="flat",
+                    cmap=cmap,
+                )
+            )
+        else:
+            imag = (
+                dic["axis"]
+                .flat[k]
+                .pcolormesh(
+                    dic["xc"],
+                    dic["yc"],
+                    maps,
+                    shading="flat",
+                    cmap=cmap,
+                    norm=colors.LogNorm(vmin=minc, vmax=maxc),
+                )
+            )
     if (
         dic["subfigs"][0]
         and dic["mode"] == "gif"

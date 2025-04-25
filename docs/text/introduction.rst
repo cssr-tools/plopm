@@ -88,6 +88,7 @@ where
 -diff       The base name (or full path) of the input file to substract ('' by default).
 -suptitle   Title for the subfigures ('' by default, i.e., set by plopm, if 0, then it is removed; otherwise, write the text).
 -cbsfax     Set the global axis position and size for the colorbar ('0.40,0.01,0.2,0.02' by default).
+-grid       Set the edgecolors and lw in the matplotlib.pyplot.pcolormesh method, e.g., 'black,1e-3' ('' by default, i.e., no grid).
 -vmin       Set a minimum threshold to remove values in the variable ('' by default).
 -vmax       Set a maximum threshold to remove values in the variable ('' by default).
 -maskthr    Set the threshold for the variable to mask " "('1e-3' by default).
