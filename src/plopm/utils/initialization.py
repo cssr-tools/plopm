@@ -347,6 +347,8 @@ def is_summary(dic):
         dic["sensor"]
         or dic["vrs"][0].lower()[:3] in ["krw", "krg"]
         or dic["vrs"][0].lower()[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
+        or dic["vrs"][0].lower()[:6] == "pcfact"
+        or dic["vrs"][0].lower()[:8] == "permfact"
     ):
         return True
     if os.path.isfile(f"{dic['name']}.SMSPEC"):

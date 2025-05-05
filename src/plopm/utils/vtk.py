@@ -38,11 +38,11 @@ def make_vtks(dic):
                 args=f"{dic['flow']} --version", stdout=PIPE, shell=True
             ) as process:
                 dic["flow_version"] = str(process.communicate()[0])[7:-3]
-            if dic["flow_version"] == "2024.10":
-                make_dry_deck(dic)
-            else:
-                os.system(f"cp {dic['deck']}.DATA {dic['deck']}_DRYRUN.DATA")
-                flags += " --enable-dry-run=1"
+            # if dic["flow_version"] == "2024.10": OPM Flow dryrun+vtk is broken again ...
+            make_dry_deck(dic)
+            # else:
+            #    os.system(f"cp {dic['deck']}.DATA {dic['deck']}_DRYRUN.DATA")
+            #    flags += " --enable-dry-run=1"
             os.system("mkdir plopm_vtks_temporal")
             deck = f" ../{dic['deck']}_DRYRUN.DATA"
             os.chdir("plopm_vtks_temporal")

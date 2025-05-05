@@ -32,7 +32,7 @@ where
 
 -i    The base name (or full path) of the input files; if more than one is given, separate them by ' ' (e.g, 'SPE11B /home/user/SPE11B_TUNED') ('SPE11B' by default).
 -o    The base name (or full path) of the output folder ('.' by default, i.e., the folder where plopm is executed).
--v    Specify the name of the variable to plot, e.g., 'pressure', in addition to special extensive quantities for the mass such as 'grid', 'wells', 'faults', 'krw', 'krg', 'krow', 'krog', 'pcow', 'pcog', 'pcwg', 'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', 'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g, 'pressure - 0pressure' to plot the pressure increase ('poro,permx,permz,porv,fipnum,satnum' by default).
+-v    Specify the name of the variable to plot, e.g., 'pressure', in addition to special extensive quantities for the mass such as 'grid', 'wells', 'faults', 'permfact', 'pcfact', 'krw', 'krg', 'krow', 'krog', 'pcow', 'pcog', 'pcwg', 'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', 'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g, 'pressure - 0pressure' to plot the pressure increase ('poro,permx,permz,porv,fipnum,satnum' by default).
 -m    Generate 'png', 'gif', or 'vtk' files ('png' by default).
 -s    The slide in the 3D model to plot the 2D maps, e.g, '10,,' to plot the xz plane on all cells with i=10, or ',,5:10' to plot the pv average weighted quantity. If the three values are given, e.g., '2,4,9', then the variable is plotted over time at that location (',1,' by default, i.e., the xz surface at j=1).
 -p    Path to flow, e.g., '/home/build/bin/flow'. This is used to generate the grid for the vtk files ('flow' by default).
