@@ -44,6 +44,8 @@ def make_summary(dic):
         dic["deckn"] = (dic["names"][0][0].split("/")[-1]).lower()
     else:
         dic["deckn"] = dic["names"][0][0].lower()
+    if ".inc" in dic["deckn"]:
+        dic["deckn"] = dic["deckn"][:-4]
     dic["fig"], dic["axis"] = [], []
     if dic["subfigs"][0]:
         dic["fig"], dic["axis"] = plt.subplots(
@@ -59,6 +61,14 @@ def make_summary(dic):
         if dic["ensemble"] > 0:
             tunit, vunit, min_t, max_t, min_v, max_v = handle_ensemble(dic)
         else:
+            if dic["ylog"][j] == "1":
+                ylow = 0
+            else:
+                ylow = -np.inf
+            if dic["xlog"][j] == "1":
+                xlow = 0
+            else:
+                xlow = -np.inf
             for i, name in enumerate(dic["names"][j]):
                 jj = j
                 if len(dic["vrs"]) == len(dic["names"][0]) and not dic["subfigs"][0]:
@@ -76,6 +86,8 @@ def make_summary(dic):
                     dic["sensor"]
                     or quan.lower()[:3] in ["krw", "krg"]
                     or quan.lower()[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
+                    or quan.lower()[:6] == "pcfact"
+                    or quan.lower()[:8] == "permfact"
                 ):
                     dic["axis"].flat[k].plot(
                         time,
@@ -95,11 +107,11 @@ def make_summary(dic):
                         lw=float(dic["lw"][jj][i]),
                     )
                 if i == 0:
-                    min_t, min_v = min(time), min(var)
+                    min_t, min_v = min(time[time > xlow]), min(var[var > ylow])
                     max_t, max_v = max(time), max(var)
                 else:
-                    min_t = min(min_t, min(time))
-                    min_v = min(min_v, min(var))
+                    min_t = min(min_t, min(time[time > xlow]))
+                    min_v = min(min_v, min(var[var > ylow]))
                     max_t = max(max_t, max(time))
                     max_v = max(max_v, max(var))
         dic["axis"].flat[k].set_ylabel(quan + vunit)

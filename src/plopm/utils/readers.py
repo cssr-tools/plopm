@@ -391,7 +391,11 @@ def read_summary(dic, case, quan, tunit, qskl, n):
             ][:n_v]
             if hyst:
                 timeh = np.array(
-                    table[0][sht + (2 * snu - 1) * nswe : sht + 2 * snu * nswe]
+                    table[0][
+                        sht
+                        + (int(nsnum / 2) + snu - 1) * nswe : sht
+                        + (int(nsnum / 2) + snu) * nswe
+                    ]
                 )
                 timeh = np.array([val for val in timeh if val <= 1.0])
                 n_v = len(timeh)
@@ -401,9 +405,9 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                         table[0][
                             sht
                             + nswe * nsnum
-                            + (2 * snu - 1) * nswe : sht
+                            + (int(nsnum / 2) + snu - 1) * nswe : sht
                             + nswe * nsnum
-                            + 2 * snu * nswe
+                            + (int(nsnum / 2) + snu) * nswe
                         ][:n_v]
                     ),
                 )
@@ -425,7 +429,11 @@ def read_summary(dic, case, quan, tunit, qskl, n):
             )
             if hyst:
                 timeh = np.array(
-                    table[0][sht + (2 * snu - 1) * nswe : sht + 2 * snu * nswe]
+                    table[0][
+                        sht
+                        + (int(nsnum / 2) + snu - 1) * nswe : sht
+                        + (int(nsnum / 2) + snu) * nswe
+                    ]
                 )
                 timeh = np.array([val for val in timeh if val <= 1.0])
                 n_v = len(timeh)
@@ -434,13 +442,14 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                     table[0][
                         sht
                         + nswe * nsnum
-                        + (2 * snu - 1) * nswe : sht
+                        + (int(nsnum / 2) + snu - 1) * nswe : sht
                         + nswe * nsnum
-                        + 2 * snu * nswe
+                        + (int(nsnum / 2) + snu) * nswe
                     ][:n_v],
                 )
                 time = np.append(time, np.flip(timeh))
         elif what == "krw":
+            nswe = tabdim[0][21]
             tunit = "s$_w$ [-]"
             sht = tabdim[0][20] - 1
             time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
@@ -451,7 +460,11 @@ def read_summary(dic, case, quan, tunit, qskl, n):
             ][:n_v]
             if hyst:
                 timeh = np.array(
-                    table[0][sht + (2 * snu - 1) * nswe : sht + 2 * snu * nswe]
+                    table[0][
+                        sht
+                        + (int(nsnum / 2) + snu - 1) * nswe : sht
+                        + (int(nsnum / 2) + snu) * nswe
+                    ]
                 )
                 timeh = np.array([val for val in timeh if val <= 1.0])
                 n_v = len(timeh)
@@ -461,14 +474,15 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                         table[0][
                             sht
                             + nswe * nsnum
-                            + (2 * snu - 1) * nswe : sht
+                            + (int(nsnum / 2) + snu - 1) * nswe : sht
                             + nswe * nsnum
-                            + 2 * snu * nswe
+                            + (int(nsnum / 2) + snu) * nswe
                         ][:n_v]
                     ),
                 )
                 time = np.append(time, np.flip(timeh))
         elif what == "pcow":
+            nswe = tabdim[0][21]
             tunit = "s$_w$ [-]"
             sht = tabdim[0][20] - 1
             time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
@@ -486,7 +500,11 @@ def read_summary(dic, case, quan, tunit, qskl, n):
             )
             if hyst:
                 timeh = np.array(
-                    table[0][sht + (2 * snu - 1) * nswe : sht + 2 * snu * nswe]
+                    table[0][
+                        sht
+                        + (int(nsnum / 2) + snu - 1) * nswe : sht
+                        + (int(nsnum / 2) + snu) * nswe
+                    ]
                 )
                 timeh = np.array([val for val in timeh if val <= 1.0])
                 timeh = 1 - timeh
@@ -496,9 +514,9 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                     table[0][
                         sht
                         + 2 * nswe * nsnum
-                        + (2 * snu - 1) * nswe : sht
+                        + (int(nsnum / 2) + snu - 1) * nswe : sht
                         + 2 * nswe * nsnum
-                        + 2 * snu * nswe
+                        + (int(nsnum / 2) + snu) * nswe
                     ][:n_v],
                 )
                 time = np.append(time, np.flip(timeh))
@@ -517,7 +535,11 @@ def read_summary(dic, case, quan, tunit, qskl, n):
             ][:n_v]
             if hyst:
                 timeh = np.array(
-                    table[0][sht + (2 * snu - 1) * nswe : sht + 2 * snu * nswe]
+                    table[0][
+                        sht
+                        + (int(nsnum / 2) + snu - 1) * nswe : sht
+                        + (int(nsnum / 2) + snu) * nswe
+                    ]
                 )
                 timeh = np.array([val for val in timeh if val <= 1.0])
                 n_v = len(timeh)
@@ -527,13 +549,44 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                         table[0][
                             sht
                             + 2 * nswe * nsnum
-                            + (2 * snu - 1) * nswe : sht
+                            + (int(nsnum / 2) + snu - 1) * nswe : sht
                             + 2 * nswe * nsnum
-                            + 2 * snu * nswe
+                            + (int(nsnum / 2) + snu) * nswe
                         ][:n_v]
                     ),
                 )
                 time = np.append(time, np.flip(timeh))
+    elif quan.lower()[:6] == "pcfact" or quan.lower()[:8] == "permfact":
+        time = []
+        var = []
+        found = False
+        snu = 1
+        vec = quans[0].upper()
+        if quans[0].lower()[:8] == "permfact" and len(quans[0].lower()) > 8:
+            snu = int(quans[0][8:])
+            vec = quans[0].upper()[:8]
+        elif quans[0].lower()[:6] == "pcfact" and len(quans[0].lower()) > 6:
+            snu = int(quans[0][6:])
+            vec = quans[0].upper()[:6]
+        file = where_at(case, vec)
+        count = 0
+        with open(file, "r", encoding="utf8") as file:
+            for row in csv.reader(file, delimiter=" "):
+                if len(row) > 0:
+                    if row[0] == vec:
+                        found = True
+                    if row[0] == "/" and found:
+                        count += 1
+                    if count == snu:
+                        break
+                    if len(row) == 2 and found and count == snu - 1:
+                        time.append(float(row[0]))
+                        var.append(float(row[1]))
+        if not var:
+            print(f"No {quans[0]} found.")
+            sys.exit()
+        var = np.array(var)
+        time = np.array(time)
     elif dic["use"] == "resdata":
         summary = Summary(f"{case}.SMSPEC")
         if quans[0].upper() in dic["smass"]:
@@ -581,6 +634,50 @@ def read_summary(dic, case, quan, tunit, qskl, n):
     elif quans[0].lower() in ["time"]:
         vunit = " [d]"
     return time, var * qskl, tunit, vunit
+
+
+def where_at(case, vec):
+    """
+    Using the input deck (.DATA) to read the i,j fault locations
+
+    Args:
+        case (str): Name of the deck\n
+        vec (str): Keyword
+
+    Returns:
+        file (str): Name of the file where the vec at.
+
+    """
+    include = False
+    path = ""
+    if len(case.split("/")) > 1:
+        path = "/".join(case.split("/")[:-1]) + "/"
+    case = case + ".DATA"
+    includes = []
+    with open(case, "r", encoding="utf8") as file:
+        for row in csv.reader(file):
+            if len(row) > 0:
+                if row[0] == vec:
+                    return case
+                if row[0] == "INCLUDE":
+                    include = True
+                    continue
+                if include:
+                    name = (row[0].split("/")[0]).strip(" ")
+                    if "'" in name:
+                        name = name[1:-1]
+                    if os.path.isfile(path + name):
+                        includes.append(path + name)
+                        include = False
+                        continue
+    for include in includes:
+        with open(include, "r", encoding="utf8") as file:
+            for row in csv.reader(file):
+                if len(row) > 0:
+                    if row[0] == vec:
+                        return include
+    print(f"No {vec} found (only looking in {case} and INCLUDE files).")
+    sys.exit()
 
 
 def operate(var, quan1, i, oper):
