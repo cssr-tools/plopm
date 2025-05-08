@@ -487,17 +487,14 @@ def read_summary(dic, case, quan, tunit, qskl, n):
             sht = tabdim[0][20] - 1
             time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
             time = np.array([val for val in time if val <= 1.0])
-            time = 1 - time
             n_v = len(time)
-            var = np.flip(
-                table[0][
-                    sht
-                    + 2 * nswe * nsnum
-                    + (snu - 1) * nswe : sht
-                    + 2 * nswe * nsnum
-                    + snu * nswe
-                ][:n_v]
-            )
+            var = table[0][
+                sht
+                + 2 * nswe * nsnum
+                + (snu - 1) * nswe : sht
+                + 2 * nswe * nsnum
+                + snu * nswe
+            ][:n_v]
             if hyst:
                 timeh = np.array(
                     table[0][
@@ -507,17 +504,18 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                     ]
                 )
                 timeh = np.array([val for val in timeh if val <= 1.0])
-                timeh = 1 - timeh
                 n_v = len(timeh)
                 var = np.append(
                     var,
-                    table[0][
-                        sht
-                        + 2 * nswe * nsnum
-                        + (int(nsnum / 2) + snu - 1) * nswe : sht
-                        + 2 * nswe * nsnum
-                        + (int(nsnum / 2) + snu) * nswe
-                    ][:n_v],
+                    np.flip(
+                        table[0][
+                            sht
+                            + 2 * nswe * nsnum
+                            + (int(nsnum / 2) + snu - 1) * nswe : sht
+                            + 2 * nswe * nsnum
+                            + (int(nsnum / 2) + snu) * nswe
+                        ][:n_v]
+                    ),
                 )
                 time = np.append(time, np.flip(timeh))
         else:
@@ -575,13 +573,25 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                 if len(row) > 0:
                     if row[0] == vec:
                         found = True
-                    if row[0] == "/" and found:
-                        count += 1
                     if count == snu:
                         break
-                    if len(row) == 2 and found and count == snu - 1:
+                    if (
+                        len(row) > 1
+                        and row[0].strip() != "--"
+                        and found
+                        and count == snu - 1
+                    ):
                         time.append(float(row[0]))
                         var.append(float(row[1]))
+                        if len(row) > 2:
+                            if row[2].strip() == "/":
+                                break
+                    if found:
+                        if row[0] == "/":
+                            count += 1
+                        elif len(row) > 2:
+                            if row[2].strip() == "/":
+                                count += 1
         if not var:
             print(f"No {quans[0]} found.")
             sys.exit()

@@ -185,6 +185,7 @@ def make_summary(dic):
             quan = f"{dic['deckn']}_{quan}"
             quan = quan.replace(" / ", "_over_")
             quan = quan.replace(" ", "")
+            quan = quan.replace(":", "-")
             dic["fig"].savefig(
                 f"{dic['output']}/{dic['save'][j] if dic['save'][j] else quan}.png",
                 bbox_inches="tight",
@@ -239,6 +240,7 @@ def make_summary(dic):
             quan = f"{dic['deckn']}_{quan}"
             quan = quan.replace(" / ", "_over_")
             quan = quan.replace(" ", "")
+            quan = quan.replace(":", "-")
             dic["fig"].savefig(
                 f"{dic['output']}/{dic['save'][j] if dic['save'][j] else quan}.png",
                 bbox_inches="tight",
@@ -1275,7 +1277,7 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         dic["axis"].flat[k].set_xticks(xlabels / dic["xskl"])
         if dic["xskl"] != 1:
             dic["axis"].flat[k].set_xticklabels(xlabels)
-    if len(dic["ylim"][n]) > 1 and dic["rm"][0] == 0:
+    if len(dic["ylim"][n]) > 1:
         dic["axis"].flat[k].set_ylim(
             [float(dic["ylim"][n][0][1:]), float(dic["ylim"][n][1][:-1])]
         )
