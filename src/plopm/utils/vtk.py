@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W3301,R0912,R0915
+# pylint: disable=W3301,R0912,R0915,E1102
 
 """
 Utiliy functions to write the vtks.
@@ -10,6 +10,7 @@ import os
 import csv
 import sys
 from subprocess import PIPE, Popen
+from alive_progress import alive_bar
 import numpy as np
 from plopm.utils.readers import get_quantity, get_readers
 
@@ -38,7 +39,7 @@ def make_vtks(dic):
                 args=f"{dic['flow']} --version", stdout=PIPE, shell=True
             ) as process:
                 dic["flow_version"] = str(process.communicate()[0])[7:-3]
-            # if dic["flow_version"] == "2024.10": OPM Flow dryrun+vtk is broken again ...
+            # if dic["flow_version"] == "2025.04": OPM Flow dryrun+vtk is broken again ...
             make_dry_deck(dic)
             # else:
             #    os.system(f"cp {dic['deck']}.DATA {dic['deck']}_DRYRUN.DATA")
@@ -52,7 +53,7 @@ def make_vtks(dic):
                 os.system(dic["flow"] + deck + flags)
             os.system(
                 f"mv {dic['deck']}_DRYRUN-00000.vtu "
-                + f"{cwd}/{dic['output']}/{dic['deck']}-GRID.vtu"
+                + f"{dic['output']}/{dic['deck']}-GRID.vtu"
             )
             os.system(f"cd .. && rm -rf plopm_vtks_temporal {deck[4:]}")
             os.chdir(cwd)
@@ -124,77 +125,81 @@ def opmtovtk(dic, k):
         4,
         "\t\t\t\t<CellData Scalars='File created by https://github.com/cssr-tools/plopm'>",
     )
-    for i in dic["restart"]:
-        for n, var in enumerate(dic["vrs"]):
-            unit, quan = get_quantity(dic, var.upper(), n, i)
-            if i == 0:
-                base_vtk.insert(
-                    5 + 2 * n,
-                    f"\n\t\t\t\t\t<DataArray type='{dic['vtkformat'][n]}' Name="
-                    + f"'{dic['vtknames'][n] if dic['vtknames'][n] else var.lower()+unit}' "
-                    + "NumberOfComponents='1' format='ascii'>\n",
-                )
-            if dic["vtkformat"][n] == "Float64":
+    with alive_bar(len(dic["restart"]) * len(dic["vrs"])) as bar_animation:
+        for i in dic["restart"]:
+            for n, var in enumerate(dic["vrs"]):
+                bar_animation()
+                unit, quan = get_quantity(dic, var.upper(), n, i)
                 if i == 0:
                     base_vtk.insert(
-                        6 + 2 * n,
-                        " ".join(
+                        5 + 2 * n,
+                        f"\n\t\t\t\t\t<DataArray type='{dic['vtkformat'][n]}' Name="
+                        + f"'{dic['vtknames'][n] if dic['vtknames'][n] else var.lower()+unit}' "
+                        + "NumberOfComponents='1' format='ascii'>\n",
+                    )
+                if dic["vtkformat"][n] == "Float64":
+                    if i == 0:
+                        base_vtk.insert(
+                            6 + 2 * n,
+                            " ".join(
+                                ["\t\t\t\t\t "]
+                                + [str(np.float32(val)) for val in quan]
+                                + ["\n\t\t\t\t\t</DataArray>"]
+                            ),
+                        )
+                    else:
+                        base_vtk[6 + 2 * n] = " ".join(
                             ["\t\t\t\t\t "]
                             + [str(np.float32(val)) for val in quan]
                             + ["\n\t\t\t\t\t</DataArray>"]
-                        ),
-                    )
-                else:
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [str(np.float32(val)) for val in quan]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-            elif dic["vtkformat"][n] == "Float32":
-                if i == 0:
-                    base_vtk.insert(
-                        6 + 2 * n,
-                        " ".join(
+                        )
+                elif dic["vtkformat"][n] == "Float32":
+                    if i == 0:
+                        base_vtk.insert(
+                            6 + 2 * n,
+                            " ".join(
+                                ["\t\t\t\t\t "]
+                                + [str(np.float16(val)) for val in quan]
+                                + ["\n\t\t\t\t\t</DataArray>"]
+                            ),
+                        )
+                    else:
+                        base_vtk[6 + 2 * n] = " ".join(
                             ["\t\t\t\t\t "]
                             + [str(np.float16(val)) for val in quan]
                             + ["\n\t\t\t\t\t</DataArray>"]
-                        ),
-                    )
-                else:
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [str(np.float16(val)) for val in quan]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-            elif dic["vtkformat"][n] == "UInt16":
-                if i == 0:
-                    base_vtk.insert(
-                        6 + 2 * n,
-                        " ".join(
+                        )
+                elif dic["vtkformat"][n] == "UInt16":
+                    if i == 0:
+                        base_vtk.insert(
+                            6 + 2 * n,
+                            " ".join(
+                                ["\t\t\t\t\t "]
+                                + [str(int(val)) for val in quan]
+                                + ["\n\t\t\t\t\t</DataArray>"]
+                            ),
+                        )
+                    else:
+                        base_vtk[6 + 2 * n] = " ".join(
                             ["\t\t\t\t\t "]
                             + [str(int(val)) for val in quan]
                             + ["\n\t\t\t\t\t</DataArray>"]
-                        ),
-                    )
+                        )
                 else:
-                    base_vtk[6 + 2 * n] = " ".join(
-                        ["\t\t\t\t\t "]
-                        + [str(int(val)) for val in quan]
-                        + ["\n\t\t\t\t\t</DataArray>"]
-                    )
-            else:
-                print(f"Unknow format ({dic['vtkformat'][n]}).")
-                sys.exit()
-        if i == 0:
-            base_vtk.insert(7 + 2 * (len(dic["vrs"]) - 1), "\n\t\t\t\t</CellData>\n")
-        where = dic["save"][k] if dic["save"][k] else dic["deck"]
-        with open(
-            f"{dic['output']}/{where}-{0 if i<1000 else ''}"
-            + f"{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
-            "w",
-            encoding="utf8",
-        ) as file:
-            file.write("".join(base_vtk))
+                    print(f"Unknow format ({dic['vtkformat'][n]}).")
+                    sys.exit()
+            if i == 0:
+                base_vtk.insert(
+                    7 + 2 * (len(dic["vrs"]) - 1), "\n\t\t\t\t</CellData>\n"
+                )
+            where = dic["save"][k] if dic["save"][k] else dic["deck"]
+            with open(
+                f"{dic['output']}/{where}-{0 if i<1000 else ''}"
+                + f"{0 if i<100 else ''}{0 if i<10 else ''}{int(i)}.vtu",
+                "w",
+                encoding="utf8",
+            ) as file:
+                file.write("".join(base_vtk))
 
 
 def make_dry_deck(dic):

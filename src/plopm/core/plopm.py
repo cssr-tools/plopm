@@ -24,15 +24,23 @@ def plopm():
     if int(cmdargs["warnings"]) == 0:
         warnings.warn = lambda *args, **kwargs: None
     dic = ini_dic(cmdargs)
+    text = (
+        "\nThe execution of plopm succeeded. "
+        + f"The generated files have been written to {dic['output']}\n"
+    )
+    print("\nExecuting plopm, please wait.")
     if dic["mode"] == "vtk":
         make_vtks(dic)
+        print(text)
         return
     if is_summary(dic):
         ini_summary(dic)
         make_summary(dic)
+        print(text)
         return
     ini_properties(dic)
     make_maps(dic)
+    print(text)
 
 
 def load_parser():
@@ -166,7 +174,10 @@ def load_parser():
         "--restart",
         default="-1",
         help="Restart number to plot the dynamic variable, where 0 corresponds to "
-        "the initial one ('-1' by default, i.e., the last restart file).",
+        "the initial one ('-1' by default, i.e., the last restart file). For "
+        "GIFs, the default correspond to all restart steps. To make a GIF using "
+        "selected restart steps, provide these separated by commas, e.g., "
+        "0,3,10,20",
     )
     parser.add_argument(
         "-a",

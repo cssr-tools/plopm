@@ -833,10 +833,13 @@ def get_readers(dic):
             dic["nx"] = dic["egrid"].dimension[0]
             dic["ny"] = dic["egrid"].dimension[1]
             dic["nz"] = dic["egrid"].dimension[2]
+    if dic["restart"][0] == -1:
+        if dic["mode"] == "gif":
+            dic["restart"] = list(range(dic["ntot"]))
+        else:
+            dic["restart"] = [dic["ntot"] - 1]
     if not dic["tnrst"]:
         dic["tnrst"] = [0] * len(dic["restart"])
-    if dic["restart"][0] == -1:
-        dic["restart"] = [dic["ntot"] - 1]
 
 
 def get_unit(name):

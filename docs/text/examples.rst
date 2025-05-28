@@ -47,6 +47,15 @@ To plot cell values over time, this can be achieved by:
 .. figure:: figs/spe11b_pressure-0pressure.png
     :scale: 20%
 
+It is also possible to set the colors in RGB or HEX format for the spatial maps, for example:
+
+.. code-block:: bash
+
+    plopm -i SPE11B -v satnum,fipnum,disperc -c '193;147;56 127;148;191 193;127;97 181;73;57 81;124;66 101;64;147 134;133;130',cet_glasbey_bw,'#b6c406 #fffa86' -subfigs 3,1 -delax 1 -cnum 3,6,2 -cformat .0f,.0f,.1f -d 7,4
+
+.. figure:: figs/spe11b_disperc_i,1,k_t5.png
+    :scale: 20%
+
 ============
 Generic deck 
 ============
@@ -215,6 +224,8 @@ To create a gif and mask the results using the satnum numbers (any variable shou
 
 .. code-block:: bash
 
-    plopm -v xco2l -subfigs 1,2 -i 'spe11b/SPE11B spe11b_larger_inj/SPE11B' -d 16,2.5 -mask satnum -r 0,5 -m gif -dpi 1000 -t "spe11b  spe11b larger injection" -f 16 -interval 1000 -loop 1 -cformat .2f -cbsfax 0.30,0.01,0.4,0.02
+    plopm -v xco2l -subfigs 1,2 -i 'spe11b/SPE11B spe11b_larger_inj/SPE11B' -d 16,2.5 -mask satnum -r 0,1,2,3,4,5 -m gif -dpi 1000 -t "spe11b  spe11b larger injection" -f 16 -interval 1000 -loop 1 -cformat .2f -cbsfax 0.30,0.01,0.4,0.02
 
 .. image:: ./figs/xco2l.gif
+
+If **-r** is not provided, then by default the GIF uses all restart steps. For selected restart steps, these can be given separated by commas, e.g., **-r 1,4,5**.
