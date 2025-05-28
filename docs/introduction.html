@@ -112,7 +112,7 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dd><p>The base name (or full path) of the output folder (‘.’ by default, i.e., the folder where plopm is executed).</p>
 </dd>
 <dt><kbd><span class="option">-v</span></kbd></dt>
-<dd><p>Specify the name of the variable to plot, e.g., ‘pressure’, in addition to special extensive quantities for the mass such as ‘grid’, ‘wells’, ‘faults’, ‘krw’, ‘krg’, ‘krow’, ‘krog’, ‘pcow’, ‘pcog’, ‘pcwg’, ‘gasm’, ‘dism’, ‘liqm’, ‘vapm’, ‘co2m’, ‘h2om’, ‘xco2l’, ‘xh2ov’, ‘xco2v’, ‘xh2ol’, ‘fwcdm’, and ‘fgipm’, as well as operations, e.g, ‘pressure - 0pressure’ to plot the pressure increase (‘poro,permx,permz,porv,fipnum,satnum’ by default).</p>
+<dd><p>Specify the name of the variable to plot, e.g., ‘pressure’, in addition to special extensive quantities for the mass such as ‘grid’, ‘wells’, ‘faults’, ‘permfact’, ‘pcfact’, ‘krw’, ‘krg’, ‘krow’, ‘krog’, ‘pcow’, ‘pcog’, ‘pcwg’, ‘gasm’, ‘dism’, ‘liqm’, ‘vapm’, ‘co2m’, ‘h2om’, ‘xco2l’, ‘xh2ov’, ‘xco2v’, ‘xh2ol’, ‘fwcdm’, and ‘fgipm’, as well as operations, e.g, ‘pressure - 0pressure’ to plot the pressure increase (‘poro,permx,permz,porv,fipnum,satnum’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-m</span></kbd></dt>
 <dd><p>Generate ‘png’, ‘gif’, or ‘vtk’ files (‘png’ by default).</p>
@@ -154,7 +154,7 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dd><p>Specify the figure title, e.g., ‘Final saturation map’ (’’ by default, i.e., set by plopm).</p>
 </dd>
 <dt><kbd><span class="option">-r</span></kbd></dt>
-<dd><p>Restart number to plot the dynamic variable, where 0 corresponds to the initial one (‘-1’ by default, i.e., the last restart file).</p>
+<dd><p>Restart number to plot the dynamic variable, where 0 corresponds to the initial one (‘-1’ by default, i.e., the last restart file). For GIFs, the default correspond to all restart steps. To make a GIF using selected restart steps, provide these separated by commas, e.g., 0,3,10,20.</p>
 </dd>
 <dt><kbd><span class="option">-a</span></kbd></dt>
 <dd><p>Scale the mass variable, e.g., 1e-9 for the color bar for the CO2 mass to be in Mt (‘1’ by default).</p>

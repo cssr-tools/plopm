@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913,R0917,C0302,C0115
+# pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913,R0917,C0302,C0115,R0916,E1102
 
 """
 Utiliy functions to write the PNGs figures.
@@ -11,6 +11,7 @@ import colorcet
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from alive_progress import alive_bar
 from scipy.interpolate import interp1d
 from matplotlib import animation
 from matplotlib import colors
@@ -458,10 +459,13 @@ def make_maps(dic):
         )
         if dic["loop"] == 0:
             im_ani.save(
-                f"{dic['output']}/{dic['vrs'][0]}.gif", extra_args=["-loop", "-1"]
+                f"{dic['output']}/{dic['save'][0] if dic['save'][0] else dic['vrs'][0]}.gif",
+                extra_args=["-loop", "-1"],
             )
         else:
-            im_ani.save(f"{dic['output']}/{dic['vrs'][0]}.gif")
+            im_ani.save(
+                f"{dic['output']}/{dic['save'][0] if dic['save'][0] else dic['vrs'][0]}.gif"
+            )
     elif dic["subfigs"][0] and dic["mode"] == "gif" and len(dic["vrs"]) > 1:
         find_min_max(dic)
         if len(dic["restart"]) > 1:
@@ -489,10 +493,13 @@ def make_maps(dic):
         )
         if dic["loop"] == 0:
             im_ani.save(
-                f"{dic['output']}/{dic['deckn']}.gif", extra_args=["-loop", "-1"]
+                f"{dic['output']}/{dic['save'][0] if dic['save'][0] else dic['deckn']}.gif",
+                extra_args=["-loop", "-1"],
             )
         else:
-            im_ani.save(f"{dic['output']}/{dic['deckn']}.gif")
+            im_ani.save(
+                f"{dic['output']}/{dic['save'][0] if dic['save'][0] else dic['deckn']}.gif"
+            )
     else:
         find_min_max(dic)
         dic["deck"] = dic["names"][0][0]
@@ -528,13 +535,14 @@ def make_maps(dic):
                     blit=False,
                     repeat=False,
                 )
+                name = f"{dic['save'][0] if dic['save'][0] else dic['deckn']+'_'+var}"
                 if dic["loop"] == 0:
                     im_ani.save(
-                        f"{dic['output']}/{dic['deckn']}_{var}.gif",
+                        f"{dic['output']}/{name}.gif",
                         extra_args=["-loop", "-1"],
                     )
                 else:
-                    im_ani.save(f"{dic['output']}/{dic['deckn']}_{var}.gif")
+                    im_ani.save(f"{dic['output']}/{name}.gif")
             else:
                 if len(dic["names"][0]) > 1:
                     for l in range(len(dic["axis"].flat) - len(dic["names"][0])):
@@ -557,6 +565,9 @@ def find_min_max(dic):
         dic (dict): Modified global dictionary
 
     """
+    if dic["restart"][0] == -1 and dic["mode"] == "gif":
+        dic["deck"] = dic["names"][0][0]
+        get_readers(dic)
     dic["deckd"] = ""
     if dic["diff"]:
         if len(dic["diff"].split("/")) > 1:
@@ -668,23 +679,28 @@ def mapit(t, dic, n):
     elif len(dic["restart"]) == 1:
         k = n
     if dic["subfigs"][0] and len(dic["names"][0]) > 1:
-        if len(dic["vrs"]) > 1:
-            dic["maxc"] = [max(dic["maxc"])] * len(dic["maxc"])
-            dic["minc"] = [min(dic["minc"])] * len(dic["minc"])
-            for nn, deck in enumerate(dic["names"][0]):
-                dic["deck"] = deck
-                dic["ndeck"] = nn
-                prepare_maps(dic, nn)
-                mapits(dic, t, nn, nn)
-        else:
-            for nn, deck in enumerate(dic["names"][0]):
-                dic["deck"] = deck
-                dic["ndeck"] = nn
-                prepare_maps(dic, nn)
-                mapits(dic, t, 0, nn)
+        with alive_bar(len(dic["names"][0])) as bar_animation:
+            if len(dic["vrs"]) > 1:
+                dic["maxc"] = [max(dic["maxc"])] * len(dic["maxc"])
+                dic["minc"] = [min(dic["minc"])] * len(dic["minc"])
+                for nn, deck in enumerate(dic["names"][0]):
+                    bar_animation()
+                    dic["deck"] = deck
+                    dic["ndeck"] = nn
+                    prepare_maps(dic, nn)
+                    mapits(dic, t, nn, nn)
+            else:
+                for nn, deck in enumerate(dic["names"][0]):
+                    bar_animation()
+                    dic["deck"] = deck
+                    dic["ndeck"] = nn
+                    prepare_maps(dic, nn)
+                    mapits(dic, t, 0, nn)
     elif dic["subfigs"][0] and len(dic["vrs"]) > 1 and dic["skip"] == 0:
-        for nn, _ in enumerate(dic["vrs"]):
-            mapits(dic, t, nn, nn)
+        with alive_bar(len(dic["vrs"])) as bar_animation:
+            for nn, _ in enumerate(dic["vrs"]):
+                bar_animation()
+                mapits(dic, t, nn, nn)
     else:
         mapits(dic, t, n, k)
 
@@ -742,6 +758,13 @@ def mapits(dic, t, n, k):
             ]
     ntick = 3
     ncolor = var + " " + unit
+    dic["def_col"] = False
+    try:
+        cmap = matplotlib.colormaps.get_cmap(dic["cmaps"][n])
+        temp = dic["cmaps"][n]
+    except ImportError:
+        dic["def_col"] = True
+        temp = "tab20"
     if var.lower() != "wells" and var.lower() != "grid" and var.lower() != "faults":
         if len(dic["names"][0]) > 1 and dic["subfigs"][0]:
             minc = dic["minc"][n]
@@ -774,7 +797,7 @@ def mapits(dic, t, n, k):
             ntick = 1
         elif (
             "num" in var.lower()
-            and dic["cmaps"][n] in dic["cmdisc"]
+            and (dic["cmaps"][n] in dic["cmdisc"] or dic["def_col"])
             and dic["discrete"]
         ):
             ntick = int(maxc - minc + 1)
@@ -789,30 +812,48 @@ def mapits(dic, t, n, k):
     nlc = ntick
     if dic["cnum"][n] and ntick > 1:
         ntick = int(dic["cnum"][n])
-        nlc = 2
     if var.lower() in ["faults"]:
         nlc = dic["nfaults"]
     if dic["clabel"]:
         ncolor = dic["clabel"]
-    cmap = matplotlib.colormaps.get_cmap(dic["cmaps"][n])
-    if dic["ncolor"] != "w":
-        cmap.set_bad(color=dic["ncolor"])
     shc = 0
     # minc = 0.
     if (
-        ("num" in var.lower() and dic["cmaps"][n] in dic["cmdisc"] and dic["discrete"])
+        ("num" in var.lower() and temp in dic["cmdisc"] and dic["discrete"])
         or var.lower() in ["faults"]
-        and dic["cmaps"][n] != "nipy_spectral"
+        or dic["def_col"]
+        and temp != "nipy_spectral"
     ):
         if maxc == minc:
             shc = 2
         from_list = matplotlib.colors.LinearSegmentedColormap.from_list
         cmap = from_list(
             None,
-            matplotlib.colormaps[dic["cmaps"][n]](range(int(minc), nlc + shc)),
+            matplotlib.colormaps[temp](range(int(minc), nlc + shc)),
             nlc,
         )
-        shc = 0.5
+        if ntick == 2:
+            shc = (maxc - minc) / 2.0
+        elif minc == 0 and "num" not in var.lower() and var.lower() != "mpi_rank":
+            shc = 0
+        else:
+            shc = 0.5
+    if dic["def_col"]:
+        temp = []
+        for values in dic["cmaps"][n].split(" "):
+            if values[0] == "#":
+                temp.append(values)
+            else:
+                temp.append([])
+                for color in values.split(";"):
+                    if color.isnumeric():
+                        temp[-1].append(float(color) / 255.0)
+                    else:
+                        print("Error for color given in -c:", dic["cmaps"][n])
+                        sys.exit()
+        cmap = colors.ListedColormap(temp)
+    if dic["ncolor"] != "w":
+        cmap.set_bad(color=dic["ncolor"])
     if len(dic["grid"]) > 1:
         if var.lower() == "grid" and var.lower() != "wells":
             imag = (
@@ -1198,13 +1239,21 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
     elif dic["faults"] or dic["wells"]:
         time = ""
         namet = f"Total no. {name} = {dic[f'n{name}']-1}, "
-    elif "num" in name and dic["cmaps"][n] in dic["cmdisc"] and dic["discrete"]:
+    elif (
+        "num" in name
+        and (dic["cmaps"][n] in dic["cmdisc"] or dic["def_col"])
+        and dic["discrete"]
+    ):
         time = ""
         namet = ""
     if (
         dic["faults"]
         or dic["wells"]
-        or ("num" in name and dic["cmaps"][n] in dic["cmdisc"] and dic["discrete"])
+        or (
+            "num" in name
+            and (dic["cmaps"][n] in dic["cmdisc"] or dic["def_col"])
+            and dic["discrete"]
+        )
     ):
         tslide = dic["tslide"][2:]
     else:

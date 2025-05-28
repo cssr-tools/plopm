@@ -126,6 +126,14 @@ summary, init, and restart available variables given an input deck.</p>
 <a class="reference internal image-reference" href="_images/spe11b_pressure-0pressure.png"><img alt="_images/spe11b_pressure-0pressure.png" src="_images/spe11b_pressure-0pressure.png" style="width: 711.6px; height: 511.6px;" />
 </a>
 </figure>
+<p>It is also possible to set the colors in RGB or HEX format for the spatial maps, for example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>satnum,fipnum,disperc<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;193;147;56 127;148;191 193;127;97 181;73;57 81;124;66 101;64;147 134;133;130&#39;</span>,cet_glasbey_bw,<span class="s1">&#39;#b6c406 #fffa86&#39;</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">3</span>,1<span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">3</span>,6,2<span class="w"> </span>-cformat<span class="w"> </span>.0f,.0f,.1f<span class="w"> </span>-d<span class="w"> </span><span class="m">7</span>,4
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/spe11b_disperc_i,1,k_t5.png"><img alt="_images/spe11b_disperc_i%2C1%2Ck_t5.png" src="_images/spe11b_disperc_i%2C1%2Ck_t5.png" style="width: 688.8000000000001px; height: 403.20000000000005px;" />
+</a>
+</figure>
 </section>
 <section id="generic-deck">
 <h2>Generic deck<a class="headerlink" href="#generic-deck" title="Link to this heading"></a></h2>
@@ -255,10 +263,11 @@ In addition, if the model includes hysteresis, then to plot both drainage and im
 <section id="gif-and-mask">
 <h2>GIF and mask<a class="headerlink" href="#gif-and-mask" title="Link to this heading"></a></h2>
 <p>To create a gif and mask the results using the satnum numbers (any variable should be supported) for the different rock properties, this can be achieved by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-v<span class="w"> </span>xco2l<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;spe11b/SPE11B spe11b_larger_inj/SPE11B&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">16</span>,2.5<span class="w"> </span>-mask<span class="w"> </span>satnum<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>,5<span class="w"> </span>-m<span class="w"> </span>gif<span class="w"> </span>-dpi<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;spe11b  spe11b larger injection&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">16</span><span class="w"> </span>-interval<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-loop<span class="w"> </span><span class="m">1</span><span class="w"> </span>-cformat<span class="w"> </span>.2f<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.30,0.01,0.4,0.02
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-v<span class="w"> </span>xco2l<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;spe11b/SPE11B spe11b_larger_inj/SPE11B&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">16</span>,2.5<span class="w"> </span>-mask<span class="w"> </span>satnum<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>,1,2,3,4,5<span class="w"> </span>-m<span class="w"> </span>gif<span class="w"> </span>-dpi<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;spe11b  spe11b larger injection&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">16</span><span class="w"> </span>-interval<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-loop<span class="w"> </span><span class="m">1</span><span class="w"> </span>-cformat<span class="w"> </span>.2f<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.30,0.01,0.4,0.02
 </pre></div>
 </div>
 <img alt="_images/xco2l.gif" src="_images/xco2l.gif" />
+<p>If <strong>-r</strong> is not provided, then by default the GIF uses all restart steps. For selected restart steps, these can be given separated by commas, e.g., <strong>-r 1,4,5</strong>.</p>
 </section>
 </section>
 

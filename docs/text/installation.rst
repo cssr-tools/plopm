@@ -23,7 +23,7 @@ install the Python requirements in a virtual environment with the following comm
     git clone https://github.com/cssr-tools/plopm.git
     # Get inside the folder
     cd plopm
-    # For a specific version (e.g., v2024.10), or else skip this step (i.e., edge version)
+    # For a specific version (e.g., v2024.10), or skip this step (i.e., edge version)
     git checkout v2024.10
     # Create virtual environment
     python3 -m venv vplopm
@@ -58,7 +58,7 @@ OPM Flow
 --------
 To use the convertion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) to vtk, you also need to install:
 
-* OPM Flow (https://opm-project.org, Release 2024.10 or current master branches)
+* OPM Flow (https://opm-project.org, Release 2025.04 or current master branches)
 
 .. tip::
 

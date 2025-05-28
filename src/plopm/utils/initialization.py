@@ -31,7 +31,7 @@ def ini_dic(cmdargs):
         dic (dict): Modified global dictionary
 
     """
-    dic = {"output": cmdargs["output"].strip()}
+    dic = {"output": os.path.abspath(cmdargs["output"].strip())}
     names = (cmdargs["input"].strip()).split("  ")
     names = [var.split(" ") for var in names]
     dic["namens"] = names
@@ -131,8 +131,6 @@ def ini_dic(cmdargs):
         dic["clogthks"] = [float(val) for val in dic["clogthks"][1:-1].split(",")]
     if dic["restart"][0] == "-1":
         dic["restart"] = [-1]
-    elif int(dic["restart"][0]) == 0 and len(dic["restart"]) == 2:
-        dic["restart"] = list(range(0, int(dic["restart"][1]) + 1))
     else:
         dic["restart"] = [int(i) for i in dic["restart"]]
     dic["sensor"] = False

@@ -22,7 +22,7 @@ def test_difference():
             "-mask",
             "satnum",
             "-r",
-            "0,5",
+            "0,1,2,3,4,5",
             "-warnings",
             "1",
             "-interval",
