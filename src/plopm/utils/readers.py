@@ -43,12 +43,12 @@ def get_yzcoords_resdata(dic, m):
     for j in range(dic["nz"]):
         dic["xc"].append([])
         dic["yc"].append([])
-        for k, n in zip(["x", "x", "y", "y"], [1, 7, 2, 8]):
+        for k, n in zip(["x", "x", "y", "y"], [13, 19, 14, 20]):
             dic[f"{k}c"][-1].append(
                 dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"] + s_l][n]
             )
         for i in range(dic["ny"] - 1):
-            for k, n in zip(["x", "x", "y", "y"], [1, 7, 2, 8]):
+            for k, n in zip(["x", "x", "y", "y"], [13, 19, 14, 20]):
                 dic[f"{k}c"][-1].append(
                     dic["mesh"][
                         (i + 1) * dic["nx"]
@@ -58,12 +58,12 @@ def get_yzcoords_resdata(dic, m):
                 )
         dic["xc"].append([])
         dic["yc"].append([])
-        for k, n in zip(["x", "x", "y", "y"], [13, 19, 14, 20]):
+        for k, n in zip(["x", "x", "y", "y"], [1, 7, 2, 8]):
             dic[f"{k}c"][-1].append(
                 dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"] + s_l][n]
             )
         for i in range(dic["ny"] - 1):
-            for k, n in zip(["x", "x", "y", "y"], [13, 19, 14, 20]):
+            for k, n in zip(["x", "x", "y", "y"], [1, 7, 2, 8]):
                 dic[f"{k}c"][-1].append(
                     dic["mesh"][
                         (i + 1) * dic["nx"]
@@ -87,21 +87,6 @@ def get_yzcoords_opm(dic, n):
     for j in range(dic["nz"]):
         dic["xc"].append([])
         dic["yc"].append([])
-        for k, c, p in zip(["x", "x", "y", "y"], [1, 1, 2, 2], [0, 2, 0, 2]):
-            dic[f"{k}c"][-1].append(
-                dic["egrid"].xyz_from_ijk(dic["slide"][n][0][0], 0, dic["nz"] - j - 1)[
-                    c
-                ][p]
-            )
-        for i in range(dic["ny"] - 1):
-            for k, c, p in zip(["x", "x", "y", "y"], [1, 1, 2, 2], [0, 2, 0, 2]):
-                dic[f"{k}c"][-1].append(
-                    dic["egrid"].xyz_from_ijk(
-                        dic["slide"][n][0][0], i + 1, dic["nz"] - j - 1
-                    )[c][p]
-                )
-        dic["xc"].append([])
-        dic["yc"].append([])
         for k, c, p in zip(["x", "x", "y", "y"], [1, 1, 2, 2], [4, 6, 4, 6]):
             dic[f"{k}c"][-1].append(
                 dic["egrid"].xyz_from_ijk(dic["slide"][n][0][0], 0, dic["nz"] - j - 1)[
@@ -110,6 +95,21 @@ def get_yzcoords_opm(dic, n):
             )
         for i in range(dic["ny"] - 1):
             for k, c, p in zip(["x", "x", "y", "y"], [1, 1, 2, 2], [4, 6, 4, 6]):
+                dic[f"{k}c"][-1].append(
+                    dic["egrid"].xyz_from_ijk(
+                        dic["slide"][n][0][0], i + 1, dic["nz"] - j - 1
+                    )[c][p]
+                )
+        dic["xc"].append([])
+        dic["yc"].append([])
+        for k, c, p in zip(["x", "x", "y", "y"], [1, 1, 2, 2], [0, 2, 0, 2]):
+            dic[f"{k}c"][-1].append(
+                dic["egrid"].xyz_from_ijk(dic["slide"][n][0][0], 0, dic["nz"] - j - 1)[
+                    c
+                ][p]
+            )
+        for i in range(dic["ny"] - 1):
+            for k, c, p in zip(["x", "x", "y", "y"], [1, 1, 2, 2], [0, 2, 0, 2]):
                 dic[f"{k}c"][-1].append(
                     dic["egrid"].xyz_from_ijk(
                         dic["slide"][n][0][0], i + 1, dic["nz"] - j - 1
@@ -133,12 +133,12 @@ def get_xzcoords_resdata(dic, m):
     for j in range(dic["nz"]):
         dic["xc"].append([])
         dic["yc"].append([])
-        for k, n in zip(["x", "x", "y", "y"], [0, 3, 2, 5]):
+        for k, n in zip(["x", "x", "y", "y"], [12, 15, 14, 17]):
             dic[f"{k}c"][-1].append(
                 dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"] + s_l][n]
             )
         for i in range(dic["nx"] - 1):
-            for k, n in zip(["x", "x", "y", "y"], [0, 3, 2, 5]):
+            for k, n in zip(["x", "x", "y", "y"], [12, 15, 14, 17]):
                 dic[f"{k}c"][-1].append(
                     dic["mesh"][
                         1 + i + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"] + s_l
@@ -146,12 +146,12 @@ def get_xzcoords_resdata(dic, m):
                 )
         dic["xc"].append([])
         dic["yc"].append([])
-        for k, n in zip(["x", "x", "y", "y"], [12, 15, 14, 17]):
+        for k, n in zip(["x", "x", "y", "y"], [0, 3, 2, 5]):
             dic[f"{k}c"][-1].append(
                 dic["mesh"][(dic["nz"] - j - 1) * dic["nx"] * dic["ny"] + s_l][n]
             )
         for i in range(dic["nx"] - 1):
-            for k, n in zip(["x", "x", "y", "y"], [12, 15, 14, 17]):
+            for k, n in zip(["x", "x", "y", "y"], [0, 3, 2, 5]):
                 dic[f"{k}c"][-1].append(
                     dic["mesh"][
                         1 + i + (dic["nz"] - j - 1) * dic["nx"] * dic["ny"] + s_l
@@ -173,21 +173,6 @@ def get_xzcoords_opm(dic, n):
     for j in range(dic["nz"]):
         dic["xc"].append([])
         dic["yc"].append([])
-        for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 2, 2], [0, 1, 0, 1]):
-            dic[f"{k}c"][-1].append(
-                dic["egrid"].xyz_from_ijk(0, dic["slide"][n][1][0], dic["nz"] - j - 1)[
-                    c
-                ][p]
-            )
-        for i in range(dic["nx"] - 1):
-            for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 2, 2], [0, 1, 0, 1]):
-                dic[f"{k}c"][-1].append(
-                    dic["egrid"].xyz_from_ijk(
-                        i + 1, dic["slide"][n][1][0], dic["nz"] - j - 1
-                    )[c][p]
-                )
-        dic["xc"].append([])
-        dic["yc"].append([])
         for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 2, 2], [4, 5, 4, 5]):
             dic[f"{k}c"][-1].append(
                 dic["egrid"].xyz_from_ijk(0, dic["slide"][n][1][0], dic["nz"] - j - 1)[
@@ -196,6 +181,21 @@ def get_xzcoords_opm(dic, n):
             )
         for i in range(dic["nx"] - 1):
             for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 2, 2], [4, 5, 4, 5]):
+                dic[f"{k}c"][-1].append(
+                    dic["egrid"].xyz_from_ijk(
+                        i + 1, dic["slide"][n][1][0], dic["nz"] - j - 1
+                    )[c][p]
+                )
+        dic["xc"].append([])
+        dic["yc"].append([])
+        for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 2, 2], [0, 1, 0, 1]):
+            dic[f"{k}c"][-1].append(
+                dic["egrid"].xyz_from_ijk(0, dic["slide"][n][1][0], dic["nz"] - j - 1)[
+                    c
+                ][p]
+            )
+        for i in range(dic["nx"] - 1):
+            for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 2, 2], [0, 1, 0, 1]):
                 dic[f"{k}c"][-1].append(
                     dic["egrid"].xyz_from_ijk(
                         1 + i, dic["slide"][n][1][0], dic["nz"] - j - 1
