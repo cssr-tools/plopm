@@ -758,13 +758,11 @@ def mapits(dic, t, n, k):
             ]
     ntick = 3
     ncolor = var + " " + unit
-    dic["def_col"] = False
-    try:
+    dic["def_col"], temp, cmap = True, "tab20", "tab20"
+    if dic["cmaps"][n] in plt.colormaps():
+        dic["def_col"] = False
         cmap = matplotlib.colormaps.get_cmap(dic["cmaps"][n])
         temp = dic["cmaps"][n]
-    except ImportError:
-        dic["def_col"] = True
-        temp = "tab20"
     if var.lower() != "wells" and var.lower() != "grid" and var.lower() != "faults":
         if len(dic["names"][0]) > 1 and dic["subfigs"][0]:
             minc = dic["minc"][n]
