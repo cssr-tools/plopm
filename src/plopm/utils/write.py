@@ -1127,6 +1127,7 @@ def mapits(dic, t, n, k):
         )
     # if dic["mode"] != "gif":
     #    plt.tight_layout(pad=0)
+    dic["axis"].flat[k].set_facecolor(dic["fc"])
     if dic["mode"] != "gif":
         if dic["subfigs"][0]:
             if t == len(dic["restart"]) - 1 and len(dic["restart"]) > 1:
