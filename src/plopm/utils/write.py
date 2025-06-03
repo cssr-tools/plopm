@@ -565,6 +565,8 @@ def find_min_max(dic):
         dic (dict): Modified global dictionary
 
     """
+    if dic["rst_range"] and dic["mode"] == "png":
+        return
     if dic["restart"][0] == -1 and dic["mode"] == "gif":
         dic["deck"] = dic["names"][0][0]
         get_readers(dic)
@@ -1192,11 +1194,13 @@ def mapits(dic, t, n, k):
             name = f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
             name = name.replace(" / ", "_over_")
             name = name.replace(" ", "")
+            m = t if dic["rst_range"] else n
             dic["fig"].savefig(
-                f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
+                f"{dic['output']}/{dic['save'][m] if dic['save'][m] else name}.png",
                 bbox_inches="tight",
                 dpi=int(dic["dpi"][0]),
             )
+            plt.close()
 
 
 def handle_axis(dic, name, n, t, k, n_s, unit):
