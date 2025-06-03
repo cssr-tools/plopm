@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W0123,R0915,R0912,R1702
+# pylint: disable=W0123,R0915,R0912,R1702,R0914
 
 """
 Utiliy functions to set the requiried input values by plopm.
@@ -129,8 +129,21 @@ def ini_dic(cmdargs):
     dic["dtitle"] = ""
     if dic["clogthks"]:
         dic["clogthks"] = [float(val) for val in dic["clogthks"][1:-1].split(",")]
+    dic["rst_range"] = False
     if dic["restart"][0] == "-1":
         dic["restart"] = [-1]
+    elif ":" in dic["restart"][0]:
+        dic["rst_range"] = True
+        vals = dic["restart"][0].split(":")
+        if len(vals) == 3:
+            dic["restart"] = list(range(int(vals[0]), int(vals[1]) + 1, int(vals[2])))
+        else:
+            dic["restart"] = list(range(int(vals[0]), int(vals[1]) + 1))
+        if dic["save"][0]:
+            dic["save"] = [
+                dic["save"][0] + f"{i}".zfill(len(str(dic["restart"][-1])))
+                for i in dic["restart"]
+            ]
     else:
         dic["restart"] = [int(i) for i in dic["restart"]]
     dic["sensor"] = False
