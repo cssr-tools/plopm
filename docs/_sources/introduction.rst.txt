@@ -34,7 +34,7 @@ where
 -o    The base name (or full path) of the output folder ('.' by default, i.e., the folder where plopm is executed).
 -v    Specify the name of the variable to plot, e.g., 'pressure', in addition to special extensive quantities for the mass such as 'grid', 'wells', 'faults', 'permfact', 'pcfact', 'krw', 'krg', 'krow', 'krog', 'pcow', 'pcog', 'pcwg', 'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', 'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g, 'pressure - 0pressure' to plot the pressure increase ('poro,permx,permz,porv,fipnum,satnum' by default).
 -m    Generate 'png', 'gif', or 'vtk' files ('png' by default).
--s    The slide in the 3D model to plot the 2D maps, e.g, '10,,' to plot the xz plane on all cells with i=10, or ',,5:10' to plot the pv average weighted quantity. If the three values are given, e.g., '2,4,9', then the variable is plotted over time at that location (',1,' by default, i.e., the xz surface at j=1).
+-s    The slide in the 3D model to plot the 2D maps, e.g, '10,,' to plot the xz plane on all cells with i=10, or ',,5:10' to plot the pv average weighted quantity. If two values are given, e.g., ':,5,7', then the variable is plotted along the colon entry given the indice at the specified restart step, unless the flag '-how ' is set, then this generates a plot of the projected variable over time. If the three values are given, e.g., '2,4,9', then the variable is plotted over time at that location (',1,' by default, i.e., the xz surface at j=1).
 -p    Path to flow, e.g., '/home/build/bin/flow'. This is used to generate the grid for the vtk files ('flow' by default).
 -z    Scale the axis in the 2D maps ('1' by default).
 -f    The font size ('12' by default).
@@ -91,6 +91,7 @@ where
 -grid       Set the edgecolors and lw in the matplotlib.pyplot.pcolormesh method, e.g., 'black,1e-3' ('' by default, i.e., no grid).
 -vmin       Set a minimum threshold to remove values in the variable ('' by default).
 -vmax       Set a maximum threshold to remove values in the variable ('' by default).
+-distance   Compute the 'min' or 'max' distance of the variable to a 'sensor' using -s, or to the lateral boundaries ('border'), e.g., '-s 1,2,3 -v 'sgas > 1e-2' -distance max,sensor' computes the maximum distance to the location using a min threshold of 1e-2 to indicate if a cell has gas or not ('' by default).
 -maskthr    Set the threshold for the variable to mask " "('1e-3' by default).
 -interval   Time for the frames in the GIF in milli second ('1000' by default).
 -loop       Set to 1 for infinity loop in the GIF ('0' by default).

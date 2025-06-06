@@ -85,6 +85,8 @@ def make_summary(dic):
                     label = dic["labels"][jj][i]
                 if (
                     dic["sensor"]
+                    or dic["layer"]
+                    or dic["distance"][0]
                     or quan.lower()[:3] in ["krw", "krg"]
                     or quan.lower()[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
                     or quan.lower()[:6] == "pcfact"
@@ -108,13 +110,21 @@ def make_summary(dic):
                         lw=float(dic["lw"][jj][i]),
                     )
                 if i == 0:
-                    min_t, min_v = min(time[time > xlow]), min(var[var > ylow])
-                    max_t, max_v = max(time), max(var)
+                    min_v = min(var[var > ylow])
+                    max_v = max(var)
+                    max_t = max(time)
+                    if tunit != "Dates":
+                        min_t = min(time[time > xlow])
+                    else:
+                        min_t = time[0]
                 else:
-                    min_t = min(min_t, min(time[time > xlow]))
                     min_v = min(min_v, min(var[var > ylow]))
-                    max_t = max(max_t, max(time))
                     max_v = max(max_v, max(var))
+                    max_t = max(max_t, max(time))
+                    if tunit != "Dates":
+                        min_t = min(min_t, min(time[time > xlow]))
+                    else:
+                        min_t = time[0]
         dic["axis"].flat[k].set_ylabel(quan + vunit)
         dic["axis"].flat[k].set_ylim([min_v, max_v])
         if dic["delax"] == 0 or k + int(dic["subfigs"][1]) >= len(dic["vrs"]):
@@ -192,8 +202,8 @@ def make_summary(dic):
                 bbox_inches="tight",
                 dpi=int(dic["dpi"][j]),
             )
-            sys.exit()
-        elif (
+            return
+        if (
             not dic["subfigs"][0] and len(dic["vrs"]) != len(dic["names"][0])
         ) or j == len(dic["vrs"]) - 1:
             if (
@@ -211,7 +221,7 @@ def make_summary(dic):
                             label = name.split("/")[-2] + "/" + name.split("/")[-1]
                         if dic["labels"][0][0]:
                             label = dic["labels"][jj][i]
-                        if dic["sensor"]:
+                        if dic["sensor"] or dic["layer"] or dic["distance"][0]:
                             dic["axis"].flat[-1].plot(
                                 time,
                                 var,

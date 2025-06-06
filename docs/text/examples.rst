@@ -2,6 +2,8 @@
 Examples
 ********
 
+See `this presentation <https://opm-project.org/wp-content/uploads/2025/06/OPM_summit_2025_Landa-Marban_tools_pycopm_plopm.pdf>`_ from the OPM summit 2025 for additional examples using **plopm**,
+
 ===========
 Hello world 
 ===========
