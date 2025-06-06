@@ -85,6 +85,32 @@
 <span id="plopm-utils-readers-module"></span><h1>plopm.utils.readers module<a class="headerlink" href="#module-plopm.utils.readers" title="Link to this heading"></a></h1>
 <p>Utiliy functions to read the OPM Flow simulator type output files.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.compute_distance">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">compute_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quans</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.compute_distance" title="Link to this definition"></a></dt>
+<dd><p>Get the required variables from the simulation files</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>var (array): Vector with the variable values</p>
+<p>time (array): Vector with the x axis values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.do_read_variables">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">do_read_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quans</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntot</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.do_read_variables" title="Link to this definition"></a></dt>
+<dd><p>Get the required variables from the simulation files</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>var (array): Vector with the variable values</p>
+<p>time (array): Vector with the x axis values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.readers.get_faults">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_faults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_faults" title="Link to this definition"></a></dt>
 <dd><p>Using the input deck (.DATA) to read the i,j fault locations</p>
@@ -258,6 +284,20 @@
 <p>oper (list): Input operators</p>
 </dd>
 <dt>Returns:</dt><dd><p>var (array): Modified values after applying the operator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.project">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.project" title="Link to this definition"></a></dt>
+<dd><p>Applied the requested projection</p>
+<dl>
+<dt>Args:</dt><dd><p>var (array): Floats with the current values</p>
+<p>oper (str): Input operator</p>
+<p>porv (array): Pore volumes of the cells</p>
+</dd>
+<dt>Returns:</dt><dd><p>var (array): Modified values after applying the projection</p>
 </dd>
 </dl>
 </dd></dl>

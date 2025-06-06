@@ -89,10 +89,13 @@ def load_parser():
         default=",1,",
         help="The slide in the 3D model to plot the 2D maps, e.g, "
         "'10,,' to plot the xz plane on all cells with i=10, or "
-        "',,5:10' to plot the pv average weighted quantity. If the three "
-        "values are given, e.g., '2,4,9', then the variable is plotted "
-        "over time at that location (',1,' by default, i.e., the xz surface "
-        "at j=1).",
+        "',,5:10' to plot the pv average weighted quantity. If two values are "
+        "given, e.g., ':,5,7', then the variable is plotted along the colon "
+        "entry given the indice at the specified restart step, unless the flag "
+        "'-how ' is set, then this generates a plot of the projected variable "
+        "over time. If the three values are given, e.g., '2,4,9', then the "
+        "variable is plotted over time at that location (',1,' by default, "
+        "i.e., the xz surface at j=1).",
     )
     parser.add_argument(
         "-p",
@@ -482,6 +485,16 @@ def load_parser():
         default="",
         help="Set a maximum threshold to remove values in the variable "
         "('' by default).",
+    )
+    parser.add_argument(
+        "-distance",
+        "--distance",
+        default="",
+        help="Compute the 'min' or 'max' distance of the variable to a 'sensor' "
+        "using -s, or to the lateral boundaries ('border'), e.g., '-s 1,2,3 -v "
+        "'sgas > 1e-2' -distance max,sensor' computes the maximum distance to the "
+        "location using a min threshold of 1e-2 to indicate if a cell has gas or "
+        "not ('' by default).",
     )
     parser.add_argument(
         "-maskthr",

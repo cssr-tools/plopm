@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=W0123,R0915,R0912,R1702,R0914
+# pylint: disable=W0123,R0915,R0912,R1702,R0914,R0916
 
 """
 Utiliy functions to set the requiried input values by plopm.
@@ -109,6 +109,7 @@ def ini_dic(cmdargs):
     dic["cbsfax"] = [float(val) for val in (cmdargs["cbsfax"].strip()).split(",")]
     dic["nwells"], dic["lwells"] = 0, []
     dic["how"] = (cmdargs["how"].strip()).split(",")
+    dic["distance"] = (cmdargs["distance"].strip()).split(",")
     for i in ["x", "y"]:
         dic[f"{i}units"] = cmdargs[f"{i}units"].strip()
         dic[f"{i}label"] = (cmdargs[f"{i}label"].strip()).split("  ")
@@ -146,7 +147,7 @@ def ini_dic(cmdargs):
             ]
     else:
         dic["restart"] = [int(i) for i in dic["restart"]]
-    dic["sensor"] = False
+    dic["sensor"], dic["layer"] = False, False
     dic["slide"] = (cmdargs["slide"]).split(" ")
     dic["slide"] = [
         [val if val else [-2, -2] for val in var.split(",")] for var in dic["slide"]
@@ -162,6 +163,14 @@ def ini_dic(cmdargs):
                         ]
                     else:
                         dic["slide"][i][j] = [int(val) - 1, int(val)]
+    elif ":" in dic["slide"][0]:
+        dic["layer"] = True
+        for i, var in enumerate(dic["slide"]):
+            for j, val in enumerate(var):
+                if val != ":":
+                    dic["slide"][i][j] = int(val) - 1
+                else:
+                    dic["slide"][i][j] = -1
     else:
         dic["sensor"] = True
         for i, var in enumerate(dic["slide"]):
@@ -356,6 +365,8 @@ def is_summary(dic):
                     print(list(range(0, ntot)))
     if (
         dic["sensor"]
+        or dic["layer"]
+        or dic["distance"][0]
         or dic["vrs"][0].lower()[:3] in ["krw", "krg"]
         or dic["vrs"][0].lower()[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
         or dic["vrs"][0].lower()[:6] == "pcfact"
