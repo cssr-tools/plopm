@@ -67,6 +67,7 @@ def ini_dic(cmdargs):
     dic["size"] = float(cmdargs["size"])
     dic["maskthr"] = float(cmdargs["maskthr"])
     dic["interval"] = float(cmdargs["interval"])
+    dic["stress"] = float(cmdargs["stress"])
     dic["loop"] = int(cmdargs["loop"])
     dic["titles"] = (cmdargs["title"].strip()).split("  ")
     dic["bounds"] = (cmdargs["bounds"].strip()).split(" ")
@@ -110,6 +111,7 @@ def ini_dic(cmdargs):
     dic["nwells"], dic["lwells"] = 0, []
     dic["how"] = (cmdargs["how"].strip()).split(",")
     dic["distance"] = (cmdargs["distance"].strip()).split(",")
+    dic["histogram"] = (cmdargs["histogram"].strip()).split(" ")
     for i in ["x", "y"]:
         dic[f"{i}units"] = cmdargs[f"{i}units"].strip()
         dic[f"{i}label"] = (cmdargs[f"{i}label"].strip()).split("  ")
@@ -179,6 +181,7 @@ def ini_dic(cmdargs):
     dic["mass"] = ["gasm", "dism", "liqm", "vapm", "co2m", "h2om"]
     dic["smass"] = ["FWCDM", "FGIPM"]
     dic["xmass"] = ["xco2l", "xh2ov", "xco2v", "xh2ol"]
+    dic["caprock"] = ["limipres", "overpres", "objepres"]
     if not os.path.exists(dic["output"]):
         os.system(f"mkdir {dic['output']}")
     dic["COLORS"] = [
@@ -367,6 +370,7 @@ def is_summary(dic):
         dic["sensor"]
         or dic["layer"]
         or dic["distance"][0]
+        or dic["histogram"][0]
         or dic["vrs"][0].lower()[:3] in ["krw", "krg"]
         or dic["vrs"][0].lower()[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
         or dic["vrs"][0].lower()[:6] == "pcfact"

@@ -123,6 +123,19 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.get_histogram">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quans</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_histogram" title="Link to this definition"></a></dt>
+<dd><p>Get the required variables from the histogram</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>var (array): Vector with the variable values</p>
+<p>time (array): Vector with the x axis values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.readers.get_quantity">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_quantity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_quantity" title="Link to this definition"></a></dt>
 <dd><p>Compute the mass (intensive quantities).</p>
@@ -242,6 +255,20 @@
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.handle_caprock">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">handle_caprock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.handle_caprock" title="Link to this definition"></a></dt>
+<dd><p>Compute quantities related to the caprock integrity.</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>name (str): Name of the variable for the mass spatial map</p>
+<p>nrst (int): Number of restart step</p>
+</dd>
+<dt>Returns:</dt><dd><p>mass (array): Floats with the computed mass</p>
 </dd>
 </dl>
 </dd></dl>

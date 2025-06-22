@@ -274,6 +274,73 @@ def get_xycoords_opm(dic, n):
                 )
 
 
+def get_histogram(dic, quans, nrst):
+    """
+    Get the required variables from the histogram
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        var (array): Vector with the variable values\n
+        time (array): Vector with the x axis values
+
+    """
+    act = dic["porv"] > 0 if quans[0].upper() != "PORV" else dic["porv"] > -1
+    var = np.nan * np.ones(dic["nxyz"], dtype=float)
+    if dic["use"] == "resdata":
+        if dic["init"].has_kw(quans[0].upper()):
+            var[act] = 1.0 * np.array(dic["init"][quans[0].upper()][0])
+        elif dic["unrst"].has_kw(quans[0].upper()):
+            var[act] = np.array(dic["unrst"][quans[0].upper()][nrst])
+        elif quans[0].lower() in dic["mass"] + dic["xmass"]:
+            var[act] = handle_mass(dic, quans[0].lower(), nrst)
+        elif quans[0].lower() in dic["caprock"]:
+            var[act], _ = handle_caprock(dic, quans[0].lower(), nrst)
+        else:
+            print(f"Unknow -v variable ({quans[0]}).")
+        if len(quans) > 1:
+            for j, val in enumerate(quans[2::2]):
+                if (val[0]).isdigit() and val[-1].isdigit():
+                    quan1 = float(val)
+                elif dic["init"].has_kw(val.upper()):
+                    quan1 = 1.0 * np.array(dic["init"][val.upper()][0])
+                elif dic["unrst"].has_kw(val.upper()):
+                    quan1 = 1.0 * dic["unrst"][val.upper()]
+                elif val.lower() in dic["mass"] + dic["xmass"]:
+                    quan1 = handle_mass(dic, val.lower(), nrst)
+                elif quans[0].lower() in dic["caprock"]:
+                    quan1, _ = handle_caprock(dic, val.lower(), nrst)
+                var[act] = operate(var[act], quan1, j, quans[1::2])
+    else:
+        if dic["init"].count(quans[0].upper()):
+            var[act] = 1.0 * dic["init"][quans[0].upper(), 0]
+        elif dic["unrst"].count(quans[0].upper()):
+            var[act] = 1.0 * dic["unrst"][quans[0].upper(), nrst]
+        elif quans[0].lower() in dic["mass"] + dic["xmass"]:
+            var[act] = handle_mass(dic, quans[0].lower(), nrst)
+        elif quans[0].lower() in dic["caprock"]:
+            var[act], _ = handle_caprock(dic, quans[0].lower(), nrst)
+        else:
+            print(f"Unknow -v variable ({quans[0]}).")
+        if len(quans) > 1:
+            for j, val in enumerate(quans[2::2]):
+                if (val[0]).isdigit() and not val[-1].isdigit():
+                    quan1 = 1.0 * dic["unrst"][val[1:].upper(), int(val[0])]
+                elif (val[0]).isdigit() and val[-1].isdigit():
+                    quan1 = float(val)
+                elif dic["init"].count(val.upper()):
+                    quan1 = 1.0 * dic["init"][val.upper(), 0]
+                elif dic["unrst"].count(val.upper()):
+                    quan1 = 1.0 * dic["unrst"][val.upper(), nrst]
+                elif val.lower() in dic["mass"] + dic["xmass"]:
+                    quan1 = handle_mass(dic, val.lower(), nrst)
+                elif val.lower() in dic["caprock"]:
+                    quan1 = handle_caprock(dic, val.lower(), nrst)
+                var[act], _ = operate(var[act], quan1, j, quans[1::2])
+    return var
+
+
 def compute_distance(dic, quans, n):
     """
     Get the required variables from the simulation files
@@ -474,6 +541,8 @@ def do_read_variables(dic, quans, n, ntot):
                     temp[i] = 1.0 * dic["unrst"][quans[0].upper()][nrst][ind]
                 elif quans[0].lower() in dic["mass"] + dic["xmass"]:
                     temp[i] = handle_mass(dic, quans[0].lower(), nrst)[ind]
+                elif quans[0].lower() in dic["caprock"]:
+                    temp[i], _ = handle_caprock(dic, quans[0].lower(), nrst)[ind]
                 else:
                     print(f"Unknow -v variable ({quans[0]}).")
                 if dic["unrst"].has_kw("RPORV"):
@@ -494,6 +563,8 @@ def do_read_variables(dic, quans, n, ntot):
                             quan1 = 1.0 * dic["unrst"][val.upper()][nrst][ind]
                         elif val.lower() in dic["mass"] + dic["xmass"]:
                             quan1 = handle_mass(dic, val.lower(), nrst)[ind]
+                        elif val.lower() in dic["caprock"]:
+                            quan1, _ = handle_caprock(dic, val.lower(), nrst)[ind]
                         temp[i] = operate(temp[i], quan1, j, quans[1::2])
             if dic["how"][0]:
                 var[o] = project(temp, dic["how"][0], porv)
@@ -528,6 +599,8 @@ def do_read_variables(dic, quans, n, ntot):
                     temp[i] = 1.0 * dic["unrst"][quans[0].upper(), nrst][ind]
                 elif quans[0].lower() in dic["mass"] + dic["xmass"]:
                     temp[i] = handle_mass(dic, quans[0].lower(), nrst)[ind]
+                elif quans[0].lower() in dic["caprock"]:
+                    temp[i], _ = handle_caprock(dic, quans[0].lower(), nrst)[ind]
                 else:
                     print(f"Unknow -v variable ({quans[0]}).")
                 if dic["unrst"].count("RPORV"):
@@ -548,6 +621,8 @@ def do_read_variables(dic, quans, n, ntot):
                             quan1 = 1.0 * dic["unrst"][val.upper(), nrst][ind]
                         elif val.lower() in dic["mass"] + dic["xmass"]:
                             quan1 = handle_mass(dic, val.lower(), nrst)[ind]
+                        elif val.lower() in dic["caprock"]:
+                            quan1, _ = handle_caprock(dic, val.lower(), nrst)[ind]
                         temp[i] = operate(temp[i], quan1, j, quans[1::2])
             if dic["how"][0]:
                 var[o] = project(temp, dic["how"][0], porv)
@@ -621,7 +696,7 @@ def read_summary(dic, case, quan, tunit, qskl, n):
         dic (dict): Modified global dictionary
 
     """
-    vunit = ""
+    time, vunit = np.array([0, 1]), ""
     tskl, tunit = initialize_time(tunit)
     quans = quan.split(" ")
     if dic["distance"][0]:
@@ -631,6 +706,11 @@ def read_summary(dic, case, quan, tunit, qskl, n):
         var, time = compute_distance(dic, quans, n)
         vunit = f" ({dic['distance'][0]} distance to {dic['distance'][1]} in {xunit})"
         var *= xskl
+    elif dic["histogram"][0]:
+        dic["deck"] = case
+        get_readers(dic)
+        var = get_histogram(dic, quans, dic["restart"][0])
+        tunit = ""
     elif dic["sensor"] or dic["how"][0]:
         dic["deck"] = case
         get_readers(dic)
@@ -1214,6 +1294,8 @@ def get_quantity(dic, name, n, nrst):
             quan = handle_mass(dic, names[0].lower(), nrst) * skl
             if names[0].lower() in dic["mass"]:
                 unit = initialize_mass(skl)
+        elif names[0].lower() in dic["caprock"]:
+            quan, unit = handle_caprock(dic, names[0].lower(), nrst)
         else:
             print(f"Unknow -v variable ({names[0]}).")
             sys.exit()
@@ -1229,6 +1311,8 @@ def get_quantity(dic, name, n, nrst):
                     quan1 = np.array(dic["unrst"][val][nrst]) * 1.0
                 elif val.lower() in dic["mass"] + dic["xmass"]:
                     quan1 = handle_mass(dic, val.lower(), nrst) * skl
+                elif val.lower() in dic["caprock"]:
+                    quan1, unit = handle_caprock(dic, val.lower(), nrst)
                 quan = operate(quan, quan1, j, names[1::2])
     else:
         if dic["init"].count(names[0]):
@@ -1253,6 +1337,8 @@ def get_quantity(dic, name, n, nrst):
             quan = handle_mass(dic, names[0].lower(), nrst) * skl
             if names[0].lower() in dic["mass"]:
                 unit = initialize_mass(skl)
+        elif names[0].lower() in dic["caprock"]:
+            quan, unit = handle_caprock(dic, names[0].lower(), nrst)
         else:
             print(f"Unknow -v variable ({names[0]}).")
             sys.exit()
@@ -1268,6 +1354,8 @@ def get_quantity(dic, name, n, nrst):
                     quan1 = dic["unrst"][val, nrst]
                 elif val.lower() in dic["mass"] + dic["xmass"]:
                     quan1 = handle_mass(dic, val.lower(), nrst) * skl
+                elif val.lower() in dic["caprock"]:
+                    quan1, unit = handle_caprock(dic, val.lower(), nrst)
                 quan = operate(quan, quan1, j, names[1::2])
     if dic["vmin"][n]:
         quan = np.array(quan)
@@ -1366,6 +1454,55 @@ def type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v, x_l_co2, x_g_h2o):
     if name == "xh2ol":
         return 1 - x_l_co2
     return co2_g + co2_d
+
+
+def handle_caprock(dic, name, nrst):
+    """
+    Compute quantities related to the caprock integrity.
+
+    Args:
+        dic (dict): Global dictionary\n
+        name (str): Name of the variable for the mass spatial map\n
+        nrst (int): Number of restart step
+
+    Returns:
+        mass (array): Floats with the computed mass
+
+    """
+    if dic["use"] == "resdata":
+        dz_corr = 0.5 * np.array(dic["init"]["DZ"][0])
+        if dic["unrst"].has_kw("WAT_DEN"):
+            den0 = np.array(dic["unrst"]["WAT_DEN"][0])
+            den1 = np.array(dic["unrst"]["WAT_DEN"][nrst])
+        else:
+            den0, den1 = 1000, 1000
+        pz_c0 = 9.81 * dz_corr * den0 / 1e5
+        pz_c1 = 9.81 * dz_corr * den1 / 1e5
+        limipres = dic["stress"] * (
+            np.array(dic["init"]["DEPTH"][0]) - 0.5 * np.array(dic["init"]["DZ"][0])
+        )
+        overpres = limipres - (np.array(dic["unrst"]["PRESSURE"][nrst]) - pz_c1)
+        limipres -= np.array(dic["unrst"]["PRESSURE"][0]) - pz_c0
+    else:
+        dz_corr = 0.5 * np.array(dic["init"]["DZ", 0])
+        if dic["unrst"].count("WAT_DEN"):
+            den0 = np.array(dic["unrst"]["WAT_DEN", 0])
+            den1 = np.array(dic["unrst"]["WAT_DEN", nrst])
+        else:
+            den0, den1 = 1000, 1000
+        pz_c0 = 9.81 * dz_corr * den0 / 1e5
+        pz_c1 = 9.81 * dz_corr * den1 / 1e5
+        limipres = dic["stress"] * (
+            np.array(dic["init"]["DEPTH", 0]) - 0.5 * np.array(dic["init"]["DZ", 0])
+        )
+        overpres = limipres - (np.array(dic["unrst"]["PRESSURE", nrst]) - pz_c1)
+        limipres -= np.array(dic["unrst"]["PRESSURE", 0]) - pz_c0
+    objepres = np.divide(overpres, limipres)
+    if name == "limipres":
+        return limipres, " [Bar]"
+    if name == "overpres":
+        return -overpres, " [Bar]"
+    return objepres, " [-]"
 
 
 def get_wells(dic, n):

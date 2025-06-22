@@ -144,6 +144,40 @@ Here is an example of making a single figure plotting subfigures and using diffe
 
 .. image:: ./figs/norne_atw2013_poro_i,j,1:22_t64.png
 
+==========
+Histograms
+==========
+
+Here is an example of two subfigures showing the histogram of the porosity and permeability in norne using 20 bins and norm and lognorm distributions 
+respectively, showing also the mean and std which can be used for sampling (see the test for additional examples):
+
+.. code-block:: bash
+
+    plopm -i NORNE_ATW2013 -v poro,permx -histogram '20,norm 20,lognorm' -axgrid 0 -subfigs 1,2 -d 15,5 -loc 'upper center' -y '[0,10000] [0,23000]' -c '#7274b3,#cddb6e'
+
+.. image:: ./figs/norne_atw2013_permx.png
+
+=================
+Caprock integrity
+=================
+
+Since there is an increase of interest in regional models, then we add three new variables **-v** related to the caprock integrity, 
+i.e., the most top active cells in the given range **-s**: 
+
+#. limipres = stress*z-p0, where stress can be set via the flag **-stress** (0.134 by default, a common value in literature).
+#. overpres = p-stress*z, i.e., a negative value means the limit pressure has not been reached. 
+#. objepres is the ratio of overpres to limipres, i.e., the value is of order of one and this can be used in optimization routines.
+
+Motivated for objepres, then now we add an option for mode to write a csv with the non nan values, i.e., **-m csv**.
+For example, if we would like to estimate these values for norne for future CCS:
+
+.. code-block:: bash
+
+    plopm -i 'NORNE_ATW2013' -s ',,1:22 ,,1:22' -v limipres,overpres -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -d 15,10 -c Spectral,spring, -subfigs 1,2 -delax 1
+    plopm -i 'NORNE_ATW2013' -m csv -v objepres -s ',,1:22' 
+
+.. image:: ./figs/norne_atw2013_overpres_i,j,1:22_t64.png
+
 ==============
 Convert to VTK 
 ==============

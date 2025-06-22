@@ -52,6 +52,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#generic-deck">Generic deck</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#rotation-translation-and-zoom">Rotation, translation, and zoom</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#projections-and-subfigures">Projections and subfigures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#histograms">Histograms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#caprock-integrity">Caprock integrity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convert-to-vtk">Convert to VTK</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#different-input-files-and-ensembles">Different input files and ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gif-and-mask">GIF and mask</a></li>
@@ -194,6 +196,31 @@ plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class=
 </pre></div>
 </div>
 <img alt="_images/norne_atw2013_poro_i%2Cj%2C1%3A22_t64.png" src="_images/norne_atw2013_poro_i%2Cj%2C1%3A22_t64.png" />
+</section>
+<section id="histograms">
+<h2>Histograms<a class="headerlink" href="#histograms" title="Link to this heading"></a></h2>
+<p>Here is an example of two subfigures showing the histogram og the porosity and permeability in norne (see the test for additional examples):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>poro,permx<span class="w"> </span>-histogram<span class="w"> </span><span class="s1">&#39;20,norm 20,lognorm&#39;</span><span class="w"> </span>-axgrid<span class="w"> </span><span class="m">0</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-d<span class="w"> </span><span class="m">15</span>,5<span class="w"> </span>-loc<span class="w"> </span><span class="s1">&#39;upper center&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,10000] [0,23000]&#39;</span><span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;#7274b3,#cddb6e&#39;</span>
+</pre></div>
+</div>
+<img alt="_images/norne_atw2013_permx.png" src="_images/norne_atw2013_permx.png" />
+</section>
+<section id="caprock-integrity">
+<h2>Caprock integrity<a class="headerlink" href="#caprock-integrity" title="Link to this heading"></a></h2>
+<p>Since there is an increase of interest in regional models, then we add three new variables <strong>-v</strong> related to the caprock integrity,
+i.e., the most top active cells in the given range <strong>-s</strong>:</p>
+<ol class="arabic simple">
+<li><p>limipres = stress*z-p0, where stress can be set via the flag <strong>-stress</strong> (0.134 by default, a common value in literature).</p></li>
+<li><p>overpres = p-stress*z, i.e., a negative value means the limit pressure has not been reached.</p></li>
+<li><p>objepres is the ratio of overpres to limipres, i.e., the value is of order of one and this can be used in optimization routines.</p></li>
+</ol>
+<p>Motivated for objepres, then now we add an option for mode to write a csv with the non nan values, i.e., <strong>-m csv</strong>.
+For example, if we would like to estimate these values for norne for future CCS:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;NORNE_ATW2013&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:22 ,,1:22&#39;</span><span class="w"> </span>-v<span class="w"> </span>limipres,overpres<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">15</span>,10<span class="w"> </span>-c<span class="w"> </span>Spectral,spring,<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span>
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;NORNE_ATW2013&#39;</span><span class="w"> </span>-m<span class="w"> </span>csv<span class="w"> </span>-v<span class="w"> </span>objepres<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:22&#39;</span>
+</pre></div>
+</div>
+<img alt="_images/norne_atw2013_overpres_i%2Cj%2C1%3A22_t64.png" src="_images/norne_atw2013_overpres_i%2Cj%2C1%3A22_t64.png" />
 </section>
 <section id="convert-to-vtk">
 <h2>Convert to VTK<a class="headerlink" href="#convert-to-vtk" title="Link to this heading"></a></h2>

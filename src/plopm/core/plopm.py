@@ -70,7 +70,7 @@ def load_parser():
         default="poro,permx,permz,porv,fipnum,satnum",
         help="Specify the name of the variable to plot, e.g., 'pressure', in "
         "addition to special variables such as 'grid', 'wells', 'faults', "
-        "'permfact', 'pcfact', "
+        "'permfact', 'pcfact', 'limipres', 'overpres', 'objepres', "
         "'krw', 'krg', 'krow', 'krog', 'pcow', 'pcog', 'pcwg', "
         "'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', "
         "'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g, "
@@ -81,7 +81,7 @@ def load_parser():
         "-m",
         "--mode",
         default="png",
-        help="Generate 'png', 'gif', or 'vtk' files ('png' by default).",
+        help="Generate 'png', 'gif', 'csv', or 'vtk' files ('png' by default).",
     )
     parser.add_argument(
         "-s",
@@ -495,6 +495,23 @@ def load_parser():
         "'sgas > 1e-2' -distance max,sensor' computes the maximum distance to the "
         "location using a min threshold of 1e-2 to indicate if a cell has gas or "
         "not ('' by default).",
+    )
+    parser.add_argument(
+        "-histogram",
+        "--histogram",
+        default="",
+        help="Plot the histogram of the given variable with the given number of "
+        "bins and distribution, e.g., '20,norm' for 20 bins and normal distribution "
+        "('' by default, i.e., no histogram; norm and lognorm supported for now, if "
+        "no specified then only the histogram is plotted).",
+    )
+    parser.add_argument(
+        "-stress",
+        "--stress",
+        default=0.134,
+        help="Value for the stress coeff in the computation of the pressure "
+        "limit for the variables related to the caprock integrity: limipres, "
+        "overpres, and objepres ('0.134' by default).",
     )
     parser.add_argument(
         "-maskthr",

@@ -13,6 +13,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from alive_progress import alive_bar
 from scipy.interpolate import interp1d
+from scipy.stats import norm, lognorm
 from matplotlib import animation
 from matplotlib import colors
 from matplotlib.ticker import LogFormatter
@@ -28,6 +29,8 @@ from plopm.utils.mapping import (
     map_xycoords,
     map_yzcoords,
 )
+
+STRESSC = 0.134
 
 
 def make_summary(dic):
@@ -100,6 +103,54 @@ def make_summary(dic):
                         label=label,
                         lw=float(dic["lw"][jj][i]),
                     )
+                elif dic["histogram"][0]:
+                    ij = i + j * len(dic["names"][j])
+                    if (
+                        len(dic["vrs"]) == len(dic["names"][0])
+                        and not dic["subfigs"][0]
+                    ):
+                        ij = i
+                    hist = dic["histogram"][ij].split(",")
+                    mean = np.nanmean(var)
+                    std = np.nanstd(var)
+                    print(f"Histogram: mean={mean:.6E}, std={std:.6E}")
+                    if not dic["labels"][0][0]:
+                        label += f" (mean={mean:.3E}, std={std:.3E})"
+                    counts, bins, _ = (
+                        dic["axis"]
+                        .flat[k]
+                        .hist(
+                            var,
+                            int(hist[0]),
+                            color=dic["colors"][jj][(i + k) % len(dic["colors"][jj])],
+                            label=label,
+                        )
+                    )
+                    if len(hist) > 1:
+                        xnorm = np.linspace(bins[0], bins[-1], 1000)
+                        if hist[1] == "norm":
+                            dic["axis"].flat[k].plot(
+                                xnorm,
+                                np.max(counts)
+                                * norm.pdf(xnorm, mean, std)
+                                / max(norm.pdf(xnorm, mean, std)),
+                                color=dic["colors"][jj][
+                                    (i + k) % len(dic["colors"][jj])
+                                ],
+                            )
+                        elif hist[1] == "lognorm":
+                            a = 1 + (std / mean) ** 2
+                            s = np.sqrt(np.log(a))
+                            scale = mean / np.sqrt(a)
+                            dist = lognorm(s, 0, scale)
+                            print(f"Distribution: lognorm({s:.6E}, 0, {scale:.6E})")
+                            dic["axis"].flat[k].plot(
+                                xnorm,
+                                np.max(counts) * dist.pdf(xnorm) / max(dist.pdf(xnorm)),
+                                color=dic["colors"][jj][
+                                    (i + k) % len(dic["colors"][jj])
+                                ],
+                            )
                 else:
                     dic["axis"].flat[k].step(
                         time,
@@ -126,7 +177,10 @@ def make_summary(dic):
                     else:
                         min_t = time[0]
         dic["axis"].flat[k].set_ylabel(quan + vunit)
-        dic["axis"].flat[k].set_ylim([min_v, max_v])
+        if not dic["histogram"][0]:
+            dic["axis"].flat[k].set_ylim([min_v, max_v])
+        else:
+            dic["axis"].flat[k].set_ylabel("Histogram of " + quan + vunit)
         if dic["delax"] == 0 or k + int(dic["subfigs"][1]) >= len(dic["vrs"]):
             dic["axis"].flat[k].set_xlabel(tunit)
             if dic["xlabel"][0]:
@@ -142,7 +196,7 @@ def make_summary(dic):
                 float(dic["xlim"][j][1][:-1]),
                 int(dic["xlnum"][j]),
             )
-        elif tunit != "Dates":
+        elif tunit != "Dates" and not dic["histogram"][0]:
             dic["axis"].flat[k].set_xlim([min_t, max_t])
             xlabels = np.linspace(
                 min_t,
@@ -158,7 +212,7 @@ def make_summary(dic):
                 float(dic["ylim"][j][1][:-1]),
                 int(dic["ylnum"][j]),
             )
-        else:
+        elif not dic["histogram"][0]:
             dic["axis"].flat[k].set_ylim([min_v, max_v])
             ylabels = np.linspace(
                 min_v,
@@ -173,7 +227,7 @@ def make_summary(dic):
                     func = "f'{x:" + dic["xformat"][j] + "}'"
                     dic["axis"].flat[k].set_xticks([float(eval(func)) for x in xlabels])
                     dic["axis"].flat[k].set_xticklabels([eval(func) for x in xlabels])
-                else:
+                elif not dic["histogram"][0]:
                     dic["axis"].flat[k].set_xticks(xlabels)
         if dic["ylog"][j] == "1":
             dic["axis"].flat[k].set_yscale("log")
@@ -182,7 +236,7 @@ def make_summary(dic):
                 func = "f'{y:" + dic["yformat"][j] + "}'"
                 dic["axis"].flat[k].set_yticks([float(eval(func)) for y in ylabels])
                 dic["axis"].flat[k].set_yticklabels([eval(func) for y in ylabels])
-            else:
+            elif not dic["histogram"][0]:
                 dic["axis"].flat[k].set_yticks(ylabels)
         if dic["loc"][j] != "empty":
             dic["axis"].flat[k].legend(loc=dic["loc"][j])
@@ -575,7 +629,7 @@ def find_min_max(dic):
         dic (dict): Modified global dictionary
 
     """
-    if dic["rst_range"] and dic["mode"] == "png":
+    if (dic["rst_range"] and dic["mode"] == "png") or dic["mode"] == "csv":
         return
     if dic["restart"][0] == -1 and dic["mode"] == "gif":
         dic["deck"] = dic["names"][0][0]
@@ -743,6 +797,19 @@ def mapits(dic, t, n, k):
         map_xzcoords(dic, var, quan, k)
     else:
         map_xycoords(dic, var, quan, k)
+    if dic["mode"] == "csv":
+        text = [""]
+        for val in dic[var + "a"]:
+            if not np.isnan(val):
+                text.append(f"{val}\n")
+        name = f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
+        name = name.replace(" / ", "_over_")
+        name = name.replace(" ", "")
+        if dic["save"][n]:
+            name = dic["save"][n]
+        with open(f"{dic['output']}/{name}.csv", "w", encoding="utf8") as file:
+            file.write("".join(text))
+        return
     maps = np.ones([dic["my"], dic["mx"]]) * np.nan
     if dic["diff"]:
         for i in np.arange(0, dic["my"]):
@@ -822,15 +889,12 @@ def mapits(dic, t, n, k):
     nlc = ntick
     if dic["cnum"][n] and ntick > 1:
         ntick = int(dic["cnum"][n])
-    if var.lower() in ["faults"]:
-        nlc = dic["nfaults"]
     if dic["clabel"]:
         ncolor = dic["clabel"]
     shc = 0
     # minc = 0.
     if (
         ("num" in var.lower() and temp in dic["cmdisc"] and dic["discrete"])
-        or var.lower() in ["faults"]
         or dic["def_col"]
         and temp != "nipy_spectral"
     ):
@@ -865,7 +929,7 @@ def mapits(dic, t, n, k):
     if dic["ncolor"] != "w":
         cmap.set_bad(color=dic["ncolor"])
     if len(dic["grid"]) > 1:
-        if var.lower() == "grid" and var.lower() != "wells":
+        if var.lower() == "grid":
             imag = (
                 dic["axis"]
                 .flat[k]
@@ -908,7 +972,7 @@ def mapits(dic, t, n, k):
                 )
             )
     else:
-        if var.lower() == "grid" and var.lower() != "wells":
+        if var.lower() == "grid":
             imag = (
                 dic["axis"]
                 .flat[k]
