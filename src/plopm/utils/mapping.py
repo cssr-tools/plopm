@@ -201,6 +201,10 @@ def map_xzcoords(dic, var, quan, n):
                     ]:
                         p_v = 1.0
                         val += quan[dic["actind"][ind]]
+                    elif var.lower() in dic["caprock"]:
+                        p_v = 1.0
+                        val = quan[dic["actind"][ind]]
+                        break
                     elif var.lower() in ["permx", "permz"]:
                         p_v += dic["dy"][dic["actind"][ind]]
                         val += quan[dic["actind"][ind]] * dic["dy"][dic["actind"][ind]]
@@ -353,6 +357,10 @@ def map_yzcoords(dic, var, quan, n):
                     ]:
                         p_v = 1.0
                         val += quan[dic["actind"][ind]]
+                    elif var.lower() in dic["caprock"]:
+                        p_v = 1.0
+                        val = quan[dic["actind"][ind]]
+                        break
                     elif var.lower() in ["permy", "permz"]:
                         p_v += dic["dx"][dic["actind"][ind]]
                         val += quan[dic["actind"][ind]] * dic["dx"][dic["actind"][ind]]
@@ -505,6 +513,10 @@ def map_xycoords(dic, var, quan, n):
                     ]:
                         p_v = 1.0
                         val += quan[dic["actind"][ind]]
+                    elif var.lower() in dic["caprock"]:
+                        p_v = 1.0
+                        val = quan[dic["actind"][ind]]
+                        break
                     elif var.lower() in ["permx", "permy"]:
                         p_v += dic["dz"][dic["actind"][ind]]
                         val += quan[dic["actind"][ind]] * dic["dz"][dic["actind"][ind]]

@@ -112,10 +112,10 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dd><p>The base name (or full path) of the output folder (‘.’ by default, i.e., the folder where plopm is executed).</p>
 </dd>
 <dt><kbd><span class="option">-v</span></kbd></dt>
-<dd><p>Specify the name of the variable to plot, e.g., ‘pressure’, in addition to special extensive quantities for the mass such as ‘grid’, ‘wells’, ‘faults’, ‘permfact’, ‘pcfact’, ‘krw’, ‘krg’, ‘krow’, ‘krog’, ‘pcow’, ‘pcog’, ‘pcwg’, ‘gasm’, ‘dism’, ‘liqm’, ‘vapm’, ‘co2m’, ‘h2om’, ‘xco2l’, ‘xh2ov’, ‘xco2v’, ‘xh2ol’, ‘fwcdm’, and ‘fgipm’, as well as operations, e.g, ‘pressure - 0pressure’ to plot the pressure increase (‘poro,permx,permz,porv,fipnum,satnum’ by default).</p>
+<dd><p>Specify the name of the variable to plot, e.g., ‘pressure’, in addition to special extensive quantities for the mass such as ‘grid’, ‘wells’, ‘faults’, ‘permfact’, ‘pcfact’, ‘limipres’, ‘overpres’, ‘objepres’, ‘krw’, ‘krg’, ‘krow’, ‘krog’, ‘pcow’, ‘pcog’, ‘pcwg’, ‘gasm’, ‘dism’, ‘liqm’, ‘vapm’, ‘co2m’, ‘h2om’, ‘xco2l’, ‘xh2ov’, ‘xco2v’, ‘xh2ol’, ‘fwcdm’, and ‘fgipm’, as well as operations, e.g, ‘pressure - 0pressure’ to plot the pressure increase (‘poro,permx,permz,porv,fipnum,satnum’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-m</span></kbd></dt>
-<dd><p>Generate ‘png’, ‘gif’, or ‘vtk’ files (‘png’ by default).</p>
+<dd><p>Generate ‘png’, ‘gif’, ‘csv’, or ‘vtk’ files (‘png’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-s</span></kbd></dt>
 <dd><p>The slide in the 3D model to plot the 2D maps, e.g, ‘10,,’ to plot the xz plane on all cells with i=10, or ‘,,5:10’ to plot the pv average weighted quantity. If two values are given, e.g., ‘:,5,7’, then the variable is plotted along the colon entry given the indice at the specified restart step, unless the flag ‘-how ‘ is set, then this generates a plot of the projected variable over time. If the three values are given, e.g., ‘2,4,9’, then the variable is plotted over time at that location (‘,1,’ by default, i.e., the xz surface at j=1).</p>
@@ -290,6 +290,12 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 </dd>
 <dt><kbd><span class="option">-d<var>istance</var></span></kbd></dt>
 <dd><p>Compute the ‘min’ or ‘max’ distance of the variable to a ‘sensor’ using -s, or to the lateral boundaries (‘border’), e.g., ‘-s 1,2,3 -v ‘sgas &gt; 1e-2’ -distance max,sensor’ computes the maximum distance to the location using a min threshold of 1e-2 to indicate if a cell has gas or not (’’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-h<var>istogram</var></span></kbd></dt>
+<dd><p>Plot the histogram of the given variable with the given number of bins and distribution, e.g., ‘20,norm’ for 20 bins and normal distribution (’’ by default, i.e., no histogram; norm and lognorm supported for now, if no specified then only the histogram is plotted).</p>
+</dd>
+<dt><kbd><span class="option">-s<var>tress</var></span></kbd></dt>
+<dd><p>Value for the stress coeff in the computation of the pressure limit for the variables related to the caprock integrity: limipres, overpres, and objepres (‘0.134’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-m<var>askthr</var></span></kbd></dt>
 <dd><p>Set the threshold for the variable to mask “ “(‘1e-3’ by default).</p>
