@@ -1045,6 +1045,10 @@ def mapits(dic, t, n, k):
             endpoint=True,
         )
     func = "lambda x, _: f'{x:" + dic["cformat"][n] + "}'"
+    frmt = "{:" + dic["cformat"][n] + "}"
+    for i, val in enumerate(vect):
+        if abs(float(frmt.format(val))) == 0:
+            vect[i] = 0
     if (
         var.lower() != "wells"
         and var.lower() != "faults"
