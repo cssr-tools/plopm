@@ -210,7 +210,7 @@ def map_xzcoords(dic, var, quan, n):
                         val += quan[dic["actind"][ind]] * dic["dy"][dic["actind"][ind]]
                     elif var.lower() == "permy":
                         p_v = 1
-                        d_z += dic["dy"][dic["actind"][ind]]
+                        d_y += dic["dy"][dic["actind"][ind]]
                         val += dic["dy"][dic["actind"][ind]] / quan[dic["actind"][ind]]
                     elif var.lower() == "grid":
                         p_v = 1
