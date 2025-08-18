@@ -463,7 +463,7 @@ def load_parser():
         "--cbsfax",
         default="0.40,0.01,0.2,0.02",
         help="Set the global axis position and size for the colorbar "
-        "('0.40,0.01,0.2,0.02' by default).",
+        "('0.40,0.01,0.2,0.02' by default; set to 'empty' to remove it).",
     )
     parser.add_argument(
         "-grid",

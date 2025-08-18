@@ -107,7 +107,7 @@ def ini_dic(cmdargs):
     dic["translate"] = (cmdargs["translate"]).split(" ")
     dic["translate"] = [var.split(",") for var in dic["translate"]]
     dic["restart"] = (cmdargs["restart"].strip()).split(",")
-    dic["cbsfax"] = [float(val) for val in (cmdargs["cbsfax"].strip()).split(",")]
+    dic["cbsfax"] = cmdargs["cbsfax"].strip()
     dic["nwells"], dic["lwells"] = 0, []
     dic["how"] = (cmdargs["how"].strip()).split(",")
     dic["distance"] = (cmdargs["distance"].strip()).split(",")
@@ -133,6 +133,8 @@ def ini_dic(cmdargs):
     if dic["clogthks"]:
         dic["clogthks"] = [float(val) for val in dic["clogthks"][1:-1].split(",")]
     dic["rst_range"] = False
+    if dic["cbsfax"] != "empty":
+        dic["cbsfax"] = [float(val) for val in (cmdargs["cbsfax"].strip()).split(",")]
     if dic["restart"][0] == "-1":
         dic["restart"] = [-1]
     elif ":" in dic["restart"][0]:
