@@ -1067,15 +1067,16 @@ def mapits(dic, t, n, k):
                 and dic["subfigs"][0]
                 and len(dic["names"][0]) == 1
             ):
-                dic["cb"][0] = dic["fig"].colorbar(
-                    imag,
-                    cax=dic["fig"].add_axes(dic["cbsfax"]),
-                    ticks=vect,
-                    label=ncolor,
-                    format=eval(func),
-                    shrink=0.2,
-                    location="top",
-                )
+                if dic["cbsfax"] != "empty":
+                    dic["cb"][0] = dic["fig"].colorbar(
+                        imag,
+                        cax=dic["fig"].add_axes(dic["cbsfax"]),
+                        ticks=vect,
+                        label=ncolor,
+                        format=eval(func),
+                        shrink=0.2,
+                        location="top",
+                    )
             elif not dic["subfigs"][0] or len(dic["names"][0]) == 1:
                 dic["cb"][k] = dic["fig"].colorbar(
                     imag,
@@ -1085,7 +1086,7 @@ def mapits(dic, t, n, k):
                     label=ncolor,
                     format=eval(func),
                 )
-            elif k == 0:
+            elif k == 0 and dic["cbsfax"] != "empty":
                 dic["cb"][0] = dic["fig"].colorbar(
                     imag,
                     cax=dic["fig"].add_axes(dic["cbsfax"]),
@@ -1103,24 +1104,25 @@ def mapits(dic, t, n, k):
                         self._sublabels = set(dic["clogthks"])
 
             if dic["subfigs"][0]:
-                if dic["clogthks"]:
-                    dic["cb"][k] = dic["fig"].colorbar(
-                        imag,
-                        cax=dic["fig"].add_axes(dic["cbsfax"]),
-                        label=ncolor,
-                        shrink=0.2,
-                        location="top",
-                        ticks=dic["clogthks"],
-                        format=MF(),
-                    )
-                else:
-                    dic["cb"][k] = dic["fig"].colorbar(
-                        imag,
-                        cax=dic["fig"].add_axes(dic["cbsfax"]),
-                        label=ncolor,
-                        shrink=0.2,
-                        location="top",
-                    )
+                if dic["cbsfax"] != "empty":
+                    if dic["clogthks"]:
+                        dic["cb"][k] = dic["fig"].colorbar(
+                            imag,
+                            cax=dic["fig"].add_axes(dic["cbsfax"]),
+                            label=ncolor,
+                            shrink=0.2,
+                            location="top",
+                            ticks=dic["clogthks"],
+                            format=MF(),
+                        )
+                    else:
+                        dic["cb"][k] = dic["fig"].colorbar(
+                            imag,
+                            cax=dic["fig"].add_axes(dic["cbsfax"]),
+                            label=ncolor,
+                            shrink=0.2,
+                            location="top",
+                        )
             else:
                 if dic["clogthks"]:
                     dic["cb"][k] = dic["fig"].colorbar(
