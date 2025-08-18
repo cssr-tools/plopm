@@ -629,7 +629,11 @@ def find_min_max(dic):
         dic (dict): Modified global dictionary
 
     """
-    if (dic["rst_range"] and dic["mode"] == "png") or dic["mode"] == "csv":
+    if (
+        (dic["rst_range"] and dic["mode"] == "png")
+        or dic["mode"] == "csv"
+        or dic["bounds"][0][0]
+    ):
         return
     if dic["restart"][0] == -1 and dic["mode"] == "gif":
         dic["deck"] = dic["names"][0][0]
@@ -1384,7 +1388,7 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         dic["axis"].flat[k].set_title(dic["titles"][k])
     if dic["slide"][n_s][2][0] == -2 and not dic["axis"].flat[k].yaxis_inverted():
         dic["axis"].flat[k].invert_yaxis()
-    if len(dic["xlim"][n]) > 1 and dic["rm"][1] == 0:
+    if len(dic["xlim"][n]) > 1:
         dic["axis"].flat[k].set_xlim(
             [float(dic["xlim"][n][0][1:]), float(dic["xlim"][n][1][:-1])]
         )

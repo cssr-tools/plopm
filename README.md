@@ -56,5 +56,4 @@ See the [_examples_](https://cssr-tools.github.io/plopm/examples.html) in the [_
 ## About plopm
 The _plopm_ package is being funded by the [_HPC Simulation Software for the Gigatonne Storage Challenge project_](https://www.norceresearch.no/en/projects/hpc-simulation-software-for-the-gigatonne-storage-challenge) [project number 622059] and [_Center for Sustainable Subsurface Resources (CSSR)_](https://cssr.no) 
 [project no. 331841].
-This is work in progress.
 Contributions are more than welcome using the fork and pull request approach. For new features, please request them raising an issue.
