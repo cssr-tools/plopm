@@ -54,6 +54,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#projections-and-subfigures">Projections and subfigures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#histograms">Histograms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#caprock-integrity">Caprock integrity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reading-from-csv-files">Reading from csv files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convert-to-vtk">Convert to VTK</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#different-input-files-and-ensembles">Different input files and ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gif-and-mask">GIF and mask</a></li>
@@ -199,7 +200,8 @@ plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class=
 </section>
 <section id="histograms">
 <h2>Histograms<a class="headerlink" href="#histograms" title="Link to this heading"></a></h2>
-<p>Here is an example of two subfigures showing the histogram og the porosity and permeability in norne (see the test for additional examples):</p>
+<p>Here is an example of two subfigures showing the histogram of the porosity and permeability in norne using 20 bins and norm and lognorm distributions
+respectively, showing also the mean and std which can be used for sampling (see the test for additional examples):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>poro,permx<span class="w"> </span>-histogram<span class="w"> </span><span class="s1">&#39;20,norm 20,lognorm&#39;</span><span class="w"> </span>-axgrid<span class="w"> </span><span class="m">0</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-d<span class="w"> </span><span class="m">15</span>,5<span class="w"> </span>-loc<span class="w"> </span><span class="s1">&#39;upper center&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,10000] [0,23000]&#39;</span><span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;#7274b3,#cddb6e&#39;</span>
 </pre></div>
 </div>
@@ -222,6 +224,60 @@ plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;NOR
 </div>
 <img alt="_images/norne_atw2013_overpres_i%2Cj%2C1%3A22_t64.png" src="_images/norne_atw2013_overpres_i%2Cj%2C1%3A22_t64.png" />
 </section>
+<section id="reading-from-csv-files">
+<h2>Reading from csv files<a class="headerlink" href="#reading-from-csv-files" title="Link to this heading"></a></h2>
+<p>Using the flag <strong>-csv</strong> allows to read values from csv files, allowing also to combine values from OPM Flow output files. To ilustrate this,
+let us consider the <a class="reference external" href="https://github.com/OPM/pyopmspe11">pyopmspe11 tool</a>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can install <a class="reference external" href="https://github.com/OPM/pyopmspe11">pyopmspe11 tool</a> by executing in the terminal: pip install git+https://github.com/OPM/pyopmspe11.git.
+Read the documentation in there to get familiar with the benchmark and the format of the csv files.</p>
+</div>
+<p>Then, let us consider the configuration file <a class="reference external" href="https://github.com/OPM/pyopmspe11/blob/main/benchmark/spe11b/r1_Cart_10m.toml">r1_Cart_10m.toml</a> from the benchmark folder. In line 2 of
+that file set the number of cpus for the run (in the original file is 32; if you do not have mpi support, simply remove mpi, i.e., mpirun -np 32). To lower the simulation time,
+in line 10 set x_n to 420 and line 12 set z_n to 60. In addition, in line 51 remove the 1000 years of initialization, i.e., the injection should be:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">inj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="w">  </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.035</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">     </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">],</span>
+<span class="w">       </span><span class="p">[</span><span class="w">  </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.035</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.035</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">],</span>
+<span class="w">       </span><span class="p">[</span><span class="w"> </span><span class="mi">950</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">     </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">     </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Once you have installed <strong>pyopmspe11</strong>, then run the configuration file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pyopmspe11<span class="w"> </span>-i<span class="w"> </span>r1_Cart_10m.toml<span class="w"> </span>-o<span class="w"> </span>r1_Cart_10m<span class="w"> </span>-m<span class="w"> </span>deck_flow_data<span class="w"> </span>-g<span class="w"> </span>all<span class="w"> </span>-t<span class="w"> </span><span class="m">5</span><span class="w"> </span>-r<span class="w"> </span><span class="m">70</span>,1,30<span class="w"> </span>-w<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span>-f<span class="w"> </span><span class="m">0</span>
+</pre></div>
+</div>
+<p>This generates the output folder r1_Cart_10m, where the OPM Flow output files and the csvs are generated. To compare the spatial maps of the CO2 mass
+fraction from the simulation grid to the reporting grid (70 by 30), this can be achieved by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-v<span class="w"> </span>xco2l<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;r1_Cart_10m/R1_CART_10M r1_Cart_10m/spe11b_spatial_map_500y&quot;</span><span class="w"> </span>-csv<span class="w"> </span><span class="s2">&quot;;1,2,5&quot;</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">2</span>,1<span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-r<span class="w"> </span><span class="m">100</span><span class="w"> </span>-d<span class="w"> </span><span class="m">10</span>,3<span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;Simulation grid  Reporting grid&quot;</span><span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.35,0.97,0.3,0.02<span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.1f<span class="w"> </span>-xformat<span class="w"> </span>.1f<span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-xlnum<span class="w"> </span><span class="m">8</span><span class="w"> </span>-cformat<span class="w"> </span>.2f
+</pre></div>
+</div>
+<p>where the flag <strong>-csv “;1,2,5”</strong> has two main entries (number of input files) separated by <strong>;</strong>, and the first entry is defaulted since the input it is
+an OPM Flow file, while the second entry has three values, where the first two sets the columns in the csv where the x and y coordinates are, and the last entry (5)
+it is the column for the plotted variable. The previous command generates the following figure:</p>
+<img alt="_images/spe11b_spatial_map_500y_xco2l_csv_t100.png" src="_images/spe11b_spatial_map_500y_xco2l_csv_t100.png" />
+<p>To compare two summary quantities, this can be achiaved by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M&quot;</span><span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;,BWPR:1944&quot;</span><span class="w"> </span>-csv<span class="w"> </span><span class="s2">&quot;1,3;&quot;</span><span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;1e-5,1&quot;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;solid,dotted&quot;</span><span class="w"> </span>-lw<span class="w"> </span><span class="s2">&quot;4,4&quot;</span><span class="w"> </span>-ylabel<span class="w"> </span><span class="s2">&quot;Sensor pressure [bar]&quot;</span><span class="w"> </span>-label<span class="w"> </span><span class="s2">&quot;From csv file  From OPM Flow output file&quot;</span><span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;r,k&quot;</span>
+</pre></div>
+</div>
+<p>where for summary variables, the flag <strong>-v “,BWPR:1944”</strong> needs to have empty entries for corresponding csv <strong>-i</strong> files, and the flag <strong>-a “1e-5,1”</strong> allows to convert the values in Pascal to bar from the csv file, multiplying by 1e-5. The previous command generates the following figure:</p>
+<img alt="_images/spe11b_time_series_BWPR-1944.png" src="_images/spe11b_time_series_BWPR-1944.png" />
+<p>If you download the benchmark data from <a class="reference external" href="https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4750">this website</a>, then you could use <strong>plopm</strong> to compare simulation results.
+For example, by downloading the  <a class="reference external" href="https://darus.uni-stuttgart.de/file.xhtml?fileId=375740&amp;version=1.0&amp;toolType=PREVIEW">spe11_opm1.zip</a>, <a class="reference external" href="https://darus.uni-stuttgart.de/file.xhtml?fileId=375725&amp;version=1.0&amp;toolType=PREVIEW">spe11_opm2.zip</a>,
+<a class="reference external" href="https://darus.uni-stuttgart.de/file.xhtml?fileId=375754&amp;version=1.0&amp;toolType=PREVIEW">spe11_opm3.zip</a>, and <a class="reference external" href="https://darus.uni-stuttgart.de/file.xhtml?fileId=375726&amp;version=1.0&amp;toolType=PREVIEW">spe11_opm4.zip</a>, then you could compare
+your simulations with those results by (to remove the legend, add the flag <strong>-loc empty</strong>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;opm1/spe11b_time_series opm2/spe11b_time_series opm3/spe11b_time_series opm4/spe11b_time_series r1_Cart_10m/spe11b_time_series&quot;</span><span class="w"> </span>-csv<span class="w"> </span><span class="s2">&quot;1,4;1,4;1,4;1,4;1,4&quot;</span><span class="w"> </span>-tunits<span class="w"> </span>y<span class="w"> </span>-x<span class="w"> </span><span class="s2">&quot;[0,1000]&quot;</span><span class="w"> </span>-ylabel<span class="w"> </span><span class="s2">&quot;dissA [kiloton]&quot;</span><span class="w"> </span>-yformat<span class="w"> </span>.1f<span class="w"> </span>-a<span class="w"> </span>1e-6<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;#a8d8e3,#a8d8e3,#a8d8e3,#a8d8e3,#fc035a&quot;</span><span class="w"> </span>-lw<span class="w"> </span><span class="m">5</span>,5,5,5,5<span class="w"> </span>-e<span class="w"> </span>solid
+</pre></div>
+</div>
+<img alt="_images/spe11b_time_series_csv_ens.png" src="_images/spe11b_time_series_csv_ens.png" />
+<p>and for the spatial maps:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;opm1/spe11b_spatial_map_250y opm2/spe11b_spatial_map_250y opm3/spe11b_spatial_map_250y opm4/spe11b_spatial_map_250y r1_Cart_10m/spe11b_spatial_map_250y&quot;</span><span class="w">  </span>-csv<span class="w"> </span><span class="s2">&quot;1,2,5;1,2,5;1,2,5;1,2,5;1,2,5&quot;</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">3</span>,2<span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.35,0.97,0.3,0.02<span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.1f<span class="w"> </span>-xformat<span class="w"> </span>.1f<span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-xlnum<span class="w"> </span><span class="m">8</span><span class="w"> </span>-cformat<span class="w"> </span>.2f<span class="w"> </span>-d<span class="w"> </span><span class="m">14</span>,4<span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;opm1  opm2  opm3  opm4  my simulation&quot;</span><span class="w"> </span>-clabel<span class="w"> </span><span class="s1">&#39;Time 250 years, CO$_2$ mass fraction (liquid phase) [-]&#39;</span><span class="w"> </span>-c<span class="w"> </span>inferno
+</pre></div>
+</div>
+<img alt="_images/spe11b_spatial_map_250y_csv_csv_t-1.png" src="_images/spe11b_spatial_map_250y_csv_csv_t-1.png" />
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>In general, the ability of plotting from csv files using the flag <strong>-csv</strong> is a game changer, expanding the applicability of <strong>plopm</strong> beyond the format of OPM Flow output files.</p>
+</div>
+</section>
 <section id="convert-to-vtk">
 <h2>Convert to VTK<a class="headerlink" href="#convert-to-vtk" title="Link to this heading"></a></h2>
 <p>Inside the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples">examples folder</a>, then we can create VTKs from the
@@ -230,10 +286,10 @@ from the restart files from the initial (0) to the number 5 restart, using a OPM
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>temp,fipnum,co2m,xco2l<span class="w"> </span>-vtkformat<span class="w"> </span>Float32,UInt16,Float64,Float32<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>,5<span class="w"> </span>-m<span class="w"> </span>vtk
 </pre></div>
 </div>
-<figure class="align-default" id="id4">
+<figure class="align-default" id="id5">
 <img alt="_images/vtk_temp.png" src="_images/vtk_temp.png" />
 <figcaption>
-<p><span class="caption-text">Visualization using paraview of the grid and temperature after 25 years of CO2 injection.</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+<p><span class="caption-text">Visualization using paraview of the grid and temperature after 25 years of CO2 injection.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="admonition note">
@@ -275,10 +331,10 @@ ensembles using <a class="reference external" href="https://github.com/cssr-tool
 <p>You can install <a class="reference external" href="https://github.com/cssr-tools/pyopmnearwell">pyopmnearwell</a> by executing in the terminal: pip install git+https://github.com/cssr-tools/pyopmnearwell.git.</p>
 </div>
 <p>Below are two of the generated figures after executing the script (additional figures are generated to show the functionality of the <strong>-ensemble</strong> flag):</p>
-<figure class="align-default" id="id5">
+<figure class="align-default" id="id6">
 <img alt="_images/ensemble.png" src="_images/ensemble.png" />
 <figcaption>
-<p><span class="caption-text">Example of visualizing ensembles using <strong>plopm</strong> (example0.png and example3_formated.png respectively).</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+<p><span class="caption-text">Example of visualizing ensembles using <strong>plopm</strong> (example0.png and example3_formated.png respectively).</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="admonition note">

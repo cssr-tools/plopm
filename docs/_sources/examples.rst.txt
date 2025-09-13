@@ -148,7 +148,8 @@ Here is an example of making a single figure plotting subfigures and using diffe
 Histograms
 ==========
 
-Here is an example of two subfigures showing the histogram og the porosity and permeability in norne (see the test for additional examples):
+Here is an example of two subfigures showing the histogram of the porosity and permeability in norne using 20 bins and norm and lognorm distributions 
+respectively, showing also the mean and std which can be used for sampling (see the test for additional examples):
 
 .. code-block:: bash
 
@@ -176,6 +177,78 @@ For example, if we would like to estimate these values for norne for future CCS:
     plopm -i 'NORNE_ATW2013' -m csv -v objepres -s ',,1:22' 
 
 .. image:: ./figs/norne_atw2013_overpres_i,j,1:22_t64.png
+
+======================
+Reading from csv files
+======================
+
+Using the flag **-csv** allows to read values from csv files, allowing also to combine values from OPM Flow output files. To ilustrate this,
+let us consider the `pyopmspe11 tool <https://github.com/OPM/pyopmspe11>`_.
+
+.. tip::
+    You can install `pyopmspe11 tool <https://github.com/OPM/pyopmspe11>`_ by executing in the terminal: pip install git+https://github.com/OPM/pyopmspe11.git. 
+    Read the documentation in there to get familiar with the benchmark and the format of the csv files.
+
+Then, let us consider the configuration file `r1_Cart_10m.toml <https://github.com/OPM/pyopmspe11/blob/main/benchmark/spe11b/r1_Cart_10m.toml>`_ from the benchmark folder. In line 2 of 
+that file set the number of cpus for the run (in the original file is 32; if you do not have mpi support, simply remove mpi, i.e., mpirun -np 32). To lower the simulation time, 
+in line 10 set x_n to 420 and line 12 set z_n to 60. In addition, in line 51 remove the 1000 years of initialization, i.e., the injection should be:
+
+.. code-block:: toml
+
+    inj = [[  25, 5, 1, 0.035, 10, 1,     0, 10],
+           [  25, 5, 1, 0.035, 10, 1, 0.035, 10],
+           [ 950, 5, 1,     0, 10, 1,     0, 10]] 
+
+Once you have installed **pyopmspe11**, then run the configuration file:
+
+.. code-block:: bash
+
+    pyopmspe11 -i r1_Cart_10m.toml -o r1_Cart_10m -m deck_flow_data -g all -t 5 -r 70,1,30 -w 0.1 -f 0
+
+This generates the output folder r1_Cart_10m, where the OPM Flow output files and the csvs are generated. To compare the spatial maps of the CO2 mass 
+fraction from the simulation grid to the reporting grid (70 by 30), this can be achieved by:
+
+.. code-block:: bash
+
+    plopm -v xco2l -i "r1_Cart_10m/R1_CART_10M r1_Cart_10m/spe11b_spatial_map_500y" -csv ";1,2,5" -subfigs 2,1 -delax 1 -r 100 -d 10,3 -suptitle 0 -t "Simulation grid  Reporting grid" -cbsfax 0.35,0.97,0.3,0.02 -yunits km -xunits km -yformat .1f -xformat .1f -cnum 5 -xlnum 8 -cformat .2f
+
+where the flag **-csv ";1,2,5"** has two main entries (number of input files) separated by **;**, and the first entry is defaulted since the input it is 
+an OPM Flow file, while the second entry has three values, where the first two sets the columns in the csv where the x and y coordinates are, and the last entry (5) 
+it is the column for the plotted variable. The previous command generates the following figure:
+
+.. image:: ./figs/spe11b_spatial_map_500y_xco2l_csv_t100.png
+
+To compare two summary quantities, this can be achiaved by: 
+
+.. code-block:: bash
+
+    plopm -i "r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M" -v ",BWPR:1944" -csv "1,3;" -a "1e-5,1" -e "solid,dotted" -lw "4,4" -ylabel "Sensor pressure [bar]" -label "From csv file  From OPM Flow output file" -c "r,k"
+
+where for summary variables, the flag **-v ",BWPR:1944"** needs to have empty entries for corresponding csv **-i** files, and the flag **-a "1e-5,1"** allows to convert the values in Pascal to bar from the csv file, multiplying by 1e-5. The previous command generates the following figure:
+
+.. image:: ./figs/spe11b_time_series_BWPR-1944.png
+
+If you download the benchmark data from `this website <https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4750>`_, then you could use **plopm** to compare simulation results. 
+For example, by downloading the  `spe11_opm1.zip <https://darus.uni-stuttgart.de/file.xhtml?fileId=375740&version=1.0&toolType=PREVIEW>`_, `spe11_opm2.zip <https://darus.uni-stuttgart.de/file.xhtml?fileId=375725&version=1.0&toolType=PREVIEW>`_, 
+`spe11_opm3.zip <https://darus.uni-stuttgart.de/file.xhtml?fileId=375754&version=1.0&toolType=PREVIEW>`_, and `spe11_opm4.zip <https://darus.uni-stuttgart.de/file.xhtml?fileId=375726&version=1.0&toolType=PREVIEW>`_, then you could compare 
+your simulations with those results by (to remove the legend, add the flag **-loc empty**):
+
+.. code-block:: bash
+
+    plopm -i "opm1/spe11b_time_series opm2/spe11b_time_series opm3/spe11b_time_series opm4/spe11b_time_series r1_Cart_10m/spe11b_time_series" -csv "1,4;1,4;1,4;1,4;1,4" -tunits y -x "[0,1000]" -ylabel "dissA [kiloton]" -yformat .1f -a 1e-6 -c "#a8d8e3,#a8d8e3,#a8d8e3,#a8d8e3,#fc035a" -lw 5,5,5,5,5 -e solid
+
+.. image:: ./figs/spe11b_time_series_csv_ens.png
+
+and for the spatial maps:
+
+.. code-block:: bash
+
+    plopm -i "opm1/spe11b_spatial_map_250y opm2/spe11b_spatial_map_250y opm3/spe11b_spatial_map_250y opm4/spe11b_spatial_map_250y r1_Cart_10m/spe11b_spatial_map_250y"  -csv "1,2,5;1,2,5;1,2,5;1,2,5;1,2,5" -subfigs 3,2 -delax 1 -suptitle 0 -cbsfax 0.35,0.97,0.3,0.02 -yunits km -xunits km -yformat .1f -xformat .1f -cnum 5 -xlnum 8 -cformat .2f -d 14,4 -t "opm1  opm2  opm3  opm4  my simulation" -clabel 'Time 250 years, CO$_2$ mass fraction (liquid phase) [-]' -c inferno
+
+.. image:: ./figs/spe11b_spatial_map_250y_csv_csv_t-1.png
+
+.. tip::
+    In general, the ability of plotting from csv files using the flag **-csv** is a game changer, expanding the applicability of **plopm** beyond the format of OPM Flow output files.
 
 ==============
 Convert to VTK 

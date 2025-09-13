@@ -156,6 +156,21 @@ def ini_dic(cmdargs):
     dic["slide"] = [
         [val if val else [-2, -2] for val in var.split(",")] for var in dic["slide"]
     ]
+    dic["csvs"] = (cmdargs["csv"]).split(";")
+    dic["csvs"] = [
+        [int(val) if val else "" for val in var.split(",")] for var in dic["csvs"]
+    ]
+    dic["csvsummary"], allcsvs = False, True
+    for val in dic["csvs"]:
+        if not val[0]:
+            allcsvs = False
+        else:
+            if len(val) == 2:
+                dic["csvsummary"] = True
+    if allcsvs:
+        dic["vrs"] = ["csv"]
+    if len(dic["csvs"])==1 and not dic["csvs"][0][0]:
+        dic["csvs"] = [dic["csvs"][0]] * (max(len(dic["names"][0]), len(dic["vrs"])) + 1)
     if [-2, -2] in dic["slide"][0]:
         for i, var in enumerate(dic["slide"]):
             for j, val in enumerate(var):
@@ -377,6 +392,7 @@ def is_summary(dic):
         or dic["vrs"][0].lower()[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
         or dic["vrs"][0].lower()[:6] == "pcfact"
         or dic["vrs"][0].lower()[:8] == "permfact"
+        or dic["csvsummary"]
     ):
         return True
     if os.path.isfile(f"{dic['name']}.SMSPEC"):

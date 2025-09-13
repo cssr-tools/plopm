@@ -48,6 +48,7 @@ where
 -t    Specify the figure title, e.g., 'Final saturation map' ('' by default, i.e., set by plopm).
 -r    Restart number to plot the dynamic variable, where 0 corresponds to the initial one ('-1' by default, i.e., the last restart file). For GIFs, the default correspond to all restart steps. To make a GIF using selected restart steps, provide these separated by commas, e.g., '0,3,10,20'.  To write a serie of PNGs, this can be achieve by setting '-r a:b:[step]', e.g., '-r 1:3' for rsts 1 to 3, and '-r 5:505:250' for rsts 5, 255, and 505.
 -a    Scale the mass variable, e.g., 1e-9 for the color bar for the CO2 mass to be in Mt ('1' by default).
+-csv        If the input file is a csv, then define the number of column for the x, y, and variable for spatial maps, or the t and variable for time series ('' by default, column numbering starting from 1, not 0).
 -tunits     For the x axis in the summary use seconds 's', minutes 'm', hours 'h', days 'd', weeks 'w', years 'y', or dates 'dates' ('s' by default).
 -ylabel     Text for the y axis ('' by default, i.e., set by plopm).
 -xlabel     Text for the x axis ('' by default, i.e., set by plopm).

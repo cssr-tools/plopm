@@ -18,7 +18,13 @@ from matplotlib import animation
 from matplotlib import colors
 from matplotlib.ticker import LogFormatter
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from plopm.utils.readers import read_summary, get_quantity, get_readers, initialize_time
+from plopm.utils.readers import (
+    read_summary,
+    get_quantity,
+    get_csvs,
+    get_readers,
+    initialize_time,
+)
 from plopm.utils.initialization import ini_slides
 from plopm.utils.mapping import (
     handle_slide_x,
@@ -457,14 +463,17 @@ def prepare_maps(dic, n):
     else:
         dic["deckn"] = dic["deck"].lower()
     dic["xc"], dic["yc"], dic["abssum"] = [], [], 0.0
-    get_readers(dic)
-    ini_slides(dic, n)
-    if dic["slide"][n][0][0] > -1:
-        handle_slide_x(dic, n)
-    elif dic["slide"][n][1][0] > -1:
-        handle_slide_y(dic, n)
+    if dic["csvs"][n][0]:
+        get_csvs(dic, n)
     else:
-        handle_slide_z(dic, n)
+        get_readers(dic)
+        ini_slides(dic, n)
+        if dic["slide"][n][0][0] > -1:
+            handle_slide_x(dic, n)
+        elif dic["slide"][n][1][0] > -1:
+            handle_slide_y(dic, n)
+        else:
+            handle_slide_z(dic, n)
     if int(dic["rotate"][n]) != 0 or dic["translate"][n] != ["[0", "0]"]:
         rotate_grid(dic, n)
 
@@ -650,7 +659,7 @@ def find_min_max(dic):
         dic["diffa"] = []
         for t, _ in enumerate(dic["restart"]):
             prepare_maps(dic, 1)
-            _, quan = get_quantity(dic, var.upper(), 0, dic["restart"][t])
+            _, quan = get_quantity(dic, var.upper(), 0, dic["restart"][t], 0)
             dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
             if dic["slide"][1][0][0] > -1:
                 map_yzcoords(dic, var, quan, 1)
@@ -667,7 +676,7 @@ def find_min_max(dic):
                 dic["deck"] = dic["names"][0][m]
                 dic["ndeck"] = m
                 prepare_maps(dic, m)
-                _, quan = get_quantity(dic, var.upper(), m, dic["restart"][t])
+                _, quan = get_quantity(dic, var.upper(), m, dic["restart"][t], 0)
                 dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
                 if dic["slide"][m][0][0] > -1:
                     map_yzcoords(dic, var, quan, m)
@@ -694,14 +703,17 @@ def find_min_max(dic):
                     dic["deck"] = deck
                     dic["ndeck"] = n
                     prepare_maps(dic, n)
-                    _, quan = get_quantity(dic, var.upper(), m, dic["restart"][t])
+                    _, quan = get_quantity(dic, var.upper(), m, dic["restart"][t], n)
                     dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
-                    if dic["slide"][n][0][0] > -1:
-                        map_yzcoords(dic, var, quan, n)
-                    elif dic["slide"][n][1][0] > -1:
-                        map_xzcoords(dic, var, quan, n)
+                    if dic["csvs"][n][0]:
+                        dic[var + "a"] = quan
                     else:
-                        map_xycoords(dic, var, quan, n)
+                        if dic["slide"][n][0][0] > -1:
+                            map_yzcoords(dic, var, quan, n)
+                        elif dic["slide"][n][1][0] > -1:
+                            map_xzcoords(dic, var, quan, n)
+                        else:
+                            map_xycoords(dic, var, quan, n)
                     if dic["diff"]:
                         dic[var + "a"] -= dic["diffa"][t]
                     if int(dic["log"][m]) == 1:
@@ -719,7 +731,7 @@ def find_min_max(dic):
             dic["deck"] = deck
             dic["ndeck"] = n
             prepare_maps(dic, n)
-            _, quan = get_quantity(dic, var.upper(), 0, 0)
+            _, quan = get_quantity(dic, var.upper(), 0, 0, n)
             dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
             if dic["slide"][n][0][0] > -1:
                 map_yzcoords(dic, var, quan, n)
@@ -790,17 +802,20 @@ def mapits(dic, t, n, k):
 
     """
     var = dic["vrs"][n]
-    unit, quan = get_quantity(dic, var.upper(), n, dic["restart"][t])
+    unit, quan = get_quantity(dic, var.upper(), n, dic["restart"][t], k)
     dic[var + "a"] = np.ones(dic["mx"] * dic["my"]) * np.nan
     n_s = 0
     if dic["subfigs"][0] and len(dic["names"][0]) > 1:
         n_s = k
-    if dic["slide"][n_s][0][0] > -1:
-        map_yzcoords(dic, var, quan, k)
-    elif dic["slide"][n_s][1][0] > -1:
-        map_xzcoords(dic, var, quan, k)
+    if dic["csvs"][k][0]:
+        dic[var + "a"] = quan
     else:
-        map_xycoords(dic, var, quan, k)
+        if dic["slide"][n_s][0][0] > -1:
+            map_yzcoords(dic, var, quan, k)
+        elif dic["slide"][n_s][1][0] > -1:
+            map_xzcoords(dic, var, quan, k)
+        else:
+            map_xycoords(dic, var, quan, k)
     if dic["mode"] == "csv":
         text = [""]
         for val in dic[var + "a"]:
@@ -1303,7 +1318,9 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
 
     """
     namet = name
-    if dic["tunits"][0] == "dates":
+    if dic["csvs"][n][0]:
+        time = ""
+    elif dic["tunits"][0] == "dates":
         if dic["use"] == "opm":
             print(
                 "For 2D spatial maps it is currently no possible to use -tunits "
@@ -1336,7 +1353,9 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
     ):
         time = ""
         namet = ""
-    if (
+    if dic["csvs"][n][0]:
+        tslide = ""
+    elif (
         dic["faults"]
         or dic["wells"]
         or (

@@ -699,7 +699,19 @@ def read_summary(dic, case, quan, tunit, qskl, n):
     time, vunit = np.array([0, 1]), ""
     tskl, tunit = initialize_time(tunit)
     quans = quan.split(" ")
-    if dic["distance"][0]:
+    if dic["csvs"][n][0]:
+        csvv = np.genfromtxt(
+            f"{case}.csv",
+            delimiter=",",
+            skip_header=1,
+        )
+        time = (
+            tskl
+            * np.array([csvv[i][dic["csvs"][n][0] - 1] for i in range(csvv.shape[0])])
+            / 86400.0
+        )
+        var = np.array([csvv[i][dic["csvs"][n][1] - 1] for i in range(csvv.shape[0])])
+    elif dic["distance"][0]:
         xskl, xunit = initialize_spatial(dic["xunits"])
         dic["deck"] = case
         get_readers(dic)
@@ -1155,6 +1167,35 @@ def initialize_time(times):
     return scale, unit
 
 
+def get_csvs(dic, n):
+    """
+    Read the csv quantities
+
+    Args:
+        dic (dict): Global dictionary\n
+        n (int): Number of deck
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    csvv = np.genfromtxt(
+        f"{dic['deck']}.csv",
+        delimiter=",",
+        skip_header=1,
+    )
+    x = csvv[-1][dic["csvs"][n][0] - 1] + csvv[0][dic["csvs"][n][0] - 1]
+    y = csvv[-1][dic["csvs"][n][1] - 1] + csvv[0][dic["csvs"][n][1] - 1]
+    dic["mx"] = round(x / (2.0 * csvv[0][dic["csvs"][n][0] - 1]))
+    dic["my"] = round(y / (2.0 * csvv[0][dic["csvs"][n][1] - 1]))
+    dic["xmx"] = np.linspace(0, x, dic["mx"] + 1)
+    dic["ymy"] = np.linspace(0, y, dic["my"] + 1)
+    dic["xc"], dic["yc"] = np.meshgrid(dic["xmx"], dic["ymy"][::-1])
+    dic["xc"], dic["yc"] = dic["xc"].tolist(), dic["yc"].tolist()
+    dic["xmeaning"], dic["ymeaning"] = "x", "y"
+    dic["nslide"] = "csv"
+
+
 def get_readers(dic):
     """
     Load the opm/resdata methods
@@ -1253,7 +1294,7 @@ def get_unit(name):
     return unit
 
 
-def get_quantity(dic, name, n, nrst):
+def get_quantity(dic, name, n, nrst, m):
     """
     Compute the mass (intensive quantities).
 
@@ -1271,7 +1312,14 @@ def get_quantity(dic, name, n, nrst):
     skl = float(dic["avar"][n])
     unit = get_unit(name)
     names = name.split(" ")
-    if dic["use"] == "resdata":
+    if dic["csvs"][m][0]:
+        csvv = np.genfromtxt(
+            f"{dic['deck']}.csv",
+            delimiter=",",
+            skip_header=1,
+        )
+        quan = np.array([csvv[i][dic["csvs"][m][2] - 1] for i in range(csvv.shape[0])])
+    elif dic["use"] == "resdata":
         if dic["init"].has_kw(names[0]):
             quan = np.array(dic["init"][names[0]][0]) * 1.0
             if names[0].lower() == "porv":
