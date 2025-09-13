@@ -169,8 +169,10 @@ def ini_dic(cmdargs):
                 dic["csvsummary"] = True
     if allcsvs:
         dic["vrs"] = ["csv"]
-    if len(dic["csvs"])==1 and not dic["csvs"][0][0]:
-        dic["csvs"] = [dic["csvs"][0]] * (max(len(dic["names"][0]), len(dic["vrs"])) + 1)
+    if len(dic["csvs"]) == 1 and not dic["csvs"][0][0]:
+        dic["csvs"] = [dic["csvs"][0]] * (
+            max(len(dic["names"][0]), len(dic["vrs"])) + 1
+        )
     if [-2, -2] in dic["slide"][0]:
         for i, var in enumerate(dic["slide"]):
             for j, val in enumerate(var):
