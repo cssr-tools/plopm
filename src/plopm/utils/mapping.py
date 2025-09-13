@@ -91,7 +91,8 @@ def rotate_grid(dic, n):
     Rotate the grid if requiered.
 
     Args:
-        dic (dict): Global dictionary
+        dic (dict): Global dictionary\n
+        n (int): Number of deck
 
     Returns:
         dic (dict): Modified global dictionary

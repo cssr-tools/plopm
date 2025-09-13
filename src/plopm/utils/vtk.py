@@ -129,7 +129,7 @@ def opmtovtk(dic, k):
         for i in dic["restart"]:
             for n, var in enumerate(dic["vrs"]):
                 bar_animation()
-                unit, quan = get_quantity(dic, var.upper(), n, i)
+                unit, quan = get_quantity(dic, var.upper(), n, i, 0)
                 if i == 0:
                     base_vtk.insert(
                         5 + 2 * n,

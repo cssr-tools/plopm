@@ -192,6 +192,14 @@ def load_parser():
         "the CO2 mass to be in Mt ('1' by default).",
     )
     parser.add_argument(
+        "-csv",
+        "--csv",
+        default="",
+        help="If the input file is a csv, then define the number of column for "
+        "the x, y, and variable for spatial maps, or the t and variable for time "
+        "series ('' by default, column numbering starting from 1, not 0).",
+    )
+    parser.add_argument(
         "-tunits",
         "--tunits",
         default="d",
