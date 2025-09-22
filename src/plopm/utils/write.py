@@ -1071,12 +1071,7 @@ def mapits(dic, t, n, k):
                 vect[i] = 0
                 if i == 0:
                     minc = 0
-    if (
-        var.lower() != "wells"
-        and var.lower() != "faults"
-        and var.lower() != "grid"
-        and dic["rm"][2] == 0
-    ):
+    if var.lower() != "wells" and var.lower() != "faults" and var.lower() != "grid":
         if int(dic["log"][n]) == 0:
             if (
                 len(dic["restart"]) > 1
@@ -1158,11 +1153,10 @@ def mapits(dic, t, n, k):
                     )
     else:
         handle_well_or_grid_or_fault(dic, imag, divider, vect, n, var.lower())
-    if dic["rm"][2] == 0:
-        imag.set_clim(
-            minc - shc,
-            maxc + shc,
-        )
+    imag.set_clim(
+        minc - shc,
+        maxc + shc,
+    )
     handle_axis(dic, var, n, t, k, n_s, unit)
     if dic["xlabel"][n] and dic["rm"][1] == 0:
         dic["axis"].flat[k].set_xlabel(dic["xlabel"][n])
