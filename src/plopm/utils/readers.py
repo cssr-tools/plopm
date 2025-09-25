@@ -1364,7 +1364,7 @@ def get_quantity(dic, name, n, nrst, m):
                 quan = operate(quan, quan1, j, names[1::2])
     else:
         if dic["init"].count(names[0]):
-            quan = dic["init"][names[0]]
+            quan = dic["init"][names[0]] * 1.0
             if names[0].lower() == "porv":
                 quan = dic["pv"]
         elif names[0].lower() == "grid":
