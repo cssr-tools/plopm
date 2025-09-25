@@ -620,11 +620,19 @@ def make_maps(dic):
                 if len(dic["names"][0]) > 1:
                     for l in range(len(dic["axis"].flat) - len(dic["names"][0])):
                         dic["fig"].delaxes(dic["axis"].flat[-1 - l])
-                for t, _ in enumerate(dic["restart"]):
+                if len(dic["restart"]) > 1 and len(dic["names"][0]) == len(
+                    dic["restart"]
+                ):
                     if not dic["subfigs"][0]:
                         dic["fig"], dic["axis"] = plt.subplots(1, 1)
                         dic["axis"] = np.array([dic["axis"]])
-                    mapit(t, dic, n)
+                    mapit(0, dic, n)
+                else:
+                    for t, _ in enumerate(dic["restart"]):
+                        if not dic["subfigs"][0]:
+                            dic["fig"], dic["axis"] = plt.subplots(1, 1)
+                            dic["axis"] = np.array([dic["axis"]])
+                        mapit(t, dic, n)
 
 
 def find_min_max(dic):
@@ -777,7 +785,12 @@ def mapit(t, dic, n):
                     dic["deck"] = deck
                     dic["ndeck"] = nn
                     prepare_maps(dic, nn)
-                    mapits(dic, t, 0, nn)
+                    if len(dic["restart"]) > 1 and len(dic["names"][0]) == len(
+                        dic["restart"]
+                    ):
+                        mapits(dic, nn, 0, nn)
+                    else:
+                        mapits(dic, t, 0, nn)
     elif dic["subfigs"][0] and len(dic["vrs"]) > 1 and dic["skip"] == 0:
         with alive_bar(len(dic["vrs"])) as bar_animation:
             for nn, _ in enumerate(dic["vrs"]):
@@ -1263,6 +1276,21 @@ def mapits(dic, t, n, k):
                             dpi=int(dic["dpi"][0]),
                         )
                 elif len(dic["names"][0]) == 1:
+                    if t == len(dic["restart"]) - 1:
+                        dic["fig"].set_facecolor(dic["fc"])
+                        name = (
+                            f"{dic['deckn']}_{var}_{dic['nslide']}_t{dic['restart'][t]}"
+                        )
+                        name = name.replace(" / ", "_over_")
+                        name = name.replace(" ", "")
+                        dic["fig"].savefig(
+                            f"{dic['output']}/{dic['save'][n] if dic['save'][n] else name}.png",
+                            bbox_inches="tight",
+                            dpi=int(dic["dpi"][0]),
+                        )
+                elif len(dic["restart"]) > 1 and len(dic["names"][0]) == len(
+                    dic["restart"]
+                ):
                     if t == len(dic["restart"]) - 1:
                         dic["fig"].set_facecolor(dic["fc"])
                         name = (
