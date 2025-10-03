@@ -1338,6 +1338,8 @@ def get_quantity(dic, name, n, nrst, m):
             quan = np.array(dic["init"]["SATNUM"][0]) * 0
         elif dic["unrst"].has_kw(names[0]):
             quan = np.array(dic["unrst"][names[0]][nrst]) * 1.0
+            if dic["unrst"].has_kw("RPORV"):
+                dic["porv"][dic["porv"] > 0] = np.array(dic["unrst"]["RPORV"][nrst])
         elif names[0].lower() in dic["mass"] + dic["xmass"]:
             quan = handle_mass(dic, names[0].lower(), nrst) * skl
             if names[0].lower() in dic["mass"]:
@@ -1381,6 +1383,8 @@ def get_quantity(dic, name, n, nrst, m):
             quan = np.array(dic["init"]["SATNUM"]) * 0
         elif dic["unrst"].count(names[0]):
             quan = dic["unrst"][names[0], nrst]
+            if dic["unrst"].count("RPORV"):
+                dic["porv"][dic["porv"] > 0] = np.array(dic["unrst"]["RPORV", nrst])
         elif names[0].lower() in dic["mass"] + dic["xmass"]:
             quan = handle_mass(dic, names[0].lower(), nrst) * skl
             if names[0].lower() in dic["mass"]:
