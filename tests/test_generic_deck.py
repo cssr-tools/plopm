@@ -37,7 +37,8 @@ def test_generic_deck():
         check=True,
     )
     os.system(
-        "flow SPE10_MODEL2.DATA --parsing-strictness=low --enable-dry-run=true & wait\n"
+        "flow SPE10_MODEL2.DATA --parsing-strictness=low --enable-dry-run=1 "
+        "--check-satfunc-consistency=0"
     )
     for slide, name, nslide, logs in zip(
         ["4,,", ",8,", ",,20"],
