@@ -246,7 +246,7 @@ def make_summary(dic):
                 dic["axis"].flat[k].set_yticks(ylabels)
         if dic["loc"][j] != "empty":
             dic["axis"].flat[k].legend(loc=dic["loc"][j])
-        if dic["titles"][j] != "0":
+        if dic["titles"][j] != "0" and dic["rm"][3] == 0:
             dic["axis"].flat[k].set_title(dic["titles"][j])
         if dic["delax"] == 1 and k + int(dic["subfigs"][1]) < len(dic["vrs"]):
             dic["axis"].flat[k].tick_params(
@@ -1058,7 +1058,12 @@ def mapits(dic, t, n, k):
     ):
         dic["cb"][k].remove()
         dic["axis"].flat[k].set_axes_locator(dic["original_loc"][k])
-    if not dic["subfigs"][0] and dic["cb"][k] != "" and dic["mode"] == "gif":
+    if (
+        not dic["subfigs"][0]
+        and dic["cb"][k] != ""
+        and dic["mode"] == "gif"
+        and dic["rm"][2] == 0
+    ):
         dic["cb"][k].remove()
         dic["axis"].flat[k].set_axes_locator(dic["original_loc"][k])
     divider = make_axes_locatable(dic["axis"].flat[k])
@@ -1389,14 +1394,24 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         tslide = dic["tslide"][2:]
     else:
         tslide = dic["tslide"]
-    if dic["subfigs"][0] and len(dic["names"][0]) > 1 and dic["titles"][k] == "0":
+    if (
+        dic["subfigs"][0]
+        and len(dic["names"][0]) > 1
+        and dic["titles"][k] == "0"
+        and dic["rm"][3] == 0
+    ):
         dic["axis"].flat[k].set_title(dic["deckn"])
         if k == 0 and dic["suptitle"] != "0":
             dic["fig"].suptitle(f"{time[1:]}")
     elif dic["subfigs"][0] and len(dic["vrs"]) > 1 and dic["titles"][k] == "0":
         if k == 0 and dic["suptitle"] != "0":
             dic["fig"].suptitle(f"{dic['deckn']}{time}")
-    elif dic["mode"] == "gif" and len(dic["vrs"]) == 1 and dic["titles"][k] == "0":
+    elif (
+        dic["mode"] == "gif"
+        and len(dic["vrs"]) == 1
+        and dic["titles"][k] == "0"
+        and dic["rm"][3] == 0
+    ):
         if dic["diff"]:
             dic["axis"].flat[k].set_title(f"{dic['deckn']}-{dic['deckd']}{time}")
         else:
@@ -1406,6 +1421,7 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         and dic["subfigs"][0]
         and len(dic["names"][0]) == 1
         and dic["titles"][k] == "0"
+        and dic["rm"][3] == 0
     ):
         dic["axis"].flat[k].set_title(f"{dic['tnrst'][dic['restart'][t]]} days")
         if k == 0 and dic["suptitle"] != "0":
