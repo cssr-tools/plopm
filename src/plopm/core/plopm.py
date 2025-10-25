@@ -134,8 +134,8 @@ def load_parser():
     parser.add_argument(
         "-u",
         "--use",
-        default="resdata",
-        help="Use resdata or OPM Python libraries ('resdata' by default).",
+        default="opm",
+        help="Use resdata or OPM Python libraries ('opm' by default).",
     )
     parser.add_argument(
         "-c",
@@ -526,6 +526,15 @@ def load_parser():
         "--maskthr",
         default=1e-3,
         help="Set the threshold for the variable to mask " "('1e-3' by default).",
+    )
+    parser.add_argument(
+        "-filter",
+        "--filter",
+        default="",
+        help="Consider only the cells fullfilling the conditions, which are separated "
+        "by '&', and use ',' for different input files e.g., 'fluxnum "
+        "== 2 & sgas >= 0.2, satnum != 5'. ('' by default; note that RPORV needs to be "
+        "set in RPTRST to be able to use dynamic filter variables such as sgas).",
     )
     parser.add_argument(
         "-interval",

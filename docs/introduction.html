@@ -136,7 +136,7 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 <dd><p>Set the lower and upper bounds along y, e.g., ‘[-10,300]’ (’’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-u</span></kbd></dt>
-<dd><p>Use resdata or opm Python libraries (‘resdata’ by default).</p>
+<dd><p>Use resdata or opm Python libraries (‘opm’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-c</span></kbd></dt>
 <dd><p>Specify the colormap, e.g., ‘jet’, or color(s) for the summary, e.g., ‘b,r’ (’’ by default, i.e., set by plopm).</p>
@@ -302,6 +302,9 @@ convert OPM Flow output files to vtk, which allows to use other visualization/po
 </dd>
 <dt><kbd><span class="option">-m<var>askthr</var></span></kbd></dt>
 <dd><p>Set the threshold for the variable to mask “ “(‘1e-3’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-f<var>ilter</var></span></kbd></dt>
+<dd><p>Consider only the cells fullfilling the conditions, which are separated by ‘&amp;’, and use ‘,’ for different input files e.g., ‘fluxnum == 2 &amp; sgas &gt;= 0.2, satnum != 5’. (’’ by default; note that RPORV needs to be set in RPTRST to be able to use dynamic filter variables such as sgas).</p>
 </dd>
 <dt><kbd><span class="option">-i<var>nterval</var></span></kbd></dt>
 <dd><p>Time for the frames in the GIF in milli second (‘1000’ by default).</p>

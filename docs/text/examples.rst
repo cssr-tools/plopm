@@ -324,6 +324,21 @@ Below are two of the generated figures after executing the script (additional fi
     By default, the saturation function is plotted for SATNUM=1. For a different table, this can be achieved by adding the number at the end of the variable, e.g., 'pcog5'. 
     In addition, if the model includes hysteresis, then to plot both drainage and imbibition curves this can be achieved by adding 'h' at the end of the variable, e.g., 'krg3h'. 
 
+=======
+Filters 
+=======
+Using the flag **-filter** allows to remove cells given conditions separated by '&', and it is also possible to set different filters in subfigures. For example:
+
+.. code-block:: bash
+
+    plopm -i 'SPE11B SPE11B SPE11B' -filter ',fipnum >= 2 & fipnum != 4,satnum == 5' -v fipnum -subfigs 3,1 -delax 1 -cformat .0f -d 7,4 -u resdata -cbsfax 0.15,0.97,0.7,0.02 -t "No filter  fipnum >= 2 and fipnum != 4  satnum == 5" -suptitle 0
+
+.. image:: ./figs/filter_opm.png
+
+.. note::
+
+    It is possible to set dynamic variables to filter as well such as sgas and pressure. However, this requires to output the dynamic pore volume, i.e., RPORV.
+    This can be achieved by adding to the deck RPORV to the RPTRST in the SOLUTION and SCHEDULE section (and running the simulations). 
 
 ============
 GIF and mask 

@@ -466,7 +466,7 @@ def prepare_maps(dic, n):
     if dic["csvs"][n][0]:
         get_csvs(dic, n)
     else:
-        get_readers(dic)
+        get_readers(dic, n)
         ini_slides(dic, n)
         if dic["slide"][n][0][0] > -1:
             handle_slide_x(dic, n)
@@ -935,7 +935,7 @@ def mapits(dic, t, n, k):
         from_list = matplotlib.colors.LinearSegmentedColormap.from_list
         cmap = from_list(
             None,
-            matplotlib.colormaps[temp](range(int(minc), nlc + shc)),
+            matplotlib.colormaps[temp](range(int(minc), int(minc) + nlc + shc)),
             nlc,
         )
         if ntick == 2:

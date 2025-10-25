@@ -337,7 +337,7 @@ def get_histogram(dic, quans, nrst):
                     quan1 = handle_mass(dic, val.lower(), nrst)
                 elif val.lower() in dic["caprock"]:
                     quan1 = handle_caprock(dic, val.lower(), nrst)
-                var[act], _ = operate(var[act], quan1, j, quans[1::2])
+                var[act] = operate(var[act], quan1, j, quans[1::2])
     return var
 
 
@@ -764,14 +764,18 @@ def read_summary(dic, case, quan, tunit, qskl, n):
         else:
             what = quans[0].lower()[:4]
             snu = int(quans[0][4:])
-        if os.path.isfile(f"{case}.INIT"):
-            if dic["use"] == "resdata":
-                dic["init"] = ResdataFile(f"{case}.INIT")
-            else:
-                dic["init"] = OpmFile(f"{case}.INIT")
-        tabdim = dic["init"].iget_kw("TABDIMS")
+        if not os.path.isfile(f"{case}.INIT"):
+            print(f"Saturation functions required {case}.INIT")
+            sys.exit()
+        if dic["use"] == "resdata":
+            dic["init"] = ResdataFile(f"{case}.INIT")
+            tabdim = dic["init"].iget_kw("TABDIMS")
+            table = np.array(dic["init"].iget_kw("TAB"))
+        else:
+            dic["init"] = OpmFile(f"{case}.INIT")
+            tabdim = [dic["init"]["TABDIMS"]]
+            table = [np.array(dic["init"]["TAB"])]
         nswe = tabdim[0][24]
-        table = np.array(dic["init"].iget_kw("TAB"))
         nsnum = tabdim[0][25]
         vunit = ""
         tskl = 1
@@ -1196,7 +1200,36 @@ def get_csvs(dic, n):
     dic["nslide"] = "csv"
 
 
-def get_readers(dic):
+def handle_filter(porvs, quan1, oper, value):
+    """
+    Applied the requested filter
+
+    Args:
+        dic (dict): Global dictionary\n
+
+    Returns:
+        var (array): Modified values after applying the operator
+
+    """
+    if oper == "==":
+        porvs = [porv if val == value else 0 for porv, val in zip(porvs, quan1)]
+    elif oper == ">=":
+        porvs = [porv if val >= value else 0 for porv, val in zip(porvs, quan1)]
+    elif oper == "<=":
+        porvs = [porv if val <= value else 0 for porv, val in zip(porvs, quan1)]
+    elif oper == "<":
+        porvs = [porv if val < value else 0 for porv, val in zip(porvs, quan1)]
+    elif oper == ">":
+        porvs = [porv if val > value else 0 for porv, val in zip(porvs, quan1)]
+    elif oper == "!=":
+        porvs = [porv if val != value else 0 for porv, val in zip(porvs, quan1)]
+    else:
+        print(f"Unknow filter ({oper}).")
+        sys.exit()
+    return porvs
+
+
+def get_readers(dic, n=0):
     """
     Load the opm/resdata methods
 
@@ -1233,6 +1266,18 @@ def get_readers(dic):
         dic["nxyz"] = len(dic["porv"])
         dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
         dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
+        if dic["filter"][n]:
+            porv0 = np.array(dic["init"]["PORV"][0])
+            for value in dic["filter"][n].split("&"):
+                filte = (value.strip()).split(" ")
+                quan1 = filte[0].upper()
+                if dic["init"].has_kw(quan1):
+                    quan1 = np.array(dic["init"][quan1][0])
+                else:
+                    continue
+                dic["porv"][porv0 > 0] = handle_filter(
+                    dic["porv"][porv0 > 0], quan1, filte[1], float(filte[2])
+                )
         if "unrst" in dic.keys():
             dic["ntot"] = len(dic["unrst"].iget_kw("PRESSURE"))
             for ntm in range(dic["ntot"]):
@@ -1249,6 +1294,18 @@ def get_readers(dic):
         dic["nxyz"] = len(dic["porv"])
         dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
         dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
+        if dic["filter"][n]:
+            porv0 = np.array(dic["init"]["PORV"])
+            for value in dic["filter"][n].split("&"):
+                filte = (value.strip()).split(" ")
+                quan1 = filte[0].upper()
+                if dic["init"].count(quan1):
+                    quan1 = np.array(dic["init"][quan1])
+                else:
+                    continue
+                dic["porv"][porv0 > 0] = handle_filter(
+                    dic["porv"][porv0 > 0], quan1, filte[1], float(filte[2])
+                )
         if "unrst" in dic.keys():
             dic["ntot"] = dic["unrst"].count("PRESSURE")
             for ntm in range(dic["ntot"]):
@@ -1339,7 +1396,28 @@ def get_quantity(dic, name, n, nrst, m):
         elif dic["unrst"].has_kw(names[0]):
             quan = np.array(dic["unrst"][names[0]][nrst]) * 1.0
             if dic["unrst"].has_kw("RPORV"):
-                dic["porv"][dic["porv"] > 0] = np.array(dic["unrst"]["RPORV"][nrst])
+                if dic["filter"][m]:
+                    porv0 = np.array(dic["init"]["PORV"][0])
+                    for value in dic["filter"][m].split("&"):
+                        filte = (value.strip()).split(" ")
+                        quan1 = filte[0].upper()
+                        if dic["init"].has_kw(quan1):
+                            quan1 = np.array(dic["init"][quan1][0])
+                        elif dic["unrst"].has_kw(quan1):
+                            quan1 = np.array(dic["unrst"][quan1][nrst])
+                        else:
+                            print(f"Unknow filter quantity ({filte[0].upper()}).")
+                            sys.exit()
+                        dic["porv"][porv0 > 0] = np.array(
+                            handle_filter(
+                                np.array(dic["unrst"]["RPORV"][nrst]),
+                                quan1,
+                                filte[1],
+                                float(filte[2]),
+                            )
+                        )
+                else:
+                    dic["porv"][dic["porv"] > 0] = np.array(dic["unrst"]["RPORV"][nrst])
         elif names[0].lower() in dic["mass"] + dic["xmass"]:
             quan = handle_mass(dic, names[0].lower(), nrst) * skl
             if names[0].lower() in dic["mass"]:
@@ -1384,7 +1462,28 @@ def get_quantity(dic, name, n, nrst, m):
         elif dic["unrst"].count(names[0]):
             quan = dic["unrst"][names[0], nrst]
             if dic["unrst"].count("RPORV"):
-                dic["porv"][dic["porv"] > 0] = np.array(dic["unrst"]["RPORV", nrst])
+                if dic["filter"][m]:
+                    porv0 = np.array(dic["init"]["PORV"])
+                    for value in dic["filter"][m].split("&"):
+                        filte = (value.strip()).split(" ")
+                        quan1 = filte[0].upper()
+                        if dic["init"].count(quan1):
+                            quan1 = np.array(dic["init"][quan1])
+                        elif dic["unrst"].count(quan1):
+                            quan1 = np.array(dic["unrst"][quan1, nrst])
+                        else:
+                            print(f"Unknow filter quantity ({filte[0].upper()}).")
+                            sys.exit()
+                        dic["porv"][porv0 > 0] = np.array(
+                            handle_filter(
+                                np.array(dic["unrst"]["RPORV", nrst]),
+                                quan1,
+                                filte[1],
+                                float(filte[2]),
+                            )
+                        )
+                else:
+                    dic["porv"][dic["porv"] > 0] = np.array(dic["unrst"]["RPORV", nrst])
         elif names[0].lower() in dic["mass"] + dic["xmass"]:
             quan = handle_mass(dic, names[0].lower(), nrst) * skl
             if names[0].lower() in dic["mass"]:

@@ -166,7 +166,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.readers.get_readers">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_readers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_readers" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_readers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.get_readers" title="Link to this definition"></a></dt>
 <dd><p>Load the opm/resdata methods</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
@@ -282,6 +282,18 @@
 <p>nrst (int): Number of restart step</p>
 </dd>
 <dt>Returns:</dt><dd><p>mass (array): Floats with the computed mass</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers.handle_filter">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">handle_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">porvs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quan1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.handle_filter" title="Link to this definition"></a></dt>
+<dd><p>Applied the requested filter</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>var (array): Modified values after applying the operator</p>
 </dd>
 </dl>
 </dd></dl>

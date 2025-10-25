@@ -40,7 +40,7 @@ where
 -f    The font size ('12' by default).
 -x    Set the lower and upper bounds along x, e.g., '[-100,200]' ('' by default).
 -y    Set the lower and upper bounds along y, e.g., '[-10,300]' ('' by default).
--u    Use resdata or opm Python libraries ('resdata' by default).
+-u    Use resdata or opm Python libraries ('opm' by default).
 -c    Specify the colormap, e.g., 'jet', or color(s) for the summary, e.g., 'b,r' ('' by default, i.e., set by plopm).
 -e    Specify the linestyles, e.g., 'solid,dotted' ('' by default, i.e., set by plopm).
 -b    Specify the upper and lower bounds for the color map, e.g., '[-0.1,11]' ('' by default, i.e., set by plopm).
@@ -96,6 +96,7 @@ where
 -histogram  Plot the histogram of the given variable with the given number of bins and distribution, e.g., '20,norm' for 20 bins and normal distribution ('' by default, i.e., no histogram; norm and lognorm supported for now, if no specified then only the histogram is plotted).
 -stress     Value for the stress coeff in the computation of the pressure limit for the variables related to the caprock integrity: limipres, overpres, and objepres ('0.134' by default).
 -maskthr    Set the threshold for the variable to mask " "('1e-3' by default).
+-filter     Consider only the cells fullfilling the conditions, which are separated by '&', and use ',' for different input files e.g., 'fluxnum == 2 & sgas >= 0.2, satnum != 5'. ('' by default; note that RPORV needs to be set in RPTRST to be able to use dynamic filter variables such as sgas).
 -interval   Time for the frames in the GIF in milli second ('1000' by default).
 -loop       Set to 1 for infinity loop in the GIF ('0' by default).
 -warnings   Set to 1 to print warnings ('0' by default).
@@ -103,4 +104,4 @@ where
  
 .. tip::
 
-    Type in the terminal **plopm -h** to show these argument options.  
+    Type in the terminal **plopm -h** to show these argument options.
