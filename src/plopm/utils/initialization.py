@@ -69,6 +69,7 @@ def ini_dic(cmdargs):
     dic["interval"] = float(cmdargs["interval"])
     dic["stress"] = float(cmdargs["stress"])
     dic["loop"] = int(cmdargs["loop"])
+    dic["filter"] = (cmdargs["filter"].strip()).split(",")
     dic["titles"] = (cmdargs["title"].strip()).split("  ")
     dic["bounds"] = (cmdargs["bounds"].strip()).split(" ")
     dic["bounds"] = [var.split(",") for var in dic["bounds"]]
@@ -281,8 +282,11 @@ def ini_dic(cmdargs):
         dic["slide"] = [dic["slide"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
     if len(dic["how"]) < max(len(dic["names"][0]), len(dic["vrs"])):
         dic["how"] = [dic["how"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
+    if len(dic["filter"]) < max(len(dic["names"][0]), len(dic["vrs"])):
+        dic["filter"] = [dic["filter"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
     if dic["diff"]:
         dic["how"] = [dic["how"][0]] * 2
+        dic["filter"] = [dic["filter"][0]] * 2
     for val in [
         "xformat",
         "yformat",
