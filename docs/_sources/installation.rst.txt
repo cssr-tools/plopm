@@ -4,8 +4,7 @@ Installation
 
 The following steps work installing the dependencies in Linux via apt-get or in macOS using brew or macports.
 While using packages managers such as Anaconda, Miniforge, or Mamba might work, these are not tested.
-The supported Python versions are 3.11 to 3.13. We will update the documentation when Python3.14 is supported
-(e.g., the resdata Python package is not yet available via pip install in Python 3.14).
+The supported Python versions are 3.11 to 3.14.
 
 .. _vplopm:
 
@@ -53,7 +52,7 @@ To use the convertion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) t
 .. tip::
 
     See the `CI.yml <https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml>`_ script 
-    for installation of OPM Flow (binary packages) and the plopm package in Ubuntu. 
+    for installation of OPM Flow (binary packages), LaTeX (optional) libraries, and the plopm package in Ubuntu.
 
 Source build in Linux/Windows
 +++++++++++++++++++++++++++++
@@ -93,7 +92,7 @@ with brew the prerequisites can be installed by:
 
 .. code-block:: console
 
-    brew install boost openblas suite-sparse python@3.12 cmake
+    brew install boost openblas suite-sparse python@3.14 cmake
 
 In addition, it is recommended to uprade and update your macOS to the latest available versions (the following steps have 
 worked for macOS Tahoe 26.0.1 with Apple clang version 17.0.0).
@@ -134,7 +133,7 @@ then building OPM Flow can be achieved with the following bash lines:
     source vplopm/bin/activate
 
 
-This builds OPM Flow, and it exports the path to the flow executable.
+This builds OPM Flow, and it exports the path of the OPM Flow executable.
 
 For macOS, the LaTeX dependency can be installed from https://www.tug.org/mactex/. If after installation you still face an error due to LaTeX 
 when executing plopm, then add the flag **-latex 0** to plopm.

@@ -40,7 +40,6 @@ where
 -f    The font size ('12' by default).
 -x    Set the lower and upper bounds along x, e.g., '[-100,200]' ('' by default).
 -y    Set the lower and upper bounds along y, e.g., '[-10,300]' ('' by default).
--u    Use resdata or opm Python libraries ('opm' by default).
 -c    Specify the colormap, e.g., 'jet', or color(s) for the summary, e.g., 'b,r' ('' by default, i.e., set by plopm).
 -e    Specify the linestyles, e.g., 'solid,dotted' ('' by default, i.e., set by plopm).
 -b    Specify the upper and lower bounds for the color map, e.g., '[-0.1,11]' ('' by default, i.e., set by plopm).

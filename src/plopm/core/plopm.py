@@ -132,12 +132,6 @@ def load_parser():
         "('' by default).",
     )
     parser.add_argument(
-        "-u",
-        "--use",
-        default="opm",
-        help="Use resdata or OPM Python libraries ('opm' by default).",
-    )
-    parser.add_argument(
         "-c",
         "--colors",
         default="",
