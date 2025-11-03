@@ -24,11 +24,11 @@ classifiers = [
     "Operating System :: OS Independent"
 ]
 dependencies = [
-    "alive_progress",
-    "colorcet",
-    "matplotlib",
-    "opm",
-    "scipy"
+    "alive_progress<=3.3.0",
+    "colorcet<=3.1.0",
+    "matplotlib<=3.10.7",
+    "opm<=2025.10",
+    "scipy<=1.16.3"
 ]
 requires-python = ">=3.11"
 
