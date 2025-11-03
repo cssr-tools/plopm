@@ -2,7 +2,7 @@
 <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%20to%203.14-blue.svg"></a>
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![DOI](https://zenodo.org/badge/828515658.svg)](https://zenodo.org/doi/10.5281/zenodo.13332414)
+[![DOI](https://zenodo.org/badge/828515658.svg)](https://doi.org/10.5281/zenodo.13332414)
 <img src="docs/text/figs/plopm.png" width="1100" height="300">
 
 # plopm: Simplified and flexible tool to visualize OPM Flow geological models
