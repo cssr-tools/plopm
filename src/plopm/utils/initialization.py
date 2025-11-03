@@ -10,14 +10,8 @@ import os
 import sys
 import matplotlib
 import matplotlib.pyplot as plt
-from resdata.resfile import ResdataFile
-from resdata.summary import Summary
-
-try:
-    from opm.io.ecl import EclFile as OpmFile
-    from opm.io.ecl import ESmry as OpmSummary
-except ImportError:
-    pass
+from opm.io.ecl import EclFile as OpmFile
+from opm.io.ecl import ESmry as OpmSummary
 
 
 def ini_dic(cmdargs):
@@ -61,7 +55,6 @@ def ini_dic(cmdargs):
     dic["printv"] = int(cmdargs["printv"])
     dic["bandprop"] = cmdargs["bandprop"]
     dic["subfigs"] = (cmdargs["subfigs"].strip()).split(",")
-    dic["use"] = cmdargs["use"].strip()
     dic["vrs"] = (cmdargs["variable"].strip()).split(",")
     dic["lw"] = cmdargs["lw"].strip()
     dic["size"] = float(cmdargs["size"])
@@ -374,16 +367,10 @@ def is_summary(dic):
     if dic["printv"] == 1:
         for ext, what in zip(["init", "unrst"], ["init", "restart"]):
             if os.path.isfile(f"{dic['name']}.{ext.upper()}"):
-                if dic["use"] == "resdata":
-                    reader = ResdataFile(f"{dic['name']}.{ext.upper()}")
-                    keys = list(reader.keys())
-                    if ext == "unrst":
-                        ntot = len(reader.iget_kw("PRESSURE"))
-                else:
-                    reader = OpmFile(f"{dic['name']}.{ext.upper()}")
-                    keys = list(reader.keys())
-                    if ext == "unrst":
-                        ntot = reader.count("PRESSURE")
+                reader = OpmFile(f"{dic['name']}.{ext.upper()}")
+                keys = list(reader.keys())
+                if ext == "unrst":
+                    ntot = reader.count("PRESSURE")
                 print(f"The {what} available variables for {dic['name']} are:")
                 print(keys)
                 if ext == "unrst":
@@ -402,10 +389,7 @@ def is_summary(dic):
     ):
         return True
     if os.path.isfile(f"{dic['name']}.SMSPEC"):
-        if dic["use"] == "resdata":
-            summary = Summary(f"{dic['name']}.SMSPEC").keys()
-        else:
-            summary = OpmSummary(f"{dic['name']}.SMSPEC").keys()
+        summary = OpmSummary(f"{dic['name']}.SMSPEC").keys()
         if dic["printv"] == 1:
             print(f"The summary available variables for {dic['name']} are:")
             print(summary)

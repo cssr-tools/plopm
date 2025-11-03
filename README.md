@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/cssr-tools/plopm/actions/workflows/CI.yml/badge.svg)](https://github.com/cssr-tools/plopm/actions/workflows/CI.yml)
-<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%20to%203.13-blue.svg"></a>
+<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%20to%203.14-blue.svg"></a>
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://zenodo.org/badge/828515658.svg)](https://zenodo.org/doi/10.5281/zenodo.13332414)
@@ -26,7 +26,7 @@ git clone https://github.com/cssr-tools/plopm.git
 cd plopm
 # For a specific version (e.g., v2025.04), or else skip this step (i.e., edge version)
 git checkout v2025.04
-# Create virtual environment (for macOS, use a Python version >= 3.10)
+# Create virtual environment
 python3 -m venv vplopm
 # Activate virtual environment
 source vplopm/bin/activate
@@ -38,7 +38,7 @@ pip install -e .
 pip install -r dev-requirements.txt
 ``` 
 
-To use the conversion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) to VTK (e.g, to use [_paraview_](https://www.paraview.org) for visualization/postprocessing), [_OPM Flow_](https://opm-project.org) is needed. See the [_installation_](https://cssr-tools.github.io/plopm/installation.html) for further details on installing binaries or building OPM Flow from the master branches in Linux, Windows, and macOS, as well as the opm Python package and LaTeX dependencies. 
+To use the conversion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) to VTK (e.g, to use [_paraview_](https://www.paraview.org) for visualization/postprocessing), [_OPM Flow_](https://opm-project.org) is needed. See the [_installation_](https://cssr-tools.github.io/plopm/installation.html) for further details on installing binaries or building OPM Flow from the master branches in Linux, Windows, and macOS, as well as the LaTeX (optional) dependency. 
 
 ## Running plopm
 You can run _plopm_ as a single command line:

@@ -7,6 +7,7 @@ Utiliy functions to write the PNGs figures.
 """
 
 import sys
+import datetime
 import colorcet
 import numpy as np
 import matplotlib
@@ -1348,13 +1349,8 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
     if dic["csvs"][n][0]:
         time = ""
     elif dic["tunits"][0] == "dates":
-        if dic["use"] == "opm":
-            print(
-                "For 2D spatial maps it is currently no possible to use -tunits "
-                "dates and -u opm. Try with -u resdata or different -tunits."
-            )
-            sys.exit()
-        time = f", {dic['unrst'].dates[dic['restart'][t]].date()}"
+        x = dic["unrst"]["INTEHEAD", dic["restart"][t]]
+        time = f", {datetime.datetime(x[66], x[65], x[64], 0, 0).date()}"
     else:
         tskl, tunit = initialize_time(dic["tunits"][0])
         tunit = tunit[5:]

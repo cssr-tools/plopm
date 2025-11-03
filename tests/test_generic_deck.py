@@ -55,8 +55,6 @@ def test_generic_deck():
                 name,
                 "-s",
                 slide,
-                "-u",
-                "resdata",
                 "-log",
                 logs,
                 "-warnings",

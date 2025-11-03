@@ -8,12 +8,9 @@ Utiliy function for the grid and locations in the geological models.
 
 import numpy as np
 from plopm.utils.readers import (
-    get_xycoords_resdata,
-    get_xycoords_opm,
-    get_xzcoords_resdata,
-    get_xzcoords_opm,
-    get_yzcoords_resdata,
-    get_yzcoords_opm,
+    get_xycoords,
+    get_xzcoords,
+    get_yzcoords,
 )
 
 
@@ -34,10 +31,7 @@ def handle_slide_x(dic, n):
     else:
         dic["tslide"] = f", slide i={dic['slide'][n][0][0]+1}:{dic['slide'][n][0][1]}"
         dic["nslide"] = f"{dic['slide'][n][0][0]+1}:{dic['slide'][n][0][1]},j,k"
-    if dic["use"] == "resdata":
-        get_yzcoords_resdata(dic, n)
-    else:
-        get_yzcoords_opm(dic, n)
+    get_yzcoords(dic, n)
 
 
 def handle_slide_y(dic, n):
@@ -57,10 +51,7 @@ def handle_slide_y(dic, n):
     else:
         dic["tslide"] = f", slide j={dic['slide'][n][1][0]+1}:{dic['slide'][n][1][1]}"
         dic["nslide"] = f"i,{dic['slide'][n][1][0]+1}:{dic['slide'][n][1][1]},k"
-    if dic["use"] == "resdata":
-        get_xzcoords_resdata(dic, n)
-    else:
-        get_xzcoords_opm(dic, n)
+    get_xzcoords(dic, n)
 
 
 def handle_slide_z(dic, n):
@@ -80,10 +71,7 @@ def handle_slide_z(dic, n):
     else:
         dic["tslide"] = f", slide k={dic['slide'][n][2][0]+1}:{dic['slide'][n][2][1]}"
         dic["nslide"] = f"i,j,{dic['slide'][n][2][0]+1}:{dic['slide'][n][2][1]}"
-    if dic["use"] == "resdata":
-        get_xycoords_resdata(dic, n)
-    else:
-        get_xycoords_opm(dic, n)
+    get_xycoords(dic, n)
 
 
 def rotate_grid(dic, n):
