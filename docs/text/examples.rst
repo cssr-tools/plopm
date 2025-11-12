@@ -49,7 +49,15 @@ To plot cell values over time, this can be achieved by:
 .. figure:: figs/spe11b_pressure-0pressure.png
     :scale: 20%
 
-It is also possible to set the colors in RGB or HEX format for the spatial maps, for example:
+=========
+Colormaps
+=========
+
+The flag **-c** allows to set `colormaps from Matplotlib <https://matplotlib.org/stable/users/explain/colors/colormaps.html#>`_ (e.g., **-c turbo**), 
+`colormaps from colorcet <https://colorcet.holoviz.org/user_guide/Continuous.html>`_ (e.g., **-c cet_glasbey_bw**), or user defined colorbars, where
+each color is given in RGB (e.g., **-c '193;147;56 127;148;191 193;127;97 181;73;57 81;124;66 101;64;147 134;133;130'**) or HEX format (e.g., **-c '#b6c406 #fffa86'**).
+
+Different colormap formats can be used when making a subfigure, for example:
 
 .. code-block:: bash
 
