@@ -49,6 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#hello-world">Hello world</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#colormaps">Colormaps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generic-deck">Generic deck</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#rotation-translation-and-zoom">Rotation, translation, and zoom</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#projections-and-subfigures">Projections and subfigures</a></li>
@@ -131,7 +132,13 @@ summary, init, and restart available variables given an input deck.</p>
 <a class="reference internal image-reference" href="_images/spe11b_pressure-0pressure.png"><img alt="_images/spe11b_pressure-0pressure.png" src="_images/spe11b_pressure-0pressure.png" style="width: 711.6px; height: 511.6px;" />
 </a>
 </figure>
-<p>It is also possible to set the colors in RGB or HEX format for the spatial maps, for example:</p>
+</section>
+<section id="colormaps">
+<h2>Colormaps<a class="headerlink" href="#colormaps" title="Link to this heading"></a></h2>
+<p>The flag <strong>-c</strong> allows to set <a class="reference external" href="https://matplotlib.org/stable/users/explain/colors/colormaps.html#">colormaps from Matplotlib</a> (e.g., <strong>-c turbo</strong>),
+<a class="reference external" href="https://colorcet.holoviz.org/user_guide/Continuous.html">colormaps from colorcet</a> (e.g., <strong>-c cet_glasbey_bw</strong>), or user defined colorbars, where
+each color is given in RGB (e.g., <strong>-c ‘193;147;56 127;148;191 193;127;97 181;73;57 81;124;66 101;64;147 134;133;130’</strong>) or HEX format (e.g., <strong>-c ‘#b6c406 #fffa86’</strong>).</p>
+<p>Different colormap formats can be used when making a subfigure, for example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>satnum,fipnum,disperc<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;193;147;56 127;148;191 193;127;97 181;73;57 81;124;66 101;64;147 134;133;130&#39;</span>,cet_glasbey_bw,<span class="s1">&#39;#b6c406 #fffa86&#39;</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">3</span>,1<span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">3</span>,6,2<span class="w"> </span>-cformat<span class="w"> </span>.0f,.0f,.1f<span class="w"> </span>-d<span class="w"> </span><span class="m">7</span>,4
 </pre></div>
 </div>
