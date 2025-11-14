@@ -1008,7 +1008,7 @@ def get_readers(dic, n=0):
             )
     if "unrst" in dic.keys():
         dic["ntot"] = len(dic["unrst"])
-        for ntm in range(dic["ntot"]):
+        for ntm in dic["unrst"].report_steps:
             dic["tnrst"].append(dic["unrst"]["DOUBHEAD", ntm][0])
     if "egrid" in dic.keys():
         dic["nx"] = dic["egrid"].dimension[0]
