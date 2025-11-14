@@ -553,12 +553,15 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                     ),
                 )
                 time = np.append(time, np.flip(timeh))
-        elif what == "kro":
-            tunit = "s$_g$ [-]"
+        elif what == "krow":
+            nswe = tabdim[0][21]
+            tunit = "s$_w$ [-]"
             sht = tabdim[0][26] - 1
             time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
             time = np.array([val for val in time if val <= 1.0])
             n_v = len(time)
+            if tabdim[0][22] == 2:
+                sht += nswe
             var = np.flip(
                 table[0][
                     sht
@@ -578,6 +581,7 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                 )
                 timeh = np.array([val for val in timeh if val <= 1.0])
                 n_v = len(timeh)
+                sht += nswe
                 var = np.append(
                     var,
                     table[0][
@@ -596,6 +600,8 @@ def read_summary(dic, case, quan, tunit, qskl, n):
             time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
             time = np.array([val for val in time if val <= 1.0])
             n_v = len(time)
+            if tabdim[0][22] == 2:
+                sht += nswe
             var = table[0][
                 sht + nswe * nsnum + (snu - 1) * nswe : sht + nswe * nsnum + snu * nswe
             ][:n_v]
@@ -646,6 +652,7 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                 )
                 timeh = np.array([val for val in timeh if val <= 1.0])
                 n_v = len(timeh)
+                sht += nswe
                 var = np.append(
                     var,
                     np.flip(
