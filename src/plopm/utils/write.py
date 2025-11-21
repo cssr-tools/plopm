@@ -925,7 +925,8 @@ def mapits(dic, t, n, k):
     if dic["clabel"]:
         ncolor = dic["clabel"]
     shc = 0
-    # minc = 0.
+    if abs(minc) < sys.float_info.epsilon:
+        minc = 0
     if (
         ("num" in var.lower() and temp in dic["cmdisc"] and dic["discrete"])
         or dic["def_col"]
@@ -942,6 +943,8 @@ def mapits(dic, t, n, k):
         if ntick == 2:
             shc = (maxc - minc) / 2.0
         elif minc == 0 and "num" not in var.lower() and var.lower() != "mpi_rank":
+            shc = 0
+        elif dic["mask"]:
             shc = 0
         else:
             shc = 0.5
