@@ -250,7 +250,7 @@ def compute_distance(dic, quans, n):
                         points.append(xyz[ind])
         print(f"Computing the {dic['distance'][0]} distance to the boundaries")
     with alive_bar(dic["ntot"] * len(points)) as bar_animation:
-        for nrst in range(dic["ntot"]):
+        for nrst in dic["unrst"].report_steps:
             xyzt = np.copy(xyz)
             var = np.nan * np.ones(dic["nxyz"], dtype=float)
             if dic["unrst"].count(quans[0].upper(), nrst):
@@ -476,7 +476,7 @@ def read_summary(dic, case, quan, tunit, qskl, n):
     elif dic["sensor"] or dic["how"][0]:
         dic["deck"] = case
         get_readers(dic)
-        var, time = do_read_variables(dic, quans, n, range(dic["ntot"]))
+        var, time = do_read_variables(dic, quans, n, dic["unrst"].report_steps)
         time *= tskl
         if tunit == "Dates":
             time = []
@@ -1007,7 +1007,7 @@ def get_readers(dic, n=0):
                 dic["porv"][porv0 > 0], quan1, filte[1], float(filte[2])
             )
     if "unrst" in dic.keys():
-        dic["ntot"] = len(dic["unrst"])
+        dic["ntot"] = len(dic["unrst"].report_steps)
         for ntm in dic["unrst"].report_steps:
             dic["tnrst"].append(dic["unrst"]["DOUBHEAD", ntm][0])
     if "egrid" in dic.keys():
@@ -1016,7 +1016,7 @@ def get_readers(dic, n=0):
         dic["nz"] = dic["egrid"].dimension[2]
     if dic["restart"][0] == -1:
         if dic["mode"] == "gif":
-            dic["restart"] = list(range(dic["ntot"]))
+            dic["restart"] = dic["unrst"].report_steps
         else:
             dic["restart"] = [dic["ntot"] - 1]
     if not dic["tnrst"]:
