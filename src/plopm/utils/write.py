@@ -17,6 +17,7 @@ from scipy.interpolate import interp1d
 from scipy.stats import norm, lognorm
 from matplotlib import animation
 from matplotlib import colors
+import matplotlib.ticker as mticker
 from matplotlib.ticker import LogFormatter
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from plopm.utils.readers import (
@@ -1106,7 +1107,11 @@ def mapits(dic, t, n, k):
                         cax=dic["fig"].add_axes(dic["cbsfax"]),
                         ticks=vect,
                         label=ncolor,
-                        format=eval(func),
+                        format=(
+                            mticker.FixedFormatter(dic["cticks"][n])
+                            if dic["cticks"][n]
+                            else eval(func)
+                        ),
                         shrink=0.2,
                         location="top",
                     )
@@ -1117,7 +1122,11 @@ def mapits(dic, t, n, k):
                     orientation="vertical",
                     ticks=vect,
                     label=ncolor,
-                    format=eval(func),
+                    format=(
+                        mticker.FixedFormatter(dic["cticks"][n])
+                        if dic["cticks"][n]
+                        else eval(func)
+                    ),
                 )
             elif k == 0 and dic["cbsfax"] != "empty":
                 dic["cb"][0] = dic["fig"].colorbar(
@@ -1125,7 +1134,11 @@ def mapits(dic, t, n, k):
                     cax=dic["fig"].add_axes(dic["cbsfax"]),
                     ticks=vect,
                     label=ncolor,
-                    format=eval(func),
+                    format=(
+                        mticker.FixedFormatter(dic["cticks"][n])
+                        if dic["cticks"][n]
+                        else eval(func)
+                    ),
                     shrink=0.2,
                     location="top",
                 )

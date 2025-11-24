@@ -23,13 +23,13 @@ the following figure should be generated (this example is used in the `tests <ht
 See the :ref:`overview` or run `plopm -h` for the definition of the argument options, as well as using `-printv` flag to output the available
 summary, init, and restart available variables given an input deck.
 
-For example, for the gas saturation at the report step number 4 using a given colormap (-c):
+For example, for the gas saturation at the report step number 4 with three colorbar labels using a given colormap (-c) and defined colorbar ticks (-cticks):
 
 .. code-block:: bash
 
-    plopm -i SPE11B -v sgas -r 4 -c cubehelix
+    plopm -i SPE11B -v sgas -r 4 -cnum 3 -c cubehelix -cticks '[0, middle, 0.9]'
 
-.. figure:: figs/spe11b_sgas_*,1,*_t4.png
+.. figure:: figs/spe11b_sgas_i,1,k_t4.png
 
 and for the gas in place summary vector given a color, line style, font size, dimension of the figure, line width, and using dates for the times:
 
