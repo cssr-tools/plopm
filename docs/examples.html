@@ -109,12 +109,12 @@ Then, if you succeed in installing <strong>plopm</strong>, inside the <a class="
 </figure>
 <p>See the <a class="reference internal" href="introduction.html#overview"><span class="std std-ref">Overview</span></a> or run <cite>plopm -h</cite> for the definition of the argument options, as well as using <cite>-printv</cite> flag to output the available
 summary, init, and restart available variables given an input deck.</p>
-<p>For example, for the gas saturation at the report step number 4 using a given colormap (-c):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-r<span class="w"> </span><span class="m">4</span><span class="w"> </span>-c<span class="w"> </span>cubehelix
+<p>For example, for the gas saturation at the report step number 4 with three colorbar labels using a given colormap (-c) and defined colorbar ticks (-cticks):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-r<span class="w"> </span><span class="m">4</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">3</span><span class="w"> </span>-c<span class="w"> </span>cubehelix<span class="w"> </span>-cticks<span class="w"> </span><span class="s1">&#39;[0, middle, 0.9]&#39;</span>
 </pre></div>
 </div>
 <figure class="align-default">
-<img alt="_images/spe11b_sgas_%2A%2C1%2C%2A_t4.png" src="_images/spe11b_sgas_%2A%2C1%2C%2A_t4.png" />
+<img alt="_images/spe11b_sgas_i%2C1%2Ck_t4.png" src="_images/spe11b_sgas_i%2C1%2Ck_t4.png" />
 </figure>
 <p>and for the gas in place summary vector given a color, line style, font size, dimension of the figure, line width, and using dates for the times:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>fgip<span class="w"> </span>-c<span class="w"> </span>b<span class="w"> </span>-e<span class="w"> </span>dotted<span class="w"> </span>-f<span class="w"> </span><span class="m">12</span><span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5<span class="w"> </span>-lw<span class="w"> </span><span class="m">4</span><span class="w"> </span>-tunits<span class="w"> </span>dates

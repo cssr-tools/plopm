@@ -171,6 +171,7 @@ examples/spe11b_permz_*,1,*_t5.png
 examples/spe11b_poro_*,1,*_t5.png
 examples/spe11b_porv_*,1,*_t5.png
 examples/spe11b_satnum_*,1,*_t5.png
+examples/spe11b_sgas_i,1,k_t4.png
 tests/generic_deck
 
 # Python environment

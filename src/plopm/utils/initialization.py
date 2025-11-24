@@ -8,6 +8,7 @@ Utiliy functions to set the requiried input values by plopm.
 
 import os
 import sys
+import shutil
 import matplotlib
 import matplotlib.pyplot as plt
 from opm.io.ecl import EclFile as OpmFile
@@ -89,6 +90,7 @@ def ini_dic(cmdargs):
     dic["avar"] = (cmdargs["adjust"].strip()).split(",")
     dic["axgrid"] = (cmdargs["axgrid"].strip()).split(",")
     dic["dpi"] = (cmdargs["dpi"].strip()).split(",")
+    dic["cticks"] = (cmdargs["cticks"].strip()).split("  ")
     dic["loc"] = (cmdargs["loc"].strip()).split(",")
     dic["vtkformat"] = (cmdargs["vtkformat"].strip()).split(",")
     dic["vtknames"] = (cmdargs["vtknames"].strip()).split("  ")
@@ -96,7 +98,6 @@ def ini_dic(cmdargs):
     dic["clogthks"] = cmdargs["clogthks"].strip()
     dic["rotate"] = (cmdargs["rotate"].strip()).split(",")
     dic["global"] = int(cmdargs["global"])
-    dic["latex"] = int(cmdargs["latex"])
     dic["save"] = (cmdargs["save"].strip()).split("  ")
     dic["translate"] = (cmdargs["translate"]).split(" ")
     dic["translate"] = [var.split(",") for var in dic["translate"]]
@@ -126,6 +127,9 @@ def ini_dic(cmdargs):
     dic["dtitle"] = ""
     if dic["clogthks"]:
         dic["clogthks"] = [float(val) for val in dic["clogthks"][1:-1].split(",")]
+    if dic["cticks"][0]:
+        for i, values in enumerate(dic["cticks"]):
+            dic["cticks"][i] = [val.strip() for val in values[1:-1].split(",")]
     dic["rst_range"] = False
     if dic["cbsfax"] != "empty":
         dic["cbsfax"] = [float(val) for val in (cmdargs["cbsfax"].strip()).split(",")]
@@ -241,7 +245,7 @@ def ini_dic(cmdargs):
     matplotlib.rc("font", **font)
     plt.rcParams.update(
         {
-            "text.usetex": dic["latex"],
+            "text.usetex": shutil.which("latex") != "None",
             "font.family": "monospace",
             "legend.columnspacing": 0.9,
             "legend.handlelength": 3.5,
@@ -273,10 +277,9 @@ def ini_dic(cmdargs):
         dic["slide"] = [dic["slide"][0]] * 2
     elif len(dic["slide"]) < max(len(dic["names"][0]), len(dic["vrs"])):
         dic["slide"] = [dic["slide"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
-    if len(dic["how"]) < max(len(dic["names"][0]), len(dic["vrs"])):
-        dic["how"] = [dic["how"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
-    if len(dic["filter"]) < max(len(dic["names"][0]), len(dic["vrs"])):
-        dic["filter"] = [dic["filter"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
+    for val in ["how", "filter", "cticks"]:
+        if len(dic[val]) < max(len(dic["names"][0]), len(dic["vrs"])):
+            dic[val] = [dic[val][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
     if dic["diff"]:
         dic["how"] = [dic["how"][0]] * 2
         dic["filter"] = [dic["filter"][0]] * 2

@@ -135,8 +135,7 @@ then building OPM Flow can be achieved with the following bash lines:
 
 This builds OPM Flow, and it exports the path of the OPM Flow executable.
 
-For macOS, the LaTeX dependency can be installed from https://www.tug.org/mactex/. If after installation you still face an error due to LaTeX 
-when executing plopm, then add the flag **-latex 0** to plopm.
+For macOS, the LaTeX dependency can be installed from https://www.tug.org/mactex/.
 
 .. tip::
     See `this repository <https://github.com/daavid00/OPM-Flow_macOS>`_ dedicated to build OPM Flow from source in the latest macOS (GitHub actions), and tested with **pycopm**, another repository in cssr-tools.

@@ -63,6 +63,7 @@ where
 -xformat    Format for the x numbers, e.g., .2e for exponential notation ('' by default, i.e., set by plopm).
 -yformat    Format for the y numbers, e.g., .1f for one decimal ('' by default, i.e., set by plopm).
 -cformat    Specify the format for the numbers in the colormap, e.g., .2f for two decimals ('' by default, i.e., set by plopm).
+-cticks     Set the colorbar tick labelling, e.g., '[G, F, E, D, C, ESF]' ('' by default).
 -xunits     For the x axis in the spatial maps meters 'm', kilometers 'km', centimeters 'cm', or milimeters 'mm' ('m' by default).
 -yunits     For the y axis in the spatial maps meters 'm', kilometers 'km', centimeters 'cm', or milimeters 'mm' ('m' by default).
 -remove     Set the entries to 1 to remove in the spatial maps the left axis, bottom axis, colorbar, and title ('0,0,0,0' by default).
@@ -99,7 +100,6 @@ where
 -interval   Time for the frames in the GIF in milli second ('1000' by default).
 -loop       Set to 1 for infinity loop in the GIF ('0' by default).
 -warnings   Set to 1 to print warnings ('0' by default).
--latex      Set to 0 to not use LaTeX formatting ('1' by default).
  
 .. tip::
 

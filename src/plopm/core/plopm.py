@@ -6,6 +6,7 @@
 Script to plot 2D maps of OPM Flow geological models.
 """
 
+import shutil
 import argparse
 import warnings
 from plopm.utils.initialization import (
@@ -33,6 +34,13 @@ def plopm():
         make_vtks(dic)
         print(text)
         return
+    if shutil.which("latex") == "None":
+        print(
+            "\nLaTeX is recommended for the figures to show the "
+            "nice fonts and given formats. You can install it by "
+            "following the instructions in the pofff's "
+            "documentation."
+        )
     if is_summary(dic):
         ini_summary(dic)
         make_summary(dic)
@@ -288,6 +296,13 @@ def load_parser():
         default="",
         help="Format for the numbers in the colormap, e.g., "
         ".2f for two decimals ('' by default, i.e., set by plopm).",
+    )
+    parser.add_argument(
+        "-cticks",
+        "--cticks",
+        default="",
+        help="Set the colorbar tick labelling, e.g., "
+        "'[G, F, E, D, C, ESF]' ('' by default).",
     )
     parser.add_argument(
         "-xunits",
@@ -547,12 +562,6 @@ def load_parser():
         "--warnings",
         default=0,
         help="Set to 1 to print warnings ('0' by default).",
-    )
-    parser.add_argument(
-        "-latex",
-        "--latex",
-        default=1,
-        help="Set to 0 to not use LaTeX formatting ('1' by default).",
     )
     return vars(parser.parse_known_args()[0])
 
