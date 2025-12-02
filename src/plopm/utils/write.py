@@ -141,7 +141,7 @@ def make_summary(dic):
                                 xnorm,
                                 np.max(counts)
                                 * norm.pdf(xnorm, mean, std)
-                                / max(norm.pdf(xnorm, mean, std)),
+                                / np.max(norm.pdf(xnorm, mean, std)),
                                 color=dic["colors"][jj][
                                     (i + k) % len(dic["colors"][jj])
                                 ],
@@ -154,7 +154,9 @@ def make_summary(dic):
                             print(f"Distribution: lognorm({s:.6E}, 0, {scale:.6E})")
                             dic["axis"].flat[k].plot(
                                 xnorm,
-                                np.max(counts) * dist.pdf(xnorm) / max(dist.pdf(xnorm)),
+                                np.max(counts)
+                                * dist.pdf(xnorm)
+                                / np.max(dist.pdf(xnorm)),
                                 color=dic["colors"][jj][
                                     (i + k) % len(dic["colors"][jj])
                                 ],
@@ -169,19 +171,19 @@ def make_summary(dic):
                         lw=float(dic["lw"][jj][i]),
                     )
                 if i == 0:
-                    min_v = min(var[var > ylow])
-                    max_v = max(var)
-                    max_t = max(time)
+                    min_v = np.min(var[var > ylow])
+                    max_v = np.max(var)
+                    max_t = np.max(time)
                     if tunit != "Dates":
-                        min_t = min(time[time > xlow])
+                        min_t = np.min(time[time > xlow])
                     else:
                         min_t = time[0]
                 else:
-                    min_v = min(min_v, min(var[var > ylow]))
-                    max_v = max(max_v, max(var))
-                    max_t = max(max_t, max(time))
+                    min_v = min(min_v, np.min(var[var > ylow]))
+                    max_v = max(max_v, np.max(var))
+                    max_t = max(max_t, np.max(time))
                     if tunit != "Dates":
-                        min_t = min(min_t, min(time[time > xlow]))
+                        min_t = min(min_t, np.min(time[time > xlow]))
                     else:
                         min_t = time[0]
         dic["axis"].flat[k].set_ylabel(quan + vunit)
@@ -403,8 +405,8 @@ def handle_ensemble(dic):
                 m = len(dic["names"]) + n
                 maxs = np.nansum(values + means, axis=1)
                 mins = np.nansum(values - means, axis=1)
-                maxs = np.where(maxs == maxs.max())[0][0]
-                mins = np.where(mins == mins.min())[0][0]
+                maxs = np.where(maxs == np.max(maxs))[0][0]
+                mins = np.where(mins == np.min(mins))[0][0]
                 labell = names[mins] + " (lower)"
                 labelu = names[maxs] + " (upper)"
                 if dic["labels"][0][0]:
@@ -699,10 +701,10 @@ def find_min_max(dic):
                 if int(dic["log"][m]) == 1:
                     dic[var + "a"][dic[var + "a"] <= 0] = np.nan
                 dic["minc"][-2] = min(
-                    dic["minc"][-2], dic[var + "a"][~np.isnan(dic[var + "a"])].min()
+                    dic["minc"][-2], np.min(dic[var + "a"][~np.isnan(dic[var + "a"])])
                 )
                 dic["maxc"][-2] = max(
-                    dic["maxc"][-2], dic[var + "a"][~np.isnan(dic[var + "a"])].max()
+                    dic["maxc"][-2], np.max(dic[var + "a"][~np.isnan(dic[var + "a"])])
                 )
     else:
         for m, var in enumerate(dic["vrs"]):
@@ -729,10 +731,12 @@ def find_min_max(dic):
                     if int(dic["log"][m]) == 1:
                         dic[var + "a"][dic[var + "a"] <= 0] = np.nan
                     dic["minc"][-2] = min(
-                        dic["minc"][-2], dic[var + "a"][~np.isnan(dic[var + "a"])].min()
+                        dic["minc"][-2],
+                        np.min(dic[var + "a"][~np.isnan(dic[var + "a"])]),
                     )
                     dic["maxc"][-2] = max(
-                        dic["maxc"][-2], dic[var + "a"][~np.isnan(dic[var + "a"])].max()
+                        dic["maxc"][-2],
+                        np.max(dic[var + "a"][~np.isnan(dic[var + "a"])]),
                     )
     if dic["mask"]:
         var = dic["mask"]
@@ -773,8 +777,8 @@ def mapit(t, dic, n):
     if dic["subfigs"][0] and len(dic["names"][0]) > 1:
         with alive_bar(len(dic["names"][0])) as bar_animation:
             if len(dic["vrs"]) > 1:
-                dic["maxc"] = [max(dic["maxc"])] * len(dic["maxc"])
-                dic["minc"] = [min(dic["minc"])] * len(dic["minc"])
+                dic["maxc"] = [np.max(dic["maxc"])] * len(dic["maxc"])
+                dic["minc"] = [np.min(dic["minc"])] * len(dic["minc"])
                 for nn, deck in enumerate(dic["names"][0]):
                     bar_animation()
                     dic["deck"] = deck
@@ -851,12 +855,12 @@ def mapits(dic, t, n, k):
                 dic[var + "a"][i * (dic["mx"]) : (i + 1) * (dic["mx"])]
                 - dic["diffa"][t][i * (dic["mx"]) : (i + 1) * (dic["mx"])]
             )
-        dic["abssum"] = sum(abs(maps[~np.isnan(maps)]))
+        dic["abssum"] = np.sum(np.abs(maps[~np.isnan(maps)]))
     else:
         for i in np.arange(0, dic["my"]):
             maps[i, :] = dic[var + "a"][i * (dic["mx"]) : (i + 1) * (dic["mx"])]
     if dic["mask"]:
-        maxv = max(dic["maska"][k][~np.isnan(dic["maska"][k])])
+        maxv = np.max(dic["maska"][k][~np.isnan(dic["maska"][k])])
         for i in np.arange(0, dic["my"]):
             maps[i, :] = [
                 (
@@ -892,11 +896,11 @@ def mapits(dic, t, n, k):
             minc = dic["minc"][n]
             maxc = dic["maxc"][n]
         elif dic["global"] == 0:
-            minc = maps[~np.isnan(maps)].min()
-            maxc = maps[~np.isnan(maps)].max()
+            minc = np.min(maps[~np.isnan(maps)])
+            maxc = np.max(maps[~np.isnan(maps)])
         else:
-            minc = quan[~np.isnan(quan)].min()
-            maxc = quan[~np.isnan(quan)].max()
+            minc = np.min(quan[~np.isnan(quan)])
+            maxc = np.max(quan[~np.isnan(quan)])
         if dic["bounds"][n][0]:
             minc = float(dic["bounds"][n][0][1:])
             maxc = float(dic["bounds"][n][1][:-1])
@@ -1375,11 +1379,13 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         dic["axis"].flat[k].axis("scaled")
     extra = ""
     if name == "porv":
-        extra = f", sum={sum(dic[name]):.3e}"
+        extra = f", sum={np.sum(dic[name]):.3e}"
     elif name in dic["mass"] and dic["diff"]:
         extra = f", |sum|={dic['abssum']:.3e} {unit}"
     elif name in dic["mass"]:
-        extra = f", sum={sum(dic[name + 'a'][~np.isnan(dic[name + 'a'])]):.3e} {unit}"
+        extra = (
+            f", sum={np.sum(dic[name + 'a'][~np.isnan(dic[name + 'a'])]):.3e} {unit}"
+        )
     elif dic["diff"]:
         extra = f", |sum|={dic['abssum']:.3e}"
     elif dic["faults"] or dic["wells"]:
@@ -1454,7 +1460,7 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
     if name == "grid" and dic["rm"][3] == 0 and dic["titles"][k] == "0":
         dic["axis"].flat[k].set_title(
             f"Grid = [{dic['nx']},{dic['ny']},{dic['nz']}], "
-            + f"Total no. active cells = {max(dic['actind'])+1}"
+            + f"Total no. active cells = {np.max(dic['actind'])+1}"
         )
     if dic["titles"][k] != "0" and dic["rm"][3] == 0:
         dic["axis"].flat[k].set_title(dic["titles"][k])
@@ -1471,8 +1477,8 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         )
     else:
         xlabels = np.linspace(
-            min(min(dic["xc"])) * dic["xskl"],
-            max(max(dic["xc"])) * dic["xskl"],
+            np.min(dic["xc"]) * dic["xskl"],
+            np.max(dic["xc"]) * dic["xskl"],
             int(dic["xlnum"][n]),
         )
     if dic["xformat"][n] and dic["rm"][1] == 0:
@@ -1496,8 +1502,8 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         )
     else:
         ylabels = np.linspace(
-            min(min(dic["yc"])) * dic["yskl"],
-            max(max(dic["yc"])) * dic["yskl"],
+            np.min(dic["yc"]) * dic["yskl"],
+            np.max(dic["yc"]) * dic["yskl"],
             int(dic["ylnum"][n]),
         )
     if dic["yformat"][n] and dic["rm"][0] == 0:
