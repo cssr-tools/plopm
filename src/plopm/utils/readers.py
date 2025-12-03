@@ -487,7 +487,8 @@ def read_summary(dic, case, quan, tunit, qskl, n):
         xskl, tunit = initialize_spatial(dic["xunits"])
         dic["deck"] = case
         get_readers(dic)
-        var, time = do_read_variables(dic, quans, n, [dic["restart"][0]])
+        tmp = dic["restart"][n] if n < len(dic["restart"]) else dic["restart"][0]
+        var, time = do_read_variables(dic, quans, n, [tmp])
         time *= xskl
     elif quans[0].lower()[:3] in ["krw", "krg"] or quans[0].lower()[:4] in [
         "krog",
