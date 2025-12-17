@@ -387,7 +387,6 @@ def is_summary(dic):
         or dic["vrs"][0].lower()[:3] in ["krw", "krg"]
         or dic["vrs"][0].lower()[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
         or dic["vrs"][0].lower()[:6] == "pcfact"
-        or dic["vrs"][0].lower()[:8] == "permfact"
         or dic["csvsummary"]
     ):
         return True
