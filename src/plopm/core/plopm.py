@@ -78,7 +78,7 @@ def load_parser():
         default="poro,permx,permz,porv,fipnum,satnum",
         help="Specify the name of the variable to plot, e.g., 'pressure', in "
         "addition to special variables such as 'grid', 'wells', 'faults', "
-        "'permfact', 'pcfact', 'limipres', 'overpres', 'objepres', "
+        "'pcfact', 'limipres', 'overpres', 'objepres', "
         "'krw', 'krg', 'krow', 'krog', 'pcow', 'pcog', 'pcwg', "
         "'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', "
         "'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g, "

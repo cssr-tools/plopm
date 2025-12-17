@@ -703,18 +703,14 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                     ),
                 )
                 time = np.append(time, np.flip(timeh))
-    elif quan.lower()[:6] == "pcfact" or quan.lower()[:8] == "permfact":
+    elif quan.lower()[:6] == "pcfact":
         time = []
         var = []
         found = False
         snu = 1
         vec = quans[0].upper()
-        if quans[0].lower()[:8] == "permfact" and len(quans[0].lower()) > 8:
-            snu = int(quans[0][8:])
-            vec = quans[0].upper()[:8]
-        elif quans[0].lower()[:6] == "pcfact" and len(quans[0].lower()) > 6:
-            snu = int(quans[0][6:])
-            vec = quans[0].upper()[:6]
+        snu = int(quans[0][6:])
+        vec = quans[0].upper()[:6]
         file = where_at(case, vec)
         count = 0
         with open(file, "r", encoding="utf8") as file:

@@ -101,7 +101,6 @@ def make_summary(dic):
                     or quan.lower()[:3] in ["krw", "krg"]
                     or quan.lower()[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
                     or quan.lower()[:6] == "pcfact"
-                    or quan.lower()[:8] == "permfact"
                 ):
                     dic["axis"].flat[k].plot(
                         time,
