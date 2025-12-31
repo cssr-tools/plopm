@@ -17,7 +17,7 @@ To install the **plopm** executable from the development version in an existing 
 
     pip install git+https://github.com/cssr-tools/plopm.git
 
-If you are interested in a specific version (e.g., v2024.10) or in modifying the source code, then you can clone the repository and 
+If you are interested in a specific version (e.g., v2025.10) or in modifying the source code, then you can clone the repository and 
 install the Python requirements in a virtual environment with the following commands:
 
 .. code-block:: console
@@ -26,8 +26,8 @@ install the Python requirements in a virtual environment with the following comm
     git clone https://github.com/cssr-tools/plopm.git
     # Get inside the folder
     cd plopm
-    # For a specific version (e.g., v2024.10), or skip this step (i.e., edge version)
-    git checkout v2024.10
+    # For a specific version (e.g., v2025.10), or skip this step (i.e., edge version)
+    git checkout v2025.10
     # Create virtual environment
     python3 -m venv vplopm
     # Activate virtual environment
@@ -43,16 +43,31 @@ install the Python requirements in a virtual environment with the following comm
 
     Typing **git tag -l** writes all available specific versions.
 
+.. note::
+  
+    For not macOS users, to install the (optional but recommended) dependencies used for the figure's LaTeX formatting, execute 
+    
+    **sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super**
+
+    For macOS users, see :ref:`macOS`.
+
 OPM Flow
 --------
 To use the convertion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) to vtk, you also need to install:
 
 * OPM Flow (https://opm-project.org, Release 2025.04 or current master branches)
 
+Binary packages
++++++++++++++++
+
+See the `downloading and installing <https://opm-project.org/?page_id=36>`_ OPM Flow online documentation for 
+instructions to install the binary packages in Ubuntu and Red Hat Enterprise Linux, and for other platforms which are
+supported either via source builds or through running a virtual machine.
+
 .. tip::
 
     See the `CI.yml <https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml>`_ script 
-    for installation of OPM Flow (binary packages), LaTeX (optional) libraries, and the plopm package in Ubuntu.
+    for installation of OPM Flow (binary packages), LaTeX (optional) libraries and the plopm package in Ubuntu.
 
 Source build in Linux/Windows
 +++++++++++++++++++++++++++++
@@ -84,30 +99,40 @@ in the terminal the following lines (which in turn should build flow in the fold
 
 .. _macOS:
 
+Brew formula for macOS
+++++++++++++++++++++++
+For macOS, there are no available binary packages, so OPM Flow needs to be built from source. Recently, a formula to build flow using brew has
+been added in `https://github.com/cssr-tools/homebrew-opm <https://github.com/cssr-tools/homebrew-opm>`_. 
+Then, you can try to install flow (v2025.10) by simply typing:
+
+.. code-block:: console
+
+    brew install cssr-tools/opm/opm-simulators
+
+You can check if the installation of OPM Flow succeded by typing in the terminal **flow \-\-help**.
+
+.. tip::
+    See the actions in the `cssr-tools/homebrew-opm <https://github.com/cssr-tools/homebrew-opm/actions>`_ repository. 
+
 Source build in macOS
 +++++++++++++++++++++
-For macOS, there are no available binary packages, so OPM Flow needs to be built from source, in addition to the dune libraries 
-(see the `prerequisites <https://opm-project.org/?page_id=239>`_, which can be installed using macports or brew). For example,
-with brew the prerequisites can be installed by:
+If you would like to build the latest OPM Flow from the master branch, then you can first install the prerequisites using brew:
 
 .. code-block:: console
 
     brew install boost openblas suite-sparse python@3.14 cmake
 
 In addition, it is recommended to uprade and update your macOS to the latest available versions (the following steps have 
-worked for macOS Tahoe 26.0.1 with Apple clang version 17.0.0).
-After the prerequisites are installed and the vplopm Python environment is created (see :ref:`vplopm`), 
-then building OPM Flow can be achieved with the following bash lines:
+worked for macOS Tahoe 26.2.0 with Apple clang version 17.0.0).
+After the prerequisites are installed, then building OPM Flow can be achieved with the following bash lines:
 
 .. code-block:: console
 
     CURRENT_DIRECTORY="$PWD"
 
-    deactivate
-    source vplopm/bin/activate
-
     for module in common geometry grid istl
-    do   git clone https://gitlab.dune-project.org/core/dune-$module.git --branch v2.9.1
+    do  git clone https://gitlab.dune-project.org/core/dune-$module.git
+        cd dune-$module && git checkout v2.10.0 && cd ..
         ./dune-common/bin/dunecontrol --only=dune-$module cmake -DCMAKE_DISABLE_FIND_PACKAGE_MPI=1
         ./dune-common/bin/dunecontrol --only=dune-$module make -j5
     done
@@ -116,8 +141,7 @@ then building OPM Flow can be achieved with the following bash lines:
 
     for repo in common grid simulators
     do  git clone https://github.com/OPM/opm-$repo.git
-        mkdir build/opm-$repo
-        cd build/opm-$repo
+        mkdir build/opm-$repo && cd build/opm-$repo
         cmake -DUSE_MPI=0 -DWITH_NDEBUG=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CURRENT_DIRECTORY/dune-common/build-cmake;$CURRENT_DIRECTORY/dune-grid/build-cmake;$CURRENT_DIRECTORY/dune-geometry/build-cmake;$CURRENT_DIRECTORY/dune-istl/build-cmake;$CURRENT_DIRECTORY/build/opm-common;$CURRENT_DIRECTORY/build/opm-grid" $CURRENT_DIRECTORY/opm-$repo
         if [[ $repo == simulators ]]; then
             make -j5 flow
@@ -127,13 +151,10 @@ then building OPM Flow can be achieved with the following bash lines:
         cd ../..
     done
 
-    echo "export PATH=\$PATH:$CURRENT_DIRECTORY/build/opm-simulators/bin" >> $CURRENT_DIRECTORY/vplopm/bin/activate
+    echo "export PATH=\$PATH:$CURRENT_DIRECTORY/build/opm-simulators/bin" >> ~/.zprofile
+    source ~/.zprofile
 
-    deactivate
-    source vplopm/bin/activate
-
-
-This builds OPM Flow, and it exports the path of the OPM Flow executable.
+This builds OPM Flow, and it exports the path to the flow executable. You can check if the installation of OPM Flow succeded by typing in the terminal **flow \-\-help**.
 
 For macOS, the LaTeX dependency can be installed from https://www.tug.org/mactex/.
 

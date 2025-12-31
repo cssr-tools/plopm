@@ -57,7 +57,7 @@ where
 -xlog       Use log scale for the x axis ('0' by default).
 -ylog       Use log scale for the y axis ('0' by default).
 -clabel     Text for the colorbar ('' by default, i.e., set by plopm).
--labels     Legend in the summary plot, separated by commas if more than one ('' by default, i.e., set by plopm).
+-labels     Legend in the summary plot, separated by two spaces if more than one ('' by default, i.e., set by plopm).
 -axgrid     Set axis.grid to True for the summary plots ('1' by default).
 -dpi        Dots per inch for the figure ('500' by default).
 -xformat    Format for the x numbers, e.g., .2e for exponential notation ('' by default, i.e., set by plopm).
