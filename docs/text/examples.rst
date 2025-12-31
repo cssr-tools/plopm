@@ -230,7 +230,7 @@ To compare two summary quantities, this can be achiaved by:
 
 .. code-block:: bash
 
-    plopm -i "r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M" -v ",BWPR:1944" -csv "1,3;" -a "1e-5,1" -e "solid,dotted" -lw "4,4" -ylabel "Sensor pressure [bar]" -label "From csv file  From OPM Flow output file" -c "r,k"
+    plopm -i "r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M" -v ",BWPR:1944" -csv "1,3;" -a "1e-5,1" -e "solid,dotted" -lw "4,4" -ylabel "Sensor pressure [bar]" -labels "From csv file  From OPM Flow output file" -c "r,k"
 
 where for summary variables, the flag **-v ",BWPR:1944"** needs to have empty entries for corresponding csv **-i** files, and the flag **-a "1e-5,1"** allows to convert the values in Pascal to bar from the csv file, multiplying by 1e-5. The previous command generates the following figure:
 

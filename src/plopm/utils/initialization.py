@@ -277,7 +277,7 @@ def ini_dic(cmdargs):
         dic["slide"] = [dic["slide"][0]] * 2
     elif len(dic["slide"]) < max(len(dic["names"][0]), len(dic["vrs"])):
         dic["slide"] = [dic["slide"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
-    for val in ["how", "filter", "cticks"]:
+    for val in ["how", "filter", "cticks", "csvs"]:
         if len(dic[val]) < max(len(dic["names"][0]), len(dic["vrs"])):
             dic[val] = [dic[val][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
     if dic["diff"]:
@@ -332,6 +332,8 @@ def ini_summary(dic):
     for i in ["x", "y"]:
         if len(dic[f"{i}lim"]) < len(dic["vrs"]) and dic[f"{i}lim"][0][0]:
             dic[f"{i}lim"] = [dic[f"{i}lim"][0]] * len(dic["vrs"])
+    if len(dic["vrs"]) == 1 and len(dic["lw"][0]) < len(dic["names"][0]):
+        dic["lw"][0] = dic["lw"][0][0] * len(dic["names"][0])
     for val in [
         "names",
         "titles",

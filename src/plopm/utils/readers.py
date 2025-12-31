@@ -406,7 +406,10 @@ def do_read_variables(dic, quans, n, ntot):
         elif dic["layer"]:
             var = temp
         else:
-            var[l] = temp
+            if xsize == 1:
+                var[l] = temp[0]
+            else:
+                var[l] = temp
     if dic["layer"] and not dic["how"][0]:
         if m == 0:
             for i in range(dic["nx"]):
