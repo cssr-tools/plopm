@@ -98,7 +98,7 @@
 <section id="hello-world">
 <h2>Hello world<a class="headerlink" href="#hello-world" title="Link to this heading"></a></h2>
 <p>The simulation files located in the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples">examples folder</a> were generated using
-<a class="reference external" href="https://github.com/OPM/pyopmspe11">pyopmspe11</a> by running this <a class="reference external" href="https://github.com/OPM/pyopmspe11/blob/main/examples/hello_world/spe11b.txt">configuration file</a>.
+<a class="reference external" href="https://github.com/OPM/pyopmspe11">pyopmspe11</a> by running this <a class="reference external" href="https://github.com/OPM/pyopmspe11/blob/main/examples/hello_world/spe11b.toml">configuration file</a>.
 Then, if you succeed in installing <strong>plopm</strong>, inside the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples">examples folder</a> by typing in the terminal</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B
 </pre></div>
@@ -281,6 +281,7 @@ your simulations with those results by (to remove the legend, add the flag <stro
 </pre></div>
 </div>
 <img alt="_images/spe11b_spatial_map_250y_csv_csv_t-1.png" src="_images/spe11b_spatial_map_250y_csv_csv_t-1.png" />
+<p>To make a GIF from csvs, then write “PLOPM” in the csv file name (e.g., ‘-i opm1/spe11b_spatial_map_PLOPMy’) where to read the given times from <strong>-r</strong> (see <a class="reference external" href="https://opm.github.io/pyopmspe11/convergence.html#full-domain">these examples from pyopmspe11</a>).</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>In general, the ability of plotting from csv files using the flag <strong>-csv</strong> is a game changer, expanding the applicability of <strong>plopm</strong> beyond the format of OPM Flow output files.</p>
@@ -387,7 +388,7 @@ This can be achieved by adding to the deck RPORV to the RPTRST in the SOLUTION a
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024-2025, NORCE Research AS.</p>
+    <p>&#169; Copyright 2024-2026, NORCE Research AS.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

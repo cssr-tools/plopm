@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 NORCE
+# SPDX-FileCopyrightText: 2024-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=R1702,W0123,W1401,R0915
 
@@ -8,7 +8,6 @@ Script to plot 2D maps of OPM Flow geological models.
 
 import shutil
 import argparse
-import warnings
 from plopm.utils.initialization import (
     ini_dic,
     ini_properties,
@@ -22,8 +21,6 @@ from plopm.utils.write import make_summary, make_maps
 def plopm():
     """Main function for the plopm executable"""
     cmdargs = load_parser()
-    if int(cmdargs["warnings"]) == 0:
-        warnings.warn = lambda *args, **kwargs: None
     dic = ini_dic(cmdargs)
     text = (
         "\nThe execution of plopm succeeded. "
@@ -556,12 +553,6 @@ def load_parser():
         "--loop",
         default=0,
         help="Set to 1 for infinity loop in the GIF ('0' by default).",
-    )
-    parser.add_argument(
-        "-warnings",
-        "--warnings",
-        default=0,
-        help="Set to 1 to print warnings ('0' by default).",
     )
     return vars(parser.parse_known_args()[0])
 

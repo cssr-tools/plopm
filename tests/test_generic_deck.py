@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 NORCE
+# SPDX-FileCopyrightText: 2024-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 
 """Test the plopm generic functionality"""
@@ -7,14 +7,16 @@ import os
 import pathlib
 import subprocess
 
-dirname: pathlib.Path = pathlib.Path(__file__).parent
+testpth: pathlib.Path = pathlib.Path(__file__).parent
 
 
 def test_generic_deck():
     """plopm application given an input deck"""
-    os.chdir(dirname)
-    os.system("mkdir generic_deck")
-    os.chdir(f"{dirname}/generic_deck")
+    if not os.path.exists(f"{testpth}/output"):
+        os.system(f"mkdir {testpth}/output")
+    if not os.path.exists(f"{testpth}/output/generic_deck"):
+        os.system(f"mkdir {testpth}/output/generic_deck")
+    os.chdir(f"{testpth}/output/generic_deck")
     for name in ["PERM", "PHI", "TOPS"]:
         subprocess.run(
             [
@@ -47,21 +49,9 @@ def test_generic_deck():
         ["0", "0", "1"],
     ):
         subprocess.run(
-            [
-                "plopm",
-                "-i",
-                "SPE10_MODEL2",
-                "-v",
-                name,
-                "-s",
-                slide,
-                "-log",
-                logs,
-                "-warnings",
-                "1",
-            ],
+            ["plopm", "-i", "SPE10_MODEL2", "-v", name, "-s", slide, "-log", logs],
             check=True,
         )
         assert os.path.exists(
-            f"{dirname}/generic_deck/spe10_model2_{name}_{nslide}_t0.png"
+            f"{testpth}/output/generic_deck/spe10_model2_{name}_{nslide}_t0.png"
         )

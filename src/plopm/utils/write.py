@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 NORCE
+# SPDX-FileCopyrightText: 2024-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913,R0917,C0302,C0115,R0916,E1102
 
@@ -1455,7 +1455,10 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
             dic["axis"].flat[k].set_title(namet + tslide + dic["dtitle"] + extra + time)
     elif dic["subfigs"][0] and len(dic["names"][0]) > 1:
         if k == 0 and dic["suptitle"] != "0":
-            dic["fig"].suptitle(f"{dic['tnrst'][dic['restart'][t]]} days")
+            if dic["mode"] == "gif" and dic["csvs"][n][0]:
+                dic["fig"].suptitle(f"{dic['restart'][t]} {dic['tunits'][0]}")
+            else:
+                dic["fig"].suptitle(f"{dic['tnrst'][dic['restart'][t]]} days")
     if name == "grid" and dic["rm"][3] == 0 and dic["titles"][k] == "0":
         dic["axis"].flat[k].set_title(
             f"Grid = [{dic['nx']},{dic['ny']},{dic['nz']}], "

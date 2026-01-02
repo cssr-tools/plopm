@@ -29,6 +29,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install mpi-default-bin
         sudo apt-get install libopm-simulators-bin
+
+    - name: Install plotting (LaTeX) dependencies
+      run: |
         sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super
         
     - name: Install dependecies
@@ -48,7 +51,7 @@ jobs:
       
     - name: Run the tests
       run: |
-        pytest --cov=plopm --cov-report term-missing tests/
+        pytest --exitfirst --cov=plopm --cov-report term-missing tests/
         
     - name: Build documentation
       run: |
