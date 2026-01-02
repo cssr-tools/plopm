@@ -1,24 +1,29 @@
+# SPDX-FileCopyrightText: 2024-2026 NORCE Research AS
+# SPDX-License-Identifier: GPL-3.0
+
 """Test the default settings"""
 
 import os
 import pathlib
 import subprocess
 
-dirname: pathlib.Path = pathlib.Path(__file__).parents[1]
+testpth: pathlib.Path = pathlib.Path(__file__).parent
+mainpth: pathlib.Path = pathlib.Path(__file__).parents[1]
 
 
 def test_dynamic():
     """See examples/SPE11B files"""
-    os.chdir(f"{dirname}/examples")
+    if not os.path.exists(f"{testpth}/output"):
+        os.system(f"mkdir {testpth}/output")
     subprocess.run(
         [
             "plopm",
             "-remove",
             "0,0,0,1",
             "-i",
-            "SPE11B",
+            f"{mainpth}/examples/SPE11B",
             "-o",
-            "output",
+            f"{testpth}/output",
             "-v",
             "sgas",
             "-s",
@@ -27,11 +32,11 @@ def test_dynamic():
             "-1",
             "-clabel",
             "gas saturation [-]",
+            "-save",
+            "dynamic",
             "-f",
             "8",
-            "-warnings",
-            "1",
         ],
         check=True,
     )
-    assert os.path.exists(f"{dirname}/examples/output/spe11b_sgas_i,1,k_t5.png")
+    assert os.path.exists(f"{testpth}/output/dynamic.png")

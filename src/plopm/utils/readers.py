@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 NORCE
+# SPDX-FileCopyrightText: 2024-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=R0911,R0912,R0913,R0915,R0917,R1702,R0914,C0302,E1102
 
@@ -915,11 +915,19 @@ def get_csvs(dic, n):
         dic (dict): Modified global dictionary
 
     """
-    csvv = np.genfromtxt(
-        f"{dic['deck']}.csv",
-        delimiter=",",
-        skip_header=1,
-    )
+    if dic["mode"] == "gif":
+        file = dic["deck"].replace("PLOPM", str(dic["restart"][0]))
+        csvv = np.genfromtxt(
+            f"{file}.csv",
+            delimiter=",",
+            skip_header=1,
+        )
+    else:
+        csvv = np.genfromtxt(
+            f"{dic['deck']}.csv",
+            delimiter=",",
+            skip_header=1,
+        )
     x = csvv[-1][dic["csvs"][n][0] - 1] + csvv[0][dic["csvs"][n][0] - 1]
     y = csvv[-1][dic["csvs"][n][1] - 1] + csvv[0][dic["csvs"][n][1] - 1]
     dic["mx"] = round(x / (2.0 * csvv[0][dic["csvs"][n][0] - 1]))
@@ -980,7 +988,6 @@ def get_readers(dic, n=0):
             else:
                 dic[ext] = OpmRestart(f"{dic['deck']}.{ext.upper()}")
     if os.path.isfile(f"{dic['deck']}.EGRID") and dic["mode"] != "vtk":
-        dic["egrid"] = []
         dic["egrid"] = OpmGrid(f"{dic['deck']}.EGRID")
     if not "init" in dic.keys() and not "unrst" in dic.keys():
         print(f"Unable to find {dic['deck']} with .EGRID or .INIT.")
@@ -1070,11 +1077,19 @@ def get_quantity(dic, name, n, nrst, m):
     unit = get_unit(name)
     names = name.split(" ")
     if dic["csvs"][m][0]:
-        csvv = np.genfromtxt(
-            f"{dic['deck']}.csv",
-            delimiter=",",
-            skip_header=1,
-        )
+        if dic["mode"] == "gif":
+            file = dic["deck"].replace("PLOPM", str(nrst))
+            csvv = np.genfromtxt(
+                f"{file}.csv",
+                delimiter=",",
+                skip_header=1,
+            )
+        else:
+            csvv = np.genfromtxt(
+                f"{dic['deck']}.csv",
+                delimiter=",",
+                skip_header=1,
+            )
         quan = np.array([csvv[i][dic["csvs"][m][2] - 1] for i in range(csvv.shape[0])])
     else:
         if dic["init"].count(names[0]):

@@ -1,55 +1,60 @@
+# SPDX-FileCopyrightText: 2024-2026 NORCE Research AS
+# SPDX-License-Identifier: GPL-3.0
+
 """Test the multislides functionality (projections)"""
 
 import os
 import pathlib
 import subprocess
 
-dirname: pathlib.Path = pathlib.Path(__file__).parents[1]
+testpth: pathlib.Path = pathlib.Path(__file__).parent
+mainpth: pathlib.Path = pathlib.Path(__file__).parents[1]
 
 
 def test_static():
     """See examples/SPE11B"""
-    os.chdir(f"{dirname}/examples")
+    if not os.path.exists(f"{testpth}/output"):
+        os.system(f"mkdir {testpth}/output")
     subprocess.run(
         [
             "plopm",
             "-s",
             ",,1:58",
+            "-i",
+            f"{mainpth}/examples/SPE11B",
             "-v",
             "pressure - 0pressure",
             "-o",
-            "output",
+            f"{testpth}/output",
             "-z",
             "0",
             "-save",
             "pres_incr",
-            "-warnings",
-            "1",
         ],
         check=True,
     )
-    assert os.path.exists(f"{dirname}/examples/output/pres_incr.png")
+    assert os.path.exists(f"{testpth}/output/pres_incr.png")
     subprocess.run(
         [
             "plopm",
             "-o",
-            "output",
+            f"{testpth}/output",
             "-v",
             "pressure - 0pressure",
             "-s",
             "1:83,, 1:10,,",
             "-z",
             "0",
+            "-i",
+            f"{mainpth}/examples/SPE11B",
             "-diff",
-            "SPE11B",
+            f"{mainpth}/examples/SPE11B",
             "-save",
             "pres_diff",
-            "-warnings",
-            "1",
         ],
         check=True,
     )
-    assert os.path.exists(f"{dirname}/examples/output/pres_diff.png")
+    assert os.path.exists(f"{testpth}/output/pres_diff.png")
     subprocess.run(
         [
             "plopm",
@@ -62,15 +67,15 @@ def test_static():
             "-a",
             "1e-6",
             "-o",
-            "output",
+            f"{testpth}/output",
             "-save",
             "tco2m_alongz",
-            "-warnings",
-            "1",
+            "-i",
+            f"{mainpth}/examples/SPE11B",
         ],
         check=True,
     )
-    assert os.path.exists(f"{dirname}/examples/output/tco2m_alongz.png")
+    assert os.path.exists(f"{testpth}/output/tco2m_alongz.png")
     subprocess.run(
         [
             "plopm",
@@ -82,13 +87,13 @@ def test_static():
             "0",
             "-a",
             "1e-6",
+            "-i",
+            f"{mainpth}/examples/SPE11B",
             "-save",
             "tco2m_alongx",
             "-o",
-            "output",
-            "-warnings",
-            "1",
+            f"{testpth}/output",
         ],
         check=True,
     )
-    assert os.path.exists(f"{dirname}/examples/output/tco2m_alongx.png")
+    assert os.path.exists(f"{testpth}/output/tco2m_alongx.png")

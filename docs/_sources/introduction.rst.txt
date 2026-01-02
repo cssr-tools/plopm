@@ -99,7 +99,6 @@ where
 -filter     Consider only the cells fullfilling the conditions, which are separated by '&', and use ',' for different input files e.g., 'fluxnum == 2 & sgas >= 0.2, satnum != 5'. ('' by default; note that RPORV needs to be set in RPTRST to be able to use dynamic filter variables such as sgas).
 -interval   Time for the frames in the GIF in milli second ('1000' by default).
 -loop       Set to 1 for infinity loop in the GIF ('0' by default).
--warnings   Set to 1 to print warnings ('0' by default).
  
 .. tip::
 

@@ -67,7 +67,7 @@ supported either via source builds or through running a virtual machine.
 .. tip::
 
     See the `CI.yml <https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml>`_ script 
-    for installation of OPM Flow (binary packages), LaTeX (optional) libraries and the plopm package in Ubuntu.
+    for installation of OPM Flow (binary packages), LaTeX (optional) libraries, and the plopm package in Ubuntu.
 
 Source build in Linux/Windows
 +++++++++++++++++++++++++++++

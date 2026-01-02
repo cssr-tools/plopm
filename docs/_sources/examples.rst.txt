@@ -9,7 +9,7 @@ Hello world
 ===========
 
 The simulation files located in the `examples folder <https://github.com/cssr-tools/plopm/blob/main/examples>`_ were generated using 
-`pyopmspe11 <https://github.com/OPM/pyopmspe11>`_ by running this `configuration file <https://github.com/OPM/pyopmspe11/blob/main/examples/hello_world/spe11b.txt>`_. 
+`pyopmspe11 <https://github.com/OPM/pyopmspe11>`_ by running this `configuration file <https://github.com/OPM/pyopmspe11/blob/main/examples/hello_world/spe11b.toml>`_. 
 Then, if you succeed in installing **plopm**, inside the `examples folder <https://github.com/cssr-tools/plopm/blob/main/examples>`_ by typing in the terminal
 
 .. code-block:: bash
@@ -254,6 +254,8 @@ and for the spatial maps:
     plopm -i "opm1/spe11b_spatial_map_250y opm2/spe11b_spatial_map_250y opm3/spe11b_spatial_map_250y opm4/spe11b_spatial_map_250y r1_Cart_10m/spe11b_spatial_map_250y"  -csv "1,2,5;1,2,5;1,2,5;1,2,5;1,2,5" -subfigs 3,2 -delax 1 -suptitle 0 -cbsfax 0.35,0.97,0.3,0.02 -yunits km -xunits km -yformat .1f -xformat .1f -cnum 5 -xlnum 8 -cformat .2f -d 14,4 -t "opm1  opm2  opm3  opm4  my simulation" -clabel 'Time 250 years, CO$_2$ mass fraction (liquid phase) [-]' -c inferno
 
 .. image:: ./figs/spe11b_spatial_map_250y_csv_csv_t-1.png
+
+To make a GIF from csvs, then write "PLOPM" in the csv file name (e.g., '-i opm1/spe11b_spatial_map_PLOPMy') where to read the given times from **-r** (see `these examples from pyopmspe11 <https://opm.github.io/pyopmspe11/convergence.html#full-domain>`_). 
 
 .. tip::
     In general, the ability of plotting from csv files using the flag **-csv** is a game changer, expanding the applicability of **plopm** beyond the format of OPM Flow output files.

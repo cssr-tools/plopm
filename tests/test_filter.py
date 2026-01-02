@@ -1,15 +1,20 @@
+# SPDX-FileCopyrightText: 2024-2026 NORCE Research AS
+# SPDX-License-Identifier: GPL-3.0
+
 """Test the filter functionality"""
 
 import os
 import pathlib
 import subprocess
 
-dirname: pathlib.Path = pathlib.Path(__file__).parents[1]
+testpth: pathlib.Path = pathlib.Path(__file__).parent
+mainpth: pathlib.Path = pathlib.Path(__file__).parents[1]
 
 
 def test_filter():
     """See examples/SPE11B"""
-    os.chdir(f"{dirname}/examples")
+    if not os.path.exists(f"{testpth}/output"):
+        os.system(f"mkdir {testpth}/output")
     subprocess.run(
         [
             "plopm",
@@ -22,9 +27,9 @@ def test_filter():
             "-suptitle",
             "0",
             "-o",
-            "output",
+            f"{testpth}/output",
             "-i",
-            "SPE11B SPE11B SPE11B",
+            f"{mainpth}/examples/SPE11B {mainpth}/examples/SPE11B {mainpth}/examples/SPE11B",
             "-v",
             "fipnum",
             "-subfigs",
@@ -37,9 +42,7 @@ def test_filter():
             "7,4",
             "-save",
             "filter",
-            "-warnings",
-            "1",
         ],
         check=True,
     )
-    assert os.path.exists(f"{dirname}/examples/output/filter.png")
+    assert os.path.exists(f"{testpth}/output/filter.png")
