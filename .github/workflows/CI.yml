@@ -51,7 +51,7 @@ jobs:
       
     - name: Run the tests
       run: |
-        pytest --exitfirst --cov=plopm --cov-report term-missing tests/
+        pytest --cov=plopm --exitfirst --cov-report term-missing tests/
         
     - name: Build documentation
       run: |
