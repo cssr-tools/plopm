@@ -57,6 +57,7 @@ def ini_dic(cmdargs):
     dic["bandprop"] = cmdargs["bandprop"]
     dic["subfigs"] = (cmdargs["subfigs"].strip()).split(",")
     dic["vrs"] = (cmdargs["variable"].strip()).split(",")
+    handle_blocks(dic)
     dic["lw"] = cmdargs["lw"].strip()
     dic["size"] = float(cmdargs["size"])
     dic["maskthr"] = float(cmdargs["maskthr"])
@@ -307,6 +308,39 @@ def ini_dic(cmdargs):
         if len(dic[val]) < len(dic["vrs"]):
             dic[val] = [dic[val][0]] * len(dic["vrs"])
     return dic
+
+
+def handle_blocks(dic):
+    """
+    For block i,j,k quantities, do not split the commas
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    n = len(dic["vrs"])
+    vrs = []
+    skip = 0
+    if n > 2:
+        for i in range(n):
+            if i < n - 2:
+                if ":" in dic["vrs"][i] and dic["vrs"][i + 1].isnumeric():
+                    skip = 3
+                    vrs.append(
+                        dic["vrs"][i]
+                        + ","
+                        + dic["vrs"][i + 1]
+                        + ","
+                        + dic["vrs"][i + 2]
+                    )
+            if 0 < skip:
+                skip -= 1
+            else:
+                vrs.append(dic["vrs"][i])
+        dic["vrs"] = vrs
 
 
 def ini_summary(dic):
