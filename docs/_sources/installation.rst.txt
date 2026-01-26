@@ -120,7 +120,7 @@ If you would like to build the latest OPM Flow from the master branch, then you 
 
 .. code-block:: console
 
-    brew install boost openblas suite-sparse python@3.14 cmake
+    brew install cjson boost openblas suite-sparse python@3.14 cmake
 
 In addition, it is recommended to uprade and update your macOS to the latest available versions (the following steps have 
 worked for macOS Tahoe 26.2.0 with Apple clang version 17.0.0).
