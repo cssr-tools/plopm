@@ -435,7 +435,8 @@ def map_xycoords(dic, var, quan, n):
         dic (dict): Modified global dictionary
 
     """
-    ny = int((dic["ny"] - 1) / 2) if dic["dual"] else dic["ny"]
+    dual = dic["dual"][n] == "1"
+    ny = int((dic["ny"] - 1) / 2) if dual else dic["ny"]
     for j in range(ny):
         for i in range(dic["nx"]):
             p_v, val, d_z = 0.0, 0.0, 0.0
@@ -474,28 +475,28 @@ def map_xycoords(dic, var, quan, n):
                         elif dic["how"][n] == "min":
                             p_v = 1.0
                             val = min(val, quan[dic["actind"][ind]])
-                            if dic["dual"]:
+                            if dual:
                                 val = min(val, quan[dic["actind"][idd]])
                         elif dic["how"][n] == "max":
                             p_v = 1.0
                             val = max(val, quan[dic["actind"][ind]])
-                            if dic["dual"]:
+                            if dual:
                                 val = max(val, quan[dic["actind"][idd]])
                         elif dic["how"][n] == "sum":
                             p_v = 1.0
                             val += quan[dic["actind"][ind]]
-                            if dic["dual"]:
+                            if dual:
                                 val += quan[dic["actind"][idd]]
                         elif dic["how"][n] == "mean":
                             p_v += 1.0
                             val += quan[dic["actind"][ind]]
-                            if dic["dual"]:
+                            if dual:
                                 p_v += 1.0
                                 val += quan[dic["actind"][idd]]
                         elif dic["how"][n] == "pvmean":
                             p_v += dic["porv"][ind]
                             val += quan[dic["actind"][ind]] * dic["porv"][ind]
-                            if dic["dual"]:
+                            if dual:
                                 p_v += dic["porv"][idd]
                                 val += quan[dic["actind"][idd]] * dic["porv"][idd]
                         elif dic["how"][n] == "harmonic":
@@ -503,7 +504,7 @@ def map_xycoords(dic, var, quan, n):
                             val += (
                                 dic["dz"][dic["actind"][ind]] / quan[dic["actind"][ind]]
                             )
-                            if dic["dual"]:
+                            if dual:
                                 d_z += dic["dz"][dic["actind"][idd]]
                                 val += (
                                     dic["dz"][dic["actind"][idd]]
@@ -514,7 +515,7 @@ def map_xycoords(dic, var, quan, n):
                             val += (
                                 quan[dic["actind"][ind]] * dic["dz"][dic["actind"][ind]]
                             )
-                            if dic["dual"]:
+                            if dual:
                                 p_v += dic["dz"][dic["actind"][idd]]
                                 val += (
                                     quan[dic["actind"][idd]]
@@ -528,7 +529,7 @@ def map_xycoords(dic, var, quan, n):
                     ]:
                         p_v = 1.0
                         val += quan[dic["actind"][ind]]
-                        if dic["dual"]:
+                        if dual:
                             val += quan[dic["actind"][idd]]
                     elif var.lower() in dic["caprock"]:
                         p_v = 1.0
@@ -537,7 +538,7 @@ def map_xycoords(dic, var, quan, n):
                     elif var.lower() in ["permx", "permy"]:
                         p_v += dic["dz"][dic["actind"][ind]]
                         val += quan[dic["actind"][ind]] * dic["dz"][dic["actind"][ind]]
-                        if dic["dual"]:
+                        if dual:
                             p_v += dic["dz"][dic["actind"][idd]]
                             val += (
                                 quan[dic["actind"][idd]] * dic["dz"][dic["actind"][idd]]
@@ -546,7 +547,7 @@ def map_xycoords(dic, var, quan, n):
                         p_v = 1
                         d_z += dic["dz"][dic["actind"][ind]]
                         val += dic["dz"][dic["actind"][ind]] / quan[dic["actind"][ind]]
-                        if dic["dual"]:
+                        if dual:
                             d_z += dic["dz"][dic["actind"][idd]]
                             val += (
                                 dic["dz"][dic["actind"][idd]] / quan[dic["actind"][idd]]
@@ -572,7 +573,7 @@ def map_xycoords(dic, var, quan, n):
                     else:
                         p_v += dic["porv"][ind]
                         val += quan[dic["actind"][ind]] * dic["porv"][ind]
-                        if dic["dual"]:
+                        if dual:
                             p_v += dic["porv"][idd]
                             val += quan[dic["actind"][idd]] * dic["porv"][idd]
             if dic["how"][n] == "harmonic" or (

@@ -51,7 +51,7 @@ def ini_dic(cmdargs):
             names[-1] = sorted(names[-1])
     dic["names"], dic["name"] = names, names[0][0]
     dic["coords"] = ["x", "y", "z"]
-    dic["dual"] = int(cmdargs["dual"]) == 1
+    dic["dual"] = (cmdargs["dual"].strip()).split(",")
     dic["scale"] = int(cmdargs["scale"])
     dic["delax"] = int(cmdargs["delax"])
     dic["printv"] = int(cmdargs["printv"])
@@ -279,7 +279,7 @@ def ini_dic(cmdargs):
         dic["slide"] = [dic["slide"][0]] * 2
     elif len(dic["slide"]) < max(len(dic["names"][0]), len(dic["vrs"])):
         dic["slide"] = [dic["slide"][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
-    for val in ["how", "filter", "cticks", "csvs"]:
+    for val in ["how", "filter", "cticks", "csvs", "dual"]:
         if len(dic[val]) < max(len(dic["names"][0]), len(dic["vrs"])):
             dic[val] = [dic[val][0]] * max(len(dic["names"][0]), len(dic["vrs"]))
     if dic["diff"]:
