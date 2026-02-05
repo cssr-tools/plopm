@@ -543,6 +543,14 @@ def load_parser():
         "set in RPTRST to be able to use dynamic filter variables such as sgas).",
     )
     parser.add_argument(
+        "-dual",
+        "--dual",
+        default=0,
+        help="Set to 1 to postprocess models with a dual grid ('0' by default, this "
+        "functionality is useful for taylored models using pycopm; examples will be "
+        "made available soon).",
+    )
+    parser.add_argument(
         "-interval",
         "--interval",
         default=1000,

@@ -51,6 +51,7 @@ def ini_dic(cmdargs):
             names[-1] = sorted(names[-1])
     dic["names"], dic["name"] = names, names[0][0]
     dic["coords"] = ["x", "y", "z"]
+    dic["dual"] = int(cmdargs["dual"]) == 1
     dic["scale"] = int(cmdargs["scale"])
     dic["delax"] = int(cmdargs["delax"])
     dic["printv"] = int(cmdargs["printv"])
