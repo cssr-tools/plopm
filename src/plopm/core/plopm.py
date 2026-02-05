@@ -545,7 +545,7 @@ def load_parser():
     parser.add_argument(
         "-dual",
         "--dual",
-        default=0,
+        default="0",
         help="Set to 1 to postprocess models with a dual grid ('0' by default, this "
         "functionality is useful for taylored models using pycopm; examples will be "
         "made available soon).",
