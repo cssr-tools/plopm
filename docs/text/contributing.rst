@@ -22,7 +22,7 @@ Contribute to the software
 #. In the main repo execute:
 
     #. **pip install -r dev-requirements.txt** (this installs the `dev-requirements.txt <https://github.com/cssr-tools/plopm/blob/main/dev-requirements.txt>`_)
-    #. **black src/ tests/** (this formats the code)
+    #. **black --target-version py312 src/ tests/** (this formats the code)
     #. **pylint src/ tests/** (this analyses the code, and might rise issues that need to be fixed before the pull request)
     #. **mypy --ignore-missing-imports src/ tests/** (this is a static checker, and might rise issues that need to be fixed before the pull request)
     #. **pytest --cov=plopm --cov-report term-missing tests/** (this runs locally the tests, and might rise issues that need to be fixed before the pull request)

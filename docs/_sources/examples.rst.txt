@@ -384,9 +384,9 @@ The ilustration in the middle is generated from the `NORNE_ATW2013.DATA <https:/
 
 .. code-block:: bash
 
-    pip install git+https://github.com/OPM/pyopmspe11.git
-    curl -L -O https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11b.toml
-    pyopmspe11 -i spe11b.toml -o spe11b -f 0
+    git clone https://github.com/OPM/opm-data.git
+    flow opm-data//norne/NORNE_ATW2013.DATA --enable-dry-run=1
+    plopm -i opm-data//norne/NORNE_ATW2013 -v permx -log 1 -rotate 65 -s ,,1 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,7600]' -t "Top view of NORNE" -xunits km -yunits km -f 16 -grid 'black,1e-2' -xformat .1f -yformat .1f -d 8,8
 
 The ilustration in the right is generated from the SPE11C model using `pyopmspe11 <https://github.com/OPM/pyopmspe11>`_, specially the corner-point case with
 more than a 100 million cells (`r4_cp_8m-8mish-8mish.toml <https://github.com/OPM/pyopmspe11/blob/main/benchmark/spe11c/r4_cp_8m-8mish-8mish.toml>`_). Since that
