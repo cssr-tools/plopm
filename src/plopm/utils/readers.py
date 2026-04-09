@@ -369,7 +369,7 @@ def do_read_variables(dic, quans, n, ntot):
                 ind = dic["egrid"].active_index(
                     dic["slide"][n][0], dic["slide"][n][1], dic["slide"][n][2]
                 )
-            l = i + o
+            ll = i + o
             if dic["unrst"].count(quans[0].upper(), nrst):
                 temp[i] = 1.0 * dic["unrst"][quans[0].upper(), nrst][ind]
             elif quans[0].lower() in dic["mass"] + dic["xmass"]:
@@ -407,9 +407,9 @@ def do_read_variables(dic, quans, n, ntot):
             var = temp
         else:
             if xsize == 1:
-                var[l] = temp[0]
+                var[ll] = temp[0]
             else:
-                var[l] = temp
+                var[ll] = temp
     if dic["layer"] and not dic["how"][0]:
         if m == 0:
             for i in range(dic["nx"]):
@@ -989,7 +989,7 @@ def get_readers(dic, n=0):
                 dic[ext] = OpmRestart(f"{dic['deck']}.{ext.upper()}")
     if os.path.isfile(f"{dic['deck']}.EGRID") and dic["mode"] != "vtk":
         dic["egrid"] = OpmGrid(f"{dic['deck']}.EGRID")
-    if not "init" in dic.keys() and not "unrst" in dic.keys():
+    if "init" not in dic.keys() and "unrst" not in dic.keys():
         print(f"Unable to find {dic['deck']} with .EGRID or .INIT.")
         sys.exit()
     dic["tnrst"] = []
