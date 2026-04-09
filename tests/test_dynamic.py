@@ -28,6 +28,8 @@ def test_dynamic():
             "sgas",
             "-s",
             ",1,",
+            "-c",
+            "cet_CET_I2",
             "-r",
             "-1",
             "-clabel",

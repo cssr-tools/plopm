@@ -304,7 +304,7 @@ from the restart files from the initial (0) to the number 5 restart, using a OPM
 </figure>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is possible to write directly VTKs from OPM Flow simulations by adding the flag <strong>–enable-vtk-output=true</strong>.
+<p>It is possible to write directly VTKs from OPM Flow simulations by adding the flag <strong>--enable-vtk-output=true</strong>.
 However, there are quantities that are not written (e.g., fipnum, flores), in addition to quantities not supported
 such as component mass (e.g., co2, h2o). This is when <strong>plopm</strong> can be helpful.</p>
 </div>
@@ -369,12 +369,26 @@ This can be achieved by adding to the deck RPORV to the RPTRST in the SOLUTION a
 </section>
 <section id="gif-and-mask">
 <h2>GIF and mask<a class="headerlink" href="#gif-and-mask" title="Link to this heading"></a></h2>
-<p>To create a gif and mask the results using the satnum numbers (any variable should be supported) for the different rock properties, this can be achieved by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-v<span class="w"> </span>xco2l<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;spe11b/SPE11B spe11b_larger_inj/SPE11B&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">16</span>,2.5<span class="w"> </span>-mask<span class="w"> </span>satnum<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>,1,2,3,4,5<span class="w"> </span>-m<span class="w"> </span>gif<span class="w"> </span>-dpi<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;spe11b  spe11b larger injection&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">16</span><span class="w"> </span>-interval<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-loop<span class="w"> </span><span class="m">1</span><span class="w"> </span>-cformat<span class="w"> </span>.2f<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.30,0.01,0.4,0.02
+<p>To create a GIF and mask the results using the satnum numbers (any variable should be supported) for the different rock properties, this can be achieved by (here we have add
+terminal commands to generate the data to generate figures by installing <strong>pyopmspe11</strong>, downloading the corresponding configuration files, creating one with higher injection
+rate, and after using <strong>plopm</strong>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/cssr-tools/pyopmspe11.git
+curl<span class="w"> </span>-O<span class="w"> </span>https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11b.toml
+cp<span class="w"> </span>spe11b.toml<span class="w"> </span>spe11b_larger_inj.toml
+sed<span class="w"> </span>-i.bak<span class="w"> </span><span class="s1">&#39;s/0.035/0.07/g&#39;</span><span class="w"> </span>spe11b_larger_inj.toml<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>spe11b_larger_inj.toml.bak
+pyopmspe11<span class="w"> </span>-i<span class="w"> </span>spe11b.toml<span class="w"> </span>-o<span class="w"> </span>spe11b<span class="w"> </span>-f<span class="w"> </span><span class="m">0</span>
+pyopmspe11<span class="w"> </span>-i<span class="w"> </span>spe11b_larger_inj.toml<span class="w"> </span>-o<span class="w"> </span>spe11b_larger_inj<span class="w"> </span>-f<span class="w"> </span><span class="m">0</span>
+plopm<span class="w"> </span>-v<span class="w"> </span>xco2l<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;spe11b/SPE11B spe11b_larger_inj/SPE11B_LARGER_INJ&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">16</span>,2.5<span class="w"> </span>-mask<span class="w"> </span>satnum<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>,1,2,3,4,5<span class="w"> </span>-m<span class="w"> </span>gif<span class="w"> </span>-dpi<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;spe11b  spe11b larger injection&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">16</span><span class="w"> </span>-interval<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-loop<span class="w"> </span><span class="m">1</span><span class="w"> </span>-cformat<span class="w"> </span>.2f<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.30,0.01,0.4,0.02
 </pre></div>
 </div>
 <img alt="_images/xco2l.gif" src="_images/xco2l.gif" />
 <p>If <strong>-r</strong> is not provided, then by default the GIF uses all restart steps. For selected restart steps, these can be given separated by commas, e.g., <strong>-r 1,4,5</strong>.</p>
+<p>To generate a single GIF of the gas saturation without masking and showing the grid:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;spe11b/SPE11B&#39;</span><span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-tunits<span class="w"> </span>y<span class="w"> </span>-c<span class="w"> </span>cet_cwr<span class="w">  </span>-grid<span class="w"> </span><span class="s1">&#39;black,5e-3&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">16</span>,5<span class="w"> </span>-m<span class="w"> </span>gif<span class="w"> </span>-dpi<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-f<span class="w"> </span><span class="m">20</span><span class="w"> </span>-interval<span class="w"> </span><span class="m">1000</span><span class="w"> </span>-loop<span class="w"> </span><span class="m">1</span><span class="w"> </span>-cformat<span class="w"> </span>.2f<span class="w"> </span>-z<span class="w"> </span><span class="m">0</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-xformat<span class="w"> </span>.1f<span class="w"> </span>-yformat<span class="w"> </span>.1f<span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-clabel<span class="w"> </span><span class="s1">&#39;Gas saturation [-]&#39;</span>
+</pre></div>
+</div>
+<img alt="_images/spe11b_sgas.gif" src="_images/spe11b_sgas.gif" />
+<p>Here we have changed the units for time from days to years using the <strong>-tunits</strong> flag. To remove the dynamic times in the GIF, set <strong>-tunits empty</strong>.</p>
 </section>
 <section id="graphical-abstract">
 <h2>Graphical abstract<a class="headerlink" href="#graphical-abstract" title="Link to this heading"></a></h2>

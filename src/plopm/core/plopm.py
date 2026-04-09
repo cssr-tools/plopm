@@ -203,8 +203,9 @@ def load_parser():
         "--tunits",
         default="d",
         help="For the x axis in the summary use seconds 's', minutes 'm', "
-        "hours 'h', days 'd', weeks 'w', years 'y', or dates 'dates' ('s' "
-        "by default).",
+        "hours 'h', days 'd', weeks 'w', years 'y', dates 'dates', or empty "
+        "'empty' ('empty' only used to remove dynamic times in GIFs) ('s' by "
+        "default).",
     )
     parser.add_argument(
         "-ylabel",

@@ -123,11 +123,11 @@ def opmtovtk(dic, k):
         "\t\t\t\t<CellData Scalars='File created by https://github.com/cssr-tools/plopm'>",
     )
     with alive_bar(len(dic["restart"]) * len(dic["vrs"])) as bar_animation:
-        for l, i in enumerate(dic["restart"]):
+        for o, i in enumerate(dic["restart"]):
             for n, var in enumerate(dic["vrs"]):
                 bar_animation()
                 unit, quan = get_quantity(dic, var.upper(), n, i, 0)
-                if l == 0:
+                if o == 0:
                     base_vtk.insert(
                         5 + 2 * n,
                         f"\n\t\t\t\t\t<DataArray type='{dic['vtkformat'][n]}' Name="
@@ -135,7 +135,7 @@ def opmtovtk(dic, k):
                         + "NumberOfComponents='1' format='ascii'>\n",
                     )
                 if dic["vtkformat"][n] == "Float64":
-                    if l == 0:
+                    if o == 0:
                         base_vtk.insert(
                             6 + 2 * n,
                             " ".join(
@@ -151,7 +151,7 @@ def opmtovtk(dic, k):
                             + ["\n\t\t\t\t\t</DataArray>"]
                         )
                 elif dic["vtkformat"][n] == "Float32":
-                    if l == 0:
+                    if o == 0:
                         base_vtk.insert(
                             6 + 2 * n,
                             " ".join(
@@ -167,7 +167,7 @@ def opmtovtk(dic, k):
                             + ["\n\t\t\t\t\t</DataArray>"]
                         )
                 elif dic["vtkformat"][n] == "UInt16":
-                    if l == 0:
+                    if o == 0:
                         base_vtk.insert(
                             6 + 2 * n,
                             " ".join(
@@ -185,7 +185,7 @@ def opmtovtk(dic, k):
                 else:
                     print(f"Unknow format ({dic['vtkformat'][n]}).")
                     sys.exit()
-            if l == 0:
+            if o == 0:
                 base_vtk.insert(
                     7 + 2 * (len(dic["vrs"]) - 1), "\n\t\t\t\t</CellData>\n"
                 )

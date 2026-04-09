@@ -277,7 +277,7 @@ from the restart files from the initial (0) to the number 5 restart, using a OPM
 
 .. note::
 
-    It is possible to write directly VTKs from OPM Flow simulations by adding the flag **--enable-vtk-output=true**.
+    It is possible to write directly VTKs from OPM Flow simulations by adding the flag **\-\-enable-vtk-output=true**.
     However, there are quantities that are not written (e.g., fipnum, flores), in addition to quantities not supported
     such as component mass (e.g., co2, h2o). This is when **plopm** can be helpful.
 
@@ -353,15 +353,33 @@ Using the flag **-filter** allows to remove cells given conditions separated by 
 ============
 GIF and mask 
 ============
-To create a gif and mask the results using the satnum numbers (any variable should be supported) for the different rock properties, this can be achieved by:
+To create a GIF and mask the results using the satnum numbers (any variable should be supported) for the different rock properties, this can be achieved by (here we have add
+terminal commands to generate the data to generate figures by installing **pyopmspe11**, downloading the corresponding configuration files, creating one with higher injection
+rate, and after using **plopm**):
 
 .. code-block:: bash
 
-    plopm -v xco2l -subfigs 1,2 -i 'spe11b/SPE11B spe11b_larger_inj/SPE11B' -d 16,2.5 -mask satnum -r 0,1,2,3,4,5 -m gif -dpi 1000 -t "spe11b  spe11b larger injection" -f 16 -interval 1000 -loop 1 -cformat .2f -cbsfax 0.30,0.01,0.4,0.02
+    pip install git+https://github.com/cssr-tools/pyopmspe11.git
+    curl -O https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11b.toml
+    cp spe11b.toml spe11b_larger_inj.toml
+    sed -i.bak 's/0.035/0.07/g' spe11b_larger_inj.toml && rm -f spe11b_larger_inj.toml.bak
+    pyopmspe11 -i spe11b.toml -o spe11b -f 0
+    pyopmspe11 -i spe11b_larger_inj.toml -o spe11b_larger_inj -f 0
+    plopm -v xco2l -subfigs 1,2 -i 'spe11b/SPE11B spe11b_larger_inj/SPE11B_LARGER_INJ' -d 16,2.5 -mask satnum -r 0,1,2,3,4,5 -m gif -dpi 1000 -t "spe11b  spe11b larger injection" -f 16 -interval 1000 -loop 1 -cformat .2f -cbsfax 0.30,0.01,0.4,0.02
 
 .. image:: ./figs/xco2l.gif
 
 If **-r** is not provided, then by default the GIF uses all restart steps. For selected restart steps, these can be given separated by commas, e.g., **-r 1,4,5**.
+
+To generate a single GIF of the gas saturation without masking and showing the grid:
+
+.. code-block:: bash
+
+    plopm -i 'spe11b/SPE11B' -v sgas -tunits y -c cet_cwr  -grid 'black,5e-3' -d 16,5 -m gif -dpi 1000 -f 20 -interval 1000 -loop 1 -cformat .2f -z 0 -xunits km -yunits km -xformat .1f -yformat .1f -cnum 5 -clabel 'Gas saturation [-]'
+
+.. image:: ./figs/spe11b_sgas.gif
+
+Here we have changed the units for time from days to years using the **-tunits** flag. To remove the dynamic times in the GIF, set **-tunits empty**.
 
 ==================
 Graphical abstract 

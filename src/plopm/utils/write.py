@@ -8,7 +8,7 @@ Utiliy functions to write the PNGs figures.
 
 import sys
 import datetime
-import colorcet
+import colorcet  # noqa: F401  # registers colorcet colormaps with matplotlib
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -306,11 +306,11 @@ def make_summary(dic):
                 dic["axis"].flat[-1].legend(loc=dic["loc"][-1])
                 for line in dic["axis"].flat[-1].get_lines():
                     line.remove()
-                for l in range(len(dic["axis"].flat) - len(dic["vrs"]) - 1):
-                    dic["fig"].delaxes(dic["axis"].flat[-2 - l])
+                for o in range(len(dic["axis"].flat) - len(dic["vrs"]) - 1):
+                    dic["fig"].delaxes(dic["axis"].flat[-2 - o])
             else:
-                for l in range(len(dic["axis"].flat) - len(dic["vrs"])):
-                    dic["fig"].delaxes(dic["axis"].flat[-1 - l])
+                for o in range(len(dic["axis"].flat) - len(dic["vrs"])):
+                    dic["fig"].delaxes(dic["axis"].flat[-1 - o])
             quan = f"{dic['deckn']}_{quan}"
             quan = quan.replace(" / ", "_over_")
             quan = quan.replace(" ", "")
@@ -522,8 +522,8 @@ def make_maps(dic):
         for _ in range(len(dic["axis"].flat)):
             dic["original_loc"].append(dic["axis"].flat[0].get_axes_locator())
             dic["cb"].append("")
-        for l in range(len(dic["axis"].flat) - len(dic["names"][0])):
-            dic["fig"].delaxes(dic["axis"].flat[-1 - l])
+        for o in range(len(dic["axis"].flat) - len(dic["names"][0])):
+            dic["fig"].delaxes(dic["axis"].flat[-1 - o])
         im_ani = animation.FuncAnimation(
             dic["fig"],
             mapit,
@@ -556,8 +556,8 @@ def make_maps(dic):
         for _ in range(len(dic["axis"].flat)):
             dic["original_loc"].append(dic["axis"].flat[0].get_axes_locator())
             dic["cb"].append("")
-        for l in range(len(dic["axis"].flat) - len(dic["vrs"])):
-            dic["fig"].delaxes(dic["axis"].flat[-1 - l])
+        for o in range(len(dic["axis"].flat) - len(dic["vrs"])):
+            dic["fig"].delaxes(dic["axis"].flat[-1 - o])
         im_ani = animation.FuncAnimation(
             dic["fig"],
             mapit,
@@ -590,18 +590,18 @@ def make_maps(dic):
                     )
                 else:
                     dic["fig"], dic["axis"] = plt.subplots(1, 1)
-            if not dic["subfigs"][0]:
+            if not dic["subfigs"][0] and dic["mode"] != "gif":
                 dic["fig"], dic["axis"] = plt.subplots(1, 1, layout="tight")
             dic["axis"] = np.array([dic["axis"]])
             for _ in range(len(dic["axis"].flat)):
                 dic["original_loc"].append(dic["axis"].flat[0].get_axes_locator())
                 dic["cb"].append("")
             if len(dic["restart"]) > 1:
-                for l in range(len(dic["axis"].flat) - len(dic["restart"])):
-                    dic["fig"].delaxes(dic["axis"].flat[-1 - l])
+                for o in range(len(dic["axis"].flat) - len(dic["restart"])):
+                    dic["fig"].delaxes(dic["axis"].flat[-1 - o])
             if dic["mode"] == "gif" and len(dic["restart"]) > 1:
-                for l in range(len(dic["axis"].flat) - len(dic["restart"])):
-                    dic["fig"].delaxes(dic["axis"].flat[-1 - l])
+                for o in range(len(dic["axis"].flat) - len(dic["restart"])):
+                    dic["fig"].delaxes(dic["axis"].flat[-1 - o])
                 im_ani = animation.FuncAnimation(
                     dic["fig"],
                     mapit,
@@ -621,8 +621,8 @@ def make_maps(dic):
                     im_ani.save(f"{dic['output']}/{name}.gif")
             else:
                 if len(dic["names"][0]) > 1:
-                    for l in range(len(dic["axis"].flat) - len(dic["names"][0])):
-                        dic["fig"].delaxes(dic["axis"].flat[-1 - l])
+                    for o in range(len(dic["axis"].flat) - len(dic["names"][0])):
+                        dic["fig"].delaxes(dic["axis"].flat[-1 - o])
                 if len(dic["restart"]) > 1 and len(dic["names"][0]) == len(
                     dic["restart"]
                 ):
@@ -1364,16 +1364,16 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         dic (dict): Modified global dictionary
 
     """
-    namet = name
-    if dic["csvs"][n][0]:
-        time = ""
-    elif dic["tunits"][0] == "dates":
+    namet, time = name, ""
+    if dic["tunits"][0] == "dates":
         x = dic["unrst"]["INTEHEAD", dic["restart"][t]]
-        time = f", {datetime.datetime(x[66], x[65], x[64], 0, 0).date()}"
+        time = f" {datetime.datetime(x[66], x[65], x[64], 0, 0).date()}"
+    elif dic["csvs"][n][0] or dic["tunits"][0] == "empty":
+        pass
     else:
         tskl, tunit = initialize_time(dic["tunits"][0])
         tunit = tunit[5:]
-        time = f", {tskl*dic['tnrst'][dic['restart'][t]]:.0f} {tunit}"
+        time = f" {tskl*dic['tnrst'][dic['restart'][t]]:.0f} {tunit}"
     if dic["scale"] == 1:
         dic["axis"].flat[k].axis("scaled")
     extra = ""
