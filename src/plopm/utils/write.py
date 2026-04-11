@@ -1434,6 +1434,13 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         else:
             dic["axis"].flat[k].set_title(f"{dic['deckn']}{time}")
     elif (
+        dic["mode"] == "gif"
+        and len(dic["vrs"]) == 1
+        and dic["titles"][k] != "0"
+        and dic["rm"][3] == 0
+    ):
+        dic["axis"].flat[k].set_title(f"{dic['titles'][k]} {time}")
+    elif (
         len(dic["restart"]) > 1
         and dic["subfigs"][0]
         and len(dic["names"][0]) == 1
@@ -1464,7 +1471,7 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
             f"Grid = [{dic['nx']},{dic['ny']},{dic['nz']}], "
             + f"Total no. active cells = {np.max(dic['actind'])+1}"
         )
-    if dic["titles"][k] != "0" and dic["rm"][3] == 0:
+    if dic["titles"][k] != "0" and dic["rm"][3] == 0 and dic["mode"] != "gif":
         dic["axis"].flat[k].set_title(dic["titles"][k])
     if dic["slide"][n_s][2][0] == -2 and not dic["axis"].flat[k].yaxis_inverted():
         dic["axis"].flat[k].invert_yaxis()
