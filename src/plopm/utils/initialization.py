@@ -31,6 +31,7 @@ def ini_dic(cmdargs):
     names = [var.split(" ") for var in names]
     dic["namens"] = names
     dic["mode"] = cmdargs["mode"].strip()
+    dic["diff"] = cmdargs["diff"].strip()
     dic["ensemble"] = int(cmdargs["ensemble"])
     if names[0][0][-1] in [".", "/"]:
         folders = names[0]
@@ -50,6 +51,18 @@ def ini_dic(cmdargs):
                             names[-1].append(os.path.join(root, file)[2:-7])
             names[-1] = sorted(names[-1])
     dic["names"], dic["name"] = names, names[0][0]
+    if dic["diff"]:
+        if dic["diff"][-1] in [".", "/"]:
+            folders = dic["diff"]
+            names = []
+            for i, folder in enumerate(folders):
+                if folder[0] != ".":
+                    folder = "./" + folder
+                for root, _, files in os.walk(folder):
+                    for file in files:
+                        if file.endswith(".EGRID"):
+                            dic["diff"] = os.path.join(root, file)[2:-6]
+                            break
     dic["coords"] = ["x", "y", "z"]
     dic["dual"] = (cmdargs["dual"].strip()).split(",")
     dic["scale"] = int(cmdargs["scale"])
@@ -82,7 +95,6 @@ def ini_dic(cmdargs):
     dic["cnum"] = (cmdargs["cnum"].strip()).split(",")
     dic["mask"] = cmdargs["mask"].strip()
     dic["suptitle"] = cmdargs["suptitle"].strip()
-    dic["diff"] = cmdargs["diff"].strip()
     dic["clabel"] = cmdargs["clabel"].strip()
     dic["labels"] = (cmdargs["labels"].strip()).split("   ")
     dic["labels"] = [var.split("  ") for var in dic["labels"]]
@@ -177,7 +189,9 @@ def ini_dic(cmdargs):
         for i, var in enumerate(dic["slide"]):
             for j, val in enumerate(var):
                 if val[0] != -2:
-                    if ":" in val:
+                    if val == ":":
+                        pass
+                    elif ":" in val:
                         dic["slide"][i][j] = [
                             int(val.split(":")[0]) - 1,
                             int(val.split(":")[1]),
@@ -453,6 +467,12 @@ def ini_slides(dic, n):
         dic (dict): Modified global dictionary
 
     """
+    if dic["slide"][n][0] == ":":
+        dic["slide"][n][0] = [0, dic["nx"]]
+    elif dic["slide"][n][1] == ":":
+        dic["slide"][n][1] = [0, dic["ny"]]
+    elif dic["slide"][n][2] == ":":
+        dic["slide"][n][2] = [0, dic["nz"]]
     if dic["slide"][n][0][0] > -1:
         dic["mx"], dic["my"] = 2 * dic["ny"] - 1, 2 * dic["nz"] - 1
         dic["xmeaning"], dic["ymeaning"] = "y", "z"

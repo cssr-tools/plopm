@@ -172,6 +172,8 @@ def get_histogram(dic, quans, nrst):
         var[act] = handle_mass(dic, quans[0].lower(), nrst)
     elif quans[0].lower() in dic["caprock"]:
         var[act], _ = handle_caprock(dic, quans[0].lower(), nrst)
+    elif quans[0].lower() in ["swat", "soil", "sgas"]:
+        var[act] = handle_saturation(dic, quans[0].lower(), nrst)
     else:
         print(f"Unknow -v variable ({quans[0]}).")
         sys.exit()
@@ -189,6 +191,8 @@ def get_histogram(dic, quans, nrst):
                 quan1 = handle_mass(dic, val.lower(), nrst)
             elif val.lower() in dic["caprock"]:
                 quan1 = handle_caprock(dic, val.lower(), nrst)
+            elif val.lower() in ["swat", "soil", "sgas"]:
+                quan1 = handle_saturation(dic, val.lower(), nrst)
             else:
                 print(f"Unknow -v variable ({val}).")
                 sys.exit()
@@ -257,6 +261,8 @@ def compute_distance(dic, quans, n):
                 var[act] = 1.0 * dic["unrst"][quans[0].upper(), nrst]
             elif quans[0].lower() in dic["mass"] + dic["xmass"]:
                 var[act] = handle_mass(dic, quans[0].lower(), nrst)
+            elif quans[0].lower() in ["swat", "soil", "sgas"]:
+                var[act] = handle_saturation(dic, quans[0].lower(), nrst)
             else:
                 print(f"Unknow -v variable ({quans[0]}).")
                 sys.exit()
@@ -272,6 +278,8 @@ def compute_distance(dic, quans, n):
                         quan1 = 1.0 * dic["unrst"][val.upper(), nrst]
                     elif val.lower() in dic["mass"] + dic["xmass"]:
                         quan1 = handle_mass(dic, val.lower(), nrst)
+                    elif val.lower() in ["swat", "soil", "sgas"]:
+                        quan1 = handle_saturation(dic, val.lower(), nrst)
                     else:
                         print(f"Unknow -v variable ({val}).")
                         sys.exit()
@@ -376,6 +384,8 @@ def do_read_variables(dic, quans, n, ntot):
                 temp[i] = handle_mass(dic, quans[0].lower(), nrst)[ind]
             elif quans[0].lower() in dic["caprock"]:
                 temp[i], _ = handle_caprock(dic, quans[0].lower(), nrst)[ind]
+            elif quans[0].lower() in ["swat", "soil", "sgas"]:
+                temp[i] = handle_saturation(dic, quans[0].lower(), nrst)[ind]
             else:
                 print(f"Unknow -v variable ({quans[0]}).")
                 sys.exit()
@@ -397,6 +407,8 @@ def do_read_variables(dic, quans, n, ntot):
                         quan1 = handle_mass(dic, val.lower(), nrst)[ind]
                     elif val.lower() in dic["caprock"]:
                         quan1, _ = handle_caprock(dic, val.lower(), nrst)[ind]
+                    elif val.lower() in ["swat", "soil", "sgas"]:
+                        quan1 = handle_saturation(dic, val.lower(), nrst)[ind]
                     else:
                         print(f"Unknow -v variable ({val}).")
                         sys.exit()
@@ -1139,6 +1151,8 @@ def get_quantity(dic, name, n, nrst, m):
                 unit = initialize_mass(skl)
         elif names[0].lower() in dic["caprock"]:
             quan, unit = handle_caprock(dic, names[0].lower(), nrst)
+        elif names[0].lower() in ["swat", "soil", "sgas"]:
+            quan = handle_saturation(dic, names[0].lower(), nrst) * skl
         else:
             print(f"Unknow -v variable ({names[0]}).")
             sys.exit()
@@ -1164,6 +1178,35 @@ def get_quantity(dic, name, n, nrst, m):
         quan = np.array(quan)
         quan[float(dic["vmax"][n]) < quan] = np.nan
     return unit, quan
+
+
+def handle_saturation(dic, name, nrst):
+    """
+    Compute the oil saturation.
+
+    Args:
+        dic (dict): Global dictionary\n
+        name (str): Name of the variable for the saturation map\n
+        nrst (int): Number of restart step
+
+    Returns:
+        s (array): Floats with the saturation
+
+    """
+    soil = (
+        np.array(dic["unrst"]["SOIL", nrst]) if dic["unrst"].count("SOIL", nrst) else 0
+    )
+    sgas = (
+        np.array(dic["unrst"]["SGAS", nrst]) if dic["unrst"].count("SGAS", nrst) else 0
+    )
+    swat = (
+        np.array(dic["unrst"]["SWAT", nrst]) if dic["unrst"].count("SWAT", nrst) else 0
+    )
+    if name == "soil":
+        return 1 - sgas - swat
+    if name == "swat":
+        return 1 - sgas - soil
+    return 1 - soil - swat
 
 
 def handle_mass(dic, name, nrst):
