@@ -25,7 +25,11 @@ def handle_slide_x(dic, n):
         dic (dict): Modified global dictionary
 
     """
-    if dic["slide"][n][0][0] == dic["slide"][n][0][1] - 1:
+    if dic["slide"][n][0][0] == ":":
+        dic["slide"][n][0] = [0, dic["nx"]]
+        dic["tslide"] = f", slide i=0:{dic['nx']}"
+        dic["nslide"] = f"0:{dic['nx']},j,k"
+    elif dic["slide"][n][0][0] == dic["slide"][n][0][1] - 1:
         dic["tslide"] = f", slide i={dic['slide'][n][0][0]+1}"
         dic["nslide"] = f"{dic['slide'][n][0][0]+1},j,k"
     else:
@@ -45,7 +49,11 @@ def handle_slide_y(dic, n):
         dic (dict): Modified global dictionary
 
     """
-    if dic["slide"][n][1][0] == dic["slide"][n][1][1] - 1:
+    if dic["slide"][n][1][0] == ":":
+        dic["slide"][n][1] = [0, dic["ny"]]
+        dic["tslide"] = f", slide j=0:{dic['ny']}"
+        dic["nslide"] = f"i,0:{dic['ny']},k"
+    elif dic["slide"][n][1][0] == dic["slide"][n][1][1] - 1:
         dic["tslide"] = f", slide j={dic['slide'][n][1][0]+1}"
         dic["nslide"] = f"i,{dic['slide'][n][1][0]+1},k"
     else:
@@ -65,7 +73,11 @@ def handle_slide_z(dic, n):
         dic (dict): Modified global dictionary
 
     """
-    if dic["slide"][n][2][0] == dic["slide"][n][2][1] - 1:
+    if dic["slide"][n][2][0] == ":":
+        dic["slide"][n][2] = [0, dic["nz"]]
+        dic["tslide"] = f", slide k={1}:{dic['nz']}"
+        dic["nslide"] = f"i,j,{1}:{dic['nz']}"
+    elif dic["slide"][n][2][0] == dic["slide"][n][2][1] - 1:
         dic["tslide"] = f", slide k={dic['slide'][n][2][0]+1}"
         dic["nslide"] = f"i,j,{dic['slide'][n][2][0]+1}"
     else:
@@ -435,7 +447,7 @@ def map_xycoords(dic, var, quan, n):
         dic (dict): Modified global dictionary
 
     """
-    dual = dic["dual"][n] == "1"
+    dual = dic["dual"][n] == "1" if n < len(dic["dual"]) else False
     ny = int((dic["ny"] - 1) / 2) if dual else dic["ny"]
     for j in range(ny):
         for i in range(dic["nx"]):
