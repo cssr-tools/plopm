@@ -33,7 +33,26 @@ def ini_dic(cmdargs):
     dic["mode"] = cmdargs["mode"].strip()
     dic["diff"] = cmdargs["diff"].strip()
     dic["ensemble"] = int(cmdargs["ensemble"])
-    if names[0][0][-1] in [".", "/"]:
+    if dic["diff"]:
+        if dic["diff"][-1] in [".", "/"]:
+            folder = dic["diff"]
+            if folder[0] != ".":
+                folder = "./" + folder
+            for root, _, files in os.walk(folder):
+                for file in files:
+                    if file.endswith(".EGRID"):
+                        dic["diff"] = os.path.join(root, file)[2:-6]
+                        break
+        if names[0][0][-1] in [".", "/"]:
+            folder = names[0][0]
+            if folder[0] != ".":
+                folder = "./" + folder
+            for root, _, files in os.walk(folder):
+                for file in files:
+                    if file.endswith(".EGRID"):
+                        names[0][0] = os.path.join(root, file)[2:-6]
+                        break
+    elif names[0][0][-1] in [".", "/"]:
         folders = names[0]
         names = []
         for i, folder in enumerate(folders):
@@ -51,18 +70,6 @@ def ini_dic(cmdargs):
                             names[-1].append(os.path.join(root, file)[2:-7])
             names[-1] = sorted(names[-1])
     dic["names"], dic["name"] = names, names[0][0]
-    if dic["diff"]:
-        if dic["diff"][-1] in [".", "/"]:
-            folders = dic["diff"]
-            names = []
-            for i, folder in enumerate(folders):
-                if folder[0] != ".":
-                    folder = "./" + folder
-                for root, _, files in os.walk(folder):
-                    for file in files:
-                        if file.endswith(".EGRID"):
-                            dic["diff"] = os.path.join(root, file)[2:-6]
-                            break
     dic["coords"] = ["x", "y", "z"]
     dic["dual"] = (cmdargs["dual"].strip()).split(",")
     dic["scale"] = int(cmdargs["scale"])
@@ -584,6 +591,8 @@ def ini_properties(dic):
         dic["cformat"] = dic["cf"].split(",")
     elif len(dic["vrs"]) == 1 and "num" in dic["vrs"][0]:
         dic["cformat"] = [".0f"]
+    elif dic["diff"]:
+        dic["cformat"] = [".1e"]
     if len(dic["cmaps"]) < len(dic["vrs"]) or (
         len(dic["vrs"]) == len(dic["names"][0])
         and len(dic["names"][0]) > 1
