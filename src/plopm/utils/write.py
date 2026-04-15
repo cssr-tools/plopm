@@ -1373,7 +1373,10 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
     else:
         tskl, tunit = initialize_time(dic["tunits"][0])
         tunit = tunit[5:]
-        time = f" {tskl*dic['tnrst'][dic['restart'][t]]:.0f} {tunit}"
+        if "unrst" in dic.keys():
+            time = f" {tskl*dic['unrst']['DOUBHEAD', dic['restart'][t]][0]:.0f} {tunit}"
+        else:
+            time = f" {tskl*dic['tnrst'][dic['restart'][t]]:.0f} {tunit}"
     if dic["scale"] == 1:
         dic["axis"].flat[k].axis("scaled")
     extra = ""
@@ -1447,7 +1450,9 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         and dic["titles"][k] == "0"
         and dic["rm"][3] == 0
     ):
-        dic["axis"].flat[k].set_title(f"{dic['tnrst'][dic['restart'][t]]} days")
+        dic["axis"].flat[k].set_title(
+            f"{dic['unrst']['DOUBHEAD', dic['restart'][t]][0]} days"
+        )
         if k == 0 and dic["suptitle"] != "0":
             if dic["diff"]:
                 dic["fig"].suptitle(f"{dic['deckn']}-{dic['deckd']}")
@@ -1464,6 +1469,10 @@ def handle_axis(dic, name, n, t, k, n_s, unit):
         if k == 0 and dic["suptitle"] != "0":
             if dic["mode"] == "gif" and dic["csvs"][n][0]:
                 dic["fig"].suptitle(f"{dic['restart'][t]} {dic['tunits'][0]}")
+            elif "unrst" in dic.keys():
+                dic["fig"].suptitle(
+                    f"{dic['unrst']['DOUBHEAD', dic['restart'][t]][0]} days"
+                )
             else:
                 dic["fig"].suptitle(f"{dic['tnrst'][dic['restart'][t]]} days")
     if name == "grid" and dic["rm"][3] == 0 and dic["titles"][k] == "0":
