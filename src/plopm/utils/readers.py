@@ -1026,7 +1026,7 @@ def get_readers(dic, n=0):
                 dic["porv"][porv0 > 0], quan1, filte[1], float(filte[2])
             )
     if "unrst" in dic.keys():
-        dic["ntot"] = len(dic["unrst"].report_steps)
+        dic["ntot"] = dic["unrst"].report_steps[-1] + 1
         for ntm in dic["unrst"].report_steps:
             dic["tnrst"].append(dic["unrst"]["DOUBHEAD", ntm][0])
     if "egrid" in dic.keys():
