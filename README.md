@@ -53,6 +53,26 @@ See the [_examples_](https://cssr-tools.github.io/plopm/examples.html) in the [_
 ## Citing
 * Landa-Marbán, D. 2026. plopm: A lightweight and flexible tool for visualization and postprocessing of OPM Flow geological models. [https://doi.org/10.13140/RG.2.2.12046.22081](https://doi.org/10.13140/RG.2.2.12046.22081).
 
+## Applications in Scientific Literature
+
+The following is a list of manuscripts in which _plopm_ is used:
+
+* Landa-Marbán, D., Zamani, N., Sandve, T.H., Gasda, S.E., 2024. Impact of Intermittency on Salt Precipitation During CO2 Injection, presented at SPE Norway Subsurface Conference, Bergen, Norway. https://doi.org/10.2118/218477-MS.
+* Mykkeltvedt, T.S., Sandve, T.H., Landa-Marbán, D., and  Gasda, S.E., 2026. A Sub-Grid Model for Convective Mixing Applied to the 11th SPE Comparative Solution Project. SPE J. https://doi.org/10.2118/233788-PA.
+* Pujol, T., Rowbotham, P., Rose, P., and Maxwell, D., 2026. Prevention and Mitigation Strategy Selection for Salt Deposition in Dry-Out Zone of CCS Aquifer Schemes, presented at 87th EAGE Annual Conference & Exhibition, https://doi.org/10.3997/2214-4609.202610886.
+* Sandve, T.H., Boon, W., Landa-Marbán, D., Tveit, S., Gasda, S.E., 2025. Multi-Scale Simulation Strategies for Managing Pressure Interference in Multi-Site CO2 Storage in Large Regional Aquifers, presented at GET 2025, https://doi.org/10.3997/2214-4609.202521134.
+* Landa-Marbán, D., Lie, K.-A., Lye, K. O., Møyner, O., Rasmussen, A. F., and T. H., Sandve, 2026. Exploring Convergence and Its Limits in Case B of the 11th SPE Comparative Solution Project. SPE J. https://doi.org/10.2118/231853-PA.
+* Landa-Marbán, D., Sandve, T.H., Both, J.W., Nordbotten, J.M., and Gasda, S.E., 2026. Performance of an open-source image-based history matching framework for CO2 storage. Transp Porous Med, https://doi.org/10.1007/s11242-025-02275-0.
+* Landa-Marbán, D., Sandve, T.H., and Gasda, S.E., 2025. A Coarsening Approach to the Troll Aquifer Model. https://arxiv.org/abs/2508.08670.
+
+The software also supports the online documentation of several open‑source tools, including:
+
+* [expreccs](https://github.com/cssr-tools/expreccs): A Python framework using OPM Flow to simulate regional and site reservoirs for CO2 storage. 
+* [pofff](https://github.com/cssr-tools/pofff): An image-based history-matching framework for the FluidFlower Benchmark using OPM Flow.
+* [pycopm](https://github.com/cssr-tools/pycopm): An open-source tool to tailor OPM Flow geological models.
+* [pyopmnearwell](https://github.com/cssr-tools/pyopmnearwell): A Python framework to simulate near well dynamics using OPM Flow.
+* [pyopmspe11](https://github.com/OPM/pyopmspe11): A Python framework using OPM Flow for the CSP SPE11 benchmark project.
+
 ## About plopm
 The _plopm_ package is being funded by the [_HPC Simulation Software for the Gigatonne Storage Challenge project_](https://www.norceresearch.no/en/projects/hpc-simulation-software-for-the-gigatonne-storage-challenge) [project number 622059] and [_Center for Sustainable Subsurface Resources (CSSR)_](https://cssr.no) 
 [project no. 331841].

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=R1702,R0912,C0325,R0913,R0914,R0915,R0917
 
-"""Utiliy function for the grid and locations in the geological models"""
+"""Utility function for the grid and locations in the geological models"""
 
 import numpy as np
 from numpy.typing import NDArray
