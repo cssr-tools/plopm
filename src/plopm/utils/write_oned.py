@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913,R0917,C0302,C0115,R0916,E1102
 
-"""Utiliy functions to write the PNGs figures"""
+"""Utility functions to write the PNGs figures"""
 
 from typing import Union
 import warnings

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=R0911,R0912,R0913,R0915,R0917,R1702,R0914,C0302,E1102
 
-"""Utiliy functions to read the OPM Flow simulator type output files"""
+"""Utility functions to read the OPM Flow simulator type output files"""
 
 import os
 import csv

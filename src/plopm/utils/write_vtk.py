@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=W3301,R0912,R0913,R0914,R0915,R0917,E1102
 
-"""Utiliy methods to write the vtks"""
+"""Utility methods to write the vtks"""
 
 import os
 import csv

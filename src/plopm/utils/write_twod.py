@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913,R0917,C0302,C0115,R0916,E1102
 
-"""Utiliy functions to write the 2D figures (PNGs and GIFs)"""
+"""Utility functions to write the 2D figures (PNGs and GIFs)"""
 
 import datetime
 import sys
@@ -94,6 +94,8 @@ def make_maps(cfg: ConfigPlopm) -> None:
         return fig, axiss
 
     def normalize_axis(axiss: Axes | NDArray[Any]) -> NDArray:
+        if isinstance(axiss, np.ndarray):
+            return axiss
         return np.array([axiss])
 
     def prepare_colorbars(axiss: NDArray[Any]) -> tuple[list[Any], list[str]]:
@@ -280,7 +282,7 @@ def make_maps(cfg: ConfigPlopm) -> None:
                     blit=False,
                     repeat=False,
                 )
-                name = f"{cfg.save[0] if cfg.save[0] else named +'_'+var}"
+                name = f"{cfg.save[0] if cfg.save[0] else named + '_' + var}"
                 save_animation(im_ani, name)
             else:
                 if len(cfg.names[0]) > 1:
@@ -1108,10 +1110,8 @@ def mapits(
     shc = 0.0
     if abs(minc) < sys.float_info.epsilon:
         minc = 0
-    if (
-        ("num" in var and temp in cfg.cmdisc and cfg.discrete)
-        or defcol
-        and temp != "nipy_spectral"
+    if ("num" in var and temp in cfg.cmdisc and cfg.discrete) or (
+        defcol and temp != "nipy_spectral"
     ):
         if maxc == minc:
             shc = 2.0

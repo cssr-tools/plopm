@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=W0123,R0915,R0912,R1702,R0914,R0916
 
-"""Utiliy functions to set the requiried input values by plopm"""
+"""Utility functions to set the requiried input values by plopm"""
 
 import os
 import sys
