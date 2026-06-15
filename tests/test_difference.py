@@ -3,32 +3,27 @@
 
 """Test the difference functionality"""
 
-import os
-import pathlib
-import subprocess
+from pathlib import Path
 
-testpth: pathlib.Path = pathlib.Path(__file__).parent
-mainpth: pathlib.Path = pathlib.Path(__file__).parents[1]
+from plopm.core.plopm import main
+
+mainpth: Path = Path(__file__).parents[1]
 
 
-def test_difference():
+def test_difference(tmp_path):
     """See examples/SPE11B"""
-    if not os.path.exists(f"{testpth}/output"):
-        os.system(f"mkdir {testpth}/output")
-    subprocess.run(
+    main(
         [
-            "plopm",
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-i",
-            f"{mainpth}/examples/SPE11B",
+            str(mainpth / "examples" / "SPE11B"),
             "-v",
             "rsw",
             "-diff",
-            f"{mainpth}/examples/SPE11B",
+            str(mainpth / "examples" / "SPE11B"),
             "-save",
             "difference",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/difference.png")
+    assert (tmp_path / "difference.png").exists()

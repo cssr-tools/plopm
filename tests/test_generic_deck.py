@@ -3,26 +3,18 @@
 
 """Test the plopm generic functionality"""
 
-import os
-import pathlib
 import subprocess
+from plopm.core.plopm import main
 
-testpth: pathlib.Path = pathlib.Path(__file__).parent
 
-
-def test_generic_deck():
+def test_generic_deck(tmp_path):
     """plopm application given an input deck"""
-    if not os.path.exists(f"{testpth}/output"):
-        os.system(f"mkdir {testpth}/output")
-    if not os.path.exists(f"{testpth}/output/generic_deck"):
-        os.system(f"mkdir {testpth}/output/generic_deck")
-    os.chdir(f"{testpth}/output/generic_deck")
     for name in ["PERM", "PHI", "TOPS"]:
         subprocess.run(
             [
                 "curl",
                 "-o",
-                f"./SPE10MODEL2_{name}.INC",
+                str(tmp_path / f"SPE10MODEL2_{name}.INC"),
                 "https://raw.githubusercontent.com/OPM/opm-data/master/spe10model2/"
                 + f"SPE10MODEL2_{name}.INC",
             ],
@@ -32,15 +24,22 @@ def test_generic_deck():
         [
             "curl",
             "-o",
-            "./SPE10_MODEL2.DATA",
+            str(tmp_path / "SPE10_MODEL2.DATA"),
             "https://raw.githubusercontent.com/OPM/opm-data/master/spe10model2/"
             + "SPE10_MODEL2.DATA",
         ],
         check=True,
     )
-    os.system(
-        "flow SPE10_MODEL2.DATA --parsing-strictness=low --enable-dry-run=1 "
-        "--check-satfunc-consistency=0"
+    subprocess.run(
+        [
+            "flow",
+            "SPE10_MODEL2.DATA",
+            "--parsing-strictness=low",
+            "--enable-dry-run=1",
+            "--check-satfunc-consistency=0",
+        ],
+        cwd=tmp_path,
+        check=True,
     )
     for slide, name, nslide, logs in zip(
         ["4,,", ",8,", ",,20"],
@@ -48,10 +47,23 @@ def test_generic_deck():
         ["4,j,k", "i,8,k", "i,j,20"],
         ["0", "0", "1"],
     ):
-        subprocess.run(
-            ["plopm", "-i", "SPE10_MODEL2", "-v", name, "-s", slide, "-log", logs],
-            check=True,
+        main(
+            [
+                "-i",
+                f"{tmp_path}/SPE10_MODEL2",
+                "-o",
+                str(tmp_path),
+                "-v",
+                name,
+                "-s",
+                slide,
+                "-log",
+                logs,
+            ]
         )
-        assert os.path.exists(
-            f"{testpth}/output/generic_deck/spe10_model2_{name}_{nslide}_t0.png"
+        assert (tmp_path / f"spe10_model2_{name}_{nslide}_t0.png").exists()
+    for name in ["grid", "wells"]:
+        main(
+            ["-i", f"{tmp_path}/SPE10_MODEL2", "-o", str(tmp_path), "-v", name],
         )
+        assert (tmp_path / f"spe10_model2_{name}_i,1,k_t0.png").exists()

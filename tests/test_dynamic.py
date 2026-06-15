@@ -3,27 +3,22 @@
 
 """Test the default settings"""
 
-import os
-import pathlib
-import subprocess
+from pathlib import Path
+from plopm.core.plopm import main
 
-testpth: pathlib.Path = pathlib.Path(__file__).parent
-mainpth: pathlib.Path = pathlib.Path(__file__).parents[1]
+mainpth: Path = Path(__file__).parents[1]
 
 
-def test_dynamic():
+def test_dynamic(tmp_path):
     """See examples/SPE11B files"""
-    if not os.path.exists(f"{testpth}/output"):
-        os.system(f"mkdir {testpth}/output")
-    subprocess.run(
+    main(
         [
-            "plopm",
             "-remove",
             "0,0,0,1",
             "-i",
-            f"{mainpth}/examples/SPE11B",
+            str(mainpth / "examples" / "SPE11B"),
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-v",
             "sgas",
             "-s",
@@ -38,7 +33,6 @@ def test_dynamic():
             "dynamic",
             "-f",
             "8",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/dynamic.png")
+    assert (tmp_path / "dynamic.png").exists()

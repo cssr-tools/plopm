@@ -3,25 +3,20 @@
 
 """Test the mask, gid, and subplot functionality"""
 
-import os
-import pathlib
-import subprocess
+from pathlib import Path
+from plopm.core.plopm import main
 
-testpth: pathlib.Path = pathlib.Path(__file__).parent
-mainpth: pathlib.Path = pathlib.Path(__file__).parents[1]
+mainpth: Path = Path(__file__).parents[1]
 
 
-def test_difference():
+def test_gif(tmp_path):
     """See examples/SPE11B"""
-    if not os.path.exists(f"{testpth}/output"):
-        os.system(f"mkdir {testpth}/output")
-    subprocess.run(
+    main(
         [
-            "plopm",
             "-v",
             "xco2l",
             "-i",
-            f"{mainpth}/examples/SPE11B",
+            str(mainpth / "examples" / "SPE11B"),
             "-m",
             "gif",
             "-mask",
@@ -35,10 +30,9 @@ def test_difference():
             "-d",
             "8,5",
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-save",
             "gif",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/gif.gif")
+    assert (tmp_path / "gif.gif").exists()

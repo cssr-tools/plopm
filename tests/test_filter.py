@@ -3,21 +3,17 @@
 
 """Test the filter functionality"""
 
-import os
-import pathlib
-import subprocess
+from pathlib import Path
 
-testpth: pathlib.Path = pathlib.Path(__file__).parent
-mainpth: pathlib.Path = pathlib.Path(__file__).parents[1]
+from plopm.core.plopm import main
+
+mainpth: Path = Path(__file__).parents[1]
 
 
-def test_filter():
+def test_filter(tmp_path):
     """See examples/SPE11B"""
-    if not os.path.exists(f"{testpth}/output"):
-        os.system(f"mkdir {testpth}/output")
-    subprocess.run(
+    main(
         [
-            "plopm",
             "-filter",
             ",fipnum >= 2 & fipnum != 4,satnum == 5",
             "-cbsfax",
@@ -27,7 +23,7 @@ def test_filter():
             "-suptitle",
             "0",
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-i",
             f"{mainpth}/examples/SPE11B {mainpth}/examples/SPE11B {mainpth}/examples/SPE11B",
             "-v",
@@ -42,7 +38,6 @@ def test_filter():
             "7,4",
             "-save",
             "filter",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/filter.png")
+    assert (tmp_path / "filter.png").exists()
