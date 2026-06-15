@@ -651,7 +651,6 @@ def read_oned(
         nswe = tabdim[24]
         nsnum = tabdim[25]
         vunit = ""
-        tskl = 1
         if what == "krg":
             tunit = "s$_g$ [-]"
             sht = tabdim[23] - 1

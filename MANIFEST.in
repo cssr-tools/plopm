@@ -1,4 +1,5 @@
 include README.md
 include LICENSE
+include src/plopm/config/*
 include src/plopm/core/*
 include src/plopm/utils/*

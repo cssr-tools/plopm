@@ -125,11 +125,9 @@ def make_maps(cfg: ConfigPlopm) -> None:
         skip = 1
     if cfg.subfigs[0]:
         fig, axis = create_figure(int(cfg.subfigs[0]), int(cfg.subfigs[1]))
-        axiss = normalize_axis(axis)
         sub1 = int(cfg.subfigs[1])
     else:
         fig, axis = create_figure(1, 1, "compressed")
-        axiss = normalize_axis(axis)
         sub1 = 1
     if cfg.subfigs[0] and cfg.gif and len(cfg.names[0]) > 1:
         _, _, _, cmin, cmax, diffa = find_min_max(cfg)
@@ -238,10 +236,8 @@ def make_maps(cfg: ConfigPlopm) -> None:
             if len(read.restart) > 1:
                 if cfg.subfigs[0]:
                     fig, axis = create_figure(int(cfg.subfigs[0]), int(cfg.subfigs[1]))
-                    axiss = normalize_axis(axis)
                 else:
                     fig, axis = create_figure(1, 1)
-                    axiss = normalize_axis(axis)
             if not cfg.subfigs[0] and not cfg.gif:
                 plt.close()
                 fig, axis = create_figure(1, 1, "tight")
@@ -293,7 +289,6 @@ def make_maps(cfg: ConfigPlopm) -> None:
                     if not cfg.subfigs[0]:
                         fig, axis = create_figure(1, 1)
                         axiss = normalize_axis(axis)
-                        axiss = normalize_axis(axiss)
                         original_loc, cb = prepare_colorbars(axiss)
                     mapit(
                         0,
