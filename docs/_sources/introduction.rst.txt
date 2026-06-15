@@ -80,10 +80,10 @@ where
 -ncolor     Color for the inactive cells in the 2D maps ('w' by default, i.e., white).
 -lw         Line width separated by commas if more than one ('1' by default).
 -subfigs    Generate separated or a single Figure (e.g., '2,2' for four subfigures) ('' by default, i.e., separate figures).
--loc        Location of the legend by passing the value to matplotlib.pyplot.legend; set to 'empty' to remove it ('best' by default).
+-loc        Location of the legend by passing the value to matplotlib.pyplot.legend: best, upper right, upper left, lower left, lower right, right, center left, center right, lower center, upper center, center, or set to 'empty' to remove it ('best' by default).
 -delax      Delete aligned axis labels in subfigures ('0' by default).
 -printv     Print the avaiable variables to plot ('0' by default).
--vtkformat  Format for each variable in the vtks, support for Float64, Float32, and UInt16 ('Float64' by default).
+-vtkformat  Format for each variable in the vtks: 'Float64', 'Float32', 'Float16', 'Int64', 'UInt64', 'Int32', 'UInt32', 'Int16', 'UInt16', 'Int8', 'UInt8' ('Float64' by default)
 -vtknames   Label each variable in the written vtk ('' by default, i.e., the names given in the -v argument).
 -mask       Static variable to use as 2D map background ('' by default).
 -diff       The base name (or full path) of the input file to substract ('' by default).

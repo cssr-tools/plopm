@@ -3,13 +3,32 @@ Examples
 ********
 
 See `this presentation <https://opm-project.org/wp-content/uploads/2025/06/OPM_summit_2025_Landa-Marban_tools_pycopm_plopm.pdf>`_ from the OPM summit 2025 for additional examples using **plopm**,
+as well as the one from `the OPM summit 2026 <https://opm-project.org/wp-content/uploads/2026/05/24_David-Landa-Marban.pdf>`_.
+
+.. warning::
+    By default the figure is generated from the front cells on the xy-plane (-s ,1,) and the axes are scaled (-z 1), which for models with large lateral
+    extend could lead to a figure such as the below one:
+
+    .. figure:: figs/docs_z_flag.png
+
+    Then, you could set these flags to **-s ,,1 -z 0** when you run **plopm** to not scale the axes and to plot the top view of the model.
+
+.. tip::
+    You can try to generate all figures from the examples below by executing inside the plopm folder:
+
+    .. code-block:: bash
+
+        . tests/scripts/docs_all.sh 
+
+    See the files inside the scripts folder for the commands to be run.
+
 
 ===========
 Hello world 
 ===========
 
 The simulation files located in the `examples folder <https://github.com/cssr-tools/plopm/blob/main/examples>`_ were generated using 
-`pyopmspe11 <https://github.com/OPM/pyopmspe11>`_ by running this `configuration file <https://github.com/OPM/pyopmspe11/blob/main/examples/hello_world/spe11b.toml>`_. 
+`pyopmspe11 <https://github.com/OPM/pyopmspe11>`_ by running this `configuration file <https://github.com/OPM/pyopmspe11/blob/main/examples/spe11b.toml>`_. 
 Then, if you succeed in installing **plopm**, inside the `examples folder <https://github.com/cssr-tools/plopm/blob/main/examples>`_ by typing in the terminal
 
 .. code-block:: bash
@@ -20,7 +39,7 @@ the following figure should be generated (this example is used in the `tests <ht
 
 .. figure:: figs/spe11b_satnum_*,1,*_t5.png
 
-See the :ref:`overview` or run `plopm -h` for the definition of the argument options, as well as using `-printv` flag to output the available
+See the :ref:`overview` or run `plopm -h` for the definition of the argument options, as well as using `-printv 1` flag to output the available
 summary, init, and restart available variables given an input deck.
 
 For example, for the gas saturation at the report step number 4 with three colorbar labels using a given colormap (-c) and defined colorbar ticks (-cticks):
@@ -131,8 +150,8 @@ To show all wells in the model and to only show the ones with at least one perfo
 
 .. code-block:: bash
 
-    plopm -i NORNE_ATW2013 -v wells -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 -global 1
-    plopm -i NORNE_ATW2013 -v wells -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 
+    plopm -i NORNE_ATW2013 -v wells -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 -global 1 -save "norne_wells_global"
+    plopm -i NORNE_ATW2013 -v wells -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8  -save "norne_wells"
 
 .. image:: ./figs/norne_wells.png
 
@@ -230,9 +249,9 @@ To compare two summary quantities, this can be achiaved by:
 
 .. code-block:: bash
 
-    plopm -i "r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M" -v ",BWPR:1944" -csv "1,3;" -a "1e-5,1" -e "solid,dotted" -lw "4,4" -ylabel "Sensor pressure [bar]" -labels "From csv file  From OPM Flow output file" -c "r,k"
+    plopm -i "r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M" -v ",BWPR:256,1,5" -csv "1,3;" -a "1e-5,1" -e "solid,dotted" -lw "4,4" -ylabel "Sensor pressure [bar]" -labels "From csv file  From OPM Flow output file" -c "r,k"
 
-where for summary variables, the flag **-v ",BWPR:1944"** needs to have empty entries for corresponding csv **-i** files, and the flag **-a "1e-5,1"** allows to convert the values in Pascal to bar from the csv file, multiplying by 1e-5. The previous command generates the following figure:
+where for summary variables, the flag **-v ",BWPR:256,1,5"** needs to have empty entries for corresponding csv **-i** files, and the flag **-a "1e-5,1"** allows to convert the values in Pascal to bar from the csv file, multiplying by 1e-5. The previous command generates the following figure:
 
 .. image:: ./figs/spe11b_time_series_BWPR-1944.png
 
@@ -269,7 +288,7 @@ from the restart files from the initial (0) to the number 5 restart, using a OPM
 
 .. code-block:: bash
     
-    plopm -i SPE11B -v temp,fipnum,co2m,xco2l -vtkformat Float32,UInt16,Float64,Float32 -r 0,5 -m vtk
+    plopm -i SPE11B -v temp,fipnum,co2m,xco2l -vtkformat Float32,UInt16,Float64,Float16 -r 0,5 -m vtk
 
 .. figure:: ./figs/vtk_temp.png
 
@@ -290,12 +309,11 @@ called spe11b_larger_inj. Then, to plot the summary vector for both runs we can 
 
 .. code-block:: bash
 
-    plopm -i 'spe11b/SPE11B spe11b_larger_inj/SPE11B' -v 'fgip,fgipm,RGIP:3 / 2' -a 1,1e-6 -tunits w -d 10,5 -c r,b -e 'solid,dashed' -t 'Field gas in place  Comparing the total mass  Half gas in place in fipnum 3' -f 14 -subfigs 2,2 -delax 1 -loc empty,empty,empty,center -save comparison
-
+    plopm -i 'spe11b/SPE11B spe11b_larger_inj/SPE11B' -v 'fgmip,fgmip / 1E6,RGMDS:5' -ylabel '[kg]  [Kt]  [kg]' -tunits w -d 10,5 -c r,b -e 'solid,dashed' -t 'Field gas mass in place  Converted to kilotonns   Dissolved CO$_2$ in facie 5' -f 14 -subfigs 2,2 -delax 1 -loc empty,empty,empty,center -save comparison
 .. image:: ./figs/comparison.png
     :scale: 6%
 
-Here, using subplots, we plot the gas in place, injected mass and scaled to kilo tons, the regional gas in place in fipnum 3 divided by 2, and the time is shown in weeks.
+Here, using subplots, we plot the gas in place in kilograms, we convert this to kilotonnes, the dissolve CO2 mass in facie 5, and the time is shown in weeks.
 
 .. tip::
     For any summary variable, one can give the path to more than two different simulation cases, just by separating the folder paths by spaces in the -i.
@@ -312,7 +330,7 @@ To changue the colormap and setting the colorbar limits manually, this can be ac
 
 .. code-block:: bash
     
-    plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -diff spe11b/SPE11B -remove 0,0,0,1 -c tab20c_r -b '[0,0.8]' -cnum 9
+    plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -diff spe11b/SPE11B -remove 0,0,0,1 -c tab20c_r -b '[0,0.8]' -cnum 9 -cformat 0.1 -save formated
 
 .. image:: ./figs/sgas_diff_edit.png
 
@@ -394,6 +412,7 @@ The first ilustration is generated from the SPE11B model using `pyopmspe11 <http
     curl -L -O https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11b.toml
     curl -L https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11b.toml -o spe11b_higher_rate.toml
     ex -s +'51c|inj = [[25, 5, 1, 0.07, 10, 1, 0.07, 10]]' -c x spe11b_higher_rate.toml
+    sed -i.bak 's/0.035/0.07/g' spe11b_higher_rate.toml
     pyopmspe11 -i spe11b.toml -o spe11b -f 0
     pyopmspe11 -i spe11b_higher_rate.toml -o spe11b_higher_rate -f 0
     plopm -i 'spe11b/SPE11B spe11b_higher_rate/SPE11B_HIGHER_RATE' -v 'fgmip * 1e-6' -c 'r,b' -tunits y -xformat .0f -lw 2 -label 'Base case  Higher injection rate' -xlnum 6 -ylabel 'Total CO$_2$ mass [Kt]' -f 18 -t 'Comparing two runs of the SPE11B model'
@@ -415,7 +434,7 @@ case requires a big computer (run with 1024 CPUs), then the steps below are appl
     pip install git+https://github.com/OPM/pyopmspe11.git
     curl -L -O https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11c.toml
     pyopmspe11 -i spe11c.toml -o spe11c -f 0
-    plopm -i spe11c/SPE11C -v satnum,xco2l -vtkformat UInt16,Float32 -r 0,5 -m vtk
+    plopm -i spe11c/SPE11C -v satnum,xco2l -vtkformat UInt16,Float16 -r 0,5 -m vtk
 
 The above commands will generate the SPE11C.pvd, SPE11C-000.vtu, and SPE11C_0005.vtu files, which then can be open using `paraview <https://www.paraview.org>`_,
 and using the interactive GUI one can then obtain the most-rigthed figure in the abstract (e.g., using the facie numbers stored as satnum to add the background).

@@ -2,510 +2,625 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=R0911,R0912,R0913,R0915,R0917,R1702,R0914,C0302,E1102
 
-"""
-Utiliy functions to read the OPM Flow simulator type output files.
-"""
+"""Utiliy functions to read the OPM Flow simulator type output files"""
 
 import os
 import csv
 import sys
+from contextlib import nullcontext
 import datetime
 import numpy as np
+from numpy.typing import NDArray
 from opm.io.ecl import EclFile as OpmFile
 from opm.io.ecl import EGrid as OpmGrid
 from opm.io.ecl import ERst as OpmRestart
 from opm.io.ecl import ESmry as OpmSummary
 from alive_progress import alive_bar
 from plopm.utils.initialization import initialize_mass, initialize_spatial
+from plopm.config.config import ConfigPlopm, ReadData
 
 GAS_DEN_REF = 1.86843
 WAT_DEN_REF = 998.108
 
 
-def get_yzcoords(dic, n):
-    """
-    Handle the coordinates from the OPM Grid to the 2D yz-mesh using opm
+def get_readers(
+    deck: str,
+    gif: bool,
+    vtk: bool,
+    vrs: list,
+    restart: list,
+    filters: list,
+    n: int = 0,
+) -> ReadData:
+    """Load the opm parsing methods"""
+    if os.path.isfile(f"{deck}.INIT"):
+        init = OpmFile(f"{deck}.INIT")
+    else:
+        print(f"Unable to find {deck} with .INIT.")
+        sys.exit()
+    unrst = OpmRestart(f"{deck}.UNRST") if os.path.isfile(f"{deck}.UNRST") else None
+    egrid = (
+        OpmGrid(f"{deck}.EGRID")
+        if os.path.isfile(f"{deck}.EGRID") and not vtk
+        else None
+    )
 
-    Args:
-        dic (dict): Global dictionary
+    porv = np.array(init["PORV"])
+    dx = np.array(init["DX"])
+    dy = np.array(init["DY"])
+    dz = np.array(init["DZ"])
 
-    Returns:
-        dic (dict): Modified global dictionary
+    act_mask = porv > 0
+    pv = porv[act_mask]
+    actind = np.cumsum(act_mask) - 1
 
-    """
-    for j in range(dic["nz"]):
-        dic["xc"].append([])
-        dic["yc"].append([])
-        for k, c, p in zip(["x", "x", "y", "y"], [1, 1, 2, 2], [4, 6, 4, 6]):
-            dic[f"{k}c"][-1].append(
-                dic["egrid"].xyz_from_ijk(
-                    dic["slide"][n][0][0], 0, dic["nz"] - j - 1, True
-                )[c][p]
-            )
-        for i in range(dic["ny"] - 1):
-            for k, c, p in zip(["x", "x", "y", "y"], [1, 1, 2, 2], [4, 6, 4, 6]):
-                dic[f"{k}c"][-1].append(
-                    dic["egrid"].xyz_from_ijk(
-                        dic["slide"][n][0][0], i + 1, dic["nz"] - j - 1, True
-                    )[c][p]
-                )
-        dic["xc"].append([])
-        dic["yc"].append([])
-        for k, c, p in zip(["x", "x", "y", "y"], [1, 1, 2, 2], [0, 2, 0, 2]):
-            dic[f"{k}c"][-1].append(
-                dic["egrid"].xyz_from_ijk(
-                    dic["slide"][n][0][0], 0, dic["nz"] - j - 1, True
-                )[c][p]
-            )
-        for i in range(dic["ny"] - 1):
-            for k, c, p in zip(["x", "x", "y", "y"], [1, 1, 2, 2], [0, 2, 0, 2]):
-                dic[f"{k}c"][-1].append(
-                    dic["egrid"].xyz_from_ijk(
-                        dic["slide"][n][0][0], i + 1, dic["nz"] - j - 1, True
-                    )[c][p]
-                )
+    tnrst = []
+    ntot = 1
 
+    if filters[n]:
+        porv0 = porv.copy()
+        for value in filters[n].split("&"):
+            filte = value.strip().split(" ")
+            key = filte[0].upper()
+            if init.count(key):
+                arr = np.array(init[key])
+                mask = porv0 > 0
+                porv[mask] = handle_filter(porv[mask], arr, filte[1], float(filte[2]))
 
-def get_xzcoords(dic, n):
-    """
-    Handle the coordinates from the OPM Grid to the 2D xz-mesh using opm
+    if unrst:
+        steps = unrst.report_steps
+        ntot = steps[-1] + 1
+        tnrst = [unrst["DOUBHEAD", ntm][0] for ntm in steps]
+        if restart[0] == -1:
+            restart = unrst.report_steps if gif else [ntot - 1]
+    elif restart[0] == -1:
+        restart = [ntot - 1]
 
-    Args:
-        dic (dict): Global dictionary
+    nx = ny = nz = 0
 
-    Returns:
-        dic (dict): Modified global dictionary
+    if egrid:
+        dim = egrid.dimension
+        nx, ny, nz = dim
+    elif "index_i" in vrs or "index_j" in vrs or "index_k" in vrs:
+        grid = OpmGrid(f"{deck}.EGRID")
+        dim = grid.dimension
+        nx, ny, nz = dim
 
-    """
-    for j in range(dic["nz"]):
-        dic["xc"].append([])
-        dic["yc"].append([])
-        for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 2, 2], [4, 5, 4, 5]):
-            dic[f"{k}c"][-1].append(
-                dic["egrid"].xyz_from_ijk(
-                    0, dic["slide"][n][1][0], dic["nz"] - j - 1, True
-                )[c][p]
-            )
-        for i in range(dic["nx"] - 1):
-            for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 2, 2], [4, 5, 4, 5]):
-                dic[f"{k}c"][-1].append(
-                    dic["egrid"].xyz_from_ijk(
-                        i + 1, dic["slide"][n][1][0], dic["nz"] - j - 1, True
-                    )[c][p]
-                )
-        dic["xc"].append([])
-        dic["yc"].append([])
-        for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 2, 2], [0, 1, 0, 1]):
-            dic[f"{k}c"][-1].append(
-                dic["egrid"].xyz_from_ijk(
-                    0, dic["slide"][n][1][0], dic["nz"] - j - 1, True
-                )[c][p]
-            )
-        for i in range(dic["nx"] - 1):
-            for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 2, 2], [0, 1, 0, 1]):
-                dic[f"{k}c"][-1].append(
-                    dic["egrid"].xyz_from_ijk(
-                        1 + i, dic["slide"][n][1][0], dic["nz"] - j - 1, True
-                    )[c][p]
-                )
+    if not tnrst:
+        tnrst = [0] * len(restart)
+
+    return ReadData(
+        init,
+        unrst,
+        egrid,
+        porv,
+        dx,
+        dy,
+        dz,
+        pv,
+        actind,
+        restart,
+        tnrst,
+        porv.size,
+        ntot,
+        nx,
+        ny,
+        nz,
+    )
 
 
-def get_xycoords(dic, n):
-    """
-    Handle the coordinates from the OPM Grid to the 2D xy-mesh using opm
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    for j in range(dic["ny"]):
-        dic["xc"].append([])
-        dic["yc"].append([])
-        for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 1, 1], [0, 1, 0, 1]):
-            dic[f"{k}c"][-1].append(
-                dic["egrid"].xyz_from_ijk(0, j, dic["slide"][n][2][0], True)[c][p]
-            )
-        for i in range(dic["nx"] - 1):
-            for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 1, 1], [0, 1, 0, 1]):
-                dic[f"{k}c"][-1].append(
-                    dic["egrid"].xyz_from_ijk(i + 1, j, dic["slide"][n][2][0], True)[c][
-                        p
-                    ]
-                )
-        dic["xc"].append([])
-        dic["yc"].append([])
-        for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 1, 1], [2, 3, 2, 3]):
-            dic[f"{k}c"][-1].append(
-                dic["egrid"].xyz_from_ijk(0, j, dic["slide"][n][2][0], True)[c][p]
-            )
-        for i in range(dic["nx"] - 1):
-            for k, c, p in zip(["x", "x", "y", "y"], [0, 0, 1, 1], [2, 3, 2, 3]):
-                dic[f"{k}c"][-1].append(
-                    dic["egrid"].xyz_from_ijk(i + 1, j, dic["slide"][n][2][0], True)[c][
-                        p
-                    ]
-                )
+def get_yzcoords(cfg: ConfigPlopm, read: ReadData, n: int) -> tuple[NDArray, NDArray]:
+    """Handle the coordinates from the OPM Grid to the 2D yz-mesh using opm"""
+    xyz_func = read.egrid.xyz_from_ijk
+    ny_val = read.ny
+    nz_val = read.nz
+    base_i_all = cfg.slide[n][0][0]
+    total_size = nz_val * 4 * ny_val
+    xc_list = [0] * total_size
+    yc_list = [0] * total_size
+    idx = 0
+    for j in range(nz_val):
+        base_k = nz_val - j - 1
+        base_idx_second = idx + 2 * ny_val
+        tmp_idx = base_idx_second
+        for i in range(ny_val):
+            val = xyz_func(base_i_all, i, base_k, True)
+            xc_list[idx] = val[1][4]
+            yc_list[idx] = val[2][4]
+            idx += 1
+            xc_list[idx] = val[1][6]
+            yc_list[idx] = val[2][6]
+            idx += 1
+            xc_list[tmp_idx] = val[1][0]
+            yc_list[tmp_idx] = val[2][0]
+            tmp_idx += 1
+            xc_list[tmp_idx] = val[1][2]
+            yc_list[tmp_idx] = val[2][2]
+            tmp_idx += 1
+        idx = base_idx_second + 2 * ny_val
+    xc_array = np.asarray(xc_list)
+    yc_array = np.asarray(yc_list)
+    return xc_array.reshape(2 * nz_val, 2 * ny_val), yc_array.reshape(
+        2 * nz_val, 2 * ny_val
+    )
 
 
-def get_histogram(dic, quans, nrst):
-    """
-    Get the required variables from the histogram
+def get_xzcoords(cfg: ConfigPlopm, read: ReadData, n: int) -> tuple[NDArray, NDArray]:
+    """Handle the coordinates from the OPM Grid to the 2D xz-mesh using opm"""
+    xyz_func = read.egrid.xyz_from_ijk
+    nx_val = read.nx
+    nz_val = read.nz
+    base_j_all = cfg.slide[n][1][0]
+    total_size = nz_val * 4 * nx_val
+    xc_list = [0] * total_size
+    yc_list = [0] * total_size
+    idx = 0
+    for j in range(nz_val):
+        base_k = nz_val - j - 1
+        base_idx_second = idx + 2 * nx_val
+        tmp_idx = base_idx_second
+        for i in range(nx_val):
+            val = xyz_func(i, base_j_all, base_k, True)
+            xc_list[idx] = val[0][4]
+            yc_list[idx] = val[2][4]
+            idx += 1
+            xc_list[idx] = val[0][5]
+            yc_list[idx] = val[2][5]
+            idx += 1
+            xc_list[tmp_idx] = val[0][0]
+            yc_list[tmp_idx] = val[2][0]
+            tmp_idx += 1
+            xc_list[tmp_idx] = val[0][1]
+            yc_list[tmp_idx] = val[2][1]
+            tmp_idx += 1
+        idx = base_idx_second + 2 * nx_val
+    xc_array = np.asarray(xc_list)
+    yc_array = np.asarray(yc_list)
+    return xc_array.reshape(2 * nz_val, 2 * nx_val), yc_array.reshape(
+        2 * nz_val, 2 * nx_val
+    )
 
-    Args:
-        dic (dict): Global dictionary
 
-    Returns:
-        var (array): Vector with the variable values\n
-        time (array): Vector with the x axis values
+def get_xycoords(cfg: ConfigPlopm, read: ReadData, n: int) -> tuple[NDArray, NDArray]:
+    """Handle the coordinates from the OPM Grid to the 2D xy-mesh"""
+    xyz_func = read.egrid.xyz_from_ijk
+    nx_val = read.nx
+    ny_val = read.ny
+    base_k_all = cfg.slide[n][2][0]
+    total_size = ny_val * 4 * nx_val
+    xc_list = [0] * total_size
+    yc_list = [0] * total_size
+    idx = 0
+    for j in range(ny_val):
+        base_idx_second = idx + 2 * nx_val
+        tmp_idx = base_idx_second
+        for i in range(nx_val):
+            val = xyz_func(i, j, base_k_all, True)
+            xc_list[idx] = val[0][0]
+            yc_list[idx] = val[1][0]
+            idx += 1
+            xc_list[idx] = val[0][1]
+            yc_list[idx] = val[1][1]
+            idx += 1
+            xc_list[tmp_idx] = val[0][2]
+            yc_list[tmp_idx] = val[1][2]
+            tmp_idx += 1
+            xc_list[tmp_idx] = val[0][3]
+            yc_list[tmp_idx] = val[1][3]
+            tmp_idx += 1
+        idx = base_idx_second + 2 * nx_val
+    xc_array = np.asarray(xc_list)
+    yc_array = np.asarray(yc_list)
+    return xc_array.reshape(2 * ny_val, 2 * nx_val), yc_array.reshape(
+        2 * ny_val, 2 * nx_val
+    )
 
-    """
-    act = dic["porv"] > 0 if quans[0].upper() != "PORV" else dic["porv"] > -1
-    var = np.nan * np.ones(dic["nxyz"], dtype=float)
-    if dic["init"].count(quans[0].upper()):
-        var[act] = 1.0 * dic["init"][quans[0].upper(), 0]
-    elif dic["unrst"].count(quans[0].upper(), nrst):
-        var[act] = 1.0 * dic["unrst"][quans[0].upper(), nrst]
-    elif quans[0].lower() in dic["mass"] + dic["xmass"]:
-        var[act] = handle_mass(dic, quans[0].lower(), nrst)
-    elif quans[0].lower() in dic["caprock"]:
-        var[act], _ = handle_caprock(dic, quans[0].lower(), nrst)
-    elif quans[0].lower() in ["swat", "soil", "sgas"]:
-        var[act] = handle_saturation(dic, quans[0].lower(), nrst)
+
+def resolve_variable(
+    cfg: ConfigPlopm,
+    read: ReadData,
+    key_up: str,
+    key_low: str,
+    nrst: int,
+    init: OpmFile,
+    unrst: OpmRestart,
+    mass_all: list,
+    caprock_list: list,
+):
+    """Handle the variable"""
+    if init.count(key_up):
+        return 1.0 * init[key_up, 0]
+    if unrst is not None and unrst.count(key_up, nrst):
+        return 1.0 * unrst[key_up, nrst]
+    if key_low in mass_all:
+        return handle_mass(read, key_low, nrst)
+    if key_low in caprock_list:
+        val, _ = handle_caprock(read, key_low, nrst, cfg.stress)
+        return val
+    if key_low in ["swat", "soil", "sgas"]:
+        return handle_saturation(read.unrst, key_low, nrst)
+    return None
+
+
+def get_histogram(cfg: ConfigPlopm, read: ReadData, quans: list, nrst: int) -> NDArray:
+    """Get the required variables from the histogram"""
+    quan0_low = quans[0]
+    quan0 = quan0_low.upper()
+    porv = read.porv
+    nxyz = read.nxyz
+    init_dic = read.init
+    unrst_dic = read.unrst
+    mass_all = cfg.mass + cfg.xmass
+    caprock_list = cfg.caprock
+    if quan0 != "PORV":
+        act = porv > 0
+    else:
+        act = porv > -1
+    var = np.nan * np.ones(nxyz, dtype=float)
+    result = resolve_variable(
+        cfg, read, quan0, quan0_low, nrst, init_dic, unrst_dic, mass_all, caprock_list
+    )
+    if result is not None:
+        var[act] = result
     else:
         print(f"Unknow -v variable ({quans[0]}).")
         sys.exit()
     if len(quans) > 1:
+        ops = quans[1::2]
         for j, val in enumerate(quans[2::2]):
-            if (val[0]).isdigit() and not val[-1].isdigit():
-                quan1 = 1.0 * dic["unrst"][val[1:].upper(), int(val[0])]
-            elif (val[0]).isdigit() and val[-1].isdigit():
-                quan1 = float(val)
-            elif dic["init"].count(val.upper()):
-                quan1 = 1.0 * dic["init"][val.upper(), 0]
-            elif dic["unrst"].count(val.upper(), nrst):
-                quan1 = 1.0 * dic["unrst"][val.upper(), nrst]
-            elif val.lower() in dic["mass"] + dic["xmass"]:
-                quan1 = handle_mass(dic, val.lower(), nrst)
-            elif val.lower() in dic["caprock"]:
-                quan1 = handle_caprock(dic, val.lower(), nrst)
-            elif val.lower() in ["swat", "soil", "sgas"]:
-                quan1 = handle_saturation(dic, val.lower(), nrst)
+            val_up = val.upper()
+            if val[0].isdigit() and not val[-1].isdigit():
+                if unrst_dic is None:
+                    print(f"Unknow -v variable ({val}).")
+                    sys.exit()
+                quan1 = 1.0 * unrst_dic[val[1:].upper(), int(val[0])]
+            elif val[0].isdigit() and val[-1].isdigit():
+                quan1 = np.full_like(var[act], float(val))
             else:
-                print(f"Unknow -v variable ({val}).")
-                sys.exit()
-            var[act] = operate(var[act], quan1, j, quans[1::2])
+                quan1 = resolve_variable(
+                    cfg,
+                    read,
+                    val_up,
+                    val,
+                    nrst,
+                    init_dic,
+                    unrst_dic,
+                    mass_all,
+                    caprock_list,
+                )
+                if quan1 is None:
+                    print(f"Unknow -v variable ({val}).")
+                    sys.exit()
+            var_act = var[act]
+            var[act] = operate(var_act, quan1, ops[j])
     return var
 
 
-def compute_distance(dic, quans, n):
-    """
-    Get the required variables from the simulation files
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        var (array): Vector with the variable values\n
-        time (array): Vector with the x axis values
-
-    """
-    xyz = np.zeros((dic["nxyz"], 3), dtype=float)
-    act = dic["porv"] > 0
-    time = np.array(dic["tnrst"])
-    distance = np.nan * np.ones(dic["ntot"])
-    m = 0
-    for k in range(dic["nz"]):
-        for j in range(dic["ny"]):
-            for i in range(dic["nx"]):
-                xyz[m, :] = np.mean(dic["egrid"].xyz_from_ijk(i, j, k, True), axis=1)
-                m += 1
-    if dic["distance"][1] == "sensor":
+def compute_distance(
+    cfg: ConfigPlopm, read: ReadData, quans: list, n: int
+) -> tuple[NDArray, NDArray]:
+    """Get the required variables from the simulation files"""
+    xyz_func = read.egrid.xyz_from_ijk
+    nx_val = read.nx
+    ny_val = read.ny
+    nz_val = read.nz
+    nxyz = read.nxyz
+    ntot = read.ntot
+    porv = read.porv
+    init_dic = read.init
+    unrst_dic = read.unrst
+    mass_all = cfg.mass + cfg.xmass
+    distance_type = cfg.distance[0]
+    xyz = np.zeros((nxyz, 3), dtype=float)
+    act = porv > 0
+    time = np.array(read.tnrst)
+    distance = np.nan * np.ones(ntot)
+    index = 0
+    for k in range(nz_val):
+        for j in range(ny_val):
+            for i in range(nx_val):
+                xyz[index, :] = np.mean(xyz_func(i, j, k, True), axis=1)
+                index += 1
+    if cfg.distance[1] == "sensor":
         ind = (
-            dic["slide"][n][0]
-            + dic["slide"][n][1] * dic["nx"]
-            + dic["slide"][n][2] * dic["nx"] * dic["ny"]
+            cfg.slide[n][0]
+            + cfg.slide[n][1] * nx_val
+            + cfg.slide[n][2] * nx_val * ny_val
         )
         points = [xyz[ind, :]]
         print(
-            f"Computing the {dic['distance'][0]} distance to the sensor "
+            f"Computing the {cfg.distance[0]} distance to the sensor "
             f"[{points[0][0]:.2E},{points[0][1]:.2E},{points[0][2]:.2E}] m"
         )
     else:
         points = []
-        for k in range(dic["nz"]):
-            if dic["ny"] > 1:
-                for i in range(dic["nx"]):
-                    ind = i + j * dic["nx"] + k * dic["nx"] * dic["ny"]
+        for k in range(nz_val):
+            if ny_val > 1:
+                base_k = k * nx_val * ny_val
+                for i in range(nx_val):
+                    ind = i + base_k
                     if act[ind]:
                         points.append(xyz[ind])
-                    ind = i + (dic["ny"] - 1) * dic["nx"] + k * dic["nx"] * dic["ny"]
+                    ind = i + (ny_val - 1) * nx_val + base_k
                     if act[ind]:
                         points.append(xyz[ind])
-            if dic["nx"] > 1:
-                for j in range(dic["ny"]):
-                    ind = j * dic["nx"] + k * dic["nx"] * dic["ny"]
+            if nx_val > 1:
+                base_k = k * nx_val * ny_val
+                for j in range(ny_val):
+                    ind = j * nx_val + base_k
                     if act[ind]:
                         points.append(xyz[ind])
-                    ind = dic["nx"] - 1 + j * dic["nx"] + k * dic["nx"] * dic["ny"]
+                    ind = nx_val - 1 + j * nx_val + base_k
                     if act[ind]:
                         points.append(xyz[ind])
-        print(f"Computing the {dic['distance'][0]} distance to the boundaries")
-    with alive_bar(dic["ntot"] * len(points)) as bar_animation:
-        for nrst in dic["unrst"].report_steps:
+        print(f"Computing the {cfg.distance[0]} distance to the boundaries")
+    show_progress = sys.stdout.isatty()
+    if show_progress:
+        bar_ctx = alive_bar(ntot * len(points), bar="fish")
+    else:
+        bar_ctx = nullcontext()
+    with bar_ctx as bar_animation:
+        for nrst in unrst_dic.report_steps:
             xyzt = np.copy(xyz)
-            var = np.nan * np.ones(dic["nxyz"], dtype=float)
-            if dic["unrst"].count(quans[0].upper(), nrst):
-                var[act] = 1.0 * dic["unrst"][quans[0].upper(), nrst]
-            elif quans[0].lower() in dic["mass"] + dic["xmass"]:
-                var[act] = handle_mass(dic, quans[0].lower(), nrst)
-            elif quans[0].lower() in ["swat", "soil", "sgas"]:
-                var[act] = handle_saturation(dic, quans[0].lower(), nrst)
+            var = np.nan * np.ones(nxyz, dtype=float)
+            quan0_low = quans[0]
+            quan0_up = quans[0].upper()
+            if quan0_low in ["index_i", "index_j", "index_k"]:
+                var[act] = get_indices(quan0_low, nx_val, ny_val, nz_val)
+            elif unrst_dic.count(quan0_up, nrst):
+                var[act] = 1.0 * unrst_dic[quan0_up, nrst]
+            elif quan0_low in mass_all:
+                var[act] = handle_mass(read, quan0_low, nrst)
+            elif quan0_low in ["swat", "soil", "sgas"]:
+                var[act] = handle_saturation(read.unrst, quan0_low, nrst)
             else:
                 print(f"Unknow -v variable ({quans[0]}).")
                 sys.exit()
             if len(quans) > 1:
+                ops = quans[1::2]
                 for j, val in enumerate(quans[2::2]):
-                    if (val[0]).isdigit() and not val[-1].isdigit():
-                        quan1 = 1.0 * dic["unrst"][val[1:].upper(), int(val[0])]
-                    elif (val[0]).isdigit() and val[-1].isdigit():
-                        quan1 = float(val)
-                    elif dic["init"].count(val.upper()):
-                        quan1 = 1.0 * dic["init"][val.upper(), 0]
-                    elif dic["unrst"].count(val.upper(), nrst):
-                        quan1 = 1.0 * dic["unrst"][val.upper(), nrst]
-                    elif val.lower() in dic["mass"] + dic["xmass"]:
-                        quan1 = handle_mass(dic, val.lower(), nrst)
-                    elif val.lower() in ["swat", "soil", "sgas"]:
-                        quan1 = handle_saturation(dic, val.lower(), nrst)
+                    val_up = val.upper()
+                    if val[0].isdigit() and not val[-1].isdigit():
+                        quan1 = 1.0 * unrst_dic[val[1:].upper(), int(val[0])]
+                    elif val[0].isdigit() and val[-1].isdigit():
+                        quan1 = np.full_like(var[act], float(val))
+                    elif init_dic.count(val_up):
+                        quan1 = 1.0 * init_dic[val_up, 0]
+                        if val_up == "PORV":
+                            quan1 = quan1[act]
+                    elif val in ["index_i", "index_j", "index_k"]:
+                        var[act] = get_indices(val, nx_val, ny_val, nz_val)
+                        continue
+                    elif unrst_dic.count(val_up, nrst):
+                        quan1 = 1.0 * unrst_dic[val_up, nrst]
+                    elif val in mass_all:
+                        quan1 = handle_mass(read, val, nrst)
+                    elif val in ["swat", "soil", "sgas"]:
+                        quan1 = handle_saturation(read.unrst, val, nrst)
                     else:
                         print(f"Unknow -v variable ({val}).")
                         sys.exit()
-                    var[act] = operate(var[act], quan1, j, quans[1::2])
+                    var_act = var[act]
+                    var[act] = operate(var_act, quan1, ops[j])
             xyzt[var != 1] = np.nan
             temp = np.nan * np.ones(len(points))
-            for i, point in enumerate(points):
-                bar_animation()
-                if dic["distance"][0].lower() == "min":
-                    temp[i] = np.nanmin(np.linalg.norm(xyzt - point, axis=1))
+            for point_index, point in enumerate(points):
+                if show_progress:
+                    bar_animation()
+                vals = np.linalg.norm(xyzt - point, axis=1)
+                if not np.all(np.isnan(vals)):
+                    if distance_type == "min":
+                        temp[point_index] = np.nanmin(vals)
+                    else:
+                        temp[point_index] = np.nanmax(vals)
+            if not np.isnan(temp).all():
+                if distance_type == "min":
+                    distance[nrst] = np.nanmin(temp)
                 else:
-                    temp[i] = np.nanmax(np.linalg.norm(xyzt - point, axis=1))
-            if dic["distance"][0].lower() == "min":
-                distance[nrst] = np.nanmin(temp)
-            else:
-                distance[nrst] = np.nanmax(temp)
+                    distance[nrst] = np.nanmax(temp)
     return distance[~np.isnan(distance)], time[~np.isnan(distance)]
 
 
-def project(var, oper, porv):
-    """
-    Applied the requested projection
+def get_indices(name: str, nx: int, ny: int, nz: int) -> list:
+    """Compute the i, j, or k indices"""
+    nxyz = nx * ny * nz
+    if name == "index_i":
+        return [(grid_index % nx) + 1 for grid_index in range(nxyz)]
+    if name == "index_j":
+        return [((grid_index // nx) % ny) + 1 for grid_index in range(nxyz)]
+    return [(grid_index // (nx * ny)) + 1 for grid_index in range(nxyz)]
 
-    Args:
-        var (array): Floats with the current values\n
-        oper (str): Input operator\n
-        porv (array): Pore volumes of the cells
 
-    Returns:
-        var (array): Modified values after applying the projection
-
-    """
+def project(var: NDArray, oper: str, porv: NDArray) -> NDArray:
+    """Applied the requested projection"""
     if oper == "min":
-        var = np.min(var)
-    elif oper == "max":
-        var = np.max(var)
-    elif oper == "sum":
-        var = np.sum(var)
-    elif oper == "mean":
-        var = np.mean(var)
-    elif oper == "pvmean":
-        var = np.mean(var * porv) / np.sum(porv)
-    else:
-        print(f"Unknow/unsupported projection ({oper}).")
-        sys.exit()
-    return var
+        return np.min(var)
+    if oper == "max":
+        return np.max(var)
+    if oper == "sum":
+        return np.sum(var)
+    if oper == "mean":
+        return np.mean(var)
+    if oper == "pvmean":
+        return np.sum(var * porv) / np.sum(porv)
+    print(f"Unknow/unsupported projection ({oper}).")
+    sys.exit()
 
 
-def do_read_variables(dic, quans, n, ntot):
-    """
-    Get the required variables from the simulation files
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        var (array): Vector with the variable values\n
-        time (array): Vector with the x axis values
-
-    """
-    m = dic["slide"][n].index(-1) if -1 in dic["slide"][n] else -1
-    if m == 0:
-        xsize = dic["nx"]
-    elif m == 1:
-        xsize = dic["ny"]
-    elif m == 2:
-        xsize = dic["nz"]
+def do_read_variables(
+    cfg: ConfigPlopm, read: ReadData, quans: list, n: int, ntot: list
+) -> tuple[NDArray, NDArray]:
+    """Get the required variables from the simulation files"""
+    slide = cfg.slide[n]
+    axis_index = slide.index(-1) if -1 in slide else -1
+    nx_val = read.nx
+    ny_val = read.ny
+    nz_val = read.nz
+    if axis_index == 0:
+        xsize = nx_val
+    elif axis_index == 1:
+        xsize = ny_val
+    elif axis_index == 2:
+        xsize = nz_val
     else:
         xsize = 1
     if len(ntot) > 1:
         tsize = len(ntot)
-        time = np.array(dic["tnrst"])
+        time = np.array(read.tnrst)
         var = 0.0 * np.ones(tsize)
     else:
         time = np.array(range(xsize), dtype=float)
         var = 0.0 * np.ones(xsize)
-    for o, nrst in enumerate(ntot):
+    init_dic = read.init
+    unrst_dic = read.unrst
+    mass_all = cfg.mass + cfg.xmass
+    caprock_list = cfg.caprock
+    pv_all = read.pv
+    layer_flag = cfg.layer
+    egrid = read.egrid
+    quan0_low = quans[0]
+    quan0_up = quan0_low.upper()
+    ops = quans[1::2] if len(quans) > 1 else []
+    for output_index, nrst in enumerate(ntot):
         temp = np.ones(xsize, dtype=float)
         porv = np.ones(xsize, dtype=float)
-        for i in range(xsize):
-            if dic["layer"]:
-                if m == 0:
-                    ind = dic["egrid"].active_index(
-                        i, dic["slide"][n][1], dic["slide"][n][2]
-                    )
-                elif m == 1:
-                    ind = dic["egrid"].active_index(
-                        dic["slide"][n][0], i, dic["slide"][n][2]
-                    )
+        inds = [0] * xsize
+        if layer_flag:
+            if axis_index == 0:
+                for index in range(xsize):
+                    inds[index] = egrid.active_index(index, slide[1], slide[2])
+            elif axis_index == 1:
+                for index in range(xsize):
+                    inds[index] = egrid.active_index(slide[0], index, slide[2])
+            elif axis_index == 2:
+                for index in range(xsize):
+                    inds[index] = egrid.active_index(slide[0], slide[1], index)
+        else:
+            ind0 = egrid.active_index(slide[0], slide[1], slide[2])
+            for index in range(xsize):
+                inds[index] = ind0
+        if quan0_low in mass_all:
+            arr_main = handle_mass(read, quan0_low, nrst)
+        elif quan0_low in caprock_list:
+            arr_main, _ = handle_caprock(read, quan0_low, nrst, cfg.stress)
+        elif quan0_low in ["swat", "soil", "sgas"]:
+            arr_main = handle_saturation(read.unrst, quan0_low, nrst)
+        else:
+            arr_main = None
+        if len(quans) > 1:
+            arr_vals = []
+            for val in quans[2::2]:
+                if val in mass_all:
+                    arr_vals.append(handle_mass(read, val, nrst))
+                elif val in caprock_list:
+                    arr, _ = handle_caprock(read, val, nrst, cfg.stress)
+                    arr_vals.append(arr)
+                elif val in ["swat", "soil", "sgas"]:
+                    arr_vals.append(handle_saturation(read.unrst, val, nrst))
                 else:
-                    ind = dic["egrid"].active_index(
-                        dic["slide"][n][0], dic["slide"][n][1], i
-                    )
-            else:
-                ind = dic["egrid"].active_index(
-                    dic["slide"][n][0], dic["slide"][n][1], dic["slide"][n][2]
-                )
-            ll = i + o
-            if dic["unrst"].count(quans[0].upper(), nrst):
-                temp[i] = 1.0 * dic["unrst"][quans[0].upper(), nrst][ind]
-            elif quans[0].lower() in dic["mass"] + dic["xmass"]:
-                temp[i] = handle_mass(dic, quans[0].lower(), nrst)[ind]
-            elif quans[0].lower() in dic["caprock"]:
-                temp[i], _ = handle_caprock(dic, quans[0].lower(), nrst)[ind]
-            elif quans[0].lower() in ["swat", "soil", "sgas"]:
-                temp[i] = handle_saturation(dic, quans[0].lower(), nrst)[ind]
-            else:
-                print(f"Unknow -v variable ({quans[0]}).")
-                sys.exit()
-            if dic["unrst"].count("RPORV", nrst):
-                porv[i] = dic["unrst"]["RPORV", nrst][ind]
-            else:
-                porv[i] = dic["pv"][ind]
-            if len(quans) > 1:
-                for j, val in enumerate(quans[2::2]):
-                    if (val[0]).isdigit() and not val[-1].isdigit():
-                        quan1 = 1.0 * dic["unrst"][val[1:].upper(), int(val[0])][ind]
-                    elif (val[0]).isdigit() and val[-1].isdigit():
-                        quan1 = float(val)
-                    elif dic["init"].count(val.upper()):
-                        quan1 = 1.0 * dic["init"][val.upper(), 0][ind]
-                    elif dic["unrst"].count(val.upper(), nrst):
-                        quan1 = 1.0 * dic["unrst"][val.upper(), nrst][ind]
-                    elif val.lower() in dic["mass"] + dic["xmass"]:
-                        quan1 = handle_mass(dic, val.lower(), nrst)[ind]
-                    elif val.lower() in dic["caprock"]:
-                        quan1, _ = handle_caprock(dic, val.lower(), nrst)[ind]
-                    elif val.lower() in ["swat", "soil", "sgas"]:
-                        quan1 = handle_saturation(dic, val.lower(), nrst)[ind]
-                    else:
-                        print(f"Unknow -v variable ({val}).")
-                        sys.exit()
-                    temp[i] = operate(temp[i], quan1, j, quans[1::2])
-        if dic["how"][0]:
-            var[o] = project(temp, dic["how"][0], porv)
-        elif dic["layer"]:
+                    arr_vals.append(np.full_like(temp, np.nan))
+        inds_arr = np.array(inds)
+
+        if unrst_dic.count(quan0_up, nrst):
+            temp = 1.0 * unrst_dic[quan0_up, nrst][inds_arr]
+        elif init_dic.count(quan0_up):
+            temp = 1.0 * init_dic[quan0_up, 0][inds_arr]
+        elif arr_main is not None:
+            temp = arr_main[inds_arr]
+        else:
+            print(f"Unknow -v variable ({quans[0]}).")
+            sys.exit()
+
+        if unrst_dic.count("RPORV", nrst):
+            porv = unrst_dic["RPORV", nrst][inds_arr]
+        else:
+            porv = pv_all[inds_arr]
+
+        if len(quans) > 1:
+            for j, val in enumerate(quans[2::2]):
+                val_up = val.upper()
+                arr_val = arr_vals[j]
+                if val[0].isdigit() and not val[-1].isdigit():
+                    quan1 = 1.0 * unrst_dic[val[1:].upper(), int(val[0])][inds_arr]
+                elif val[0].isdigit() and val[-1].isdigit():
+                    quan1 = np.full_like(temp, float(val))
+                elif init_dic.count(val_up):
+                    quan1 = 1.0 * init_dic[val_up, 0][inds_arr]
+                elif unrst_dic.count(val_up, nrst):
+                    quan1 = 1.0 * unrst_dic[val_up, nrst][inds_arr]
+                elif not np.isnan(arr_val).all():
+                    quan1 = arr_val[inds_arr]
+                else:
+                    print(f"Unknow -v variable ({val}).")
+                    sys.exit()
+                temp = operate(temp, quan1, ops[j])
+        ll = np.arange(xsize) + output_index
+        if cfg.how[0]:
+            var[output_index] = project(temp, cfg.how[0], porv)
+        elif layer_flag:
             var = temp
         else:
             if xsize == 1:
                 var[ll] = temp[0]
             else:
                 var[ll] = temp
-    if dic["layer"] and not dic["how"][0]:
-        if m == 0:
-            for i in range(dic["nx"]):
-                time[i] = np.mean(
-                    dic["egrid"].xyz_from_ijk(
-                        i, dic["slide"][n][1], dic["slide"][n][2], True
-                    ),
-                    axis=1,
-                )[0]
-        elif m == 1:
-            for j in range(dic["ny"]):
-                time[j] = np.mean(
-                    dic["egrid"].xyz_from_ijk(
-                        dic["slide"][n][0], j, dic["slide"][n][2], True
-                    ),
-                    axis=1,
-                )[1]
+    if layer_flag and not cfg.how[0]:
+        xyz_func = egrid.xyz_from_ijk
+        if axis_index == 0:
+            for i in range(nx_val):
+                time[i] = np.mean(xyz_func(i, slide[1], slide[2], True), axis=1)[0]
+        elif axis_index == 1:
+            for j in range(ny_val):
+                time[j] = np.mean(xyz_func(slide[0], j, slide[2], True), axis=1)[1]
         else:
-            for k in range(dic["nz"]):
-                time[k] = np.mean(
-                    dic["egrid"].xyz_from_ijk(
-                        dic["slide"][n][0], dic["slide"][n][1], k, True
-                    ),
-                    axis=1,
-                )[2]
+            for k in range(nz_val):
+                time[k] = np.mean(xyz_func(slide[0], slide[1], k, True), axis=1)[2]
     return var, time
 
 
-def read_summary(dic, case, quan, tunit, qskl, n):
-    """
-    Handle the summary vectors
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+def read_oned(
+    cfg: ConfigPlopm, case: str, quan: str, tunit: str, qskl: float, n: int
+) -> tuple[NDArray, NDArray, str, str]:
+    """Handle the oned vectors"""
     time, vunit = np.array([0, 1]), ""
     tskl, tunit = initialize_time(tunit)
     quans = quan.split(" ")
-    if dic["csvs"][n][0]:
-        csvv = np.genfromtxt(
-            f"{case}.csv",
-            delimiter=",",
-            skip_header=1,
-        )
-        time = (
-            tskl
-            * np.array([csvv[i][dic["csvs"][n][0] - 1] for i in range(csvv.shape[0])])
-            / 86400.0
-        )
-        var = np.array([csvv[i][dic["csvs"][n][1] - 1] for i in range(csvv.shape[0])])
-    elif dic["distance"][0]:
-        xskl, xunit = initialize_spatial(dic["xunits"])
-        dic["deck"] = case
-        get_readers(dic)
-        var, time = compute_distance(dic, quans, n)
-        vunit = f" ({dic['distance'][0]} distance to {dic['distance'][1]} in {xunit})"
+    csv_flag = cfg.csvs[n][0]
+    q0_low = quans[0]
+    if csv_flag:
+        csvv = np.genfromtxt(f"{case}.csv", delimiter=",", skip_header=1)
+        col_t = cfg.csvs[n][0] - 1
+        col_v = cfg.csvs[n][1] - 1
+        time = tskl * csvv[:, col_t] / 86400.0
+        var = csvv[:, col_v]
+    elif cfg.distance[0]:
+        xskl, xunit = initialize_spatial(cfg.xunits)
+        read = get_readers(case, cfg.gif, cfg.vtk, cfg.vrs, cfg.restart, cfg.filter)
+        var, time = compute_distance(cfg, read, quans, n)
+        vunit = f" ({cfg.distance[0]} distance to {cfg.distance[1]} in {xunit})"
         var *= xskl
-    elif dic["histogram"][0]:
-        dic["deck"] = case
-        get_readers(dic)
-        var = get_histogram(dic, quans, dic["restart"][0])
+    elif cfg.histogram[0]:
+        read = get_readers(case, cfg.gif, cfg.vtk, cfg.vrs, cfg.restart, cfg.filter)
+        var = get_histogram(cfg, read, quans, read.restart[0])
         tunit = ""
-    elif dic["sensor"] or dic["how"][0]:
-        dic["deck"] = case
-        get_readers(dic)
-        var, time = do_read_variables(dic, quans, n, dic["unrst"].report_steps)
+    elif cfg.sensor or cfg.how[0]:
+        read = get_readers(case, cfg.gif, cfg.vtk, cfg.vrs, cfg.restart, cfg.filter)
+        var, time = do_read_variables(cfg, read, quans, n, read.unrst.report_steps)
         time *= tskl
         if tunit == "Dates":
-            time = []
-            for i in range(len(dic["unrst"])):
-                x = dic["unrst"]["INTEHEAD", i]
-                time.append(datetime.datetime(x[66], x[65], x[64], 0, 0))
-    elif dic["layer"]:
-        xskl, tunit = initialize_spatial(dic["xunits"])
-        dic["deck"] = case
-        get_readers(dic)
-        tmp = dic["restart"][n] if n < len(dic["restart"]) else dic["restart"][0]
-        var, time = do_read_variables(dic, quans, n, [tmp])
+            tmp = []
+            unrst_dic = read.unrst
+            for index in range(len(unrst_dic)):
+                values = unrst_dic["INTEHEAD", index]
+                tmp.append(datetime.datetime(values[66], values[65], values[64], 0, 0))
+            time = np.array(tmp)
+    elif cfg.layer:
+        xskl, tunit = initialize_spatial(cfg.xunits)
+        read = get_readers(case, cfg.gif, cfg.vtk, cfg.vrs, cfg.restart, cfg.filter)
+        tmp = read.restart[n] if n < len(cfg.restart) else read.restart[0]
+        var, time = do_read_variables(cfg, read, quans, n, [tmp])
         time *= xskl
-    elif quans[0].lower()[:3] in ["krw", "krg"] or quans[0].lower()[:4] in [
+    elif q0_low[:3] in ["krw", "krg"] or q0_low[:4] in [
         "krog",
         "krow",
         "pcow",
@@ -514,221 +629,127 @@ def read_summary(dic, case, quan, tunit, qskl, n):
     ]:
         snu = 1
         hyst = False
-        if quans[0].lower()[-1] == "h":
+        if q0_low[-1] == "h":
             hyst = True
-            quans[0] = quans[0][:-1]
-        if len(quans[0].lower()) == 3:
-            what = quans[0].lower()[:3]
-        elif quans[0].lower() in ["krow", "krog", "pcow", "pcog", "pcwg"]:
-            what = quans[0].lower()[:4]
-        elif quans[0].lower()[:3] in ["krw", "krg"]:
-            what = quans[0].lower()[:3]
+            q0_low = quans[0][:-1]
+        if len(q0_low) == 3:
+            what = q0_low[:3]
+        elif q0_low in ["krow", "krog", "pcow", "pcog", "pcwg"]:
+            what = q0_low[:4]
+        elif q0_low[:3] in ["krw", "krg"]:
+            what = q0_low[:3]
             snu = int(quans[0][3:])
         else:
-            what = quans[0].lower()[:4]
+            what = q0_low[:4]
             snu = int(quans[0][4:])
         if not os.path.isfile(f"{case}.INIT"):
             print(f"Saturation functions required {case}.INIT")
             sys.exit()
-        dic["init"] = OpmFile(f"{case}.INIT")
-        tabdim = [dic["init"]["TABDIMS"]]
-        table = [np.array(dic["init"]["TAB"])]
-        nswe = tabdim[0][24]
-        nsnum = tabdim[0][25]
+        init = OpmFile(f"{case}.INIT")
+        tabdim = init["TABDIMS"]
+        table = np.array(init["TAB"])
+        nswe = tabdim[24]
+        nsnum = tabdim[25]
         vunit = ""
         tskl = 1
         if what == "krg":
             tunit = "s$_g$ [-]"
-            sht = tabdim[0][23] - 1
-            time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
-            time = np.array([val for val in time if val <= 1.0])
-            n_v = len(time)
-            var = table[0][
+            sht = tabdim[23] - 1
+            base = sht + (snu - 1) * nswe
+            time = table[base : base + nswe]
+            time = time[time <= 1.0]
+            count_v = len(time)
+            var = table[
                 sht + nswe * nsnum + (snu - 1) * nswe : sht + nswe * nsnum + snu * nswe
-            ][:n_v]
+            ][:count_v]
             if hyst:
-                timeh = np.array(
-                    table[0][
-                        sht
-                        + (int(nsnum / 2) + snu - 1) * nswe : sht
-                        + (int(nsnum / 2) + snu) * nswe
-                    ]
-                )
-                timeh = np.array([val for val in timeh if val <= 1.0])
-                n_v = len(timeh)
+                base2 = sht + (nsnum // 2 + snu - 1) * nswe
+                timeh = table[base2 : base2 + nswe]
+                timeh = timeh[timeh <= 1.0]
+                count_v = len(timeh)
                 var = np.append(
                     var,
                     np.flip(
-                        table[0][
+                        table[
                             sht
                             + nswe * nsnum
-                            + (int(nsnum / 2) + snu - 1) * nswe : sht
+                            + (nsnum // 2 + snu - 1) * nswe : sht
                             + nswe * nsnum
-                            + (int(nsnum / 2) + snu) * nswe
-                        ][:n_v]
+                            + (nsnum // 2 + snu) * nswe
+                        ][:count_v]
                     ),
                 )
                 time = np.append(time, np.flip(timeh))
         elif what == "krow":
-            nswe = tabdim[0][21]
+            nswe = tabdim[21]
             tunit = "s$_w$ [-]"
-            sht = tabdim[0][26] - 1
-            time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
-            time = np.array([val for val in time if val <= 1.0])
-            n_v = len(time)
-            if tabdim[0][22] == 2:
+            sht = tabdim[26] - 1
+            base = sht + (snu - 1) * nswe
+            time = table[base : base + nswe]
+            time = time[time <= 1.0]
+            count_v = len(time)
+            if tabdim[22] == 2:
                 sht += nswe
             var = np.flip(
-                table[0][
+                table[
                     sht
                     + nswe * nsnum
                     + (snu - 1) * nswe : sht
                     + nswe * nsnum
                     + snu * nswe
-                ][:n_v]
+                ][:count_v]
             )
-            if hyst:
-                timeh = np.array(
-                    table[0][
-                        sht
-                        + (int(nsnum / 2) + snu - 1) * nswe : sht
-                        + (int(nsnum / 2) + snu) * nswe
-                    ]
-                )
-                timeh = np.array([val for val in timeh if val <= 1.0])
-                n_v = len(timeh)
-                sht += nswe
-                var = np.append(
-                    var,
-                    table[0][
-                        sht
-                        + nswe * nsnum
-                        + (int(nsnum / 2) + snu - 1) * nswe : sht
-                        + nswe * nsnum
-                        + (int(nsnum / 2) + snu) * nswe
-                    ][:n_v],
-                )
-                time = np.append(time, np.flip(timeh))
         elif what == "krw":
-            nswe = tabdim[0][21]
+            nswe = tabdim[21]
             tunit = "s$_w$ [-]"
-            sht = tabdim[0][20] - 1
-            time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
-            time = np.array([val for val in time if val <= 1.0])
-            n_v = len(time)
-            if tabdim[0][22] == 2:
+            sht = tabdim[20] - 1
+            base = sht + (snu - 1) * nswe
+            time = table[base : base + nswe]
+            time = time[time <= 1.0]
+            count_v = len(time)
+            if tabdim[22] == 2:
                 sht += nswe
-            var = table[0][
+            var = table[
                 sht + nswe * nsnum + (snu - 1) * nswe : sht + nswe * nsnum + snu * nswe
-            ][:n_v]
-            if hyst:
-                timeh = np.array(
-                    table[0][
-                        sht
-                        + (int(nsnum / 2) + snu - 1) * nswe : sht
-                        + (int(nsnum / 2) + snu) * nswe
-                    ]
-                )
-                timeh = np.array([val for val in timeh if val <= 1.0])
-                n_v = len(timeh)
-                var = np.append(
-                    var,
-                    np.flip(
-                        table[0][
-                            sht
-                            + nswe * nsnum
-                            + (int(nsnum / 2) + snu - 1) * nswe : sht
-                            + nswe * nsnum
-                            + (int(nsnum / 2) + snu) * nswe
-                        ][:n_v]
-                    ),
-                )
-                time = np.append(time, np.flip(timeh))
+            ][:count_v]
         elif what == "pcow":
-            nswe = tabdim[0][21]
+            nswe = tabdim[21]
             tunit = "s$_w$ [-]"
-            sht = tabdim[0][20] - 1
-            time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
-            time = np.array([val for val in time if val <= 1.0])
-            n_v = len(time)
-            var = table[0][
+            sht = tabdim[20] - 1
+            base = sht + (snu - 1) * nswe
+            time = table[base : base + nswe]
+            time = time[time <= 1.0]
+            count_v = len(time)
+            var = table[
                 sht
                 + 2 * nswe * nsnum
                 + (snu - 1) * nswe : sht
                 + 2 * nswe * nsnum
                 + snu * nswe
-            ][:n_v]
-            if hyst:
-                timeh = np.array(
-                    table[0][
-                        sht
-                        + (int(nsnum / 2) + snu - 1) * nswe : sht
-                        + (int(nsnum / 2) + snu) * nswe
-                    ]
-                )
-                timeh = np.array([val for val in timeh if val <= 1.0])
-                n_v = len(timeh)
-                sht += nswe
-                var = np.append(
-                    var,
-                    np.flip(
-                        table[0][
-                            sht
-                            + 2 * nswe * nsnum
-                            + (int(nsnum / 2) + snu - 1) * nswe : sht
-                            + 2 * nswe * nsnum
-                            + (int(nsnum / 2) + snu) * nswe
-                        ][:n_v]
-                    ),
-                )
-                time = np.append(time, np.flip(timeh))
+            ][:count_v]
         else:
             tunit = "s$_g$ [-]"
-            sht = tabdim[0][23] - 1
-            time = np.array(table[0][sht + (snu - 1) * nswe : sht + snu * nswe])
-            time = np.array([val for val in time if val <= 1.0])
-            n_v = len(time)
-            var = table[0][
+            sht = tabdim[23] - 1
+            base = sht + (snu - 1) * nswe
+            time = table[base : base + nswe]
+            time = time[time <= 1.0]
+            count_v = len(time)
+            var = table[
                 sht
                 + 2 * nswe * nsnum
                 + (snu - 1) * nswe : sht
                 + 2 * nswe * nsnum
                 + snu * nswe
-            ][:n_v]
-            if hyst:
-                timeh = np.array(
-                    table[0][
-                        sht
-                        + (int(nsnum / 2) + snu - 1) * nswe : sht
-                        + (int(nsnum / 2) + snu) * nswe
-                    ]
-                )
-                timeh = np.array([val for val in timeh if val <= 1.0])
-                n_v = len(timeh)
-                var = np.append(
-                    var,
-                    np.flip(
-                        table[0][
-                            sht
-                            + 2 * nswe * nsnum
-                            + (int(nsnum / 2) + snu - 1) * nswe : sht
-                            + 2 * nswe * nsnum
-                            + (int(nsnum / 2) + snu) * nswe
-                        ][:n_v]
-                    ),
-                )
-                time = np.append(time, np.flip(timeh))
-    elif quan.lower()[:6] == "pcfact":
-        time = []
-        var = []
+            ][:count_v]
+    elif quan[:6] == "pcfact":
+        tmp0 = []
+        tmp2 = []
         found = False
-        snu = 1
-        vec = quans[0].upper()
         snu = int(quans[0][6:])
         vec = quans[0].upper()[:6]
-        file = where_at(case, vec)
+        file_name = where_at(case, vec)
         count = 0
-        with open(file, "r", encoding="utf8") as file:
+        with open(file_name, "r", encoding="utf8") as file:
             for row in csv.reader(file, delimiter=" "):
                 if len(row) > 0:
                     if row[0] == vec:
@@ -741,467 +762,333 @@ def read_summary(dic, case, quan, tunit, qskl, n):
                         and found
                         and count == snu - 1
                     ):
-                        time.append(float(row[0]))
-                        var.append(float(row[1]))
-                        if len(row) > 2:
-                            if row[2].strip() == "/":
-                                break
+                        tmp0.append(float(row[0]))
+                        tmp2.append(float(row[1]))
+                        if len(row) > 2 and row[2].strip() == "/":
+                            break
                     if found:
                         if row[0] == "/":
                             count += 1
-                        elif len(row) > 2:
-                            if row[2].strip() == "/":
-                                count += 1
-        if not var:
+                        elif len(row) > 2 and row[2].strip() == "/":
+                            count += 1
+        if not tmp2:
             print(f"No {quans[0]} found.")
             sys.exit()
-        var = np.array(var)
-        time = np.array(time)
+        var = np.array(tmp2)
+        time = np.array(tmp0)
     else:
         summary = OpmSummary(f"{case}.SMSPEC")
-        if quans[0].upper() in dic["smass"]:
-            var = summary[quans[0][:-1].upper()]
+        key = quans[0].upper()
+        keys = summary.keys()
+        if quans[0] in cfg.smass:
+            var = summary[key[:-1]]
         else:
-            var = summary[quans[0].upper()]
+            var = summary[key]
         if len(quans) > 1:
-            for i, val in enumerate(quans[2::2]):
-                if val.upper() in summary.keys():
+            ops = quans[1::2]
+            for index, val in enumerate(quans[2::2]):
+                if val.upper() in keys:
                     quan1 = summary[val.upper()]
                 else:
                     quan1 = float(val)
-                var = operate(var, quan1, i, quans[1::2])
+                var = operate(var, quan1, ops[index])
         if tunit == "Dates":
             smsp_dates = 86400 * summary["TIME"]
-            smsp_dates = [
-                summary.start_date + datetime.timedelta(seconds=float(seconds))
-                for seconds in smsp_dates
-            ]
-            time = smsp_dates
+            time = np.array(
+                [
+                    summary.start_date + datetime.timedelta(seconds=float(sec))
+                    for sec in smsp_dates
+                ]
+            )
         else:
             time = summary["TIME"] * tskl
-    if quans[0].lower() in ["fgip", "fgit"]:
+    if quans[0] in ["fgip", "fgit"]:
         vunit = " [sm$^3$]"
-    elif quans[0].upper() in dic["smass"]:
+    elif quans[0] in cfg.smass:
         var *= GAS_DEN_REF
         vunit = initialize_mass(qskl)
-    elif quans[0].lower() in ["time"]:
+    elif quans[0] in ["time"]:
         vunit = " [d]"
     return time, var * qskl, tunit, vunit
 
 
-def where_at(case, vec):
-    """
-    Using the input deck (.DATA) to read the i,j fault locations
-
-    Args:
-        case (str): Name of the deck\n
-        vec (str): Keyword
-
-    Returns:
-        file (str): Name of the file where the vec at.
-
-    """
+def where_at(case: str, vec: str) -> str:
+    """Using the input deck (.DATA) to read the i,j fault locations"""
     include = False
     path = ""
-    if len(case.split("/")) > 1:
-        path = "/".join(case.split("/")[:-1]) + "/"
-    case = case + ".DATA"
+    parts = case.split("/")
+    if len(parts) > 1:
+        path = "/".join(parts[:-1]) + "/"
+    case_file = case + ".DATA"
     includes = []
-    with open(case, "r", encoding="utf8") as file:
+    with open(case_file, "r", encoding="utf8") as file:
         for row in csv.reader(file):
-            if len(row) > 0:
-                if row[0] == vec:
-                    return case
-                if row[0] == "INCLUDE":
-                    include = True
-                    continue
-                if include:
-                    name = (row[0].split("/")[0]).strip(" ")
-                    if "'" in name:
-                        name = name[1:-1]
-                    if os.path.isfile(path + name):
-                        includes.append(path + name)
-                        include = False
-                        continue
-    for include in includes:
-        with open(include, "r", encoding="utf8") as file:
+            if not row:
+                continue
+            val = row[0]
+            if val == vec:
+                return case_file
+            if val == "INCLUDE":
+                include = True
+                continue
+            if include:
+                name = val.split("/")[0].strip(" ")
+                if "'" in name:
+                    name = name[1:-1]
+                full = path + name
+                if os.path.isfile(full):
+                    includes.append(full)
+                include = False
+    for include_file in includes:
+        with open(include_file, "r", encoding="utf8") as file:
             for row in csv.reader(file):
-                if len(row) > 0:
-                    if row[0] == vec:
-                        return include
-    print(f"No {vec} found (only looking in {case} and INCLUDE files).")
+                if not row:
+                    continue
+                if row[0] == vec:
+                    return include_file
+    print(f"No {vec} found (only looking in {case_file} and INCLUDE files).")
     sys.exit()
 
 
-def operate(var, quan1, i, oper):
-    """
-    Applied the requested operation
-
-    Args:
-        var (array): Floats with the current values\n
-        quan1 (array): Value(s) to operate\n
-        i (int): Index of the operator\n
-        oper (list): Input operators
-
-    Returns:
-        var (array): Modified values after applying the operator
-
-    """
-    if oper[i] == "+":
-        var += quan1
-    elif oper[i] == "-":
-        var -= quan1
-    elif oper[i] == "*":
-        var *= quan1
-    elif oper[i] == "/":
-        var /= quan1
-    elif oper[i] == "==":
-        var[~np.isnan(var)] = [
-            1 if val == quan1 else np.nan for val in var[~np.isnan(var)]
-        ]
-    elif oper[i] == ">=":
-        var[~np.isnan(var)] = [
-            1 if val >= quan1 else np.nan for val in var[~np.isnan(var)]
-        ]
-    elif oper[i] == "<=":
-        var[~np.isnan(var)] = [
-            1 if val <= quan1 else np.nan for val in var[~np.isnan(var)]
-        ]
-    elif oper[i] == "<":
-        var[~np.isnan(var)] = [
-            1 if val < quan1 else np.nan for val in var[~np.isnan(var)]
-        ]
-    elif oper[i] == ">":
-        var[~np.isnan(var)] = [
-            1 if val > quan1 else np.nan for val in var[~np.isnan(var)]
-        ]
-    elif oper[i] == "!=":
-        var[~np.isnan(var)] = [
-            1 if val != quan1 else np.nan for val in var[~np.isnan(var)]
-        ]
+def operate(
+    var: NDArray[np.float64], quan1: NDArray[np.float64], oper: str
+) -> NDArray[np.float64]:
+    """Applied the requested operation"""
+    if oper == "+":
+        return var + quan1
+    if oper == "-":
+        return var - quan1
+    if oper == "*":
+        return var * quan1
+    if oper == "/":
+        return var / quan1
+    mask = ~np.isnan(var)
+    qmask = ~np.isnan(quan1)
+    mask = mask & qmask
+    if oper == "==":
+        var[mask] = np.where(var[mask] == quan1[mask], 1.0, np.nan)
+    elif oper == ">=":
+        var[mask] = np.where(var[mask] >= quan1[mask], 1.0, np.nan)
+    elif oper == "<=":
+        var[mask] = np.where(var[mask] <= quan1[mask], 1.0, np.nan)
+    elif oper == "<":
+        var[mask] = np.where(var[mask] < quan1[mask], 1.0, np.nan)
+    elif oper == ">":
+        var[mask] = np.where(var[mask] > quan1[mask], 1.0, np.nan)
+    elif oper == "!=":
+        var[mask] = np.where(var[mask] != quan1[mask], 1.0, np.nan)
     else:
-        print(f"Unknow operation ({oper[i]}).")
+        print(f"Unknow operation ({oper}).")
         sys.exit()
     return var
 
 
-def initialize_time(times):
-    """
-    Handle the time units for the x axis in the summary
-
-    Args:
-        times (str): Type for the time to plot
-
-    Returns:
-        scale (float): Scale for the times\n
-        unit (str): Units for the x label
-
-    """
-    scale, unit = 1.0 * 86400, "Time [seconds]"
+def initialize_time(times: str) -> tuple[float, str]:
+    """Handle the time units for the x axis in the summary"""
     if times == "s":
-        scale, unit = 1.0 * 86400, "Time [seconds]"
+        return 86400.0, "Time [seconds]"
     if times == "m":
-        scale, unit = 1.0 * 86400 / 60, "Time [minutes]"
+        return 1440.0, "Time [minutes]"
     if times == "h":
-        scale, unit = 1.0 * 86400 / 3600, "Time [hours]"
+        return 24.0, "Time [hours]"
     if times == "d":
-        scale, unit = 1.0 * 86400 / 86400, "Time [days]"
+        return 1.0, "Time [days]"
     if times == "w":
-        scale, unit = 1.0 * 86400 / 604800, "Time [weeks]"
+        return 0.14285714285714285, "Time [weeks]"
     if times == "y":
-        scale, unit = 1.0 * 86400 / 31557600, "Time [years]"
+        return 0.002737909255898758, "Time [years]"
     if times == "dates":
-        scale, unit = 1, "Dates"
-    return scale, unit
+        return 1, "Dates"
+    return 86400.0, "Time [seconds]"
 
 
-def get_csvs(dic, n):
-    """
-    Read the csv quantities
-
-    Args:
-        dic (dict): Global dictionary\n
-        n (int): Number of deck
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    if dic["mode"] == "gif":
-        file = dic["deck"].replace("PLOPM", str(dic["restart"][0]))
-        csvv = np.genfromtxt(
-            f"{file}.csv",
-            delimiter=",",
-            skip_header=1,
-        )
+def get_csvs(
+    cfg: ConfigPlopm, deck: str, n: int
+) -> tuple[NDArray, NDArray, int, int, str, str]:
+    """Read the csv quantities"""
+    if cfg.gif:
+        file_name = deck.replace("PLOPM", str(cfg.restart[0]))
     else:
-        csvv = np.genfromtxt(
-            f"{dic['deck']}.csv",
-            delimiter=",",
-            skip_header=1,
-        )
-    x = csvv[-1][dic["csvs"][n][0] - 1] + csvv[0][dic["csvs"][n][0] - 1]
-    y = csvv[-1][dic["csvs"][n][1] - 1] + csvv[0][dic["csvs"][n][1] - 1]
-    dic["mx"] = round(x / (2.0 * csvv[0][dic["csvs"][n][0] - 1]))
-    dic["my"] = round(y / (2.0 * csvv[0][dic["csvs"][n][1] - 1]))
-    dic["xmx"] = np.linspace(0, x, dic["mx"] + 1)
-    dic["ymy"] = np.linspace(0, y, dic["my"] + 1)
-    dic["xc"], dic["yc"] = np.meshgrid(dic["xmx"], dic["ymy"][::-1])
-    dic["xc"], dic["yc"] = dic["xc"].tolist(), dic["yc"].tolist()
-    dic["xmeaning"], dic["ymeaning"] = "x", "y"
-    dic["nslide"] = "csv"
+        file_name = deck
+    csvv = np.genfromtxt(f"{file_name}.csv", delimiter=",", skip_header=1)
+    col_x = cfg.csvs[n][0] - 1
+    col_y = cfg.csvs[n][1] - 1
+    x0 = csvv[0, col_x]
+    x1 = csvv[-1, col_x]
+    y0 = csvv[0, col_y]
+    y1 = csvv[-1, col_y]
+    x = x1 + x0
+    y = y1 + y0
+    mx = round(x / (2.0 * x0))
+    my = round(y / (2.0 * y0))
+    xname = "x"
+    yname = "y"
+    xmx = np.linspace(0, x, mx + 1)
+    ymy = np.linspace(0, y, my + 1)
+    return xmx[None, :], ymy[::-1][:, None], mx, my, xname, yname
 
 
-def handle_filter(porvs, quan1, oper, value):
-    """
-    Applied the requested filter
-
-    Args:
-        dic (dict): Global dictionary\n
-
-    Returns:
-        var (array): Modified values after applying the operator
-
-    """
+def handle_filter(porvs: NDArray, quan1: NDArray, oper: str, value: float) -> NDArray:
+    """Apply the requested filter"""
     if oper == "==":
-        porvs = [porv if val == value else 0 for porv, val in zip(porvs, quan1)]
+        mask = quan1 == value
     elif oper == ">=":
-        porvs = [porv if val >= value else 0 for porv, val in zip(porvs, quan1)]
+        mask = quan1 >= value
     elif oper == "<=":
-        porvs = [porv if val <= value else 0 for porv, val in zip(porvs, quan1)]
+        mask = quan1 <= value
     elif oper == "<":
-        porvs = [porv if val < value else 0 for porv, val in zip(porvs, quan1)]
+        mask = quan1 < value
     elif oper == ">":
-        porvs = [porv if val > value else 0 for porv, val in zip(porvs, quan1)]
+        mask = quan1 > value
     elif oper == "!=":
-        porvs = [porv if val != value else 0 for porv, val in zip(porvs, quan1)]
+        mask = quan1 != value
     else:
         print(f"Unknow filter ({oper}).")
         sys.exit()
-    return porvs
+    return np.where(mask, porvs, 0)
 
 
-def get_readers(dic, n=0):
-    """
-    Load the opm parsing methods
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    for ext in ["init", "unrst"]:
-        if os.path.isfile(f"{dic['deck']}.{ext.upper()}"):
-            dic[ext] = []
-            if ext == "init":
-                dic[ext] = OpmFile(f"{dic['deck']}.{ext.upper()}")
-            else:
-                dic[ext] = OpmRestart(f"{dic['deck']}.{ext.upper()}")
-    if os.path.isfile(f"{dic['deck']}.EGRID") and dic["mode"] != "vtk":
-        dic["egrid"] = OpmGrid(f"{dic['deck']}.EGRID")
-    if "init" not in dic.keys() and "unrst" not in dic.keys():
-        print(f"Unable to find {dic['deck']} with .EGRID or .INIT.")
-        sys.exit()
-    dic["tnrst"] = []
-    dic["ntot"] = 1
-    dic["porv"] = np.array(dic["init"]["PORV"])
-    dic["dx"] = np.array(dic["init"]["DX"])
-    dic["dy"] = np.array(dic["init"]["DY"])
-    dic["dz"] = np.array(dic["init"]["DZ"])
-    dic["nxyz"] = len(dic["porv"])
-    dic["pv"] = np.array([porv for porv in dic["porv"] if porv > 0])
-    dic["actind"] = np.cumsum([1 if porv > 0 else 0 for porv in dic["porv"]]) - 1
-    if dic["filter"][n]:
-        porv0 = np.array(dic["init"]["PORV"])
-        for value in dic["filter"][n].split("&"):
-            filte = (value.strip()).split(" ")
-            quan1 = filte[0].upper()
-            if dic["init"].count(quan1):
-                quan1 = np.array(dic["init"][quan1])
-            else:
-                continue
-            dic["porv"][porv0 > 0] = handle_filter(
-                dic["porv"][porv0 > 0], quan1, filte[1], float(filte[2])
-            )
-    if "unrst" in dic.keys():
-        dic["ntot"] = dic["unrst"].report_steps[-1] + 1
-        for ntm in dic["unrst"].report_steps:
-            dic["tnrst"].append(dic["unrst"]["DOUBHEAD", ntm][0])
-    if "egrid" in dic.keys():
-        dic["nx"] = dic["egrid"].dimension[0]
-        dic["ny"] = dic["egrid"].dimension[1]
-        dic["nz"] = dic["egrid"].dimension[2]
-    if dic["restart"][0] == -1:
-        if dic["mode"] == "gif":
-            dic["restart"] = dic["unrst"].report_steps
-        else:
-            dic["restart"] = [dic["ntot"] - 1]
-    if not dic["tnrst"]:
-        dic["tnrst"] = [0] * len(dic["restart"])
+def get_unit(name: str) -> str:
+    """Get the variable unit"""
+    name_low = name.lower()
+    if name_low in {"disperc", "depth", "dx", "dy", "dz"}:
+        return " [m]"
+    if name_low in {"porv", "fgip", "fgit"}:
+        return r" [sm$^3$]"
+    if name_low in {"permx", "permy", "permz"}:
+        return " [mD]"
+    if name_low in {"tranx", "trany", "tranz"}:
+        return " [cP rm$^3$/ (day bar)]"
+    if name_low in {"pressure", "rpr", "fpr", "fprr", "wbhp"}:
+        return " [bar]"
+    return " [-]"
 
 
-def get_unit(name):
-    """
-    Get the variable unit
-
-    Args:
-        name (str): Variable
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    if name.lower() in ["disperc", "depth", "dx", "dy", "dz"]:
-        unit = " [m]"
-    elif name.lower() in ["porv"]:
-        unit = r" [sm$^3$]"
-    elif name.lower() in ["permx", "permy", "permz"]:
-        unit = " [mD]"
-    elif name.lower() in ["tranx", "trany", "tranz"]:
-        unit = " [cP rm$^3$/ (day bar)]"
-    elif name.lower() in ["pressure", "rpr", "fpr", "fprr", "wbhp"]:
-        unit = " [bar]"
-    elif name.lower() in ["fgip", "fgit"]:
-        unit = " [sm$^3$]"
-    else:
-        unit = " [-]"
-    return unit
-
-
-def get_quantity(dic, name, n, nrst, m):
-    """
-    Compute the mass (intensive quantities).
-
-    Args:
-        dic (dict): Global dictionary\n
-        name (str): Name of the variable\n
-        skl (float): Scaling for the mass quantity\n
-        nrst (int): Number of restart step
-
-    Returns:
-        unit (str): Corresponding physical unit\n
-        quan (array): Floats with the requested quantity
-
-    """
-    skl = float(dic["avar"][n])
-    unit = get_unit(name)
+def get_quantity(
+    deck: str,
+    read: ReadData,
+    name: str,
+    nrst: int,
+    skl: float,
+    mass: list[str],
+    mass_all: list[str],
+    caprock: list[str],
+    stress: float,
+    filters: str,
+    isgif: bool,
+    vmin: str,
+    vmax: str,
+    cvs: list,
+) -> tuple[str, NDArray]:
+    """Handle the quantity from the OPM output files"""
     names = name.split(" ")
-    if dic["csvs"][m][0]:
-        if dic["mode"] == "gif":
-            file = dic["deck"].replace("PLOPM", str(nrst))
-            csvv = np.genfromtxt(
-                f"{file}.csv",
-                delimiter=",",
-                skip_header=1,
-            )
+    unit = get_unit(name)
+    name0_low = names[0]
+    name0 = name0_low.upper()
+    if cvs[0]:
+        if isgif:
+            file_name = deck.replace("PLOPM", str(nrst))
         else:
-            csvv = np.genfromtxt(
-                f"{dic['deck']}.csv",
-                delimiter=",",
-                skip_header=1,
-            )
-        quan = np.array([csvv[i][dic["csvs"][m][2] - 1] for i in range(csvv.shape[0])])
+            file_name = deck
+        csvv = np.genfromtxt(f"{file_name}.csv", delimiter=",", skip_header=1)
+        col = cvs[2] - 1
+        quan = csvv[:, col]
     else:
-        if dic["init"].count(names[0]):
-            quan = dic["init"][names[0]] * 1.0
-            if names[0].lower() == "porv":
-                quan = dic["pv"]
-        elif names[0].lower() == "grid":
-            quan = np.array(dic["init"]["SATNUM"]) * 0
-        elif names[0].lower() == "wells":
-            quan = np.array(dic["init"]["SATNUM"]) * 0
-            dic["wells"] = []
-            get_wells(dic, n)
-        elif names[0].lower() == "faults":
-            quan = np.array(dic["init"]["SATNUM"]) * 0
-            dic["faults"] = []
-            get_faults(dic, n)
-        elif "index" in names[0].lower():
-            quan = np.array(dic["init"]["SATNUM"]) * 0
-        elif dic["unrst"].count(names[0], nrst):
-            quan = dic["unrst"][names[0], nrst]
-            if dic["unrst"].count("RPORV", nrst):
-                if dic["filter"][m]:
-                    porv0 = np.array(dic["init"]["PORV"])
-                    for value in dic["filter"][m].split("&"):
-                        filte = (value.strip()).split(" ")
-                        quan1 = filte[0].upper()
-                        if dic["init"].count(quan1):
-                            quan1 = np.array(dic["init"][quan1])
-                        elif dic["unrst"].count(quan1, nrst):
-                            quan1 = np.array(dic["unrst"][quan1, nrst])
+        if read.init.count(name0):
+            quan = np.array(read.init[name0], dtype=float)
+            if name0_low == "porv":
+                quan = read.pv
+        elif name0_low in ["wells", "faults", "grid"]:
+            quan = np.zeros_like(read.init["SATNUM"])
+        elif name0_low in ["index_i", "index_j", "index_k"]:
+            quan = np.array(
+                get_indices(name0_low, read.nx, read.ny, read.nz), dtype=float
+            )
+            quan = quan[read.porv > 0]
+        elif read.unrst.count(name0, nrst):
+            quan = read.unrst[name0, nrst]
+            if read.unrst.count("RPORV", nrst):
+                if filters:
+                    porv0 = np.array(read.init["PORV"])
+                    mask = porv0 > 0
+                    base_rporv = np.array(read.unrst["RPORV", nrst])
+                    for value in filters.split("&"):
+                        filte = value.strip().split(" ")
+                        key = filte[0].upper()
+                        if read.init.count(key):
+                            q1 = np.array(read.init[key])
+                        elif read.unrst.count(key, nrst):
+                            q1 = np.array(read.unrst[key, nrst])
                         else:
-                            print(f"Unknow filter quantity ({filte[0].upper()}).")
+                            print(f"Unknow filter quantity ({key}).")
                             sys.exit()
-                        dic["porv"][porv0 > 0] = np.array(
-                            handle_filter(
-                                np.array(dic["unrst"]["RPORV", nrst]),
-                                quan1,
-                                filte[1],
-                                float(filte[2]),
-                            )
+                        base_rporv = handle_filter(
+                            base_rporv, q1, filte[1], float(filte[2])
                         )
+                    read.porv[mask] = base_rporv
                 else:
-                    dic["porv"][dic["porv"] > 0] = np.array(dic["unrst"]["RPORV", nrst])
-        elif names[0].lower() in dic["mass"] + dic["xmass"]:
-            quan = handle_mass(dic, names[0].lower(), nrst) * skl
-            if names[0].lower() in dic["mass"]:
+                    read.porv[read.porv > 0] = np.array(read.unrst["RPORV", nrst])
+        elif name0_low in mass_all:
+            quan = handle_mass(read, name0_low, nrst) * skl
+            if name0_low in mass:
                 unit = initialize_mass(skl)
-        elif names[0].lower() in dic["caprock"]:
-            quan, unit = handle_caprock(dic, names[0].lower(), nrst)
-        elif names[0].lower() in ["swat", "soil", "sgas"]:
-            quan = handle_saturation(dic, names[0].lower(), nrst) * skl
+        elif name0_low in caprock:
+            quan, unit = handle_caprock(read, name0_low, nrst, stress)
+        elif name0_low in ["swat", "soil", "sgas"]:
+            quan = handle_saturation(read.unrst, name0_low, nrst) * skl
         else:
-            print(f"Unknow -v variable ({names[0]}).")
+            print(f"Unknow -v variable ({name0}).")
             sys.exit()
         if len(names) > 1:
+            ops = names[1::2]
             for j, val in enumerate(names[2::2]):
-                if (val[0]).isdigit() and not val[-1].isdigit():
-                    quan1 = dic["unrst"][val[1:], int(val[0])]
-                elif (val[0]).isdigit() and val[-1].isdigit():
-                    quan1 = float(val)
-                elif dic["init"].count(val):
-                    quan1 = dic["init"][val]
-                elif dic["unrst"].count(val, nrst):
-                    quan1 = dic["unrst"][val, nrst]
-                elif val.lower() in dic["mass"] + dic["xmass"]:
-                    quan1 = handle_mass(dic, val.lower(), nrst) * skl
-                elif val.lower() in dic["caprock"]:
-                    quan1, unit = handle_caprock(dic, val.lower(), nrst)
-                quan = operate(quan, quan1, j, names[1::2])
-    if dic["vmin"][n]:
-        quan = np.array(quan)
-        quan[quan < float(dic["vmin"][n])] = np.nan
-    if dic["vmax"][n]:
-        quan = np.array(quan)
-        quan[float(dic["vmax"][n]) < quan] = np.nan
+                if val[0].isdigit() and not val[-1].isdigit():
+                    q1 = read.unrst[val[1:].upper(), int(val[0])]
+                elif val[0].isdigit() and val[-1].isdigit():
+                    q1 = np.full_like(quan, float(val))
+                elif read.init.count(val.upper()):
+                    q1 = np.array(read.init[val.upper()])
+                    if val.upper() == "PORV":
+                        q1 = q1[read.porv > 0]
+                elif val in ["index_i", "index_j", "index_k"]:
+                    q1 = np.array(
+                        get_indices(val, read.nx, read.ny, read.nz),
+                        dtype=float,
+                    )
+                    q1 = q1[read.porv > 0]
+                elif read.unrst.count(val.upper(), nrst):
+                    q1 = read.unrst[val.upper(), nrst]
+                elif val in mass_all:
+                    q1 = handle_mass(read, val, nrst) * skl
+                elif val in caprock:
+                    q1, unit = handle_caprock(read, val, nrst, stress)
+                else:
+                    print(f"Unknow -v variable ({val}).")
+                    sys.exit()
+                quan = operate(quan, q1, ops[j])
+    if vmin:
+        quan = np.asarray(quan)
+        quan[quan < float(vmin)] = np.nan
+    if vmax:
+        quan = np.asarray(quan)
+        quan[quan > float(vmax)] = np.nan
     return unit, quan
 
 
-def handle_saturation(dic, name, nrst):
-    """
-    Compute the oil saturation.
-
-    Args:
-        dic (dict): Global dictionary\n
-        name (str): Name of the variable for the saturation map\n
-        nrst (int): Number of restart step
-
-    Returns:
-        s (array): Floats with the saturation
-
-    """
-    soil = (
-        np.array(dic["unrst"]["SOIL", nrst]) if dic["unrst"].count("SOIL", nrst) else 0
-    )
-    sgas = (
-        np.array(dic["unrst"]["SGAS", nrst]) if dic["unrst"].count("SGAS", nrst) else 0
-    )
-    swat = (
-        np.array(dic["unrst"]["SWAT", nrst]) if dic["unrst"].count("SWAT", nrst) else 0
-    )
+def handle_saturation(unrst: OpmRestart, name: str, nrst: int) -> NDArray:
+    """Compute the oil saturation"""
+    if unrst.count("SOIL", nrst):
+        soil = np.array(unrst["SOIL", nrst])
+    else:
+        soil = np.array(0)
+    if unrst.count("SGAS", nrst):
+        sgas = np.array(unrst["SGAS", nrst])
+    else:
+        sgas = np.array(0)
+    if unrst.count("SWAT", nrst):
+        swat = np.array(unrst["SWAT", nrst])
+    else:
+        swat = np.array(0)
     if name == "soil":
         return 1 - sgas - swat
     if name == "swat":
@@ -1209,58 +1096,51 @@ def handle_saturation(dic, name, nrst):
     return 1 - soil - swat
 
 
-def handle_mass(dic, name, nrst):
-    """
-    Compute the mass (intensive quantities).
-
-    Args:
-        dic (dict): Global dictionary\n
-        name (str): Name of the variable for the mass spatial map\n
-        nrst (int): Number of restart step
-
-    Returns:
-        mass (array): Floats with the computed mass
-
-    """
-    sgas = np.array(dic["unrst"]["SGAS", nrst])
-    rhog = np.array(dic["unrst"]["GAS_DEN", nrst])
-    rhow = np.array(dic["unrst"]["WAT_DEN", nrst])
-    if dic["unrst"].count("RSW", nrst):
-        rsw = np.array(dic["unrst"]["RSW", nrst])
+def handle_mass(read: ReadData, name: str, nrst: int) -> NDArray:
+    """Compute the mass (intensive quantities)"""
+    sgas = np.array(read.unrst["SGAS", nrst])
+    rhog = np.array(read.unrst["GAS_DEN", nrst])
+    rhow = np.array(read.unrst["WAT_DEN", nrst])
+    if read.unrst.count("RSW", nrst):
+        rsw = np.array(read.unrst["RSW", nrst])
     else:
-        rsw = 0.0 * sgas
-    if dic["unrst"].count("RVW", nrst):
-        rvw = np.array(dic["unrst"]["RVW", nrst])
+        rsw = np.zeros_like(sgas)
+    if read.unrst.count("RVW", nrst):
+        rvw = np.array(read.unrst["RVW", nrst])
     else:
-        rvw = 0.0 * sgas
-    if dic["unrst"].count("RPORV", nrst):
-        rpv = np.array(dic["unrst"]["RPORV", nrst])
+        rvw = np.zeros_like(sgas)
+    if read.unrst.count("RPORV", nrst):
+        rpv = np.array(read.unrst["RPORV", nrst])
     else:
-        rpv = dic["pv"]
-    x_l_co2 = np.divide(rsw, rsw + WAT_DEN_REF / GAS_DEN_REF)
-    x_g_h2o = np.divide(rvw, rvw + GAS_DEN_REF / WAT_DEN_REF)
-    co2_g = (1 - x_g_h2o) * sgas * rhog * rpv
-    co2_d = x_l_co2 * (1.0 - sgas) * rhow * rpv
-    h2o_l = (1 - x_l_co2) * (1 - sgas) * rhow * rpv
+        rpv = read.pv
+    denom_l = rsw + WAT_DEN_REF / GAS_DEN_REF
+    denom_g = rvw + GAS_DEN_REF / WAT_DEN_REF
+    x_l_co2 = np.zeros_like(rsw)
+    x_g_h2o = np.zeros_like(rvw)
+    mask_l = denom_l != 0
+    mask_g = denom_g != 0
+    x_l_co2[mask_l] = rsw[mask_l] / denom_l[mask_l]
+    x_g_h2o[mask_g] = rvw[mask_g] / denom_g[mask_g]
+    inv_sgas = 1.0 - sgas
+    inv_xg = 1.0 - x_g_h2o
+    inv_xl = 1.0 - x_l_co2
+    co2_g = inv_xg * sgas * rhog * rpv
+    co2_d = x_l_co2 * inv_sgas * rhow * rpv
+    h2o_l = inv_xl * inv_sgas * rhow * rpv
     h2o_v = x_g_h2o * sgas * rhog * rpv
     return type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v, x_l_co2, x_g_h2o)
 
 
-def type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v, x_l_co2, x_g_h2o):
-    """
-    From the given variable return the associated mass
-
-    Args:
-        name (str): Name of the variable for the mass spatial map\n
-        co2_g: Mass of CO2 in the gas phase\n
-        co2_d: Mass of CO2 in the liquid phase\n
-        h2o_l: Mass of H2O in the liquid phase\n
-        h2o_v: Mass of H2O in the gas phase
-
-    Returns:
-        mass (array): Floats with the computed mass
-
-    """
+def type_of_mass(
+    name: str,
+    co2_g: NDArray,
+    co2_d: NDArray,
+    h2o_l: NDArray,
+    h2o_v: NDArray,
+    x_l_co2: NDArray,
+    x_g_h2o: NDArray,
+) -> NDArray:
+    """From the given variable return the associated mass"""
     if name == "gasm":
         return co2_g
     if name == "dism":
@@ -1282,239 +1162,200 @@ def type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v, x_l_co2, x_g_h2o):
     return co2_g + co2_d
 
 
-def handle_caprock(dic, name, nrst):
-    """
-    Compute quantities related to the caprock integrity.
-
-    Args:
-        dic (dict): Global dictionary\n
-        name (str): Name of the variable for the mass spatial map\n
-        nrst (int): Number of restart step
-
-    Returns:
-        mass (array): Floats with the computed mass
-
-    """
-    dz_corr = 0.5 * np.array(dic["init"]["DZ", 0])
-    if dic["unrst"].count("WAT_DEN", 0) and dic["unrst"].count("WAT_DEN", nrst):
-        den0 = np.array(dic["unrst"]["WAT_DEN", 0])
-        den1 = np.array(dic["unrst"]["WAT_DEN", nrst])
+def handle_caprock(
+    read: ReadData, name: str, nrst: int, stress: float
+) -> tuple[NDArray, str]:
+    """Compute quantities related to the caprock integrity"""
+    init_dic = read.init
+    unrst_dic = read.unrst
+    dz = np.array(init_dic["DZ", 0])
+    depth = np.array(init_dic["DEPTH", 0])
+    dz_half = 0.5 * dz
+    dz_corr = 0.5 * dz
+    if unrst_dic.count("WAT_DEN", 0) and unrst_dic.count("WAT_DEN", nrst):
+        den0 = np.array(unrst_dic["WAT_DEN", 0])
+        den1 = np.array(unrst_dic["WAT_DEN", nrst])
     else:
-        den0, den1 = 1000, 1000
-    pz_c0 = 9.81 * dz_corr * den0 / 1e5
-    pz_c1 = 9.81 * dz_corr * den1 / 1e5
-    limipres = dic["stress"] * (
-        np.array(dic["init"]["DEPTH", 0]) - 0.5 * np.array(dic["init"]["DZ", 0])
-    )
-    overpres = limipres - (np.array(dic["unrst"]["PRESSURE", nrst]) - pz_c1)
-    limipres -= np.array(dic["unrst"]["PRESSURE", 0]) - pz_c0
-    objepres = np.divide(overpres, limipres)
+        den0 = np.array(1000.0)
+        den1 = np.array(1000.0)
+    fac = 9.81 / 1e5
+    pz_c0 = fac * dz_corr * den0
+    pz_c1 = fac * dz_corr * den1
+    pressure0 = np.array(unrst_dic["PRESSURE", 0])
+    pressure1 = np.array(unrst_dic["PRESSURE", nrst])
+    limipres = stress * (depth - dz_half)
+    overpres = limipres - (pressure1 - pz_c1)
+    limipres -= pressure0 - pz_c0
+    objepres = np.zeros_like(overpres)
+    mask = limipres != 0
+    objepres[mask] = overpres[mask] / limipres[mask]
     if name == "limipres":
-        return limipres, " [Bar]"
+        return limipres, " [bar]"
     if name == "overpres":
-        return -overpres, " [Bar]"
+        return -overpres, " [bar]"
     return objepres, " [-]"
 
 
-def get_wells(dic, n):
-    """
-    Using the input deck (.DATA) to read the i,j well locations
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    dic["lwells"] = []
-    dic["wellsa"] = np.ones((dic["mx"]) * (dic["my"])) * np.nan
-    dic["grida"] = np.ones((dic["mx"]) * (dic["my"])) * np.nan
-    wells, sources = False, False
-    with open(f"{dic['name']}.DATA", "r", encoding="utf8") as file:
+def get_wells(cfg: ConfigPlopm, n: int) -> tuple[list, list]:
+    """Using the input deck (.DATA) to read the i,j well locations"""
+    wells: list[list[list[int]]] = []
+    lwells: list[str] = []
+    well_map = {}
+    haswells = False
+    sources = False
+    with open(f"{cfg.name}.DATA", "r", encoding="utf8") as file:
         for row in csv.reader(file):
-            nrwo = str(row)[2:-2]
-            if wells:
-                if len(nrwo.split()) < 2:
-                    if nrwo == "/":
-                        wells = False
+            if not row:
+                continue
+            tokens = row[0].split()
+            if not tokens:
+                continue
+            key = tokens[0]
+            if key == "COMPDAT":
+                haswells = True
+                continue
+            if key == "SOURCE":
+                sources = True
+                continue
+            if key == "/":
+                haswells = False
+                sources = False
+                continue
+            if key.startswith("--"):
+                continue
+            if haswells:
+                if len(tokens) < 5:
                     continue
-                if nrwo.split()[0] == "--" or nrwo.split()[0][:2] == "--":
-                    continue
-                if nrwo.split()[0] not in dic["lwells"]:
-                    dic["lwells"].append(str(nrwo.split()[0]))
-                    dic["wells"].append([])
-                dic["wells"][dic["lwells"].index(nrwo.split()[0])].append(
+                wname = tokens[0]
+                if wname not in well_map:
+                    well_map[wname] = len(lwells)
+                    lwells.append(wname)
+                    wells.append([])
+                idx = well_map[wname]
+                wells[idx].append(
                     [
-                        int(nrwo.split()[1]) - 1,
-                        int(nrwo.split()[2]) - 1,
-                        int(nrwo.split()[3]) - 1,
-                        int(nrwo.split()[4]) - 1,
+                        int(tokens[1]) - 1,
+                        int(tokens[2]) - 1,
+                        int(tokens[3]) - 1,
+                        int(tokens[4]) - 1,
                     ]
                 )
-            if sources:
-                if len(nrwo.split()) < 2:
-                    if nrwo == "/":
-                        wells = False
+            elif sources:
+                if len(tokens) < 3:
                     continue
-                if nrwo.split()[0] == "--" or nrwo.split()[0][:2] == "--":
-                    continue
-                if nrwo.split()[0] not in dic["lwells"]:
-                    dic["lwells"].append(nrwo.split()[0])
-                    dic["wells"].append([])
-                dic["wells"][dic["lwells"].index(nrwo.split()[0])].append(
+                wname = tokens[0]
+                if wname not in well_map:
+                    well_map[wname] = len(lwells)
+                    lwells.append(wname)
+                    wells.append([])
+                idx = well_map[wname]
+                wells[idx].append(
                     [
-                        int(nrwo.split()[0]) - 1,
-                        int(nrwo.split()[1]) - 1,
-                        int(nrwo.split()[2]) - 1,
-                        int(nrwo.split()[2]) - 1,
+                        int(tokens[0]) - 1,
+                        int(tokens[1]) - 1,
+                        int(tokens[2]) - 1,
+                        int(tokens[2]) - 1,
                     ]
                 )
-            if len(nrwo.split()) < 1:
-                if nrwo == "COMPDAT":
-                    wells = True
-                if nrwo == "SOURCE":
-                    sources = True
-            else:
-                if nrwo.split()[0] == "COMPDAT":
-                    wells = True
-                if nrwo.split()[0] == "SOURCE":
-                    sources = True
-    dic["nwells"] = len(dic["lwells"]) + 1
-    if dic["global"] == 0:
-        if dic["slide"][n][0][0] > -1:
-            for i, wells in enumerate(dic["wells"]):
-                for j, well in enumerate(wells):
-                    if dic["whow"] == "min":
-                        count = 0
-                        for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
-                            if well[0] == sld:
-                                count = 1
-                                break
-                        if count == 0:
-                            dic["wells"][i][j] = []
+    if not cfg.global_:
+        sld_x = cfg.slide[n][0]
+        sld_y = cfg.slide[n][1]
+        sld_z = cfg.slide[n][2]
+        whow = cfg.whow
+        for i, wells_list in enumerate(wells):
+            for j, well in enumerate(wells_list):
+                if not well:
+                    continue
+                keep = True
+                if sld_x[0] > -1:
+                    val = well[0]
+                    if whow == "min":
+                        keep = sld_x[0] <= val < sld_x[1]
                     else:
-                        for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
-                            if well[0] != sld:
-                                dic["wells"][i][j] = []
-        elif dic["slide"][n][1][0] > -1:
-            for i, wells in enumerate(dic["wells"]):
-                for j, well in enumerate(wells):
-                    if dic["whow"] == "min":
-                        count = 0
-                        for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
-                            if well[1] == sld:
-                                count = 1
-                                break
-                        if count == 0:
-                            dic["wells"][i][j] = []
+                        keep = val == sld_x[0]
+                elif sld_y[0] > -1:
+                    val = well[1]
+                    if whow == "min":
+                        keep = sld_y[0] <= val < sld_y[1]
                     else:
-                        for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
-                            if well[1] != sld:
-                                dic["wells"][i][j] = []
-        else:
-            for i, wells in enumerate(dic["wells"]):
-                for j, well in enumerate(wells):
-                    if dic["whow"] == "min":
-                        count = 0
-                        for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
-                            if sld in range(well[2], well[3] + 1):
-                                count = 1
-                                break
-                        if count == 0:
-                            dic["wells"][i][j] = []
+                        keep = val == sld_y[0]
+                else:
+                    z0, z1 = well[2], well[3]
+                    if whow == "min":
+                        keep = not (sld_z[1] < z0 or sld_z[0] > z1)
                     else:
-                        for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
-                            if sld not in range(well[2], well[3] + 1):
-                                dic["wells"][i][j] = []
+                        keep = sld_z[0] >= z0 and sld_z[0] <= z1
+                if not keep:
+                    wells[i][j] = []
+    return wells, lwells
 
 
-def get_faults(dic, n):
-    """
-    Using the input deck (.DATA) to read the i,j fault locations
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    dic["lfaults"] = []
-    dic["faultsa"] = np.ones((dic["mx"]) * (dic["my"])) * np.nan
-    dic["grida"] = np.ones((dic["mx"]) * (dic["my"])) * np.nan
-    faults = False
-    with open(f"{dic['name']}.DATA", "r", encoding="utf8") as file:
+def get_faults(cfg: ConfigPlopm, n: int) -> tuple[list, list]:
+    """Using the input deck (.DATA) to read the i,j fault locations"""
+    faults: list[list[list[int]]] = []
+    lfaults: list[str] = []
+    fault_map = {}
+    hasfaults = False
+    with open(f"{cfg.name}.DATA", "r", encoding="utf8") as file:
         for row in csv.reader(file):
-            nrwo = str(row)[2:-2]
-            if faults:
-                if len(nrwo.split()) < 2:
-                    if nrwo == "/" or "/" in nrwo:
-                        break
+            if not row:
+                continue
+            tokens = row[0].split()
+            if not tokens:
+                continue
+            key = tokens[0]
+            if key == "FAULTS":
+                hasfaults = True
+                continue
+            if hasfaults:
+                if key.startswith("--"):
                     continue
-                if nrwo.split()[0] == "--" or nrwo.split()[0][:2] == "--":
+                if "/" in key:
+                    break
+                if len(tokens) < 7:
                     continue
-                if nrwo.split()[0] not in dic["lfaults"]:
-                    dic["lfaults"].append(nrwo.split()[0])
-                    dic["faults"].append([])
-                dic["faults"][dic["lfaults"].index(nrwo.split()[0])].append(
+                fname = key
+                if fname not in fault_map:
+                    fault_map[fname] = len(lfaults)
+                    lfaults.append(fname)
+                    faults.append([])
+                idx = fault_map[fname]
+                faults[idx].append(
                     [
-                        int(nrwo.split()[1]) - 1,
-                        int(nrwo.split()[3]) - 1,
-                        int(nrwo.split()[5]) - 1,
-                        int(nrwo.split()[6]) - 1,
+                        int(tokens[1]) - 1,
+                        int(tokens[3]) - 1,
+                        int(tokens[5]) - 1,
+                        int(tokens[6]) - 1,
                     ]
                 )
-            if len(nrwo.split()) < 1:
-                if nrwo == "FAULTS":
-                    faults = True
-            else:
-                if nrwo.split()[0] == "FAULTS":
-                    faults = True
-    dic["nfaults"] = len(dic["lfaults"]) + 1
-    if dic["global"] == 0:
-        if dic["slide"][n][0][0] > -1:
-            for i, faults in enumerate(dic["faults"]):
-                for j, fault in enumerate(faults):
-                    if dic["whow"] == "min":
-                        count = 0
-                        for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
-                            if fault[0] == sld:
-                                count = 1
-                                break
-                        if count == 0:
-                            dic["faults"][i][j] = []
+    if not cfg.global_:
+        sld_x = cfg.slide[n][0]
+        sld_y = cfg.slide[n][1]
+        sld_z = cfg.slide[n][2]
+        whow = cfg.whow
+        for i, flist in enumerate(faults):
+            for j, fault in enumerate(flist):
+                if not fault:
+                    continue
+                keep = True
+                if sld_x[0] > -1:
+                    val = fault[0]
+                    if whow == "min":
+                        keep = sld_x[0] <= val < sld_x[1]
                     else:
-                        for sld in range(dic["slide"][n][0][0], dic["slide"][n][0][1]):
-                            if fault[0] != sld:
-                                dic["faults"][i][j] = []
-        elif dic["slide"][n][1][0] > -1:
-            for i, faults in enumerate(dic["faults"]):
-                for j, fault in enumerate(faults):
-                    if dic["whow"] == "min":
-                        count = 0
-                        for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
-                            if fault[1] == sld:
-                                count = 1
-                                break
-                        if count == 0:
-                            dic["faults"][i][j] = []
+                        keep = val == sld_x[0]
+                elif sld_y[0] > -1:
+                    val = fault[1]
+                    if whow == "min":
+                        keep = sld_y[0] <= val < sld_y[1]
                     else:
-                        for sld in range(dic["slide"][n][1][0], dic["slide"][n][1][1]):
-                            if fault[1] != sld:
-                                dic["faults"][i][j] = []
-        else:
-            for i, faults in enumerate(dic["faults"]):
-                for j, fault in enumerate(faults):
-                    if dic["whow"] == "min":
-                        count = 0
-                        for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
-                            if sld in range(fault[2], fault[3] + 1):
-                                count = 1
-                                break
-                        if count == 0:
-                            dic["faults"][i][j] = []
+                        keep = val == sld_y[0]
+                else:
+                    z0, z1 = fault[2], fault[3]
+                    if whow == "min":
+                        keep = not (sld_z[1] < z0 or sld_z[0] > z1)
                     else:
-                        for sld in range(dic["slide"][n][2][0], dic["slide"][n][2][1]):
-                            if sld not in range(fault[2], fault[3] + 1):
-                                dic["faults"][i][j] = []
+                        keep = sld_z[0] >= z0 and sld_z[0] <= z1
+                if not keep:
+                    faults[i][j] = []
+    return faults, lfaults

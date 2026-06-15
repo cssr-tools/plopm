@@ -3,25 +3,20 @@
 
 """Test the histograms, caprock integrity, and csvs"""
 
-import os
-import pathlib
-import subprocess
+from pathlib import Path
+from plopm.core.plopm import main
 
-testpth: pathlib.Path = pathlib.Path(__file__).parent
-mainpth: pathlib.Path = pathlib.Path(__file__).parents[1]
+mainpth: Path = Path(__file__).parents[1]
 
 
-def test_metrics():
+def test_metrics(tmp_path):
     """See examples/SPE11B"""
-    if not os.path.exists(f"{testpth}/output"):
-        os.system(f"mkdir {testpth}/output")
-    subprocess.run(
+    main(
         [
-            "plopm",
             "-i",
             f"{mainpth}/examples/SPE11B {mainpth}/examples/SPE11B {mainpth}/examples/SPE11B",
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-v",
             "depth,dz,tranz * 10",
             "-histogram",
@@ -34,40 +29,36 @@ def test_metrics():
             "Histogram",
             "-save",
             "histogram",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/histogram.png")
+    assert (tmp_path / "histogram.png").exists()
     for name in ["limipres", "overpres", "objepres"]:
-        subprocess.run(
+        main(
             [
-                "plopm",
                 "-i",
-                f"{mainpth}/examples/SPE11B",
+                str(mainpth / "examples" / "SPE11B"),
                 "-s",
                 ",,1:58",
                 "-o",
-                f"{testpth}/output",
+                str(tmp_path),
                 "-v",
                 name,
                 "-z",
                 "0",
                 "-save",
                 name,
-            ],
-            check=True,
+            ]
         )
-        assert os.path.exists(f"{testpth}/output/{name}.png")
-    subprocess.run(
+        assert (tmp_path / f"{name}.png").exists()
+    main(
         [
-            "plopm",
             "-i",
-            f"{mainpth}/examples/SPE11B",
+            str(mainpth / "examples" / "SPE11B"),
             "-m",
             "csv",
             "SPE11B",
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-v",
             "objepres",
             "-s",
@@ -76,7 +67,6 @@ def test_metrics():
             "0",
             "-save",
             "objepres",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/objepres.csv")
+    assert (tmp_path / "objepres.csv").exists()

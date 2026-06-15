@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   plopm.config
    plopm.core
    plopm.utils
 

@@ -95,11 +95,29 @@
              
   <section id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
-<p>See <a class="reference external" href="https://opm-project.org/wp-content/uploads/2025/06/OPM_summit_2025_Landa-Marban_tools_pycopm_plopm.pdf">this presentation</a> from the OPM summit 2025 for additional examples using <strong>plopm</strong>,</p>
+<p>See <a class="reference external" href="https://opm-project.org/wp-content/uploads/2025/06/OPM_summit_2025_Landa-Marban_tools_pycopm_plopm.pdf">this presentation</a> from the OPM summit 2025 for additional examples using <strong>plopm</strong>,
+as well as the one from <a class="reference external" href="https://opm-project.org/wp-content/uploads/2026/05/24_David-Landa-Marban.pdf">the OPM summit 2026</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>By default the figure is generated from the front cells on the xy-plane (-s ,1,) and the axes are scaled (-z 1), which for models with large lateral
+extend could lead to a figure such as the below one:</p>
+<figure class="align-default">
+<img alt="_images/docs_z_flag.png" src="_images/docs_z_flag.png" />
+</figure>
+<p>Then, you could set these flags to <strong>-s ,,1 -z 0</strong> when you run <strong>plopm</strong> to not scale the axes and to plot the top view of the model.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can try to generate all figures from the examples below by executing inside the plopm folder:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>tests/scripts/docs_all.sh
+</pre></div>
+</div>
+<p>See the files inside the scripts folder for the commands to be run.</p>
+</div>
 <section id="hello-world">
 <h2>Hello world<a class="headerlink" href="#hello-world" title="Link to this heading"></a></h2>
 <p>The simulation files located in the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples">examples folder</a> were generated using
-<a class="reference external" href="https://github.com/OPM/pyopmspe11">pyopmspe11</a> by running this <a class="reference external" href="https://github.com/OPM/pyopmspe11/blob/main/examples/hello_world/spe11b.toml">configuration file</a>.
+<a class="reference external" href="https://github.com/OPM/pyopmspe11">pyopmspe11</a> by running this <a class="reference external" href="https://github.com/OPM/pyopmspe11/blob/main/examples/spe11b.toml">configuration file</a>.
 Then, if you succeed in installing <strong>plopm</strong>, inside the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples">examples folder</a> by typing in the terminal</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B
 </pre></div>
@@ -108,7 +126,7 @@ Then, if you succeed in installing <strong>plopm</strong>, inside the <a class="
 <figure class="align-default">
 <img alt="_images/spe11b_satnum_%2A%2C1%2C%2A_t5.png" src="_images/spe11b_satnum_%2A%2C1%2C%2A_t5.png" />
 </figure>
-<p>See the <a class="reference internal" href="introduction.html#overview"><span class="std std-ref">Overview</span></a> or run <cite>plopm -h</cite> for the definition of the argument options, as well as using <cite>-printv</cite> flag to output the available
+<p>See the <a class="reference internal" href="introduction.html#overview"><span class="std std-ref">Overview</span></a> or run <cite>plopm -h</cite> for the definition of the argument options, as well as using <cite>-printv 1</cite> flag to output the available
 summary, init, and restart available variables given an input deck.</p>
 <p>For example, for the gas saturation at the report step number 4 with three colorbar labels using a given colormap (-c) and defined colorbar ticks (-cticks):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-r<span class="w"> </span><span class="m">4</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">3</span><span class="w"> </span>-c<span class="w"> </span>cubehelix<span class="w"> </span>-cticks<span class="w"> </span><span class="s1">&#39;[0, middle, 0.9]&#39;</span>
@@ -189,8 +207,8 @@ plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class=
 </div>
 <img alt="_images/norne_faults.png" src="_images/norne_faults.png" />
 <p>To show all wells in the model and to only show the ones with at least one perforation on the top layer, this can be achieved by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>wells<span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">8</span><span class="w"> </span>-global<span class="w"> </span><span class="m">1</span>
-plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>wells<span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">8</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>wells<span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">8</span><span class="w"> </span>-global<span class="w"> </span><span class="m">1</span><span class="w"> </span>-save<span class="w"> </span><span class="s2">&quot;norne_wells_global&quot;</span>
+plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class="w"> </span>-v<span class="w"> </span>wells<span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">8</span><span class="w">  </span>-save<span class="w"> </span><span class="s2">&quot;norne_wells&quot;</span>
 </pre></div>
 </div>
 <img alt="_images/norne_wells.png" src="_images/norne_wells.png" />
@@ -264,10 +282,10 @@ an OPM Flow file, while the second entry has three values, where the first two s
 it is the column for the plotted variable. The previous command generates the following figure:</p>
 <img alt="_images/spe11b_spatial_map_500y_xco2l_csv_t100.png" src="_images/spe11b_spatial_map_500y_xco2l_csv_t100.png" />
 <p>To compare two summary quantities, this can be achiaved by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M&quot;</span><span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;,BWPR:1944&quot;</span><span class="w"> </span>-csv<span class="w"> </span><span class="s2">&quot;1,3;&quot;</span><span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;1e-5,1&quot;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;solid,dotted&quot;</span><span class="w"> </span>-lw<span class="w"> </span><span class="s2">&quot;4,4&quot;</span><span class="w"> </span>-ylabel<span class="w"> </span><span class="s2">&quot;Sensor pressure [bar]&quot;</span><span class="w"> </span>-labels<span class="w"> </span><span class="s2">&quot;From csv file  From OPM Flow output file&quot;</span><span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;r,k&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M&quot;</span><span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;,BWPR:256,1,5&quot;</span><span class="w"> </span>-csv<span class="w"> </span><span class="s2">&quot;1,3;&quot;</span><span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;1e-5,1&quot;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;solid,dotted&quot;</span><span class="w"> </span>-lw<span class="w"> </span><span class="s2">&quot;4,4&quot;</span><span class="w"> </span>-ylabel<span class="w"> </span><span class="s2">&quot;Sensor pressure [bar]&quot;</span><span class="w"> </span>-labels<span class="w"> </span><span class="s2">&quot;From csv file  From OPM Flow output file&quot;</span><span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;r,k&quot;</span>
 </pre></div>
 </div>
-<p>where for summary variables, the flag <strong>-v “,BWPR:1944”</strong> needs to have empty entries for corresponding csv <strong>-i</strong> files, and the flag <strong>-a “1e-5,1”</strong> allows to convert the values in Pascal to bar from the csv file, multiplying by 1e-5. The previous command generates the following figure:</p>
+<p>where for summary variables, the flag <strong>-v “,BWPR:256,1,5”</strong> needs to have empty entries for corresponding csv <strong>-i</strong> files, and the flag <strong>-a “1e-5,1”</strong> allows to convert the values in Pascal to bar from the csv file, multiplying by 1e-5. The previous command generates the following figure:</p>
 <img alt="_images/spe11b_time_series_BWPR-1944.png" src="_images/spe11b_time_series_BWPR-1944.png" />
 <p>If you download the benchmark data from <a class="reference external" href="https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4750">this website</a>, then you could use <strong>plopm</strong> to compare simulation results.
 For example, by downloading the  <a class="reference external" href="https://darus.uni-stuttgart.de/file.xhtml?fileId=375740&amp;version=1.0&amp;toolType=PREVIEW">spe11_opm1.zip</a>, <a class="reference external" href="https://darus.uni-stuttgart.de/file.xhtml?fileId=375725&amp;version=1.0&amp;toolType=PREVIEW">spe11_opm2.zip</a>,
@@ -293,7 +311,7 @@ your simulations with those results by (to remove the legend, add the flag <stro
 <p>Inside the <a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/examples">examples folder</a>, then we can create VTKs from the
 OPM Flow simulation results (i.e., .EGRID, .INIT, .UNRST). For example, to create VTKS for the temperature, fipnum, the co2 mass, and the co2 mass fraction in the liquid phase
 from the restart files from the initial (0) to the number 5 restart, using a OPM Flow build from source in a given path, this can be achieved by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>temp,fipnum,co2m,xco2l<span class="w"> </span>-vtkformat<span class="w"> </span>Float32,UInt16,Float64,Float32<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>,5<span class="w"> </span>-m<span class="w"> </span>vtk
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>temp,fipnum,co2m,xco2l<span class="w"> </span>-vtkformat<span class="w"> </span>Float32,UInt16,Float64,Float16<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>,5<span class="w"> </span>-m<span class="w"> </span>vtk
 </pre></div>
 </div>
 <figure class="align-default" id="id8">
@@ -314,12 +332,12 @@ such as component mass (e.g., co2, h2o). This is when <strong>plopm</strong> can
 <p>Let us assume we have two different runs in different folders for the spe11b case, where the firsts results are save
 in a folder called spe11b, and simulation results where the injection rate has been increased are saved in a folder
 called spe11b_larger_inj. Then, to plot the summary vector for both runs we can execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;spe11b/SPE11B spe11b_larger_inj/SPE11B&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;fgip,fgipm,RGIP:3 / 2&#39;</span><span class="w"> </span>-a<span class="w"> </span><span class="m">1</span>,1e-6<span class="w"> </span>-tunits<span class="w"> </span>w<span class="w"> </span>-d<span class="w"> </span><span class="m">10</span>,5<span class="w"> </span>-c<span class="w"> </span>r,b<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;solid,dashed&#39;</span><span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Field gas in place  Comparing the total mass  Half gas in place in fipnum 3&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">14</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">2</span>,2<span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-loc<span class="w"> </span>empty,empty,empty,center<span class="w"> </span>-save<span class="w"> </span>comparison
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;spe11b/SPE11B spe11b_larger_inj/SPE11B&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;fgmip,fgmip / 1E6,RGMDS:5&#39;</span><span class="w"> </span>-ylabel<span class="w"> </span><span class="s1">&#39;[kg]  [Kt]  [kg]&#39;</span><span class="w"> </span>-tunits<span class="w"> </span>w<span class="w"> </span>-d<span class="w"> </span><span class="m">10</span>,5<span class="w"> </span>-c<span class="w"> </span>r,b<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;solid,dashed&#39;</span><span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Field gas mass in place  Converted to kilotonns   Dissolved CO$_2$ in facie 5&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">14</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">2</span>,2<span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-loc<span class="w"> </span>empty,empty,empty,center<span class="w"> </span>-save<span class="w"> </span>comparison
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/comparison.png"><img alt="_images/comparison.png" height="368" src="_images/comparison.png" width="728" />
+<a class="reference internal image-reference" href="_images/comparison.png"><img alt="_images/comparison.png" height="153" src="_images/comparison.png" width="303" />
 </a>
-<p>Here, using subplots, we plot the gas in place, injected mass and scaled to kilo tons, the regional gas in place in fipnum 3 divided by 2, and the time is shown in weeks.</p>
+<p>Here, using subplots, we plot the gas in place in kilograms, we convert this to kilotonnes, the dissolve CO2 mass in facie 5, and the time is shown in weeks.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>For any summary variable, one can give the path to more than two different simulation cases, just by separating the folder paths by spaces in the -i.</p>
@@ -330,7 +348,7 @@ called spe11b_larger_inj. Then, to plot the summary vector for both runs we can 
 </div>
 <img alt="_images/sgas_diff.png" src="_images/sgas_diff.png" />
 <p>To changue the colormap and setting the colorbar limits manually, this can be achieved by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>spe11b_larger_inj/SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span><span class="w"> </span>-diff<span class="w"> </span>spe11b/SPE11B<span class="w"> </span>-remove<span class="w"> </span><span class="m">0</span>,0,0,1<span class="w"> </span>-c<span class="w"> </span>tab20c_r<span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[0,0.8]&#39;</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">9</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>spe11b_larger_inj/SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span><span class="w"> </span>-diff<span class="w"> </span>spe11b/SPE11B<span class="w"> </span>-remove<span class="w"> </span><span class="m">0</span>,0,0,1<span class="w"> </span>-c<span class="w"> </span>tab20c_r<span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[0,0.8]&#39;</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">9</span><span class="w"> </span>-cformat<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span>-save<span class="w"> </span>formated
 </pre></div>
 </div>
 <img alt="_images/sgas_diff_edit.png" src="_images/sgas_diff_edit.png" />
@@ -398,6 +416,7 @@ The first ilustration is generated from the SPE11B model using <a class="referen
 curl<span class="w"> </span>-L<span class="w"> </span>-O<span class="w"> </span>https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11b.toml
 curl<span class="w"> </span>-L<span class="w"> </span>https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11b.toml<span class="w"> </span>-o<span class="w"> </span>spe11b_higher_rate.toml
 ex<span class="w"> </span>-s<span class="w"> </span>+<span class="s1">&#39;51c|inj = [[25, 5, 1, 0.07, 10, 1, 0.07, 10]]&#39;</span><span class="w"> </span>-c<span class="w"> </span>x<span class="w"> </span>spe11b_higher_rate.toml
+sed<span class="w"> </span>-i.bak<span class="w"> </span><span class="s1">&#39;s/0.035/0.07/g&#39;</span><span class="w"> </span>spe11b_higher_rate.toml
 pyopmspe11<span class="w"> </span>-i<span class="w"> </span>spe11b.toml<span class="w"> </span>-o<span class="w"> </span>spe11b<span class="w"> </span>-f<span class="w"> </span><span class="m">0</span>
 pyopmspe11<span class="w"> </span>-i<span class="w"> </span>spe11b_higher_rate.toml<span class="w"> </span>-o<span class="w"> </span>spe11b_higher_rate<span class="w"> </span>-f<span class="w"> </span><span class="m">0</span>
 plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;spe11b/SPE11B spe11b_higher_rate/SPE11B_HIGHER_RATE&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;fgmip * 1e-6&#39;</span><span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;r,b&#39;</span><span class="w"> </span>-tunits<span class="w"> </span>y<span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-lw<span class="w"> </span><span class="m">2</span><span class="w"> </span>-label<span class="w"> </span><span class="s1">&#39;Base case  Higher injection rate&#39;</span><span class="w"> </span>-xlnum<span class="w"> </span><span class="m">6</span><span class="w"> </span>-ylabel<span class="w"> </span><span class="s1">&#39;Total CO$_2$ mass [Kt]&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">18</span><span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Comparing two runs of the SPE11B model&#39;</span>
@@ -415,7 +434,7 @@ case requires a big computer (run with 1024 CPUs), then the steps below are appl
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/OPM/pyopmspe11.git
 curl<span class="w"> </span>-L<span class="w"> </span>-O<span class="w"> </span>https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11c.toml
 pyopmspe11<span class="w"> </span>-i<span class="w"> </span>spe11c.toml<span class="w"> </span>-o<span class="w"> </span>spe11c<span class="w"> </span>-f<span class="w"> </span><span class="m">0</span>
-plopm<span class="w"> </span>-i<span class="w"> </span>spe11c/SPE11C<span class="w"> </span>-v<span class="w"> </span>satnum,xco2l<span class="w"> </span>-vtkformat<span class="w"> </span>UInt16,Float32<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>,5<span class="w"> </span>-m<span class="w"> </span>vtk
+plopm<span class="w"> </span>-i<span class="w"> </span>spe11c/SPE11C<span class="w"> </span>-v<span class="w"> </span>satnum,xco2l<span class="w"> </span>-vtkformat<span class="w"> </span>UInt16,Float16<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>,5<span class="w"> </span>-m<span class="w"> </span>vtk
 </pre></div>
 </div>
 <p>The above commands will generate the SPE11C.pvd, SPE11C-000.vtu, and SPE11C_0005.vtu files, which then can be open using <a class="reference external" href="https://www.paraview.org">paraview</a>,

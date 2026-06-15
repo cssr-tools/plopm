@@ -17,7 +17,7 @@ To install the **plopm** executable from the development version in an existing 
 
     pip install git+https://github.com/cssr-tools/plopm.git
 
-If you are interested in a specific version (e.g., v2025.10) or in modifying the source code, then you can clone the repository and 
+If you are interested in a specific version (e.g., v2026.04) or in modifying the source code, then you can clone the repository and 
 install the Python requirements in a virtual environment with the following commands:
 
 .. code-block:: console
@@ -26,8 +26,8 @@ install the Python requirements in a virtual environment with the following comm
     git clone https://github.com/cssr-tools/plopm.git
     # Get inside the folder
     cd plopm
-    # For a specific version (e.g., v2025.10), or skip this step (i.e., edge version)
-    git checkout v2025.10
+    # For a specific version (e.g., v2026.04), or skip this step (i.e., edge version)
+    git checkout v2026.04
     # Create virtual environment
     python3 -m venv vplopm
     # Activate virtual environment
@@ -55,7 +55,7 @@ OPM Flow
 --------
 To use the convertion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) to vtk, you also need to install:
 
-* OPM Flow (https://opm-project.org, Release 2025.04 or current master branches)
+* OPM Flow (https://opm-project.org, Release 2026.04 or current master branches)
 
 Binary packages
 +++++++++++++++
@@ -103,7 +103,7 @@ Brew formula for macOS
 ++++++++++++++++++++++
 For macOS, there are no available binary packages, so OPM Flow needs to be built from source. Recently, a formula to build flow using brew has
 been added in `https://github.com/cssr-tools/homebrew-opm <https://github.com/cssr-tools/homebrew-opm>`_. 
-Then, you can try to install flow (v2026.02) by simply typing:
+Then, you can try to install flow (v2026.04) by simply typing:
 
 .. code-block:: console
 

@@ -8,6 +8,9 @@ on:
    
 jobs:
   run-plopm-local:
+    permissions:
+      contents: read
+      pull-requests: write
     timeout-minutes: 30
     runs-on: ubuntu-latest
 
@@ -45,14 +48,14 @@ jobs:
         
     - name: Check code style and linting 
       run: |
-        black --target-version py312 --check src/ tests/
-        pylint src/ tests/
-        ruff check src/ tests/
-        mypy --ignore-missing-imports src/ tests/
+        black --target-version py312 src/ tests/ examples/ --check
+        pylint src/ tests/ examples/
+        ruff check src/ tests/ examples/
+        mypy --ignore-missing-imports src/ tests/ examples/
       
     - name: Run the tests
       run: |
-        pytest --cov=plopm --exitfirst --cov-report term-missing tests/
+        pytest --cov=plopm --cov-report term-missing --basetemp=test_outputs tests/ --exitfirst
         
     - name: Build documentation
       run: |

@@ -3,55 +3,46 @@
 
 """Test the summary functionality"""
 
-import os
-import pathlib
-import subprocess
+from pathlib import Path
+from plopm.core.plopm import main
 
-testpth: pathlib.Path = pathlib.Path(__file__).parent
-mainpth: pathlib.Path = pathlib.Path(__file__).parents[1]
+mainpth: Path = Path(__file__).parents[1]
 
 
-def test_summary():
+def test_summary(tmp_path):
     """See examples/SPE11B"""
-    if not os.path.exists(f"{testpth}/output"):
-        os.system(f"mkdir {testpth}/output")
     for name in ["krw3", "krg2", "pcwg5"]:
-        subprocess.run(
+        main(
             [
-                "plopm",
                 "-i",
-                f"{mainpth}/examples/SPE11B",
+                str(mainpth / "examples" / "SPE11B"),
                 "-v",
                 name,
                 "-c",
                 "k",
                 "-o",
-                f"{testpth}/output",
-            ],
-            check=True,
+                str(tmp_path),
+            ]
         )
-        assert os.path.exists(f"{testpth}/output/spe11b_{name}.png")
+        assert (tmp_path / f"spe11b_{name}.png").exists()
     for i in range(1, 4):
-        subprocess.run(
+        main(
             [
-                "plopm",
                 "-i",
-                f"{mainpth}/examples/SPE11B",
+                str(mainpth / "examples" / "SPE11B"),
                 "-v",
                 "tcpu",
                 "-ensemble",
                 str(i),
                 "-o",
-                f"{testpth}/output",
+                str(tmp_path),
                 "-save",
                 f"spe11b_ens{i}",
-            ],
-            check=True,
+            ]
         )
-        assert os.path.exists(f"{testpth}/output/spe11b_ens{i}.png")
-    subprocess.run(
+        assert (tmp_path / f"spe11b_ens{i}.png").exists()
+    main(
         [
-            "plopm",
             "-i",
             f"{mainpth}/examples/SPE11B {mainpth}/examples/SPE11B",
             "-v",
@@ -61,20 +52,18 @@ def test_summary():
             "-subfigs",
             "2,2",
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-save",
             "subfigs_summary",
             "-d",
             "6,5",
             "-ylabel",
             "gas in place  mass in place  halfmass region 3",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/subfigs_summary.png")
-    subprocess.run(
+    assert (tmp_path / "subfigs_summary.png").exists()
+    main(
         [
-            "plopm",
             "-i",
             f"{mainpth}/examples/SPE11B {mainpth}/examples/SPE11B {mainpth}/examples/SPE11B",
             "-v",
@@ -88,14 +77,12 @@ def test_summary():
             "-labels",
             "Reference  Times 2  Over 2",
             "-o",
-            f"{testpth}/output",
-        ],
-        check=True,
+            str(tmp_path),
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/summary.png")
-    subprocess.run(
+    assert (tmp_path / "summary.png").exists()
+    main(
         [
-            "plopm",
             "-i",
             f"{mainpth}/examples/SPE11B {mainpth}/examples/SPE11B {mainpth}/examples/SPE11B",
             "-v",
@@ -117,16 +104,14 @@ def test_summary():
             "-u",
             "opm",
             "-o",
-            f"{testpth}/output",
-        ],
-        check=True,
+            str(tmp_path),
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/spe11b_pressure-0pressure.png")
-    subprocess.run(
+    assert (tmp_path / "spe11b_pressure-0pressure.png").exists()
+    main(
         [
-            "plopm",
             "-i",
-            f"{mainpth}/examples/SPE11B {mainpth}/examples/SPE11B {mainpth}/examples/SPE11B",
+            str(mainpth / "examples" / "SPE11B"),
             "-v",
             "pressure - 0pressure",
             "-s",
@@ -146,18 +131,16 @@ def test_summary():
             "-u",
             "opm",
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-save",
             "layers",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/layers.png")
-    subprocess.run(
+    assert (tmp_path / "layers.png").exists()
+    main(
         [
-            "plopm",
             "-i",
-            f"{mainpth}/examples/SPE11B",
+            str(mainpth / "examples" / "SPE11B"),
             "-v",
             "sgas > 1e-2",
             "-distance",
@@ -169,18 +152,16 @@ def test_summary():
             "-xunits",
             "km",
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-save",
             "distance_sensor",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/distance_sensor.png")
-    subprocess.run(
+    assert (tmp_path / "distance_sensor.png").exists()
+    main(
         [
-            "plopm",
             "-i",
-            f"{mainpth}/examples/SPE11B",
+            str(mainpth / "examples" / "SPE11B"),
             "-v",
             "sgas > 1e-2",
             "-distance",
@@ -192,18 +173,16 @@ def test_summary():
             "-u",
             "opm",
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-save",
             "distance_border",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/distance_border.png")
-    subprocess.run(
+    assert (tmp_path / "distance_border.png").exists()
+    main(
         [
-            "plopm",
             "-i",
-            f"{mainpth}/examples/SPE11B",
+            str(mainpth / "examples" / "SPE11B"),
             "-v",
             "pressure",
             "-s",
@@ -211,10 +190,9 @@ def test_summary():
             "-how",
             "pvmean",
             "-o",
-            f"{testpth}/output",
+            str(tmp_path),
             "-save",
             "projection_layer",
-        ],
-        check=True,
+        ]
     )
-    assert os.path.exists(f"{testpth}/output/projection_layer.png")
+    assert (tmp_path / "projection_layer.png").exists()

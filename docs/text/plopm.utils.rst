@@ -10,8 +10,9 @@ Submodules
    plopm.utils.initialization
    plopm.utils.mapping
    plopm.utils.readers
-   plopm.utils.vtk
-   plopm.utils.write
+   plopm.utils.write_oned
+   plopm.utils.write_twod
+   plopm.utils.write_vtk
 
 Module contents
 ---------------

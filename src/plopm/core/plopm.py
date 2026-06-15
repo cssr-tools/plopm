@@ -2,570 +2,581 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=R1702,W0123,W1401,R0915
 
-"""
-Script to plot 2D maps of OPM Flow geological models.
-"""
+"""Postprocessing visualization tool for OPM Flow geological models"""
 
 import shutil
 import argparse
 from plopm.utils.initialization import (
-    ini_dic,
+    ini_cfg,
     ini_properties,
     is_summary,
     ini_summary,
 )
-from plopm.utils.vtk import make_vtks
-from plopm.utils.write import make_summary, make_maps
+from plopm.utils.write_vtk import make_vtks
+from plopm.utils.write_oned import make_plots
+from plopm.utils.write_twod import make_maps
 
 
-def plopm():
+def main(argv=None) -> None:
     """Main function for the plopm executable"""
-    cmdargs = load_parser()
-    dic = ini_dic(cmdargs)
-    text = (
-        "\nThe execution of plopm succeeded. "
-        + f"The generated files have been written to {dic['output']}\n"
-    )
+    cmdargs = load_parser(argv)
+    cfg = ini_cfg(cmdargs)
     print("\nExecuting plopm, please wait.")
-    if dic["mode"] == "vtk":
-        make_vtks(dic)
-        print(text)
-        return
-    if shutil.which("latex") == "None":
-        print(
-            "\nLaTeX is recommended for the figures to show the "
-            "nice fonts and given formats. You can install it by "
-            "following the instructions in the pofff's "
-            "documentation."
+    if cfg.vtk:
+        make_vtks(
+            cmdargs["path"],
+            cfg.names,
+            cfg.output,
+            cfg.save,
+            cfg.restart,
+            cfg.vrs,
+            cfg.vtkformat,
+            cfg.vtknames,
+            cfg.gif,
+            cfg.vtk,
+            cfg.filter,
+            cfg.adjust,
+            cfg.mass,
+            cfg.mass + cfg.xmass,
+            cfg.caprock,
+            cfg.stress,
+            cfg.filter,
         )
-    if is_summary(dic):
-        ini_summary(dic)
-        make_summary(dic)
-        print(text)
-        return
-    ini_properties(dic)
-    make_maps(dic)
-    print(text)
+    else:
+        if shutil.which("latex") is None:
+            print(
+                "\nLaTeX is recommended for the figures to show the "
+                "nice fonts and given formats. You can install it by "
+                "following the instructions in the plopm's "
+                "documentation."
+            )
+        if is_summary(cfg):
+            ini_summary(cfg)
+            make_plots(cfg)
+        else:
+            ini_properties(cfg)
+            make_maps(cfg)
+    print(
+        "\nThe execution of plopm succeeded. "
+        + f"The generated files have been written to {cfg.output}\n"
+    )
 
 
-def load_parser():
-    """Argument options"""
+def load_parser(argv: list[str] | None) -> dict:
+    """CLI arguments"""
     parser = argparse.ArgumentParser(
-        description="plopm: Simplified and flexible Python tool for quick "
-        "visualization of OPM Flow geological models.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="plopm: Simplified and flexible Python tool for quick visualization of "
+        "OPM Flow geological models. See online documentation for examples and "
+        "detailed description of command flags: "
+        "https://cssr-tools.github.io/plopm/introduction.html#overview",
     )
     parser.add_argument(
         "-i",
         "--input",
+        type=str.strip,
         default="SPE11B",
-        help="The base name (or full path) of the input files; if more than"
-        " one is given, separate them by spaces ' ' (e.g, "
-        "'SPE11B /home/user/SPE11B_TUNED') ('SPE11B' by default).",
-    )
-    parser.add_argument(
-        "-o",
-        "--output",
-        default=".",
-        help="The base name (or full path) of the output folder ('.' by "
-        "default, i.e., the folder where plopm is executed).",
+        help="Provide input file(s) or base name(s), separated by spaces "
+        'e.g. "SPE11B /home/user/SPE11B_TUNED"',
     )
     parser.add_argument(
         "-v",
         "--variable",
+        type=str.strip,
         default="poro,permx,permz,porv,fipnum,satnum",
-        help="Specify the name of the variable to plot, e.g., 'pressure', in "
-        "addition to special variables such as 'grid', 'wells', 'faults', "
-        "'pcfact', 'limipres', 'overpres', 'objepres', "
-        "'krw', 'krg', 'krow', 'krog', 'pcow', 'pcog', 'pcwg', "
-        "'gasm', 'dism', 'liqm', 'vapm', 'co2m', 'h2om', 'xco2l', 'xh2ov', "
-        "'xco2v', 'xh2ol', 'fwcdm', and 'fgipm', as well as operations, e.g, "
-        "'pressure - 0pressure' to plot the pressure increase "
-        "('poro,permx,permz,porv,fipnum,satnum' by default.",
+        help="Specify variable(s) to plot, including standard variables, special "
+        "variables (grid, wells, faults), and expressions "
+        'e.g. "pressure - 0pressure"',
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=str.strip,
+        default=".",
+        help="Set output directory",
     )
     parser.add_argument(
         "-m",
         "--mode",
+        type=str.strip,
+        choices=["png", "gif", "csv", "vtk"],
         default="png",
-        help="Generate 'png', 'gif', 'csv', or 'vtk' files ('png' by default).",
+        help="Select output format",
     )
     parser.add_argument(
         "-s",
         "--slide",
+        type=str.strip,
         default=",1,",
-        help="The slide in the 3D model to plot the 2D maps, e.g, "
-        "'10,,' to plot the xz plane on all cells with i=10, or "
-        "',,5:10' to plot the pv average weighted quantity. If two values are "
-        "given, e.g., ':,5,7', then the variable is plotted along the colon "
-        "entry given the indice at the specified restart step, unless the flag "
-        "'-how ' is set, then this generates a plot of the projected variable "
-        "over time. If the three values are given, e.g., '2,4,9', then the "
-        "variable is plotted over time at that location (',1,' by default, "
-        "i.e., the xz surface at j=1).",
-    )
-    parser.add_argument(
-        "-p",
-        "--path",
-        default="flow",
-        help="Path to flow, e.g., '/home/build/bin/flow'."
-        " This is used to generate the grid for the vtk files ('flow' by "
-        "default).",
-    )
-    parser.add_argument(
-        "-z",
-        "--scale",
-        default=1,
-        help="Scale the axis in the 2D maps ('1' by default).",
-    )
-    parser.add_argument(
-        "-f",
-        "--size",
-        default=12,
-        help="The font size ('12' by default)",
-    )
-    parser.add_argument(
-        "-x",
-        "--xlim",
-        default="",
-        help="Set the lower and upper bounds along x, e.g., '[-100,200]' "
-        "('' by default).",
-    )
-    parser.add_argument(
-        "-y",
-        "--ylim",
-        default="",
-        help="Set the lower and upper bounds along y, e.g., '[-10,300]' "
-        "('' by default).",
-    )
-    parser.add_argument(
-        "-c",
-        "--colors",
-        default="",
-        help="Specify the colormap, e.g., 'jet', or color(s) for the summary, "
-        "e.g., 'b,r' ('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-e",
-        "--linestyle",
-        default="",
-        help="Specify the linestyles for the summary plots, "
-        "e.g., 'solid,dotted' ('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-b",
-        "--bounds",
-        default="",
-        help="Specify the upper and lower bounds for the colormap, e.g., "
-        " '[-0.1,11]' ('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-d",
-        "--dimensions",
-        default="7,5",
-        help="Specify the dimensions in inches of the generated png, e.g., "
-        "'8,16' ('7,5' by default).",
-    )
-    parser.add_argument(
-        "-t",
-        "--title",
-        default="0",
-        help="Specify the figure title, e.g., 'Final saturation map' ('' by "
-        "default, i.e., set by plopm, set to 0 to remove).",
+        help="Select slice or location using i,j,k format "
+        'e.g. "10,," (xz plane), ",,5:10" (range), "2,4,9" (cell over time)',
     )
     parser.add_argument(
         "-r",
         "--restart",
+        type=str.strip,
         default="-1",
-        help="Restart number to plot the dynamic variable, where 0 corresponds to "
-        "the initial one ('-1' by default, i.e., the last restart file). For "
-        "GIFs, the default correspond to all restart steps. To make a GIF using "
-        "selected restart steps, provide these separated by commas, e.g., "
-        "'0,3,10,20'. To write a serie of PNGs, this can be achieve by setting "
-        "'-r a:b:[step]', e.g., '-r 1:3' for rsts 1 to 3, and '-r 5:505:250' for "
-        "rsts 5, 255, and 505.",
+        help="Select restart step(s): single, list, or range "
+        'e.g. "-1", "0,3,10", "1:5", "5:505:250"',
     )
     parser.add_argument(
-        "-a",
-        "--adjust",
-        default="1.0",
-        help="Scale the mass variable, e.g., 1e-9 for the color bar for "
-        "the CO2 mass to be in Mt ('1' by default).",
-    )
-    parser.add_argument(
-        "-csv",
-        "--csv",
+        "-c",
+        "--colors",
+        type=str.strip,
         default="",
-        help="If the input file is a csv, then define the number of column for "
-        "the x, y, and variable for spatial maps, or the t and variable for time "
-        "series ('' by default, column numbering starting from 1, not 0).",
+        help='Set colormap or colors e.g. "jet" or "b,r"',
     )
     parser.add_argument(
-        "-tunits",
-        "--tunits",
-        default="d",
-        help="For the x axis in the summary use seconds 's', minutes 'm', "
-        "hours 'h', days 'd', weeks 'w', years 'y', dates 'dates', or empty "
-        "'empty' ('empty' only used to remove dynamic times in GIFs) ('s' by "
-        "default).",
-    )
-    parser.add_argument(
-        "-ylabel",
-        "--ylabel",
+        "-b",
+        "--bounds",
+        type=str.strip,
         default="",
-        help="Text for the y axis ('' by default, i.e., set by plopm).",
+        help='Set color limits e.g. "[-0.1,11]"',
     )
     parser.add_argument(
-        "-xlabel",
-        "--xlabel",
-        default="",
-        help="Text for the x axis ('' by default, i.e., set by plopm).",
+        "-d",
+        "--dimensions",
+        type=str.strip,
+        default="7,5",
+        help='Set figure size in inches e.g. "7,5"',
     )
     parser.add_argument(
-        "-ylnum",
-        "--ylnum",
-        default="5",
-        help="Number of y axis labels ('5' by default).",
+        "-f",
+        "--size",
+        type=str.strip,
+        default="12",
+        help="Set font size",
     )
     parser.add_argument(
-        "-xlnum",
-        "--xlnum",
-        default="5",
-        help="Number of x axis labels ('5' by default).",
-    )
-    parser.add_argument(
-        "-cnum",
-        "--cnum",
-        default="",
-        help="Number of color labels ('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-xlog",
-        "--xlog",
+        "-t",
+        "--title",
+        type=str.strip,
         default="0",
-        help="Use log scale for the x axis ('0' by default).",
-    )
-    parser.add_argument(
-        "-ylog",
-        "--ylog",
-        default="0",
-        help="Use log scale for the y axis ('0' by default).",
-    )
-    parser.add_argument(
-        "-clabel",
-        "--clabel",
-        default="",
-        help="Text for the colorbar ('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-labels",
-        "--labels",
-        default="",
-        help="Legend in the summary plot, separated by two spaces if more than "
-        "one ('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-axgrid",
-        "--axgrid",
-        default="1",
-        help="Set axis.grid to True for the summary plots ('1' by default).",
-    )
-    parser.add_argument(
-        "-dpi",
-        "--dpi",
-        default="500",
-        help="Dots per inch for the figure ('500' by default).",
-    )
-    parser.add_argument(
-        "-xformat",
-        "--xformat",
-        default="",
-        help="Format for the x numbers, e.g., .2e for exponential notation "
-        "('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-yformat",
-        "--yformat",
-        default="",
-        help="Format for the y numbers, e.g., .1f for one decimal "
-        "('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-cformat",
-        "--cformat",
-        default="",
-        help="Format for the numbers in the colormap, e.g., "
-        ".2f for two decimals ('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-cticks",
-        "--cticks",
-        default="",
-        help="Set the colorbar tick labelling, e.g., "
-        "'[G, F, E, D, C, ESF]' ('' by default).",
-    )
-    parser.add_argument(
-        "-xunits",
-        "--xunits",
-        default="m",
-        help="For the x axis in the spatial maps meters 'm', kilometers 'km', "
-        "centimeters 'cm', or milimeters 'mm' ('m' by default).",
-    )
-    parser.add_argument(
-        "-yunits",
-        "--yunits",
-        default="m",
-        help="For the y axis in the spatial maps meters 'm', kilometers 'km', "
-        "centimeters 'cm', or milimeters 'mm' ('m' by default).",
-    )
-    parser.add_argument(
-        "-remove",
-        "--remove",
-        default="0,0,0,0",
-        help="Set the entries to 1 to remove in the spatial maps "
-        "the left axis, bottom axis, colorbar, and title ('0,0,0,0' by default).",
-    )
-    parser.add_argument(
-        "-facecolor",
-        "--facecolor",
-        default="w",
-        help="Color outside the spatial map ('w' by default, i.e., white).",
-    )
-    parser.add_argument(
-        "-save",
-        "--save",
-        default="",
-        help="Name of the output files ('' by default, i.e., set by plopm).",
-    )
-    parser.add_argument(
-        "-log",
-        "--log",
-        default="0",
-        help="Log scale for the color map ('0' by default).",
-    )
-    parser.add_argument(
-        "-clogthks",
-        "--clogthks",
-        default="",
-        help="Set the thicks for the color maps with log scale, e.g., '[1,2,3]' "
-        "('' by default).",
-    )
-    parser.add_argument(
-        "-rotate",
-        "--rotate",
-        default="0",
-        help="Grades to rotate the grid in the 2D maps ('0' by default).",
-    )
-    parser.add_argument(
-        "-translate",
-        "--translate",
-        default="[0,0]",
-        help="Translate the grid in the 2D maps x,y directions ('[0,0]' "
-        "by default).",
-    )
-    parser.add_argument(
-        "-global",
-        "--global",
-        default=0,
-        help="Min and max in the colorbars from the current 2D slide values "
-        "(0) or whole 3D model '1' ('0' by default).",
-    )
-    parser.add_argument(
-        "-ensemble",
-        "--ensemble",
-        default="0",
-        help="Set to '1' to plot the mean and error bands for the ensemble, "
-        "'2' to plot the min, mean, and max values, and '3' to plot '1' and '2' "
-        "('0' by default).",
-    )
-    parser.add_argument(
-        "-bandprop",
-        "--bandprop",
-        default="",
-        help="Set to color and alpha values for the matplotlib.pyplot.fill_between "
-        "function when the flag -ensamble is used with values '1' or '3' , e.g., "
-        "-bandprop 'r,0.1,g,0.2' ('' by default, i.e., set as the same color as "
-        "the mean and alpha==0.2).",
-    )
-    parser.add_argument(
-        "-how",
-        "--how",
-        default="",
-        help="Select how to project the given variable (-v) in a slide range (-s). "
-        "By default the variables are pore volume weighted averaged along the range "
-        "except for mass quantities, porv, trans, and cell dims (e.g., dz) which are summed; "
-        "cell indices (e.g., index_i) which show the discrete value; harmonic average and "
-        "arithmetic average for permeabilities depending on the slide range direction using "
-        "the cell dim along the slide (e.g., -s ,,1:2 -v permz [harmonic averaged]); "
-        "for wells/faults, 'min' show the cells when at least one cell contains them "
-        "or 'max' when all cells are part of the given slide/slides range. The supported "
-        "options are 'min', 'max', 'sum', 'mean', 'pvmean', 'harmonic', 'arithmetic', "
-        "'first', and 'last' ('' by default, i.e., the defaults as described above).",
-    )
-    parser.add_argument(
-        "-ncolor",
-        "--ncolor",
-        default="w",
-        help="Color for the inactive cells in the 2D maps ('w' by default, i.e., white).",
-    )
-    parser.add_argument(
-        "-lw",
-        "--lw",
-        default="",
-        help="Line width separated by commas if more than one ('1' by default).",
-    )
-    parser.add_argument(
-        "-subfigs",
-        "--subfigs",
-        default="",
-        help="Generate separated or a single Figure (e.g., '2,2' for four "
-        "subfigures) ('' by default, i.e., separate figures).",
-    )
-    parser.add_argument(
-        "-loc",
-        "--loc",
-        default="best",
-        help="Location of the legend by passing the value to "
-        "matplotlib.pyplot.legend; set to 'empty' to remove it ('best' by "
-        "default).",
-    )
-    parser.add_argument(
-        "-delax",
-        "--delax",
-        default=0,
-        help="Delete aligned axis labels in subfigures ('0' by default).",
-    )
-    parser.add_argument(
-        "-printv",
-        "--printv",
-        default=0,
-        help="Print the avaiable variables to plot ('0' by default).",
-    )
-    parser.add_argument(
-        "-vtkformat",
-        "--vtkformat",
-        default="Float64",
-        help="Format for each variable in the vtks, support for Float64, "
-        "Float32, and UInt16 ('Float64' by default).",
-    )
-    parser.add_argument(
-        "-vtknames",
-        "--vtknames",
-        default="",
-        help="Label each variable in the written vtk ('' by default, "
-        "i.e., the names given in the -v argument).",
-    )
-    parser.add_argument(
-        "-mask",
-        "--mask",
-        default="",
-        help="Static variable to use as 2D map background ('' by default).",
-    )
-    parser.add_argument(
-        "-diff",
-        "--diff",
-        default="",
-        help="The base name (or full path) of the input file to substract"
-        " ('' by default).",
+        help="Set figure title, separate subplots using double spaces",
     )
     parser.add_argument(
         "-suptitle",
         "--suptitle",
+        type=str.strip,
         default="",
-        help="Title for the subfigures ('' by default, i.e., set by plopm, "
-        "if 0, then it is removed; otherwise, write the text).",
+        help="Set title for subfigures or use 0 to remove",
     )
     parser.add_argument(
-        "-cbsfax",
-        "--cbsfax",
-        default="0.40,0.01,0.2,0.02",
-        help="Set the global axis position and size for the colorbar "
-        "('0.40,0.01,0.2,0.02' by default; set to 'empty' to remove it).",
-    )
-    parser.add_argument(
-        "-grid",
-        "--grid",
+        "-clabel",
+        "--clabel",
+        type=str.strip,
         default="",
-        help="Set the edgecolors and lw in the matplotlib.pyplot.pcolormesh "
-        "method, e.g., 'black,1e-3' ('' by default, i.e., no grid).",
+        help="Set colorbar label",
     )
     parser.add_argument(
-        "-vmin",
-        "--vmin",
+        "-xlabel",
+        "--xlabel",
+        type=str.strip,
         default="",
-        help="Set a minimum threshold to remove values in the variable "
-        "('' by default).",
+        help="Set x-axis label",
     )
     parser.add_argument(
-        "-vmax",
-        "--vmax",
+        "-ylabel",
+        "--ylabel",
+        type=str.strip,
         default="",
-        help="Set a maximum threshold to remove values in the variable "
-        "('' by default).",
+        help="Set y-axis label",
     )
     parser.add_argument(
-        "-distance",
-        "--distance",
+        "-facecolor",
+        "--facecolor",
+        type=str.strip,
+        default="w",
+        help="Set background color outside plot",
+    )
+    parser.add_argument(
+        "-dpi",
+        "--dpi",
+        type=str.strip,
+        default="500",
+        help="Set figure resolution in DPI",
+    )
+    parser.add_argument(
+        "-x",
+        "--xlim",
+        type=str.strip,
         default="",
-        help="Compute the 'min' or 'max' distance of the variable to a 'sensor' "
-        "using -s, or to the lateral boundaries ('border'), e.g., '-s 1,2,3 -v "
-        "'sgas > 1e-2' -distance max,sensor' computes the maximum distance to the "
-        "location using a min threshold of 1e-2 to indicate if a cell has gas or "
-        "not ('' by default).",
+        help='Set x-axis limits e.g. "[-100,200]"',
     )
     parser.add_argument(
-        "-histogram",
-        "--histogram",
+        "-y",
+        "--ylim",
+        type=str.strip,
         default="",
-        help="Plot the histogram of the given variable with the given number of "
-        "bins and distribution, e.g., '20,norm' for 20 bins and normal distribution "
-        "('' by default, i.e., no histogram; norm and lognorm supported for now, if "
-        "no specified then only the histogram is plotted).",
+        help='Set y-axis limits e.g. "[-10,300]"',
     )
     parser.add_argument(
-        "-stress",
-        "--stress",
-        default=0.134,
-        help="Value for the stress coeff in the computation of the pressure "
-        "limit for the variables related to the caprock integrity: limipres, "
-        "overpres, and objepres ('0.134' by default).",
+        "-z",
+        "--scale",
+        type=str.strip,
+        choices=["0", "1"],
+        default="1",
+        help="Enable equal axis scaling",
     )
     parser.add_argument(
-        "-maskthr",
-        "--maskthr",
-        default=1e-3,
-        help="Set the threshold for the variable to mask " "('1e-3' by default).",
+        "-xlog",
+        "--xlog",
+        type=str.strip,
+        default="0",
+        help="Enable logarithmic x-axis",
+    )
+    parser.add_argument(
+        "-ylog",
+        "--ylog",
+        type=str.strip,
+        default="0",
+        help="Enable logarithmic y-axis",
+    )
+    parser.add_argument(
+        "-log",
+        "--log",
+        type=str.strip,
+        default="0",
+        help="Enable logarithmic color scale",
+    )
+    parser.add_argument(
+        "-clogthks",
+        "--clogthks",
+        type=str.strip,
+        default="",
+        help='Set custom tick values for logarithmic color scale e.g. "[1,2,3]"',
+    )
+    parser.add_argument(
+        "-a",
+        "--adjust",
+        type=str.strip,
+        default="1",
+        help="Apply scaling factor to variable values e.g. 1e-9 for converting mass to Mt",
+    )
+    parser.add_argument(
+        "-xformat",
+        "--xformat",
+        type=str.strip,
+        default="",
+        help='Set x-axis number format e.g. ".2e"',
+    )
+    parser.add_argument(
+        "-yformat",
+        "--yformat",
+        type=str.strip,
+        default="",
+        help='Set y-axis number format e.g. ".1f"',
+    )
+    parser.add_argument(
+        "-cformat",
+        "--cformat",
+        type=str.strip,
+        default="",
+        help='Set colorbar number format e.g. ".2f"',
+    )
+    parser.add_argument(
+        "-xlnum",
+        "--xlnum",
+        type=str.strip,
+        default="5",
+        help="Set number of x-axis ticks",
+    )
+    parser.add_argument(
+        "-ylnum",
+        "--ylnum",
+        type=str.strip,
+        default="5",
+        help="Set number of y-axis ticks",
+    )
+    parser.add_argument(
+        "-cnum",
+        "--cnum",
+        type=str.strip,
+        default="",
+        help="Set number of colorbar ticks",
+    )
+    parser.add_argument(
+        "-cticks",
+        "--cticks",
+        type=str.strip,
+        default="",
+        help='Set custom colorbar tick labels e.g. "[A,B,C]"',
+    )
+    parser.add_argument(
+        "-xunits",
+        "--xunits",
+        type=str.strip,
+        choices=["mm", "cm", "m", "km"],
+        default="m",
+        help="Set x-axis units",
+    )
+    parser.add_argument(
+        "-yunits",
+        "--yunits",
+        type=str.strip,
+        choices=["mm", "cm", "m", "km"],
+        default="m",
+        help="Set y-axis units",
+    )
+    parser.add_argument(
+        "-subfigs",
+        "--subfigs",
+        type=str.strip,
+        default="",
+        help='Arrange subplots e.g. "2,2" for grid layout',
+    )
+    parser.add_argument(
+        "-loc",
+        "--loc",
+        type=str.strip,
+        default="best",
+        help="Set legend location or use empty to remove",
+    )
+    parser.add_argument(
+        "-labels",
+        "--labels",
+        type=str.strip,
+        default="",
+        help="Set legend labels separated by double spaces",
+    )
+    parser.add_argument(
+        "-lw",
+        "--lw",
+        type=str.strip,
+        default="",
+        help="Set line widths separated by commas",
+    )
+    parser.add_argument(
+        "-e",
+        "--linestyle",
+        type=str.strip,
+        default="",
+        help='Set line styles e.g. "solid,dotted"',
+    )
+    parser.add_argument(
+        "-axgrid",
+        "--axgrid",
+        type=str.strip,
+        choices=["0", "1"],
+        default="1",
+        help="Toggle axis grid display",
+    )
+    parser.add_argument(
+        "-remove",
+        "--remove",
+        type=str.strip,
+        default="0,0,0,0",
+        help="Toggle left axis, bottom axis, colorbar, title using 0 or 1",
+    )
+    parser.add_argument(
+        "-how",
+        "--how",
+        type=str.strip,
+        default="",
+        help="Select aggregation method such as mean, pvmean, sum, harmonic, arithmetic",
+    )
+    parser.add_argument(
+        "-global",
+        "--global",
+        type=str.strip,
+        choices=["0", "1"],
+        default="0",
+        help="Use local slice or global model range for color scaling",
     )
     parser.add_argument(
         "-filter",
         "--filter",
+        type=str.strip,
         default="",
-        help="Consider only the cells fullfilling the conditions, which are separated "
-        "by '&', and use ',' for different input files e.g., 'fluxnum "
-        "== 2 & sgas >= 0.2, satnum != 5'. ('' by default; note that RPORV needs to be "
-        "set in RPTRST to be able to use dynamic filter variables such as sgas).",
+        help='Filter cells using conditions, and use "," for different input files e.g. '
+        '"sgas >= 0.2 & fluxnum == 2, satnum != 5"',
+    )
+    parser.add_argument(
+        "-vmin",
+        "--vmin",
+        type=str.strip,
+        default="",
+        help="Set minimum threshold for values",
+    )
+    parser.add_argument(
+        "-vmax",
+        "--vmax",
+        type=str.strip,
+        default="",
+        help="Set maximum threshold for values",
+    )
+    parser.add_argument(
+        "-mask",
+        "--mask",
+        type=str.strip,
+        default="",
+        help="Set background variable for map masking",
+    )
+    parser.add_argument(
+        "-maskthr",
+        "--maskthr",
+        type=str.strip,
+        default="1e-3",
+        help="Set masking threshold",
+    )
+    parser.add_argument(
+        "-ensemble",
+        "--ensemble",
+        type=str.strip,
+        choices=["0", "1", "2", "3"],
+        default="0",
+        help="Configure ensemble statistics plotting mode",
+    )
+    parser.add_argument(
+        "-bandprop",
+        "--bandprop",
+        type=str.strip,
+        default="",
+        help="Set fill_between color and alpha values",
+    )
+    parser.add_argument(
+        "-histogram",
+        "--histogram",
+        type=str.strip,
+        default="",
+        help='Plot histogram using "bins,distribution" e.g. "20,norm"',
+    )
+    parser.add_argument(
+        "-distance",
+        "--distance",
+        type=str.strip,
+        choices=["min,sensor", "max,sensor", "min,border", "max,border", ""],
+        default="",
+        help="Compute distance relative to sensor or boundary",
+    )
+    parser.add_argument(
+        "-stress",
+        "--stress",
+        type=str.strip,
+        default="0.134",
+        help="Set stress coefficient used to compute pressure limits for caprock "
+        "integrity variables (limipres, overpres, objepres)",
+    )
+    parser.add_argument(
+        "-rotate",
+        "--rotate",
+        type=str.strip,
+        default="0",
+        help="Rotate grid by angle in degrees",
+    )
+    parser.add_argument(
+        "-translate",
+        "--translate",
+        type=str.strip,
+        default="[0,0]",
+        help="Translate grid in x and y directions",
+    )
+    parser.add_argument(
+        "-csv",
+        "--csv",
+        type=str.strip,
+        default="",
+        help="Define CSV column indices starting at 1",
+    )
+    parser.add_argument(
+        "-tunits",
+        "--tunits",
+        type=str.strip,
+        choices=["s", "m", "h", "d", "w", "y", "dates", "empty"],
+        default="d",
+        help="Set time units for plots",
+    )
+    parser.add_argument(
+        "-save",
+        "--save",
+        type=str.strip,
+        default="",
+        help="Set output filename",
+    )
+    parser.add_argument(
+        "-p",
+        "--path",
+        type=str.strip,
+        default="flow",
+        help="Set path to flow executable",
+    )
+    parser.add_argument(
+        "-vtkformat",
+        "--vtkformat",
+        type=str.strip,
+        default="Float64",
+        help="Set VTK variable formats separated by commas",
+    )
+    parser.add_argument(
+        "-vtknames",
+        "--vtknames",
+        type=str.strip,
+        default="",
+        help="Set custom names for VTK variables",
+    )
+    parser.add_argument(
+        "-diff",
+        "--diff",
+        type=str.strip,
+        default="",
+        help="Provide input file for difference computation",
+    )
+    parser.add_argument(
+        "-ncolor",
+        "--ncolor",
+        type=str.strip,
+        default="w",
+        help="Set color for inactive cells",
+    )
+    parser.add_argument(
+        "-grid",
+        "--grid",
+        type=str.strip,
+        default="",
+        help="Set pcolormesh edge color and line width",
+    )
+    parser.add_argument(
+        "-cbsfax",
+        "--cbsfax",
+        type=str.strip,
+        default="0.40,0.01,0.2,0.02",
+        help="Set position of fig.add_axes([left, bottom, width, height])",
+    )
+    parser.add_argument(
+        "-delax",
+        "--delax",
+        type=str.strip,
+        choices=["0", "1"],
+        default="0",
+        help="Remove duplicated axis labels in subplots",
+    )
+    parser.add_argument(
+        "-printv",
+        "--printv",
+        type=str.strip,
+        choices=["0", "1"],
+        default="0",
+        help="Print available variables",
     )
     parser.add_argument(
         "-dual",
         "--dual",
+        type=str.strip,
         default="0",
-        help="Set to 1 to postprocess models with a dual grid ('0' by default, this "
-        "functionality is useful for taylored models using pycopm; examples will be "
-        "made available soon).",
+        help="Enable dual-grid processing",
     )
     parser.add_argument(
         "-interval",
         "--interval",
-        default=1000,
-        help="Time for the frames in the GIF in milli second ('1000' by default).",
+        type=str.strip,
+        default="1000",
+        help="Set GIF frame interval in milliseconds",
     )
     parser.add_argument(
         "-loop",
         "--loop",
-        default=0,
-        help="Set to 1 for infinity loop in the GIF ('0' by default).",
+        type=str.strip,
+        default="0",
+        help="Enable infinite GIF looping",
     )
-    return vars(parser.parse_known_args()[0])
-
-
-def main():
-    """Main function"""
-    plopm()
+    return vars(parser.parse_known_args(argv)[0])
