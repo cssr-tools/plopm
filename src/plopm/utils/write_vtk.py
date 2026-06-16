@@ -105,7 +105,6 @@ def make_vtks(
             output,
             dname,
             save,
-            restart,
             vrs,
             vtkformat_list,
             vtknames,
@@ -120,7 +119,7 @@ def make_vtks(
         writepvd(
             save,
             dname,
-            restart,
+            read.restart,
             read.tnrst,
             output,
             k,
@@ -169,9 +168,6 @@ def check_integer_conversion(
     warning_keys: set[tuple[str, str, str]],
 ) -> None:
     """Warn about risky integer conversions"""
-    raw_quan = np.asarray(quan)
-    if not raw_quan.size:
-        return
     try:
         numeric_quan = np.asarray(quan, dtype=np.float64)
     except (TypeError, ValueError):
@@ -181,7 +177,10 @@ def check_integer_conversion(
             f"Warning: {var.upper()} contains non-numeric values but is written as {vtkformat}.",
         )
         return
-    finite_quan = numeric_quan[np.isfinite(numeric_quan)]
+    if not numeric_quan.size:
+        return
+    finite_mask = np.isfinite(numeric_quan)
+    finite_quan = numeric_quan[finite_mask]
     if finite_quan.size != numeric_quan.size:
         warn_once(
             warning_keys,
@@ -191,7 +190,9 @@ def check_integer_conversion(
     if not finite_quan.size:
         return
     dtype_info = np.iinfo(target_dtype)
-    if np.issubdtype(target_dtype, np.unsignedinteger) and np.nanmin(finite_quan) < 0:
+    min_val = finite_quan.min()
+    max_val = finite_quan.max()
+    if np.issubdtype(target_dtype, np.unsignedinteger) and min_val < 0:
         warn_once(
             warning_keys,
             (var.upper(), vtkformat, "negative_unsigned"),
@@ -205,10 +206,7 @@ def check_integer_conversion(
             f"Warning: {var.upper()} contains float values but is written as {vtkformat}; "
             "NumPy will truncate decimals.",
         )
-    if (
-        np.nanmin(finite_quan) < dtype_info.min
-        or np.nanmax(finite_quan) > dtype_info.max
-    ):
+    if min_val < dtype_info.min or max_val > dtype_info.max:
         warn_once(
             warning_keys,
             (var.upper(), vtkformat, "out_of_range"),
@@ -220,7 +218,7 @@ def check_integer_conversion(
 def format_data_array(quan: NDArray, target_dtype: type) -> str:
     """Format values for an ascii VTK DataArray"""
     quan = np.ravel(np.asarray(quan, dtype=target_dtype))
-    if np.dtype(target_dtype) == np.dtype(np.float32):
+    if np.issubdtype(np.dtype(target_dtype), np.floating):
         quan = np.char.mod("%.8f", quan)
         quan = np.char.rstrip(np.char.rstrip(quan, "0"), ".")
         quan = np.where(quan == "-0", "0", quan)
@@ -235,7 +233,6 @@ def opmtovtk(
     output: str,
     dname: str,
     save: list,
-    restart,
     vrs: list,
     vtkformat_list: list,
     vtknames: list,
@@ -248,6 +245,7 @@ def opmtovtk(
     filterss: str,
 ) -> None:
     """Generate the vtks"""
+    restart = read.restart
     base_vtk = []
     skip = False
     warning_keys: set[tuple[str, str, str]] = set()
@@ -300,6 +298,8 @@ def opmtovtk(
                     check_integer_conversion(
                         quan, var, vtkformat, target_dtype, warning_keys
                     )
+                # VTK XML interoperability for Float16 is limited in many readers,
+                # so we emit Float32 in the DataArray type while preserving values.
                 if vtkformat == "Float16":
                     vtkformat = "Float32"
                 cell_data.append(
