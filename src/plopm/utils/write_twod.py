@@ -967,8 +967,11 @@ def mapits(
     def save_map(named: str, save_index: int) -> None:
         fig.set_facecolor(cfg.fc)
         name = clean_name(f"{named}_{var}_{sliden}_t{read.restart[t]}")
+        if save_index < len(cfg.save):
+            if cfg.save[save_index]:
+                name = cfg.save[save_index]
         fig.savefig(
-            f"{cfg.output}/{cfg.save[save_index] if cfg.save[save_index] else name}.png",
+            f"{cfg.output}/{name}.png",
             bbox_inches="tight",
             dpi=int(cfg.dpi[0]),
         )
