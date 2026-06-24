@@ -385,10 +385,8 @@ def find_min_max(
     cmin, cmax = [float("inf")], [float("-inf")]
     diffa: list[NDArray] = []
     xc, yc = np.empty(0), np.empty(0)
-    if (
-        (cfg.rst_range and cfg.png and not cfg.subfigs[0])
-        or cfg.csv
-        or (cfg.bounds[0][0] and not cfg.diff)
+    if (cfg.rst_range and cfg.png and not cfg.subfigs[0]) or (
+        cfg.bounds[0][0] and not cfg.diff
     ):
         return ReadData(), xc, yc, cmin, cmax, diffa
 
@@ -1027,6 +1025,13 @@ def mapits(
             quaa = map_xzcoords(cfg, read, var, quan, k, mx, my, welult, nwelult)
         else:
             quaa = map_xycoords(cfg, read, var, quan, k, mx, my, welult, nwelult)
+    if cfg.diff:
+        quaa -= diffa[t]
+    if cfg.mask:
+        mask = maska[k]
+        maxv = np.nanmax(mask)
+        mask_condition = quaa < cfg.maskthr
+        quaa[mask_condition] = -cmax[n] * (maxv - mask[mask_condition]) / (maxv - 1)
     if cfg.csv:
         text = [f"{val}\n" for val in quaa if not np.isnan(val)]
         name = clean_name(f"{named}_{var}_{sliden}_t{read.restart[t]}")
@@ -1035,13 +1040,6 @@ def mapits(
         with open(f"{cfg.output}/{name}.csv", "w", encoding="utf8") as file:
             file.write("".join(text))
         return
-    if cfg.diff:
-        quaa -= diffa[t]
-    if cfg.mask:
-        mask = maska[k]
-        maxv = np.nanmax(mask)
-        mask_condition = quaa < cfg.maskthr
-        quaa[mask_condition] = -cmax[n] * (maxv - mask[mask_condition]) / (maxv - 1)
     if var in cfg.mass and cfg.diff:
         extinf = np.nansum(np.abs(quaa))
     elif var in cfg.mass:
@@ -1095,7 +1093,12 @@ def mapits(
             maxc = minmax
         if maxc == minc:
             ntick = 1
-        elif "num" in var and (cfg.cmaps[n] in cfg.cmdisc or defcol) and cfg.discrete:
+        elif (
+            "num" in var
+            and (cfg.cmaps[n] in cfg.cmdisc or defcol)
+            and cfg.discrete
+            and (minc.is_integer() and maxc.is_integer())
+        ):
             ntick = int(maxc - minc + 1)
         if cfg.mask:
             minc = -maxc
