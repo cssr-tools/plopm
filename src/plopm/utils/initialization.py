@@ -298,8 +298,12 @@ def ini_cfg(cmdargs: dict) -> ConfigPlopm:
         if len(getattr(cfg, val)) < max_count:
             setattr(cfg, val, [getattr(cfg, val)[0]] * max_count)
         elif len(cfg.restart) > 1 and cfg.subfigs[0]:
+            if (
+                len(getattr(cfg, val)) >= max(max_count, len(cfg.restart))
+                and val == "title"
+            ):
+                continue
             setattr(cfg, val, [getattr(cfg, val)[0]] * len(cfg.restart))
-
     if len(cfg.restart) > 1 and cfg.subfigs[0]:
         cfg.save = [cmdargs["save"]]
 

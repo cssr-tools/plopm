@@ -521,8 +521,24 @@ def do_read_variables(
                     arr_vals.append(np.full_like(temp, np.nan))
         inds_arr = np.array(inds)
 
+        if unrst_dic.count("RPORV", nrst):
+            porv = unrst_dic["RPORV", nrst][inds_arr]
+        else:
+            porv = pv_all[inds_arr]
+
         if unrst_dic.count(quan0_up, nrst):
             temp = 1.0 * unrst_dic[quan0_up, nrst][inds_arr]
+            # porv-weighted pressure for the dual model
+            if cfg.dual[n] == "1" and cfg.sensor:
+                indd = egrid.active_index(
+                    slide[0], slide[1] + int((read.ny - 1) / 2) + 1, slide[2]
+                )
+                presd = unrst_dic[quan0_up, nrst][indd]
+                if unrst_dic.count("RPORV", nrst):
+                    porvd = unrst_dic["RPORV", nrst][indd]
+                else:
+                    porvd = pv_all[indd]
+                temp = (temp * porv + presd * porvd) / (porv + porvd)
         elif init_dic.count(quan0_up):
             temp = 1.0 * init_dic[quan0_up, 0][inds_arr]
         elif arr_main is not None:
@@ -530,11 +546,6 @@ def do_read_variables(
         else:
             print(f"Unknow -v variable ({quans[0]}).")
             sys.exit()
-
-        if unrst_dic.count("RPORV", nrst):
-            porv = unrst_dic["RPORV", nrst][inds_arr]
-        else:
-            porv = pv_all[inds_arr]
 
         if len(quans) > 1:
             for j, val in enumerate(quans[2::2]):

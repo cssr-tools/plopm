@@ -644,4 +644,6 @@ def map_xycoords(
                                 mapped_values[2 * value[0] + 2 * value[1] * mx] = (
                                     index + 1
                                 )
+    if dual and cfg.diff:
+        mapped_values = mapped_values[: (2 * nx - 1) * (2 * ny - 1)]
     return mapped_values
