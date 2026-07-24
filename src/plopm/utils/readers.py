@@ -4,20 +4,22 @@
 
 """Utility functions to read the OPM Flow simulator type output files"""
 
-import os
 import csv
+import datetime
+import os
 import sys
 from contextlib import nullcontext
-import datetime
+
 import numpy as np
+from alive_progress import alive_bar
 from numpy.typing import NDArray
 from opm.io.ecl import EclFile as OpmFile
 from opm.io.ecl import EGrid as OpmGrid
 from opm.io.ecl import ERst as OpmRestart
 from opm.io.ecl import ESmry as OpmSummary
-from alive_progress import alive_bar
-from plopm.utils.initialization import initialize_mass, initialize_spatial
+
 from plopm.config.config import ConfigPlopm, ReadData
+from plopm.utils.initialization import initialize_mass, initialize_spatial
 
 GAS_DEN_REF = 1.86843
 WAT_DEN_REF = 998.108
@@ -623,7 +625,7 @@ def read_oned(
             unrst_dic = read.unrst
             for index in range(len(unrst_dic)):
                 values = unrst_dic["INTEHEAD", index]
-                tmp.append(datetime.datetime(values[66], values[65], values[64], 0, 0))
+                tmp.append(datetime.date(values[66], values[65], values[64]))
             time = np.array(tmp)
     elif cfg.layer:
         xskl, tunit = initialize_spatial(cfg.xunits)
@@ -776,11 +778,13 @@ def read_oned(
                         tmp2.append(float(row[1]))
                         if len(row) > 2 and row[2].strip() == "/":
                             break
-                    if found:
-                        if row[0] == "/":
-                            count += 1
-                        elif len(row) > 2 and row[2].strip() == "/":
-                            count += 1
+                    if (
+                        found
+                        and row[0] == "/"
+                        or len(row) > 2
+                        and row[2].strip() == "/"
+                    ):
+                        count += 1
         if not tmp2:
             print(f"No {quans[0]} found.")
             sys.exit()

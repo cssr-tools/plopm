@@ -4,6 +4,7 @@
 """Test the default settings"""
 
 from pathlib import Path
+
 from plopm.core.plopm import main
 
 mainpth: Path = Path(__file__).parents[1]

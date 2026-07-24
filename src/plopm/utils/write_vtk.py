@@ -4,18 +4,20 @@
 
 """Utility methods to write the vtks"""
 
-import os
 import csv
-import sys
+import os
 import shlex
 import shutil
+import sys
 from contextlib import nullcontext
 from subprocess import run
-from alive_progress import alive_bar
+
 import numpy as np
+from alive_progress import alive_bar
 from numpy.typing import NDArray
-from plopm.utils.readers import get_quantity, get_readers
+
 from plopm.config.config import ReadData
+from plopm.utils.readers import get_quantity, get_readers
 
 VTK_DTYPES = {
     "Float64": np.float64,
@@ -170,7 +172,7 @@ def check_integer_conversion(
     """Warn about risky integer conversions"""
     try:
         numeric_quan = np.asarray(quan, dtype=np.float64)
-    except (TypeError, ValueError):
+    except TypeError:
         warn_once(
             warning_keys,
             (var.upper(), vtkformat, "non_numeric"),
@@ -334,8 +336,7 @@ def make_dry_deck(dname: str) -> None:
         "w",
         encoding="utf8",
     ) as file:
-        for line in lol:
-            file.write(line + "\n")
+        file.writelines(line + "\n" for line in lol)
 
 
 def get_flags() -> tuple[str, str]:

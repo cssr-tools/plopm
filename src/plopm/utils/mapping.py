@@ -6,8 +6,9 @@
 
 import numpy as np
 from numpy.typing import NDArray
-from plopm.utils.readers import get_xycoords, get_xzcoords, get_yzcoords
+
 from plopm.config.config import ConfigPlopm, ReadData
+from plopm.utils.readers import get_xycoords, get_xzcoords, get_yzcoords
 
 
 def handle_slide_x(

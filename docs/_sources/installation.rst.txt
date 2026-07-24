@@ -67,7 +67,7 @@ supported either via source builds or through running a virtual machine.
 .. tip::
 
     See the `CI.yml <https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml>`_ script 
-    for installation of OPM Flow (binary packages), LaTeX (optional) libraries, and the plopm package in Ubuntu.
+    for installation of OPM Flow (binary packages), LaTeX (optional) libraries, and the plopm package in Ubuntu 26.04 and Python 3.14.
 
 Source build in Linux/Windows
 +++++++++++++++++++++++++++++
@@ -103,11 +103,13 @@ Brew formula for macOS
 ++++++++++++++++++++++
 For macOS, there are no available binary packages, so OPM Flow needs to be built from source. Recently, a formula to build flow using brew has
 been added in `https://github.com/cssr-tools/homebrew-opm <https://github.com/cssr-tools/homebrew-opm>`_. 
-Then, you can try to install flow (v2026.04) by simply typing:
+Then, you can try to install flow (v2026.07 interim release) by simply typing:
 
 .. code-block:: console
 
-    brew install cssr-tools/opm/opm-simulators
+    brew tap cssr-tools/opm
+    brew trust cssr-tools/opm
+    brew install cssr-tools/opm/opm-simulators -y
 
 You can check if the installation of OPM Flow succeded by typing in the terminal **flow \-\-help**.
 
@@ -116,4 +118,4 @@ You can check if the installation of OPM Flow succeded by typing in the terminal
 
 Source build in macOS
 +++++++++++++++++++++
-See `this repository <https://github.com/daavid00/OPM-Flow_macOS>`_ dedicated to build OPM Flow from source in the latest macOS (GitHub actions), and tested with **pycopm**, another repository in cssr-tools.
+See `this repository <https://github.com/daavid00/OPM-Flow_macOS>`_ dedicated to build OPM Flow from source in macOS 26 (GitHub actions), and tested with **pycopm**, another repository in cssr-tools.

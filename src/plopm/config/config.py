@@ -5,6 +5,7 @@
 """Central configuration structures for plopm"""
 
 from dataclasses import dataclass, field
+
 import numpy as np
 from numpy.typing import NDArray
 from opm.io.ecl import EclFile as OpmFile
@@ -24,6 +25,7 @@ class ConfigPlopm:
     delax: bool = False
     printv: bool = False
     loop: bool = False
+    step: bool = False
     global_: bool = False
     rst_range: bool = False
     sensor: bool = False
@@ -133,8 +135,8 @@ class ReadData:
     dz: NDArray = field(default_factory=lambda: np.array([]))
     pv: NDArray = field(default_factory=lambda: np.array([]))
     actind: NDArray = field(default_factory=lambda: np.array([]))
-    restart: list = field(default_factory=lambda: [])
-    tnrst: list = field(default_factory=lambda: [])
+    restart: list = field(default_factory=list)
+    tnrst: list = field(default_factory=list)
     nxyz: int = 0
     ntot: int = 0
     nx: int = 0

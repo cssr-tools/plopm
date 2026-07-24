@@ -6,42 +6,44 @@
 
 import datetime
 import sys
+from collections.abc import Iterable
 from contextlib import nullcontext
 from typing import Any
-from collections.abc import Iterable
+
 import colorcet  # noqa: F401  # registers colorcet colormaps with matplotlib
-import numpy as np
-from numpy.typing import NDArray
-from alive_progress import alive_bar
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-from matplotlib.artist import Artist
-from matplotlib.animation import FuncAnimation, writers
+import numpy as np
+from alive_progress import alive_bar
 from matplotlib import animation, colors
+from matplotlib.animation import FuncAnimation, writers
+from matplotlib.artist import Artist
 from matplotlib.axes import Axes
-from matplotlib.figure import Figure
 from matplotlib.cm import ScalarMappable
+from matplotlib.figure import Figure
 from matplotlib.ticker import LogFormatter
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from mpl_toolkits.axes_grid1.axes_divider import AxesDivider
+from numpy.typing import NDArray
+
 from plopm.config.config import ConfigPlopm, ReadData
-from plopm.utils.readers import (
-    get_quantity,
-    get_csvs,
-    get_faults,
-    get_readers,
-    get_wells,
-    initialize_time,
-)
 from plopm.utils.mapping import (
     handle_slide_x,
     handle_slide_y,
     handle_slide_z,
-    rotate_grid,
-    map_xzcoords,
     map_xycoords,
+    map_xzcoords,
     map_yzcoords,
+    rotate_grid,
+)
+from plopm.utils.readers import (
+    get_csvs,
+    get_faults,
+    get_quantity,
+    get_readers,
+    get_wells,
+    initialize_time,
 )
 
 
@@ -804,10 +806,12 @@ def handle_axis(
     namet, time = name, ""
     if cfg.tunits[0] == "dates":
         date_values = unrst["INTEHEAD", restart[t]]
-        date = datetime.datetime(
-            date_values[66], date_values[65], date_values[64], 0, 0
+        date = datetime.date(
+            date_values[66],
+            date_values[65],
+            date_values[64],
         )
-        time = f" {date.date()}"
+        time = f" {date}"
     elif cfg.tunits[0] == "empty":
         pass
     else:
@@ -965,9 +969,8 @@ def mapits(
     def save_map(named: str, save_index: int) -> None:
         fig.set_facecolor(cfg.fc)
         name = clean_name(f"{named}_{var}_{sliden}_t{read.restart[t]}")
-        if save_index < len(cfg.save):
-            if cfg.save[save_index]:
-                name = cfg.save[save_index]
+        if save_index < len(cfg.save) and cfg.save[save_index]:
+            name = cfg.save[save_index]
         fig.savefig(
             f"{cfg.output}/{name}.png",
             bbox_inches="tight",
@@ -1057,16 +1060,18 @@ def mapits(
         temp = cfg.cmaps[n]
     if var not in ("wells", "grid", "faults"):
         valid_maps = quaa[~np.isnan(quaa)]
-        if len(cfg.names[0]) > 1 and cfg.subfigs[0]:
-            minc = cmin[n]
-            maxc = cmax[n]
-        elif len(cfg.vrs) > 1 and cfg.subfigs[0]:
-            minc = cmin[n]
-            maxc = cmax[n]
-        elif len(read.restart) > 1 and cfg.subfigs[0] and len(cfg.names[0]) == 1:
-            minc = cmin[n]
-            maxc = cmax[n]
-        elif cfg.gif and not cfg.subfigs[0] or int(cfg.log[n]) == 1:
+        if (
+            len(cfg.names[0]) > 1
+            and cfg.subfigs[0]
+            or len(cfg.vrs) > 1
+            and cfg.subfigs[0]
+            or len(read.restart) > 1
+            and cfg.subfigs[0]
+            and len(cfg.names[0]) == 1
+            or cfg.gif
+            and not cfg.subfigs[0]
+            or int(cfg.log[n]) == 1
+        ):
             minc = cmin[n]
             maxc = cmax[n]
         elif not cfg.global_ and valid_maps.size > 0:
@@ -1129,9 +1134,7 @@ def mapits(
         )
         if ntick == 2:
             shc = (maxc - minc) / 2.0
-        elif minc == 0 and "num" not in var and var != "mpi_rank":
-            shc = 0
-        elif cfg.mask:
+        elif minc == 0 and "num" not in var and var != "mpi_rank" or cfg.mask:
             shc = 0
         else:
             shc = 0.5
@@ -1377,9 +1380,7 @@ def mapits(
         cfg.rm[1] == 0
         and len(cfg.names[0]) == 1
         and (k + sub1 >= len(cfg.vrs) or not cfg.subfigs[0])
-    ):
-        axis.set_xlabel(f"{xname+cfg.xunit}")
-    elif (
+    ) or (
         cfg.rm[1] == 0
         and len(cfg.names[0]) == len(cfg.vrs)
         and len(cfg.vrs) > 1
@@ -1392,26 +1393,28 @@ def mapits(
         axis.set_ylabel(f"{yname+cfg.yunit}")
     if cfg.rm[2] == 1 and len(fig.axes) > 1:
         fig.delaxes(fig.axes[1])
-    if cfg.rm[1] == 1 or (
-        k + sub1 < len(cfg.names[0])
-        and cfg.subfigs[0]
-        and len(cfg.vrs) == 1
-        and cfg.delax
-    ):
-        axis.tick_params(axis="x", which="both", bottom=False, labelbottom=False)
-    elif cfg.rm[1] == 1 or (
-        k + sub1 < len(cfg.vrs)
-        and cfg.subfigs[0]
-        and len(cfg.names[0]) == 1
-        and cfg.delax
-    ):
-        axis.tick_params(axis="x", which="both", bottom=False, labelbottom=False)
-    elif (
-        k + sub1 < len(read.restart)
-        and len(read.restart) > 1
-        and cfg.subfigs[0]
-        and len(cfg.names[0]) == 1
-        and cfg.delax
+    if (
+        cfg.rm[1] == 1
+        or (
+            k + sub1 < len(cfg.names[0])
+            and cfg.subfigs[0]
+            and len(cfg.vrs) == 1
+            and cfg.delax
+        )
+        or cfg.rm[1] == 1
+        or (
+            k + sub1 < len(cfg.vrs)
+            and cfg.subfigs[0]
+            and len(cfg.names[0]) == 1
+            and cfg.delax
+        )
+        or (
+            k + sub1 < len(read.restart)
+            and len(read.restart) > 1
+            and cfg.subfigs[0]
+            and len(cfg.names[0]) == 1
+            and cfg.delax
+        )
     ):
         axis.tick_params(axis="x", which="both", bottom=False, labelbottom=False)
     if cfg.rm[0] == 1 or (k % sub1 > 0 and cfg.subfigs[0] and cfg.delax == 1):
@@ -1419,18 +1422,22 @@ def mapits(
     axis.set_facecolor(cfg.fc)
     if not cfg.gif:
         if cfg.subfigs[0]:
-            if t == len(read.restart) - 1 and len(read.restart) > 1:
-                save_map(named, n)
-            elif n == len(cfg.vrs) - 1 and len(cfg.vrs) > 1:
+            if (
+                t == len(read.restart) - 1
+                and len(read.restart) > 1
+                or n == len(cfg.vrs) - 1
+                and len(cfg.vrs) > 1
+            ):
                 save_map(named, n)
             else:
                 if len(read.restart) == 1:
                     if k == max(len(cfg.vrs) - 1, len(cfg.names[0]) - 1):
                         save_map(named, n)
-                elif len(cfg.names[0]) == 1:
-                    if t == len(read.restart) - 1:
-                        save_map(named, n)
-                elif len(read.restart) > 1 and len(cfg.names[0]) == len(read.restart):
+                elif (
+                    len(cfg.names[0]) == 1
+                    or len(read.restart) > 1
+                    and len(cfg.names[0]) == len(read.restart)
+                ):
                     if t == len(read.restart) - 1:
                         save_map(named, n)
                 else:
