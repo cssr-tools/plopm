@@ -5,18 +5,19 @@
 """Test by iterating with Copilot looking at the pylint coverage report"""
 
 from pathlib import Path
+
 import numpy as np
-from PIL import Image
 import pytest
+from PIL import Image
 
 from plopm.core.plopm import main
 from plopm.utils.readers import (
+    get_indices,
     get_unit,
+    handle_filter,
     initialize_time,
     operate,
-    handle_filter,
     project,
-    get_indices,
 )
 
 testpth: Path = Path(__file__).parent

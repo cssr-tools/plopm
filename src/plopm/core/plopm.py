@@ -4,17 +4,18 @@
 
 """Postprocessing visualization tool for OPM Flow geological models"""
 
-import shutil
 import argparse
+import shutil
+
 from plopm.utils.initialization import (
     ini_cfg,
     ini_properties,
-    is_summary,
     ini_summary,
+    is_summary,
 )
-from plopm.utils.write_vtk import make_vtks
 from plopm.utils.write_oned import make_plots
 from plopm.utils.write_twod import make_maps
+from plopm.utils.write_vtk import make_vtks
 
 
 def main(argv=None) -> None:
@@ -578,5 +579,13 @@ def load_parser(argv: list[str] | None) -> dict:
         type=str.strip,
         default="0",
         help="Enable infinite GIF looping",
+    )
+    parser.add_argument(
+        "-step",
+        "--step",
+        type=str.strip,
+        choices=["0", "1"],
+        default="0",
+        help="Use ax.step instead of ax.plot",
     )
     return vars(parser.parse_known_args(argv)[0])

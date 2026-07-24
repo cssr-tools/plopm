@@ -4,17 +4,18 @@
 
 """Utility functions to write the PNGs figures"""
 
-from typing import Union
 import warnings
-import numpy as np
-from numpy.typing import NDArray
+
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from numpy.typing import NDArray
 from scipy.interpolate import interp1d
-from scipy.stats import norm, lognorm
-from plopm.utils.readers import read_oned
+from scipy.stats import lognorm, norm
+
 from plopm.config.config import ConfigPlopm
+from plopm.utils.readers import read_oned
 
 
 def make_plots(cfg: ConfigPlopm) -> None:
@@ -132,16 +133,8 @@ def make_plots(cfg: ConfigPlopm) -> None:
                     cfg, name, quan, cfg.tunits[jj], float(cfg.adjust[jj]), i
                 )
                 label = get_label(name, jj, i)
-                use_line_plot = (
-                    cfg.sensor
-                    or cfg.layer
-                    or cfg.distance[0]
-                    or quan[:3] in ["krw", "krg"]
-                    or quan[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
-                    or quan[:6] == "pcfact"
-                )
-                if use_line_plot:
-                    axis.plot(
+                if cfg.step:
+                    axis.step(
                         time,
                         var,
                         color=cfg.colors[jj][i % len(cfg.colors[jj])],
@@ -194,7 +187,7 @@ def make_plots(cfg: ConfigPlopm) -> None:
                                         ],
                                     )
                 else:
-                    axis.step(
+                    axis.plot(
                         time,
                         var,
                         color=cfg.colors[jj][i % len(cfg.colors[jj])],
@@ -310,7 +303,7 @@ def make_plots(cfg: ConfigPlopm) -> None:
 
 
 def handle_ensemble(
-    cfg: ConfigPlopm, axiss: Union[Axes, np.ndarray]
+    cfg: ConfigPlopm, axiss: Axes | np.ndarray
 ) -> tuple[str, str, float, float, float, float]:
     """Compute the mean and create the band"""
     axis = axiss if isinstance(axiss, Axes) else np.ravel(axiss)[0]
@@ -318,15 +311,19 @@ def handle_ensemble(
     min_v, max_v = np.inf, -np.inf
     hyst = 1
     var_name = cfg.vrs[0]
-    if var_name[:3] in ["krw", "krg"] or var_name[:4] in [
-        "krow",
-        "krog",
-        "pcow",
-        "pcog",
-        "pcwg",
-    ]:
-        if var_name[-1] == "h":
-            hyst = 2
+    if (
+        var_name[:3] in ["krw", "krg"]
+        or var_name[:4]
+        in [
+            "krow",
+            "krog",
+            "pcow",
+            "pcog",
+            "pcwg",
+        ]
+        and var_name[-1] == "h"
+    ):
+        hyst = 2
     for hyst_index in range(hyst):
         for names_index, names in enumerate(cfg.names):
             label = cfg.namens[0][names_index] + " (mean)"

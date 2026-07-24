@@ -4,6 +4,7 @@
 """Test the summary functionality"""
 
 from pathlib import Path
+
 from plopm.core.plopm import main
 
 mainpth: Path = Path(__file__).parents[1]
@@ -78,6 +79,8 @@ def test_summary(tmp_path):
             "Reference  Times 2  Over 2",
             "-o",
             str(tmp_path),
+            "-step",
+            "1",
         ]
     )
     assert (tmp_path / "summary.png").exists()

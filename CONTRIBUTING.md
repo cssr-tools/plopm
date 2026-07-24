@@ -13,13 +13,13 @@ Contributions are more than welcome using the fork and pull request approach ðŸ™
 1. Work on your own fork of the main repo
 1. In the main repo execute:
     1. **pip install -r dev-requirements.txt** (this installs the [_dev-requirements.txt_](https://github.com/cssr-tools/plopm/blob/main/dev-requirements.txt))
-    1. **black --target-version py312 src/ tests/ examples/** (this formats the code)
+    1. **black --target-version py314 src/ tests/ examples/** (this formats the code)
     1. **pylint src/ tests/ examples/** (this analyses the code, and might rise issues that need to be fixed before the pull request)
     1. **ruff check src/ tests/ examples/** (this also analyses the code, and might rise issues that need to be fixed before the pull request)
     1. **mypy --ignore-missing-imports src/ tests/ examples/** (this is a static checker, and might rise issues that need to be fixed before the pull request)
     1. **pytest --cov=plopm --cov-report term-missing --basetemp=test_outputs tests/ -n auto** (this runs locally the tests, and might rise issues that need to be fixed before the pull request)
     1. **pushd docs & make html** (this generates the documentation, and might rise issues that need to be fixed before the pull request; if the build succeeds and if the contribution changes the documentation, then copy all content from the docs/_build/html/ folder and replace the files in the [_docs_](https://github.com/cssr-tools/plopm/tree/main/docs) folder)
-    * Tip: See the [_CI.yml_](https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml) script and the [_Actions_](https://github.com/cssr-tools/plopm/actions) for installation of plopm, OPM Flow (binary packages), and dependencies, as well as the execution of the six previous steps in Ubuntu 24.04.
+    * Tip: See the [_CI.yml_](https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml) script and the [_Actions_](https://github.com/cssr-tools/plopm/actions) for installation of plopm, OPM Flow (binary packages), and dependencies, as well as the execution of the six previous steps in Ubuntu 26.04 and Python 3.14.
 1. Squash your commits into a single commit (see this [_nice tutorial_](https://gist.github.com/lpranam/4ae996b0a4bc37448dc80356efbca7fa) if you are not familiar with this)
 1. Push your commit and make a pull request
 1. The maintainers will review the pull request, and if the contribution is accepted, then it will be merge to the main repo 

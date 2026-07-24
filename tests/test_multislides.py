@@ -4,6 +4,7 @@
 """Test the multislides functionality (projections)"""
 
 from pathlib import Path
+
 from plopm.core.plopm import main
 
 mainpth: Path = Path(__file__).parents[1]

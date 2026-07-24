@@ -4,6 +4,7 @@
 """Test the histograms, caprock integrity, and csvs"""
 
 from pathlib import Path
+
 from plopm.core.plopm import main
 
 mainpth: Path = Path(__file__).parents[1]

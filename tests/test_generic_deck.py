@@ -4,6 +4,7 @@
 """Test the plopm generic functionality"""
 
 import subprocess
+
 from plopm.core.plopm import main
 
 

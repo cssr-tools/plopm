@@ -5,13 +5,15 @@
 """Utility functions to set the requiried input values by plopm"""
 
 import os
-import sys
 import shutil
+import sys
 from typing import cast
+
 import matplotlib
 import matplotlib.pyplot as plt
 from opm.io.ecl import EclFile as OpmFile
 from opm.io.ecl import ESmry as OpmSummary
+
 from plopm.config.config import ConfigPlopm
 
 
@@ -143,7 +145,7 @@ def ini_cfg(cmdargs: dict) -> ConfigPlopm:
     cfg.labels = [var.split("  ") for var in cfg.labels]
     cfg.rm = [int(val) for val in cmdargs["remove"].split(",")]
     cfg.global_ = int(cmdargs["global"]) == 1
-    for name in ["scale", "delax", "loop", "printv"]:
+    for name in ["scale", "delax", "loop", "printv", "step"]:
         setattr(cfg, name, int(cmdargs[name]) == 1)
     for name in [
         "dimensions",
