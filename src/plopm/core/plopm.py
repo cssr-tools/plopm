@@ -483,7 +483,7 @@ def load_parser(argv: list[str] | None) -> dict:
         "-tunits",
         "--tunits",
         type=str.strip,
-        choices=["s", "m", "h", "d", "w", "y", "dates", "empty"],
+        choices=["s", "m", "h", "d", "w", "y", "dates", "empty", "tstep"],
         default="d",
         help="Set time units for plots",
     )

@@ -72,7 +72,8 @@ def get_readers(
     if unrst:
         steps = unrst.report_steps
         ntot = steps[-1] + 1
-        tnrst = [unrst["DOUBHEAD", ntm][0] for ntm in steps]
+        if unrst.count("DOUBHEAD", 0):
+            tnrst = [unrst["DOUBHEAD", ntm][0] for ntm in steps]
         if restart[0] == -1:
             restart = unrst.report_steps if gif else [ntot - 1]
     elif restart[0] == -1:
@@ -1217,7 +1218,7 @@ def get_wells(cfg: ConfigPlopm, n: int) -> tuple[list, list]:
     well_map = {}
     haswells = False
     sources = False
-    with open(f"{cfg.name}.DATA", "r", encoding="utf8") as file:
+    with open(f"{cfg.names[0][n]}.DATA", "r", encoding="utf8") as file:
         for row in csv.reader(file):
             if not row:
                 continue
@@ -1310,7 +1311,7 @@ def get_faults(cfg: ConfigPlopm, n: int) -> tuple[list, list]:
     lfaults: list[str] = []
     fault_map = {}
     hasfaults = False
-    with open(f"{cfg.name}.DATA", "r", encoding="utf8") as file:
+    with open(f"{cfg.names[0][n]}.DATA", "r", encoding="utf8") as file:
         for row in csv.reader(file):
             if not row:
                 continue

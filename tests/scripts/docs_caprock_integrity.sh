@@ -1,6 +1,5 @@
 WHR="test_outputs/opm-data/norne/NORNE_ATW2013"
 OUT="test_outputs/docs_caprock_integrity"
-INC="test_outputs/opm-data/norne/INCLUDE"
 . tests/scripts/initialize_output_folders.sh $OUT
 . tests/scripts/get_opm_data.sh
 . tests/scripts/run_norne.sh

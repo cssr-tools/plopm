@@ -817,10 +817,12 @@ def handle_axis(
     else:
         tskl, tunit = initialize_time(cfg.tunits[0])
         tunit = tunit[5:]
-        if unrst:
+        if unrst and unrst.count("DOUBHEAD", 0):
             time = f" {tskl*unrst['DOUBHEAD', restart[t]][0]:.0f} {tunit}"
-        else:
+        elif cfg.tunits[0] in ["s", "m", "h", "d", "w", "y"]:
             time = f" {restart[t]:.0f} {tunit}"
+        else:
+            time = f" {restart[t]:.0f} [{cfg.tunits[0]}]"
     if cfg.scale:
         axis.axis("scaled")
     extra = ""
@@ -850,6 +852,8 @@ def handle_axis(
         and cfg.title[k] == "0"
         and cfg.rm[3] == 0
     ):
+        if name_lower == "porv":
+            named += f" (total porv={np.sum(read.porv)})"
         axis.set_title(named)
         if k == 0 and cfg.suptitle != "0":
             fig.suptitle(f"{time[1:]}")
