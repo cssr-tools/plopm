@@ -4,6 +4,7 @@
 
 """Utility functions to set the requiried input values by plopm"""
 
+import copy
 import os
 import shutil
 import sys
@@ -298,14 +299,31 @@ def ini_cfg(cmdargs: dict) -> ConfigPlopm:
 
     for val in ["how", "filter", "cticks", "csvs", "dual", "slide", "title"]:
         if len(getattr(cfg, val)) < max_count:
-            setattr(cfg, val, [getattr(cfg, val)[0]] * max_count)
+            if val == "slide":
+                current = getattr(cfg, val)
+                setattr(
+                    cfg,
+                    val,
+                    [copy.deepcopy(current[0]) for _ in range(max_count)],
+                )
+            else:
+                setattr(cfg, val, [getattr(cfg, val)[0]] * max_count)
         elif len(cfg.restart) > 1 and cfg.subfigs[0]:
             if (
                 len(getattr(cfg, val)) >= max(max_count, len(cfg.restart))
                 and val == "title"
             ):
                 continue
-            setattr(cfg, val, [getattr(cfg, val)[0]] * len(cfg.restart))
+            if val == "slide":
+                current = getattr(cfg, val)
+                setattr(
+                    cfg,
+                    val,
+                    [copy.deepcopy(current[0]) for _ in range(len(cfg.restart))],
+                )
+            else:
+                setattr(cfg, val, [getattr(cfg, val)[0]] * len(cfg.restart))
+
     if len(cfg.restart) > 1 and cfg.subfigs[0]:
         cfg.save = [cmdargs["save"]]
 
