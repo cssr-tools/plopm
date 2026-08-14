@@ -68,6 +68,14 @@ To plot cell values over time, this can be achieved by:
 .. figure:: figs/spe11b_pressure-0pressure.png
     :scale: 20%
 
+.. tip::
+
+    All previous commands can be executed as (`docs_hello_world.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_hello_world.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_hello_world.sh
+
 =========
 Colormaps
 =========
@@ -84,6 +92,14 @@ Different colormap formats can be used when making a subfigure, for example:
 
 .. figure:: figs/spe11b_disperc_i,1,k_t5.png
     :scale: 20%
+
+.. tip::
+
+    All previous commands can be executed as (`docs_colormaps.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_colormaps.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_colormaps.sh
 
 ============
 Generic deck 
@@ -113,6 +129,14 @@ To plot information for the grid, and also the location of the wells from the to
 
 Here, we use the remove flag to delete the colorbar axis in the maps for the grid and to delete the generated title in the wells plot (the first entry
 in remove would delete the left axis, e.g., the y label and y ticks in this example, while the second entry if set to 1 would remove the x axis).
+
+.. tip::
+
+    All previous commands can be executed as (`docs_generic_deck.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_generic_deck.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_generic_deck.sh
 
 ===============================
 Rotation, translation, and zoom
@@ -159,6 +183,14 @@ To show all wells in the model and to only show the ones with at least one perfo
 
     For plotting the faults and wells, they must be specified in the input deck (no via include files).
 
+.. tip::
+
+    All previous commands can be executed as (`docs_rotation_translation_zoom.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_rotation_translation_zoom.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_rotation_translation_zoom.sh
+
 ==========================
 Projections and subfigures
 ==========================
@@ -170,6 +202,14 @@ Here is an example of making a single figure plotting subfigures and using diffe
     plopm -i NORNE_ATW2013 -v 'index_k,permx,poro' -s ',,1:22 ,,1:22 ,,1:22' -how 'first,arithmetic,max' -subfigs 1,3 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -d 24,10 -c 'PuOr,vanimo,jet' -cformat '.0f,.0f,.2f' -cnum '2,4,8' -suptitle 0 -t "Top k values using first  Averaged permx using arithmetic  Values of porosity using max" -f 18
 
 .. image:: ./figs/norne_atw2013_poro_i,j,1:22_t64.png
+
+.. tip::
+
+    All previous commands can be executed as (`docs_projections_subfigures.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_projections_subfigures.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_projections_subfigures.sh
 
 ==========
 Histograms
@@ -183,6 +223,14 @@ respectively, showing also the mean and std which can be used for sampling (see 
     plopm -i NORNE_ATW2013 -v poro,permx -histogram '20,norm 20,lognorm' -axgrid 0 -subfigs 1,2 -d 15,5 -loc 'upper center' -y '[0,10000] [0,23000]' -c '#7274b3,#cddb6e'
 
 .. image:: ./figs/norne_atw2013_permx.png
+
+.. tip::
+
+    All previous commands can be executed as (`docs_histograms.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_histograms.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_histograms.sh
 
 =================
 Caprock integrity
@@ -200,10 +248,18 @@ For example, if we would like to estimate these values for norne for future CCS:
 
 .. code-block:: bash
 
-    plopm -i 'NORNE_ATW2013' -s ',,1:22 ,,1:22' -v limipres,overpres -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -d 15,10 -c Spectral,spring, -subfigs 1,2 -delax 1
+    plopm -i 'NORNE_ATW2013' -s ',,1:22 ,,1:22' -v limipres,overpres -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -d 15,10 -c Spectral,spring -subfigs 1,2 -delax 1
     plopm -i 'NORNE_ATW2013' -m csv -v objepres -s ',,1:22' 
 
 .. image:: ./figs/norne_atw2013_overpres_i,j,1:22_t64.png
+
+.. tip::
+
+    All previous commands can be executed as (`docs_caprock_integrity.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_caprock_integrity.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_caprock_integrity.sh
 
 ======================
 Reading from csv files
@@ -279,6 +335,14 @@ To make a GIF from csvs, then write "PLOPM" in the csv file name (e.g., '-i opm1
 .. tip::
     In general, the ability of plotting from csv files using the flag **-csv** is a game changer, expanding the applicability of **plopm** beyond the format of OPM Flow output files.
 
+.. tip::
+
+    All previous commands can be executed as (`docs_reading_csvs.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_reading_csvs.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_reading_csvs.sh
+
 ==============
 Convert to VTK 
 ==============
@@ -299,6 +363,14 @@ from the restart files from the initial (0) to the number 5 restart, using a OPM
     It is possible to write directly VTKs from OPM Flow simulations by adding the flag **\-\-enable-vtk-output=true**.
     However, there are quantities that are not written (e.g., fipnum, flores), in addition to quantities not supported
     such as component mass (e.g., co2, h2o). This is when **plopm** can be helpful.
+
+.. tip::
+
+    All previous commands can be executed as (`docs_convert_to_vtk.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_convert_to_vtk.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_convert_to_vtk.sh
 
 ===================================
 Different input files and ensembles
@@ -350,7 +422,15 @@ Below are two of the generated figures after executing the script (additional fi
 
     As seen in this example, **plopm** supports the plotting of saturation functions using the '-v' flag, namely 'krw', 'krg', 'krow', 'krog', 'pcow', 'pcog', and 'pcwg'.
     By default, the saturation function is plotted for SATNUM=1. For a different table, this can be achieved by adding the number at the end of the variable, e.g., 'pcog5'. 
-    In addition, if the model includes hysteresis, then to plot both drainage and imbibition curves this can be achieved by adding 'h' at the end of the variable, e.g., 'krg3h'. 
+    In addition, if the model includes hysteresis, then to plot both drainage and imbibition curves this can be achieved by adding 'h' at the end of the variable, e.g., 'krg3h'.
+
+.. tip::
+
+    All previous commands can be executed as (`docs_different_files_and_ensembles.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_different_files_and_ensembles.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_different_files_and_ensembles.sh
 
 =======
 Filters 
@@ -366,7 +446,15 @@ Using the flag **-filter** allows to remove cells given conditions separated by 
 .. note::
 
     It is possible to set dynamic variables to filter as well such as sgas and pressure. However, this requires to output the dynamic pore volume, i.e., RPORV.
-    This can be achieved by adding to the deck RPORV to the RPTRST in the SOLUTION and SCHEDULE section (and running the simulations). 
+    This can be achieved by adding to the deck RPORV to the RPTRST in the SOLUTION and SCHEDULE section (and running the simulations).
+
+.. tip::
+
+    All previous commands can be executed as (`docs_filters.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_filters.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_filters.sh
 
 ============
 GIF and mask 
@@ -398,6 +486,14 @@ To generate a single GIF of the gas saturation without masking and showing the g
 .. image:: ./figs/spe11b_sgas.gif
 
 Here we have changed the units for time from days to years using the **-tunits** flag. To remove the dynamic times in the GIF, set **-tunits empty**.
+
+.. tip::
+
+    All previous commands can be executed as (`docs_gif_mask.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_gif_mask.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_gif_mask.sh
 
 ==================
 Graphical abstract 
@@ -438,3 +534,11 @@ case requires a big computer (run with 1024 CPUs), then the steps below are appl
 
 The above commands will generate the SPE11C.pvd, SPE11C-000.vtu, and SPE11C_0005.vtu files, which then can be open using `paraview <https://www.paraview.org>`_,
 and using the interactive GUI one can then obtain the most-rigthed figure in the abstract (e.g., using the facie numbers stored as satnum to add the background).
+
+.. tip::
+
+    All previous commands can be executed as (`docs_graphical_abstract.sh <https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_graphical_abstract.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_graphical_abstract.sh

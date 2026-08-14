@@ -126,7 +126,7 @@ Then, if you succeed in installing <strong>plopm</strong>, inside the <a class="
 <figure class="align-default">
 <img alt="_images/spe11b_satnum_%2A%2C1%2C%2A_t5.png" src="_images/spe11b_satnum_%2A%2C1%2C%2A_t5.png" />
 </figure>
-<p>See the <a class="reference internal" href="introduction.html#overview"><span class="std std-ref">Overview</span></a> or run <cite>plopm -h</cite> for the definition of the argument options, as well as using <cite>-printv 1</cite> flag to output the available
+<p>See the <a class="reference internal" href="introduction.html#overview"><span class="std std-ref">Command-line options</span></a> or run <cite>plopm -h</cite> for the definition of the argument options, as well as using <cite>-printv 1</cite> flag to output the available
 summary, init, and restart available variables given an input deck.</p>
 <p>For example, for the gas saturation at the report step number 4 with three colorbar labels using a given colormap (-c) and defined colorbar ticks (-cticks):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>SPE11B<span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-r<span class="w"> </span><span class="m">4</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">3</span><span class="w"> </span>-c<span class="w"> </span>cubehelix<span class="w"> </span>-cticks<span class="w"> </span><span class="s1">&#39;[0, middle, 0.9]&#39;</span>
@@ -151,6 +151,13 @@ summary, init, and restart available variables given an input deck.</p>
 <a class="reference internal image-reference" href="_images/spe11b_pressure-0pressure.png"><img alt="_images/spe11b_pressure-0pressure.png" height="512" src="_images/spe11b_pressure-0pressure.png" width="712" />
 </a>
 </figure>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_hello_world.sh">docs_hello_world.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_hello_world.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="colormaps">
 <h2>Colormaps<a class="headerlink" href="#colormaps" title="Link to this heading"></a></h2>
@@ -165,6 +172,13 @@ each color is given in RGB (e.g., <strong>-c ‘193;147;56 127;148;191 193;127;9
 <a class="reference internal image-reference" href="_images/spe11b_disperc_i,1,k_t5.png"><img alt="_images/spe11b_disperc_i%2C1%2Ck_t5.png" height="403" src="_images/spe11b_disperc_i%2C1%2Ck_t5.png" width="689" />
 </a>
 </figure>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_colormaps.sh">docs_colormaps.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_colormaps.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="generic-deck">
 <h2>Generic deck<a class="headerlink" href="#generic-deck" title="Link to this heading"></a></h2>
@@ -185,6 +199,13 @@ setting the format to the numbers to two floats in the y axis, and setting manua
 <img alt="_images/wells.png" src="_images/wells.png" />
 <p>Here, we use the remove flag to delete the colorbar axis in the maps for the grid and to delete the generated title in the wells plot (the first entry
 in remove would delete the left axis, e.g., the y label and y ticks in this example, while the second entry if set to 1 would remove the x axis).</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_generic_deck.sh">docs_generic_deck.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_generic_deck.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="rotation-translation-and-zoom">
 <h2>Rotation, translation, and zoom<a class="headerlink" href="#rotation-translation-and-zoom" title="Link to this heading"></a></h2>
@@ -216,6 +237,13 @@ plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class=
 <p class="admonition-title">Note</p>
 <p>For plotting the faults and wells, they must be specified in the input deck (no via include files).</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_rotation_translation_zoom.sh">docs_rotation_translation_zoom.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_rotation_translation_zoom.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="projections-and-subfigures">
 <h2>Projections and subfigures<a class="headerlink" href="#projections-and-subfigures" title="Link to this heading"></a></h2>
@@ -224,6 +252,13 @@ plopm<span class="w"> </span>-i<span class="w"> </span>NORNE_ATW2013<span class=
 </pre></div>
 </div>
 <img alt="_images/norne_atw2013_poro_i%2Cj%2C1%3A22_t64.png" src="_images/norne_atw2013_poro_i%2Cj%2C1%3A22_t64.png" />
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_projections_subfigures.sh">docs_projections_subfigures.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_projections_subfigures.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="histograms">
 <h2>Histograms<a class="headerlink" href="#histograms" title="Link to this heading"></a></h2>
@@ -233,6 +268,13 @@ respectively, showing also the mean and std which can be used for sampling (see 
 </pre></div>
 </div>
 <img alt="_images/norne_atw2013_permx.png" src="_images/norne_atw2013_permx.png" />
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_histograms.sh">docs_histograms.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_histograms.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="caprock-integrity">
 <h2>Caprock integrity<a class="headerlink" href="#caprock-integrity" title="Link to this heading"></a></h2>
@@ -245,11 +287,18 @@ i.e., the most top active cells in the given range <strong>-s</strong>:</p>
 </ol>
 <p>Motivated for objepres, then now we add an option for mode to write a csv with the non nan values, i.e., <strong>-m csv</strong>.
 For example, if we would like to estimate these values for norne for future CCS:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;NORNE_ATW2013&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:22 ,,1:22&#39;</span><span class="w"> </span>-v<span class="w"> </span>limipres,overpres<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">15</span>,10<span class="w"> </span>-c<span class="w"> </span>Spectral,spring,<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;NORNE_ATW2013&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:22 ,,1:22&#39;</span><span class="w"> </span>-v<span class="w"> </span>limipres,overpres<span class="w"> </span>-rotate<span class="w"> </span><span class="m">65</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[6456335.5,-3476500]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,5600]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,8800]&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">15</span>,10<span class="w"> </span>-c<span class="w"> </span>Spectral,spring<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span>
 plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;NORNE_ATW2013&#39;</span><span class="w"> </span>-m<span class="w"> </span>csv<span class="w"> </span>-v<span class="w"> </span>objepres<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:22&#39;</span>
 </pre></div>
 </div>
 <img alt="_images/norne_atw2013_overpres_i%2Cj%2C1%3A22_t64.png" src="_images/norne_atw2013_overpres_i%2Cj%2C1%3A22_t64.png" />
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_caprock_integrity.sh">docs_caprock_integrity.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_caprock_integrity.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="reading-from-csv-files">
 <h2>Reading from csv files<a class="headerlink" href="#reading-from-csv-files" title="Link to this heading"></a></h2>
@@ -305,6 +354,13 @@ your simulations with those results by (to remove the legend, add the flag <stro
 <p class="admonition-title">Tip</p>
 <p>In general, the ability of plotting from csv files using the flag <strong>-csv</strong> is a game changer, expanding the applicability of <strong>plopm</strong> beyond the format of OPM Flow output files.</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_reading_csvs.sh">docs_reading_csvs.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_reading_csvs.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="convert-to-vtk">
 <h2>Convert to VTK<a class="headerlink" href="#convert-to-vtk" title="Link to this heading"></a></h2>
@@ -325,6 +381,13 @@ from the restart files from the initial (0) to the number 5 restart, using a OPM
 <p>It is possible to write directly VTKs from OPM Flow simulations by adding the flag <strong>--enable-vtk-output=true</strong>.
 However, there are quantities that are not written (e.g., fipnum, flores), in addition to quantities not supported
 such as component mass (e.g., co2, h2o). This is when <strong>plopm</strong> can be helpful.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_convert_to_vtk.sh">docs_convert_to_vtk.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_convert_to_vtk.sh
+</pre></div>
+</div>
 </div>
 </section>
 <section id="different-input-files-and-ensembles">
@@ -371,6 +434,13 @@ ensembles using <a class="reference external" href="https://github.com/cssr-tool
 By default, the saturation function is plotted for SATNUM=1. For a different table, this can be achieved by adding the number at the end of the variable, e.g., ‘pcog5’.
 In addition, if the model includes hysteresis, then to plot both drainage and imbibition curves this can be achieved by adding ‘h’ at the end of the variable, e.g., ‘krg3h’.</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_different_files_and_ensembles.sh">docs_different_files_and_ensembles.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_different_files_and_ensembles.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="filters">
 <h2>Filters<a class="headerlink" href="#filters" title="Link to this heading"></a></h2>
@@ -383,6 +453,13 @@ In addition, if the model includes hysteresis, then to plot both drainage and im
 <p class="admonition-title">Note</p>
 <p>It is possible to set dynamic variables to filter as well such as sgas and pressure. However, this requires to output the dynamic pore volume, i.e., RPORV.
 This can be achieved by adding to the deck RPORV to the RPTRST in the SOLUTION and SCHEDULE section (and running the simulations).</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_filters.sh">docs_filters.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_filters.sh
+</pre></div>
+</div>
 </div>
 </section>
 <section id="gif-and-mask">
@@ -407,6 +484,13 @@ plopm<span class="w"> </span>-v<span class="w"> </span>xco2l<span class="w"> </s
 </div>
 <img alt="_images/spe11b_sgas.gif" src="_images/spe11b_sgas.gif" />
 <p>Here we have changed the units for time from days to years using the <strong>-tunits</strong> flag. To remove the dynamic times in the GIF, set <strong>-tunits empty</strong>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_gif_mask.sh">docs_gif_mask.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_gif_mask.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="graphical-abstract">
 <h2>Graphical abstract<a class="headerlink" href="#graphical-abstract" title="Link to this heading"></a></h2>
@@ -439,6 +523,13 @@ plopm<span class="w"> </span>-i<span class="w"> </span>spe11c/SPE11C<span class=
 </div>
 <p>The above commands will generate the SPE11C.pvd, SPE11C-000.vtu, and SPE11C_0005.vtu files, which then can be open using <a class="reference external" href="https://www.paraview.org">paraview</a>,
 and using the interactive GUI one can then obtain the most-rigthed figure in the abstract (e.g., using the facie numbers stored as satnum to add the background).</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_graphical_abstract.sh">docs_graphical_abstract.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_graphical_abstract.sh
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 

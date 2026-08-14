@@ -1,11 +1,14 @@
 # SPDX-FileCopyrightText: 2024-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R1702,W0123,W1401,R0915
+# pylint: disable=C0302,R1702,W0123,W1401,R0912,R0914,R0915
 
 """Postprocessing visualization tool for OPM Flow geological models"""
 
 import argparse
+import re
+import shlex
 import shutil
+import subprocess
 
 from plopm.utils.initialization import (
     ini_cfg,
@@ -21,6 +24,7 @@ from plopm.utils.write_vtk import make_vtks
 def main(argv=None) -> None:
     """Main function for the plopm executable"""
     cmdargs = load_parser(argv)
+    check_cmdargs(cmdargs)
     cfg = ini_cfg(cmdargs)
     print("\nExecuting plopm, please wait.")
     if cfg.vtk:
@@ -374,7 +378,8 @@ def load_parser(argv: list[str] | None) -> dict:
         "--how",
         type=str.strip,
         default="",
-        help="Select aggregation method such as mean, pvmean, sum, harmonic, arithmetic",
+        help="Select aggregation method for the 2D and 1D proyections (min, max, sum, "
+        "mean, pvmean, harmonic, arithmetic, first, last)",
     )
     parser.add_argument(
         "-global",
@@ -541,7 +546,8 @@ def load_parser(argv: list[str] | None) -> dict:
         "--cbsfax",
         type=str.strip,
         default="0.40,0.01,0.2,0.02",
-        help="Set position of fig.add_axes([left, bottom, width, height])",
+        help="Set position of fig.add_axes([left, bottom, width, height])'; "
+        "set to 'empty' to remove it",
     )
     parser.add_argument(
         "-delax",
@@ -589,3 +595,504 @@ def load_parser(argv: list[str] | None) -> dict:
         help="Use ax.step instead of ax.plot",
     )
     return vars(parser.parse_known_args(argv)[0])
+
+
+def check_cmdargs(cmdargs: dict[str, str]) -> None:
+    """Validate command-line arguments and incompatible operations.
+
+    Parameters
+    ----------
+    cmdargs
+        Parsed arguments returned by :func:`load_parser`.
+
+    Raises
+    ------
+    SystemExit
+        If an argument is invalid or an incompatible combination is requested.
+    """
+
+    def fail(message: str) -> None:
+        print(message)
+        raise SystemExit(1)
+
+    def parse_number(option: str, value: str) -> float:
+        try:
+            number = float(value)
+        except ValueError:
+            fail(f"Invalid value '{option} {value}', expected a number.")
+        return number
+
+    def parse_number_list(
+        option: str,
+        value: str,
+        expected_length: int | None = None,
+    ) -> list:
+        entries = value.split(",")
+        if expected_length is not None and len(entries) != expected_length:
+            fail(
+                f"Invalid value '{option} {value}', expected {expected_length} "
+                "numbers separated by commas."
+            )
+        try:
+            numbers = [float(entry) for entry in entries]
+        except ValueError:
+            fail(
+                f"Invalid value '{option} {value}', expected numbers separated "
+                "by commas."
+            )
+        return numbers
+
+    mode = cmdargs["mode"]
+    vtk_mode = mode == "vtk"
+    gif_mode = mode == "gif"
+    number = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
+    positive_integer = r"[1-9]\d*"
+    non_negative_integer = r"\d+"
+
+    if not cmdargs["input"]:
+        fail("Invalid value for '-i', the input cannot be empty.")
+    if not cmdargs["output"]:
+        fail("Invalid value for '-o', the output folder cannot be empty.")
+    if not cmdargs["variable"]:
+        fail("Invalid value for '-v', the variable cannot be empty.")
+
+    positive_number_options = [
+        ("-f", "size"),
+        ("-dpi", "dpi"),
+        ("-xlnum", "xlnum"),
+        ("-ylnum", "ylnum"),
+        ("-maskthr", "maskthr"),
+        ("-interval", "interval"),
+    ]
+    for option, name in positive_number_options:
+        value = parse_number(option, cmdargs[name])
+        if value <= 0:
+            fail(
+                f"Invalid value '{option} {cmdargs[name]}', expected a positive "
+                "number."
+            )
+
+    number_options = [
+        ("-stress", "stress"),
+        ("-rotate", "rotate"),
+    ]
+    for option, name in number_options:
+        parse_number(option, cmdargs[name])
+    parse_number_list("-a", cmdargs["adjust"])
+
+    optional_number_options = [
+        ("-vmin", "vmin"),
+        ("-vmax", "vmax"),
+    ]
+    for option, name in optional_number_options:
+        if cmdargs[name]:
+            parse_number(option, cmdargs[name])
+
+    if (
+        cmdargs["vmin"]
+        and cmdargs["vmax"]
+        and float(cmdargs["vmin"]) > float(cmdargs["vmax"])
+    ):
+        fail(
+            f"Invalid values '-vmin {cmdargs['vmin']}' and "
+            f"'-vmax {cmdargs['vmax']}', the minimum threshold must not "
+            "be greater than the maximum threshold."
+        )
+
+    colorbar_tick_numbers = cmdargs["cnum"]
+    if colorbar_tick_numbers:
+        cnum_entries = colorbar_tick_numbers.split(",")
+        if any(not re.fullmatch(positive_integer, entry) for entry in cnum_entries):
+            fail(
+                f"Invalid value '-cnum {colorbar_tick_numbers}', expected "
+                "positive integers separated by commas."
+            )
+
+    boolean_options = [
+        ("-xlog", "xlog"),
+        ("-ylog", "ylog"),
+        ("-log", "log"),
+        ("-dual", "dual"),
+        ("-loop", "loop"),
+    ]
+    for option, name in boolean_options:
+        values = cmdargs[name].split(",")
+        if any(value not in ["0", "1"] for value in values):
+            fail(
+                f"Invalid value '{option} {cmdargs[name]}', expected values "
+                "containing only 0 or 1, separated by commas."
+            )
+
+    dimensions = parse_number_list(
+        "-d",
+        cmdargs["dimensions"],
+        2,
+    )
+    if any(value <= 0 for value in dimensions):
+        fail(
+            f"Invalid value '-d {cmdargs['dimensions']}', figure dimensions "
+            "must be positive."
+        )
+
+    translation = cmdargs["translate"]
+    if not re.fullmatch(
+        rf"\[\s*{number}\s*,\s*{number}\s*\]",
+        translation,
+    ):
+        fail(
+            f"Invalid value '-translate {translation}', expected two numbers "
+            "enclosed by brackets, e.g., '-translate [10,-5]'."
+        )
+
+    interval_pattern = re.compile(rf"\[\s*({number})\s*,\s*({number})\s*\]")
+    for option, name in [
+        ("-b", "bounds"),
+        ("-x", "xlim"),
+        ("-y", "ylim"),
+    ]:
+        valu = cmdargs[name]
+        if not valu:
+            continue
+        for interval_value in valu.split():
+            if not interval_pattern.fullmatch(interval_value):
+                fail(
+                    f"Invalid value '{option} {interval_value}', expected two "
+                    "numeric bounds enclosed by brackets, e.g., '[0,10]'."
+                )
+
+    aggregation_methods = cmdargs["how"]
+    if aggregation_methods:
+        valid_aggregation_methods = [
+            "min",
+            "max",
+            "sum",
+            "mean",
+            "pvmean",
+            "harmonic",
+            "arithmetic",
+            "first",
+            "last",
+        ]
+        method_entries = aggregation_methods.split(",")
+        if any(method not in valid_aggregation_methods for method in method_entries):
+            fail(
+                f"Invalid value '-how {aggregation_methods}', valid methods are "
+                f"{', '.join(valid_aggregation_methods)}."
+            )
+
+    slide = cmdargs["slide"]
+    slides = slide.split()
+    slide_entry_pattern = re.compile(
+        rf"(?:{positive_integer}|" rf"{positive_integer}:{positive_integer}|:)?"
+    )
+    if not slides:
+        fail("Invalid value for '-s', the slide selection cannot be empty.")
+
+    slide_entries = []
+    for selection in slides:
+        entries = selection.split(",")
+        if len(entries) != 3 or any(
+            not slide_entry_pattern.fullmatch(entry) for entry in entries
+        ):
+            fail(
+                f"Invalid value '-s {selection}', expected three i,j,k entries "
+                "separated by commas, using positive indices, ':', or ranges."
+            )
+        if all(not entry for entry in entries):
+            fail(
+                f"Invalid value '-s {selection}', at least one slide entry must "
+                "be provided."
+            )
+        colon_entries = 0
+        for entry in entries:
+            if ":" not in entry:
+                continue
+            colon_entries += 1
+            if entry != ":":
+                start, end = (int(index) for index in entry.split(":"))
+                if start > end:
+                    fail(
+                        f"Invalid range '{entry}' in '-s {selection}', the end "
+                        "must not be smaller than the start."
+                    )
+        if colon_entries > 1:
+            fail(
+                f"Invalid value '-s {selection}', only one slide direction can "
+                "contain ':' or an index range."
+            )
+        slide_entries.append(entries)
+
+    restart = cmdargs["restart"]
+    restart_pattern = re.compile(
+        rf"(?:-1|"
+        rf"{non_negative_integer}(?:,{non_negative_integer})*|"
+        rf"{non_negative_integer}:{non_negative_integer}"
+        rf"(?::{positive_integer})?)"
+    )
+    if not restart_pattern.fullmatch(restart):
+        fail(
+            f"Invalid value '-r {restart}', expected '-1', non-negative "
+            "restart indices separated by commas, or 'start:end[:step]'."
+        )
+
+    if ":" in restart:
+        restart_range = [int(value) for value in restart.split(":")]
+        if restart_range[0] > restart_range[1]:
+            fail(
+                f"Invalid range '-r {restart}', the end must not be smaller "
+                "than the start."
+            )
+
+    list_options = [
+        ("-c", "colors"),
+        ("-e", "linestyle"),
+    ]
+    for option, name in list_options:
+        valu = cmdargs[name]
+        if valu and any(not entry for entry in valu.split(",")):
+            fail(f"Invalid value '{option} {valu}', entries cannot be empty.")
+
+    line_widths = cmdargs["lw"]
+    if line_widths:
+        width_values = parse_number_list("-lw", line_widths)
+        if any(width <= 0 for width in width_values):
+            fail(f"Invalid value '-lw {line_widths}', line widths must be " "positive.")
+
+    remove = cmdargs["remove"]
+    remove_entries = remove.split(",")
+    if len(remove_entries) != 4 or any(
+        entry not in ["0", "1"] for entry in remove_entries
+    ):
+        fail(
+            f"Invalid value '-remove {remove}', expected four values "
+            "containing only 0 or 1."
+        )
+
+    subfigs = cmdargs["subfigs"]
+    if subfigs:
+        subfig_entries = subfigs.split(",")
+        if len(subfig_entries) != 2 or any(
+            not re.fullmatch(positive_integer, entry) for entry in subfig_entries
+        ):
+            fail(
+                f"Invalid value '-subfigs {subfigs}', expected two positive "
+                "integers separated by a comma, e.g., '-subfigs 2,2'."
+            )
+
+    colorbar_axis = cmdargs["cbsfax"]
+    if colorbar_axis != "empty":
+        colorbar_axis_values = parse_number_list(
+            "-cbsfax",
+            colorbar_axis,
+            4,
+        )
+        if colorbar_axis_values[0] < 0 or colorbar_axis_values[1] < 0:
+            fail(
+                f"Invalid value '-cbsfax {colorbar_axis}', the left and bottom "
+                "positions cannot be negative."
+            )
+        if colorbar_axis_values[2] <= 0 or colorbar_axis_values[3] <= 0:
+            fail(
+                f"Invalid value '-cbsfax {colorbar_axis}', width and height "
+                "must be positive."
+            )
+
+    grid = cmdargs["grid"]
+    if grid:
+        grid_entries = grid.split(",")
+        if len(grid_entries) != 2 or not grid_entries[0] or not grid_entries[1]:
+            fail(
+                f"Invalid value '-grid {grid}', expected a color and line "
+                "width separated by a comma."
+            )
+        if parse_number("-grid", grid_entries[1]) < 0:
+            fail(f"Invalid value '-grid {grid}', the line width cannot be " "negative.")
+
+    csv_columns = cmdargs["csv"]
+    if csv_columns:
+        csv_specifications = csv_columns.split(";")
+        for specification in csv_specifications:
+            if not specification:
+                continue
+            column_entries = specification.split(",")
+            if len(column_entries) not in [2, 3] or any(
+                not re.fullmatch(positive_integer, entry) for entry in column_entries
+            ):
+                fail(
+                    f"Invalid value '-csv {csv_columns}', each non-empty "
+                    "specification must contain two column indices for a time "
+                    "series or three column indices for a spatial map."
+                )
+            if len(set(column_entries)) != len(column_entries):
+                fail(
+                    f"Invalid value '-csv {csv_columns}', column indices within "
+                    "each specification must be different."
+                )
+
+    histogram = cmdargs["histogram"]
+    if histogram:
+        histogram_specifications = histogram.split()
+        for specification in histogram_specifications:
+            histogram_entries = specification.split(",")
+            if len(histogram_entries) not in [1, 2]:
+                fail(
+                    f"Invalid value '-histogram {specification}', expected "
+                    "'bins', 'bins,norm', or 'bins,lognorm'."
+                )
+            if not re.fullmatch(
+                positive_integer,
+                histogram_entries[0],
+            ):
+                fail(
+                    f"Invalid value '-histogram {specification}', the number "
+                    "of bins must be a positive integer."
+                )
+            if len(histogram_entries) == 2 and histogram_entries[1] not in [
+                "norm",
+                "lognorm",
+            ]:
+                fail(
+                    f"Invalid value '-histogram {specification}', supported "
+                    "distributions are 'norm' and 'lognorm'."
+                )
+
+    band_properties = cmdargs["bandprop"]
+    if band_properties:
+        band_entries = band_properties.split(",")
+        if len(band_entries) % 2 != 0 or any(not color for color in band_entries[::2]):
+            fail(
+                f"Invalid value '-bandprop {band_properties}', expected "
+                "color and alpha pairs."
+            )
+        try:
+            alpha_values = [float(alpha) for alpha in band_entries[1::2]]
+        except ValueError:
+            alpha_values = []
+        if not alpha_values or any(alpha < 0 or alpha > 1 for alpha in alpha_values):
+            fail(
+                f"Invalid value '-bandprop {band_properties}', alpha values "
+                "must be between 0 and 1."
+            )
+        if cmdargs["ensemble"] not in ["1", "3"]:
+            fail(
+                "Invalid combination, '-bandprop' can only be used with "
+                "'-ensemble 1' or '-ensemble 3'."
+            )
+
+    log_values = cmdargs["log"].split(",")
+    if any(value not in ["0", "1"] for value in log_values):
+        fail(
+            f"Invalid value '-log {cmdargs['log']}', expected values containing "
+            "only 0 or 1, separated by commas."
+        )
+
+    if cmdargs["clogthks"] and "1" not in log_values:
+        fail(
+            "Invalid combination, '-clogthks' requires at least one logarithmic "
+            "color scale enabled with '-log'."
+        )
+
+    if cmdargs["maskthr"] != "1e-3" and not cmdargs["mask"]:
+        fail(
+            "Invalid combination, '-maskthr' can only be changed when '-mask' "
+            "is used."
+        )
+
+    if (
+        cmdargs["distance"]
+        and "sensor" in cmdargs["distance"]
+        and any(
+            any(not re.fullmatch(positive_integer, entry) for entry in entries)
+            for entries in slide_entries
+        )
+    ):
+        fail(
+            "Invalid combination, a sensor distance requires each location "
+            "provided with '-s' to contain three positive indices."
+        )
+
+    vtk_names = cmdargs["vtknames"]
+    if vtk_names:
+        vtk_name_entries = vtk_names.split(",")
+        if any(not name for name in vtk_name_entries):
+            fail(
+                f"Invalid value '-vtknames {vtk_names}', VTK variable names "
+                "cannot be empty."
+            )
+
+    valid_vtk_formats = [
+        "Float64",
+        "Float32",
+        "Float16",
+        "Int64",
+        "UInt64",
+        "Int32",
+        "UInt32",
+        "Int16",
+        "UInt16",
+        "Int8",
+        "UInt8",
+    ]
+    vtk_formats = cmdargs["vtkformat"].split(",")
+    if any(vtk_format not in valid_vtk_formats for vtk_format in vtk_formats):
+        fail(
+            f"Invalid value '-vtkformat {cmdargs['vtkformat']}', valid "
+            f"formats are {', '.join(valid_vtk_formats)}."
+        )
+
+    vtk_options = {
+        "-p": ("path", "flow"),
+        "-vtkformat": ("vtkformat", "Float64"),
+        "-vtknames": ("vtknames", ""),
+    }
+    if not vtk_mode:
+        invalid_options = [
+            option
+            for option, (name, default) in vtk_options.items()
+            if cmdargs[name] != default
+        ]
+        if invalid_options:
+            fail(
+                f"Invalid option for '-m {mode}', the following options can "
+                f"only be used with '-m vtk': {', '.join(invalid_options)}."
+            )
+    else:
+        try:
+            flow_arguments = shlex.split(cmdargs["path"])
+        except ValueError:
+            flow_arguments = []
+
+        if not flow_arguments:
+            fail(f"Invalid OPM Flow command '-p {cmdargs['path']}'.")
+
+        try:
+            flow_result = subprocess.run(
+                [*flow_arguments, "-h"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.STDOUT,
+                check=False,
+            )
+        except OSError:
+            flow_result = None
+
+        if flow_result is None or flow_result.returncode != 0:
+            fail(
+                f"The OPM Flow executable '-p {cmdargs['path']}' is not "
+                "available or not working."
+            )
+
+    if not gif_mode:
+        gif_options = {
+            "-interval": ("interval", "1000"),
+            "-loop": ("loop", "0"),
+        }
+        invalid_options = [
+            option
+            for option, (name, default) in gif_options.items()
+            if cmdargs[name] != default
+        ]
+        if invalid_options:
+            fail(
+                f"Invalid option for '-m {mode}', the following options can "
+                f"only be used with '-m gif': {', '.join(invalid_options)}."
+            )

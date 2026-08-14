@@ -28,3 +28,5 @@ wait
 . tests/scripts/docs_gif_mask.sh &
 . tests/scripts/docs_graphical_abstract.sh &
 wait
+
+. tests/scripts/docs_check_outputs.sh
