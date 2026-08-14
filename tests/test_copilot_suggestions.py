@@ -1580,7 +1580,7 @@ def test_3dbox_grid_wells_faults_all_directions(tmp_path):
     for name, slide, how, save in zip(
         ["grid", "wells", "wells", "faults", "faults"],
         ["2,,", ",2,", ",,2", ",2,", ",,2"],
-        ["", "min", "max", "min", "max"],
+        ["max", "min", "max", "min", "max"],
         [
             "box_grid_i",
             "box_wells_j_min",
@@ -2266,8 +2266,7 @@ def test_line_styles_and_widths(tmp_path):
 
 
 def test_colorbar_and_logscale(tmp_path):
-    for log, clog, save in zip(
-        ["0", "1"],
+    for clog, save in zip(
         ["[1,2,5]", "[1,10,100]"],
         ["clog1", "clog2"],
     ):
@@ -2278,7 +2277,7 @@ def test_colorbar_and_logscale(tmp_path):
                 "-v",
                 "pressure",
                 "-log",
-                log,
+                "1",
                 "-clogthks",
                 clog,
                 "-o",
@@ -3067,9 +3066,8 @@ def test_point_and_line_extractions(tmp_path):
 
 
 def test_grid_and_wells_variables(tmp_path):
-    for name, how, save in zip(
+    for name, save in zip(
         ["grid", "wells"],
-        ["", "min"],
         ["grid_variable", "wells_variable"],
     ):
         main(
@@ -3080,8 +3078,6 @@ def test_grid_and_wells_variables(tmp_path):
                 name,
                 "-s",
                 ",1,",
-                "-how",
-                how,
                 "-o",
                 str(tmp_path),
                 "-save",

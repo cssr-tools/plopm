@@ -47,7 +47,11 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#concept">Concept</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-options">Command-line options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#value-and-list-syntax">Value and list syntax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#options">Options</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -97,229 +101,297 @@ figures for papers/presentations. Also, <strong>plopm</strong> can plot summary 
 as well as the difference between given dynamic variables (e.g., pressure) for two different simulations cases. In addition, <strong>plopm</strong> can
 convert OPM Flow output files to vtk, which allows to use other visualization/postprocessing tools (e.g., <a class="reference external" href="https://www.paraview.org">paraview</a>).</p>
 </section>
-<section id="overview">
-<span id="id1"></span><h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>The current implementation supports the following executable with the argument options:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>name<span class="o">(</span>s<span class="o">)</span>_of_input_file<span class="o">(</span>s<span class="o">)</span>
+<section id="command-line-options">
+<span id="overview"></span><h2>Command-line options<a class="headerlink" href="#command-line-options" title="Link to this heading"></a></h2>
+<p>The current implementation supports the following executable with argument options, e.g., :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>name<span class="o">(</span>s<span class="o">)</span>_of_input_file<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>-v<span class="w"> </span>name<span class="o">(</span>s<span class="o">)</span>_of_variables<span class="o">(</span>s<span class="o">)</span>
 </pre></div>
 </div>
-<p>where</p>
-<dl class="option-list">
-<dt><kbd><span class="option">-i</span></kbd></dt>
-<dd><p>The base name (or full path) of the input files; if more than one is given, separate them by ‘ ‘ (e.g, ‘SPE11B /home/user/SPE11B_TUNED’) (‘SPE11B’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-o</span></kbd></dt>
-<dd><p>The base name (or full path) of the output folder (‘.’ by default, i.e., the folder where plopm is executed).</p>
-</dd>
-<dt><kbd><span class="option">-v</span></kbd></dt>
-<dd><p>Specify the name of the variable to plot, e.g., ‘pressure’, in addition to special extensive quantities for the mass such as ‘grid’, ‘wells’, ‘faults’, ‘pcfact’, ‘limipres’, ‘overpres’, ‘objepres’, ‘krw’, ‘krg’, ‘krow’, ‘krog’, ‘pcow’, ‘pcog’, ‘pcwg’, ‘gasm’, ‘dism’, ‘liqm’, ‘vapm’, ‘co2m’, ‘h2om’, ‘xco2l’, ‘xh2ov’, ‘xco2v’, ‘xh2ol’, ‘fwcdm’, and ‘fgipm’, as well as operations, e.g, ‘pressure - 0pressure’ to plot the pressure increase (‘poro,permx,permz,porv,fipnum,satnum’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-m</span></kbd></dt>
-<dd><p>Generate ‘png’, ‘gif’, ‘csv’, or ‘vtk’ files (‘png’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-s</span></kbd></dt>
-<dd><p>The slide in the 3D model to plot the 2D maps, e.g, ‘10,,’ to plot the xz plane on all cells with i=10, or ‘,,5:10’ to plot the pv average weighted quantity. If two values are given, e.g., ‘:,5,7’, then the variable is plotted along the colon entry given the indice at the specified restart step, unless the flag ‘-how ‘ is set, then this generates a plot of the projected variable over time. If the three values are given, e.g., ‘2,4,9’, then the variable is plotted over time at that location (‘,1,’ by default, i.e., the xz surface at j=1).</p>
-</dd>
-<dt><kbd><span class="option">-p</span></kbd></dt>
-<dd><p>Path to flow, e.g., ‘/home/build/bin/flow’. This is used to generate the grid for the vtk files (‘flow’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-z</span></kbd></dt>
-<dd><p>Scale the axis in the 2D maps (‘1’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-f</span></kbd></dt>
-<dd><p>The font size (‘12’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-x</span></kbd></dt>
-<dd><p>Set the lower and upper bounds along x, e.g., ‘[-100,200]’ (’’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-y</span></kbd></dt>
-<dd><p>Set the lower and upper bounds along y, e.g., ‘[-10,300]’ (’’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-c</span></kbd></dt>
-<dd><p>Specify the colormap, e.g., ‘jet’, or color(s) for the summary, e.g., ‘b,r’ (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-e</span></kbd></dt>
-<dd><p>Specify the linestyles, e.g., ‘solid,dotted’ (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-b</span></kbd></dt>
-<dd><p>Specify the upper and lower bounds for the color map, e.g., ‘[-0.1,11]’ (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-d</span></kbd></dt>
-<dd><p>Specify the dimensions in inches generated png, e.g., ‘8,16’ (‘7,5’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-t</span></kbd></dt>
-<dd><p>Specify the figure title, e.g., ‘Final saturation map’ (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-r</span></kbd></dt>
-<dd><p>Restart number to plot the dynamic variable, where 0 corresponds to the initial one (‘-1’ by default, i.e., the last restart file). For GIFs, the default correspond to all restart steps. To make a GIF using selected restart steps, provide these separated by commas, e.g., ‘0,3,10,20’.  To write a serie of PNGs, this can be achieve by setting ‘-r a:b:[step]’, e.g., ‘-r 1:3’ for rsts 1 to 3, and ‘-r 5:505:250’ for rsts 5, 255, and 505.</p>
-</dd>
-<dt><kbd><span class="option">-a</span></kbd></dt>
-<dd><p>Scale the mass variable, e.g., 1e-9 for the color bar for the CO2 mass to be in Mt (‘1’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-c<var>sv</var></span></kbd></dt>
-<dd><p>If the input file is a csv, then define the number of column for the x, y, and variable for spatial maps, or the t and variable for time series (’’ by default, column numbering starting from 1, not 0).</p>
-</dd>
-<dt><kbd><span class="option">-t<var>units</var></span></kbd></dt>
-<dd><p>For the x axis in the summary use seconds ‘s’, minutes ‘m’, hours ‘h’, days ‘d’, weeks ‘w’, years ‘y’, or dates ‘dates’ (‘s’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-y<var>label</var></span></kbd></dt>
-<dd><p>Text for the y axis (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-x<var>label</var></span></kbd></dt>
-<dd><p>Text for the x axis (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-y<var>lnum</var></span></kbd></dt>
-<dd><p>Number of y axis labels (‘5’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-x<var>lnum</var></span></kbd></dt>
-<dd><p>Number of x axis labels (‘5’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-c<var>num</var></span></kbd></dt>
-<dd><p>Number of color labels (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-x<var>log</var></span></kbd></dt>
-<dd><p>Use log scale for the x axis (‘0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-y<var>log</var></span></kbd></dt>
-<dd><p>Use log scale for the y axis (‘0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-c<var>label</var></span></kbd></dt>
-<dd><p>Text for the colorbar (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-l<var>abels</var></span></kbd></dt>
-<dd><p>Legend in the summary plot, separated by two spaces if more than one (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-a<var>xgrid</var></span></kbd></dt>
-<dd><p>Set axis.grid to True for the summary plots (‘1’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-d<var>pi</var></span></kbd></dt>
-<dd><p>Dots per inch for the figure (‘500’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-x<var>format</var></span></kbd></dt>
-<dd><p>Format for the x numbers, e.g., .2e for exponential notation (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-y<var>format</var></span></kbd></dt>
-<dd><p>Format for the y numbers, e.g., .1f for one decimal (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-c<var>format</var></span></kbd></dt>
-<dd><p>Specify the format for the numbers in the colormap, e.g., .2f for two decimals (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-c<var>ticks</var></span></kbd></dt>
-<dd><p>Set the colorbar tick labelling, e.g., ‘[G, F, E, D, C, ESF]’ (’’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-x<var>units</var></span></kbd></dt>
-<dd><p>For the x axis in the spatial maps meters ‘m’, kilometers ‘km’, centimeters ‘cm’, or milimeters ‘mm’ (‘m’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-y<var>units</var></span></kbd></dt>
-<dd><p>For the y axis in the spatial maps meters ‘m’, kilometers ‘km’, centimeters ‘cm’, or milimeters ‘mm’ (‘m’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-r<var>emove</var></span></kbd></dt>
-<dd><p>Set the entries to 1 to remove in the spatial maps the left axis, bottom axis, colorbar, and title (‘0,0,0,0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-f<var>acecolor</var></span></kbd></dt>
-<dd><p>Color outside the spatial map (‘w’ by default, i.e., white).</p>
-</dd>
-<dt><kbd><span class="option">-s<var>ave</var></span></kbd></dt>
-<dd><p>Name of the output files (’’ by default, i.e., set by plopm).</p>
-</dd>
-<dt><kbd><span class="option">-l<var>og</var></span></kbd></dt>
-<dd><p>Log scale for the color map (‘0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-c<var>logthks</var></span></kbd></dt>
-<dd><p>Set the thicks for the color maps with log scale, e.g., ‘[1,2,3]’ (’’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-r<var>otate</var></span></kbd></dt>
-<dd><p>Grades to rotate the grid in the 2D maps (‘0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-t<var>ranslate</var></span></kbd></dt>
-<dd><p>Translate the grid in the 2D maps x,y directions (‘[0,0]’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-g<var>lobal</var></span></kbd></dt>
-<dd><p>Min and max in the colorbars from the current 2D slide values (0) or whole 3D model ‘1’ (‘0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-e<var>nsemble</var></span></kbd></dt>
-<dd><p>Set to ‘1’ to plot the mean and error bands for the ensemble, ‘2’ to plot the min, mean, and max values, and ‘3’ to plot ‘1’ and ‘2’ (‘0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-b<var>andprop</var></span></kbd></dt>
-<dd><p>Set to color and alpha values for the matplotlib.pyplot.fill_between function when the flag -ensamble is used with values ‘1’ or ‘3’ , e.g., -bandprop ‘r,0.1,g,0.2’ (’’ by default, i.e., set as the same color as the mean and alpha==0.2).</p>
-</dd>
-<dt><kbd><span class="option">-h<var>ow</var></span></kbd></dt>
-<dd><p>Select how to project the given variable (-v) in a slide range (-s). By default the variables are pore volume weighted averaged along the range except for mass quantities, porv, trans, and cell dims (e.g., dz) which are summed; cell indices (e.g., index_i) which show the discrete value; harmonic average and arithmetic average for permeabilities depending on the slide range direction using the cell dim along the slide (e.g., -s ,,1:2 -v permz [harmonic averaged]); for wells/faults, ‘min’ show the cells when at least one cell contains them or ‘max’ when all cells are part of the given slide/slides range. The supported options are ‘min’, ‘max’, ‘sum’, ‘mean’, ‘pvmean’, ‘harmonic’, ‘arithmetic’, ‘first’, and ‘last’ (’’ by default, i.e., the defaults as described above).</p>
-</dd>
-<dt><kbd><span class="option">-n<var>color</var></span></kbd></dt>
-<dd><p>Color for the inactive cells in the 2D maps (‘w’ by default, i.e., white).</p>
-</dd>
-<dt><kbd><span class="option">-l<var>w</var></span></kbd></dt>
-<dd><p>Line width separated by commas if more than one (‘1’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-s<var>ubfigs</var></span></kbd></dt>
-<dd><p>Generate separated or a single Figure (e.g., ‘2,2’ for four subfigures) (’’ by default, i.e., separate figures).</p>
-</dd>
-<dt><kbd><span class="option">-l<var>oc</var></span></kbd></dt>
-<dd><p>Location of the legend by passing the value to matplotlib.pyplot.legend: best, upper right, upper left, lower left, lower right, right, center left, center right, lower center, upper center, center, or set to ‘empty’ to remove it (‘best’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-d<var>elax</var></span></kbd></dt>
-<dd><p>Delete aligned axis labels in subfigures (‘0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-p<var>rintv</var></span></kbd></dt>
-<dd><p>Print the avaiable variables to plot (‘0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-v<var>tkformat</var></span></kbd></dt>
-<dd><p>Format for each variable in the vtks: ‘Float64’, ‘Float32’, ‘Float16’, ‘Int64’, ‘UInt64’, ‘Int32’, ‘UInt32’, ‘Int16’, ‘UInt16’, ‘Int8’, ‘UInt8’ (‘Float64’ by default)</p>
-</dd>
-<dt><kbd><span class="option">-v<var>tknames</var></span></kbd></dt>
-<dd><p>Label each variable in the written vtk (’’ by default, i.e., the names given in the -v argument).</p>
-</dd>
-<dt><kbd><span class="option">-m<var>ask</var></span></kbd></dt>
-<dd><p>Static variable to use as 2D map background (’’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-d<var>iff</var></span></kbd></dt>
-<dd><p>The base name (or full path) of the input file to substract (’’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-s<var>uptitle</var></span></kbd></dt>
-<dd><p>Title for the subfigures (’’ by default, i.e., set by plopm, if 0, then it is removed; otherwise, write the text).</p>
-</dd>
-<dt><kbd><span class="option">-c<var>bsfax</var></span></kbd></dt>
-<dd><p>Set the global axis position and size for the colorbar (‘0.40,0.01,0.2,0.02’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-g<var>rid</var></span></kbd></dt>
-<dd><p>Set the edgecolors and lw in the matplotlib.pyplot.pcolormesh method, e.g., ‘black,1e-3’ (’’ by default, i.e., no grid).</p>
-</dd>
-<dt><kbd><span class="option">-v<var>min</var></span></kbd></dt>
-<dd><p>Set a minimum threshold to remove values in the variable (’’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-v<var>max</var></span></kbd></dt>
-<dd><p>Set a maximum threshold to remove values in the variable (’’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-d<var>istance</var></span></kbd></dt>
-<dd><p>Compute the ‘min’ or ‘max’ distance of the variable to a ‘sensor’ using -s, or to the lateral boundaries (‘border’), e.g., ‘-s 1,2,3 -v ‘sgas &gt; 1e-2’ -distance max,sensor’ computes the maximum distance to the location using a min threshold of 1e-2 to indicate if a cell has gas or not (’’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-h<var>istogram</var></span></kbd></dt>
-<dd><p>Plot the histogram of the given variable with the given number of bins and distribution, e.g., ‘20,norm’ for 20 bins and normal distribution (’’ by default, i.e., no histogram; norm and lognorm supported for now, if no specified then only the histogram is plotted).</p>
-</dd>
-<dt><kbd><span class="option">-s<var>tress</var></span></kbd></dt>
-<dd><p>Value for the stress coeff in the computation of the pressure limit for the variables related to the caprock integrity: limipres, overpres, and objepres (‘0.134’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-m<var>askthr</var></span></kbd></dt>
-<dd><p>Set the threshold for the variable to mask “ “(‘1e-3’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-f<var>ilter</var></span></kbd></dt>
-<dd><p>Consider only the cells fullfilling the conditions, which are separated by ‘&amp;’, and use ‘,’ for different input files e.g., ‘fluxnum == 2 &amp; sgas &gt;= 0.2, satnum != 5’. (’’ by default; note that RPORV needs to be set in RPTRST to be able to use dynamic filter variables such as sgas).</p>
-</dd>
-<dt><kbd><span class="option">-i<var>nterval</var></span></kbd></dt>
-<dd><p>Time for the frames in the GIF in milli second (‘1000’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-l<var>oop</var></span></kbd></dt>
-<dd><p>Set to 1 for infinity loop in the GIF (‘0’ by default).</p>
-</dd>
-<dt><kbd><span class="option">-s<var>tep</var></span></kbd></dt>
-<dd><p>Set to 1 to use ax.step instead of ax.plot (‘0’ by default).</p>
-</dd>
-</dl>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Type in the terminal <strong>plopm -h</strong> to show these argument options.</p>
+<p>Type in the terminal <strong>plopm -h</strong> to show a short description of the argument options.</p>
 </div>
+<section id="value-and-list-syntax">
+<h3>Value and list syntax<a class="headerlink" href="#value-and-list-syntax" title="Link to this heading"></a></h3>
+<p>Commas normally separate entries within one specification, while spaces
+separate repeated specifications for different inputs, variables, or plots.
+Enclose the complete argument in quotes when it contains spaces.</p>
+<p>For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-v &quot;pressure,sgas&quot;</span>
+<span class="go">-s &quot;1,1,1 41,1,29 83,1,58&quot;</span>
+<span class="go">-y &quot;[0,10000] [0,23000]&quot;</span>
+<span class="go">-histogram &quot;50,norm 20,lognorm 100&quot;</span>
+<span class="go">-log &quot;1,1,0&quot;</span>
+</pre></div>
+</div>
+<p>The separators have the following general meanings:</p>
+<ul class="simple">
+<li><p><strong>Commas</strong> separate components within one specification, such as
+<code class="docutils literal notranslate"><span class="pre">2,4,9</span></code>, <code class="docutils literal notranslate"><span class="pre">0,2,5</span></code>, or <code class="docutils literal notranslate"><span class="pre">[100,-50]</span></code>.</p></li>
+<li><p><strong>Single spaces</strong> separate repeated specifications, such as
+<code class="docutils literal notranslate"><span class="pre">1,1,1</span> <span class="pre">41,1,29</span> <span class="pre">83,1,58</span></code> or <code class="docutils literal notranslate"><span class="pre">[0,10000]</span> <span class="pre">[0,23000]</span></code>.</p></li>
+<li><p><strong>Two spaces</strong> separate free-text labels or titles when each value may
+itself contain spaces, such as <code class="docutils literal notranslate"><span class="pre">Reference</span> <span class="pre">case</span>&#160; <span class="pre">Modified</span> <span class="pre">case</span></code>.</p></li>
+<li><p><strong>Semicolons</strong> separate CSV column specifications for different inputs. An
+empty specification skips the corresponding input, such as <code class="docutils literal notranslate"><span class="pre">;1,2,5</span></code>.</p></li>
+<li><p><strong>Ampersands (&amp;)</strong> join filter conditions for the same input.</p></li>
+<li><p><strong>Commas in -filter</strong> separate filter specifications for different
+inputs.</p></li>
+<li><p><strong>Empty entries</strong> may act as placeholders where an option applies only to
+selected inputs.</p></li>
+</ul>
+<p>For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-labels &quot;Reference case  Modified case&quot;</span>
+<span class="go">-filter &quot;fluxnum == 2 &amp; sgas &gt;= 0.2, satnum != 5&quot;</span>
+<span class="go">-i &quot;table model&quot; -v &quot;,BWPR:256,1,5&quot; -csv &quot;1,3;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="options">
+<h3>Options<a class="headerlink" href="#options" title="Link to this heading"></a></h3>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">-i</span></code>, <code class="docutils literal notranslate"><span class="pre">--input</span></code></dt><dd><p>Base name or full path of the input. Separate multiple inputs with spaces,
+e.g., <code class="docutils literal notranslate"><span class="pre">SPE11B</span> <span class="pre">/home/user/SPE11B_TUNED</span></code> (<code class="docutils literal notranslate"><span class="pre">SPE11B</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-o</span></code>, <code class="docutils literal notranslate"><span class="pre">--output</span></code></dt><dd><p>Base name or full path of the output folder (<code class="docutils literal notranslate"><span class="pre">.</span></code> by default, i.e., the
+folder where plopm is executed).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-v</span></code>, <code class="docutils literal notranslate"><span class="pre">--variable</span></code></dt><dd><p>Variable specification(s) to plot. Separate variables with commas, e.g.,
+<code class="docutils literal notranslate"><span class="pre">pressure,sgas</span></code>. Expressions are also supported, e.g.,
+<code class="docutils literal notranslate"><span class="pre">pressure</span> <span class="pre">-</span> <span class="pre">0pressure</span></code>. An empty entry may be used as a placeholder when
+the corresponding input is configured through <code class="docutils literal notranslate"><span class="pre">-csv</span></code>, e.g.,
+<code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">&quot;,BWPR:256,1,5&quot;</span> <span class="pre">-csv</span> <span class="pre">&quot;1,3;&quot;</span></code>.</p>
+<p>Special variables include <code class="docutils literal notranslate"><span class="pre">grid</span></code>, <code class="docutils literal notranslate"><span class="pre">wells</span></code>, <code class="docutils literal notranslate"><span class="pre">faults</span></code>, <code class="docutils literal notranslate"><span class="pre">pcfact</span></code>,
+<code class="docutils literal notranslate"><span class="pre">limipres</span></code>, <code class="docutils literal notranslate"><span class="pre">overpres</span></code>, <code class="docutils literal notranslate"><span class="pre">objepres</span></code>, <code class="docutils literal notranslate"><span class="pre">krw</span></code>, <code class="docutils literal notranslate"><span class="pre">krg</span></code>, <code class="docutils literal notranslate"><span class="pre">krow</span></code>,
+<code class="docutils literal notranslate"><span class="pre">krog</span></code>, <code class="docutils literal notranslate"><span class="pre">pcow</span></code>, <code class="docutils literal notranslate"><span class="pre">pcog</span></code>, <code class="docutils literal notranslate"><span class="pre">pcwg</span></code>, <code class="docutils literal notranslate"><span class="pre">gasm</span></code>, <code class="docutils literal notranslate"><span class="pre">dism</span></code>, <code class="docutils literal notranslate"><span class="pre">liqm</span></code>,
+<code class="docutils literal notranslate"><span class="pre">vapm</span></code>, <code class="docutils literal notranslate"><span class="pre">co2m</span></code>, <code class="docutils literal notranslate"><span class="pre">h2om</span></code>, <code class="docutils literal notranslate"><span class="pre">xco2l</span></code>, <code class="docutils literal notranslate"><span class="pre">xh2ov</span></code>, <code class="docutils literal notranslate"><span class="pre">xco2v</span></code>,
+<code class="docutils literal notranslate"><span class="pre">xh2ol</span></code>, <code class="docutils literal notranslate"><span class="pre">fwcdm</span></code>, and <code class="docutils literal notranslate"><span class="pre">fgipm</span></code>
+(<code class="docutils literal notranslate"><span class="pre">poro,permx,permz,porv,fipnum,satnum</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-m</span></code>, <code class="docutils literal notranslate"><span class="pre">--mode</span></code></dt><dd><p>Output format: <code class="docutils literal notranslate"><span class="pre">png</span></code>, <code class="docutils literal notranslate"><span class="pre">gif</span></code>, <code class="docutils literal notranslate"><span class="pre">csv</span></code>, or <code class="docutils literal notranslate"><span class="pre">vtk</span></code> (<code class="docutils literal notranslate"><span class="pre">png</span></code> by
+default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-s</span></code>, <code class="docutils literal notranslate"><span class="pre">--slide</span></code></dt><dd><p>Slide or location in <code class="docutils literal notranslate"><span class="pre">i,j,k</span></code> form. An empty entry selects a plane, e.g.,
+<code class="docutils literal notranslate"><span class="pre">10,,</span></code>; a range projects over cells, e.g., <code class="docutils literal notranslate"><span class="pre">,,5:10</span></code>; <code class="docutils literal notranslate"><span class="pre">:</span></code> selects a
+line, e.g., <code class="docutils literal notranslate"><span class="pre">:,5,7</span></code>; and three indices select a cell over time, e.g.,
+<code class="docutils literal notranslate"><span class="pre">2,4,9</span></code>. Separate multiple selections with spaces, e.g.,
+<code class="docutils literal notranslate"><span class="pre">1,1,1</span> <span class="pre">41,1,29</span> <span class="pre">83,1,58</span></code> (<code class="docutils literal notranslate"><span class="pre">,1,</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-r</span></code>, <code class="docutils literal notranslate"><span class="pre">--restart</span></code></dt><dd><p>Restart step(s), where <code class="docutils literal notranslate"><span class="pre">0</span></code> is the initial state and <code class="docutils literal notranslate"><span class="pre">-1</span></code> is the last.
+Separate selected steps with commas, e.g., <code class="docutils literal notranslate"><span class="pre">0,2</span></code> or <code class="docutils literal notranslate"><span class="pre">0,3,10,20</span></code>, or
+use <code class="docutils literal notranslate"><span class="pre">start:end[:step]</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">1:3</span></code>, <code class="docutils literal notranslate"><span class="pre">0:4:2</span></code>, or <code class="docutils literal notranslate"><span class="pre">5:505:250</span></code>.
+The default is <code class="docutils literal notranslate"><span class="pre">-1</span></code>; GIF output uses all available steps by default.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-c</span></code>, <code class="docutils literal notranslate"><span class="pre">--colors</span></code></dt><dd><p>Colormap, e.g., <code class="docutils literal notranslate"><span class="pre">jet</span></code>, or summary-plot colors separated by commas, e.g.,
+<code class="docutils literal notranslate"><span class="pre">b,r</span></code> (empty by default, i.e., set by plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-b</span></code>, <code class="docutils literal notranslate"><span class="pre">--bounds</span></code></dt><dd><p>Color-scale limits in the requested display order, e.g., <code class="docutils literal notranslate"><span class="pre">[-0.1,11]</span></code> or
+<code class="docutils literal notranslate"><span class="pre">[11,-0.1]</span></code>. Separate limits for multiple plots with spaces (empty by
+default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-d</span></code>, <code class="docutils literal notranslate"><span class="pre">--dimensions</span></code></dt><dd><p>Figure width and height in inches, separated by a comma, e.g., <code class="docutils literal notranslate"><span class="pre">8,16</span></code>
+(<code class="docutils literal notranslate"><span class="pre">7,5</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-f</span></code>, <code class="docutils literal notranslate"><span class="pre">--size</span></code></dt><dd><p>Font size (<code class="docutils literal notranslate"><span class="pre">12</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-t</span></code>, <code class="docutils literal notranslate"><span class="pre">--title</span></code></dt><dd><p>Figure title. Separate titles for multiple plots with two spaces
+(<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-suptitle</span></code></dt><dd><p>Title for a group of subfigures. Use <code class="docutils literal notranslate"><span class="pre">0</span></code> to remove it (empty by default,
+i.e., set by plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-clabel</span></code></dt><dd><p>Colorbar label. Separate labels for multiple plots with two spaces (empty
+by default, i.e., set by plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-xlabel</span></code></dt><dd><p>X-axis label. Separate labels for multiple plots with two spaces (empty by
+default, i.e., set by plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-ylabel</span></code></dt><dd><p>Y-axis label. Separate labels for multiple plots with two spaces (empty by
+default, i.e., set by plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-facecolor</span></code></dt><dd><p>Color outside the spatial map (<code class="docutils literal notranslate"><span class="pre">w</span></code> by default, i.e., white).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-dpi</span></code></dt><dd><p>Figure resolution in dots per inch (<code class="docutils literal notranslate"><span class="pre">500</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-x</span></code>, <code class="docutils literal notranslate"><span class="pre">--xlim</span></code></dt><dd><p>X-axis limits in the requested display order, e.g., <code class="docutils literal notranslate"><span class="pre">[-100,200]</span></code> or
+<code class="docutils literal notranslate"><span class="pre">[200,-100]</span></code>. Separate limits for multiple plots with spaces, e.g.,
+<code class="docutils literal notranslate"><span class="pre">[-100,200]</span> <span class="pre">[500,0]</span></code> (empty by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-y</span></code>, <code class="docutils literal notranslate"><span class="pre">--ylim</span></code></dt><dd><p>Y-axis limits in the requested display order, e.g., <code class="docutils literal notranslate"><span class="pre">[0,70]</span></code> or
+<code class="docutils literal notranslate"><span class="pre">[70,0]</span></code>. Separate limits for multiple plots with spaces, e.g.,
+<code class="docutils literal notranslate"><span class="pre">[0,10000]</span> <span class="pre">[0,23000]</span></code> (empty by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-z</span></code>, <code class="docutils literal notranslate"><span class="pre">--scale</span></code></dt><dd><p>Scale the axes equally in 2D maps: <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">1</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-xlog</span></code></dt><dd><p>Enable the logarithmic x-axis using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>. Comma-separated
+settings are accepted when different plots require different values
+(<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-ylog</span></code></dt><dd><p>Enable the logarithmic y-axis using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>. Comma-separated
+settings are accepted when different plots require different values
+(<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-log</span></code></dt><dd><p>Enable logarithmic color scaling using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>. Separate settings
+for multiple variables with commas, e.g., <code class="docutils literal notranslate"><span class="pre">1,1,0</span></code> (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-clogthks</span></code></dt><dd><p>Tick values for logarithmic color scales, enclosed by brackets and
+separated by commas, e.g., <code class="docutils literal notranslate"><span class="pre">[1,10,100]</span></code>. At least one corresponding
+<code class="docutils literal notranslate"><span class="pre">-log</span></code> setting must be <code class="docutils literal notranslate"><span class="pre">1</span></code> (empty by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-a</span></code>, <code class="docutils literal notranslate"><span class="pre">--adjust</span></code></dt><dd><p>Scaling factor applied to variable values, e.g., <code class="docutils literal notranslate"><span class="pre">1e-9</span></code> to display CO2
+mass in Mt. Separate factors for multiple variables or plots with commas,
+e.g., <code class="docutils literal notranslate"><span class="pre">1e-5,1</span></code> (<code class="docutils literal notranslate"><span class="pre">1</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-xformat</span></code></dt><dd><p>X-axis number format, e.g., <code class="docutils literal notranslate"><span class="pre">.2e</span></code> (empty by default, i.e., set by
+plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-yformat</span></code></dt><dd><p>Y-axis number format, e.g., <code class="docutils literal notranslate"><span class="pre">.1f</span></code> (empty by default, i.e., set by
+plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-cformat</span></code></dt><dd><p>Colorbar number format, e.g., <code class="docutils literal notranslate"><span class="pre">.2f</span></code> (empty by default, i.e., set by
+plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-xlnum</span></code></dt><dd><p>Number of x-axis ticks (<code class="docutils literal notranslate"><span class="pre">5</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-ylnum</span></code></dt><dd><p>Number of y-axis ticks (<code class="docutils literal notranslate"><span class="pre">5</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-cnum</span></code></dt><dd><p>Number of colorbar ticks. Separate values for multiple plots with commas,
+e.g., <code class="docutils literal notranslate"><span class="pre">3,6,2</span></code> (empty by default, i.e., set by plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-cticks</span></code></dt><dd><p>Colorbar tick labels enclosed by brackets and separated by commas, e.g.,
+<code class="docutils literal notranslate"><span class="pre">[G,F,E,D,C,ESF]</span></code> (empty by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-xunits</span></code></dt><dd><p>Spatial-map x-axis units: <code class="docutils literal notranslate"><span class="pre">mm</span></code>, <code class="docutils literal notranslate"><span class="pre">cm</span></code>, <code class="docutils literal notranslate"><span class="pre">m</span></code>, or <code class="docutils literal notranslate"><span class="pre">km</span></code> (<code class="docutils literal notranslate"><span class="pre">m</span></code> by
+default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-yunits</span></code></dt><dd><p>Spatial-map y-axis units: <code class="docutils literal notranslate"><span class="pre">mm</span></code>, <code class="docutils literal notranslate"><span class="pre">cm</span></code>, <code class="docutils literal notranslate"><span class="pre">m</span></code>, or <code class="docutils literal notranslate"><span class="pre">km</span></code> (<code class="docutils literal notranslate"><span class="pre">m</span></code> by
+default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-subfigs</span></code></dt><dd><p>Subplot rows and columns separated by a comma, e.g., <code class="docutils literal notranslate"><span class="pre">2,2</span></code> for four
+subplots (empty by default, i.e., separate figures).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-loc</span></code></dt><dd><p>Legend location passed to <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.legend</span></code>: <code class="docutils literal notranslate"><span class="pre">best</span></code>,
+<code class="docutils literal notranslate"><span class="pre">upper</span> <span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">upper</span> <span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">lower</span> <span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">lower</span> <span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>,
+<code class="docutils literal notranslate"><span class="pre">center</span> <span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">center</span> <span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">lower</span> <span class="pre">center</span></code>, <code class="docutils literal notranslate"><span class="pre">upper</span> <span class="pre">center</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">center</span></code>. Use <code class="docutils literal notranslate"><span class="pre">empty</span></code> to remove the legend (<code class="docutils literal notranslate"><span class="pre">best</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-labels</span></code></dt><dd><p>Summary-plot legend labels, separated by two spaces, e.g.,
+<code class="docutils literal notranslate"><span class="pre">Reference</span> <span class="pre">case</span>&#160; <span class="pre">Modified</span> <span class="pre">case</span></code> (empty by default, i.e., set by plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-lw</span></code></dt><dd><p>Line widths separated by commas, e.g., <code class="docutils literal notranslate"><span class="pre">1,2,1.5</span></code> (empty by default,
+i.e., set by plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-e</span></code>, <code class="docutils literal notranslate"><span class="pre">--linestyle</span></code></dt><dd><p>Line styles separated by commas, e.g., <code class="docutils literal notranslate"><span class="pre">solid,dotted</span></code> (empty by default,
+i.e., set by plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-axgrid</span></code></dt><dd><p>Display the summary-plot axis grid: <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">1</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-remove</span></code></dt><dd><p>Remove the left axis, bottom axis, colorbar, and title using four
+comma-separated values of <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">0,0,0,0</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-how</span></code></dt><dd><p>Aggregation or selection method for 2D slices and projections. Supported
+values are <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">mean</span></code>, <code class="docutils literal notranslate"><span class="pre">pvmean</span></code>, <code class="docutils literal notranslate"><span class="pre">harmonic</span></code>,
+<code class="docutils literal notranslate"><span class="pre">arithmetic</span></code>, <code class="docutils literal notranslate"><span class="pre">first</span></code>, and <code class="docutils literal notranslate"><span class="pre">last</span></code>. Separate methods for multiple
+variables or plots with commas, e.g., <code class="docutils literal notranslate"><span class="pre">first,arithmetic,max</span></code>.</p>
+<p>By default, continuous variables are pore-volume weighted, extensive
+quantities are summed, indices retain discrete values, and permeabilities
+use directional harmonic or arithmetic averaging. For wells and faults,
+<code class="docutils literal notranslate"><span class="pre">min</span></code> shows cells containing at least one occurrence, while <code class="docutils literal notranslate"><span class="pre">max</span></code>
+requires all projected cells to contain one (empty by default, i.e.,
+selected automatically).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-global</span></code></dt><dd><p>Use the current slice range (<code class="docutils literal notranslate"><span class="pre">0</span></code>) or the whole 3D-model range (<code class="docutils literal notranslate"><span class="pre">1</span></code>)
+for color scaling (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-filter</span></code></dt><dd><p>Cell-selection conditions. Join conditions for one input with <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> and
+separate filters for different inputs with commas, e.g.,
+<code class="docutils literal notranslate"><span class="pre">fluxnum</span> <span class="pre">==</span> <span class="pre">2</span> <span class="pre">&amp;</span> <span class="pre">sgas</span> <span class="pre">&gt;=</span> <span class="pre">0.2,</span> <span class="pre">satnum</span> <span class="pre">!=</span> <span class="pre">5</span></code> (empty by default). Dynamic
+variables such as <code class="docutils literal notranslate"><span class="pre">sgas</span></code> require <code class="docutils literal notranslate"><span class="pre">RPORV</span></code> in <code class="docutils literal notranslate"><span class="pre">RPTRST</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-vmin</span></code></dt><dd><p>Minimum threshold used to remove variable values (empty by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-vmax</span></code></dt><dd><p>Maximum threshold used to remove variable values (empty by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-mask</span></code></dt><dd><p>Static variable used as the 2D-map background (empty by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-maskthr</span></code></dt><dd><p>Threshold for the variable supplied through <code class="docutils literal notranslate"><span class="pre">-mask</span></code> (<code class="docutils literal notranslate"><span class="pre">1e-3</span></code> by
+default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-ensemble</span></code></dt><dd><p>Ensemble plotting mode: <code class="docutils literal notranslate"><span class="pre">1</span></code> for mean and error bands, <code class="docutils literal notranslate"><span class="pre">2</span></code> for minimum,
+mean, and maximum, or <code class="docutils literal notranslate"><span class="pre">3</span></code> for both. Use <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable ensemble
+plotting (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-bandprop</span></code></dt><dd><p>Fill colors and alpha values as comma-separated pairs, e.g.,
+<code class="docutils literal notranslate"><span class="pre">r,0.1,g,0.2</span></code>. Used with <code class="docutils literal notranslate"><span class="pre">-ensemble</span> <span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">-ensemble</span> <span class="pre">3</span></code> (empty by
+default, i.e., the mean color with alpha 0.2).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-histogram</span></code></dt><dd><p>Histogram bins and optional distribution, e.g., <code class="docutils literal notranslate"><span class="pre">20</span></code>, <code class="docutils literal notranslate"><span class="pre">20,norm</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">20,lognorm</span></code>. Separate specifications for multiple plots with spaces,
+e.g., <code class="docutils literal notranslate"><span class="pre">50,norm</span> <span class="pre">20,lognorm</span> <span class="pre">100</span></code> (empty by default, i.e., no histogram).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-distance</span></code></dt><dd><p>Compute the minimum or maximum distance to a sensor or lateral border:
+<code class="docutils literal notranslate"><span class="pre">min,sensor</span></code>, <code class="docutils literal notranslate"><span class="pre">max,sensor</span></code>, <code class="docutils literal notranslate"><span class="pre">min,border</span></code>, or <code class="docutils literal notranslate"><span class="pre">max,border</span></code>. For a
+sensor, provide its <code class="docutils literal notranslate"><span class="pre">i,j,k</span></code> location with <code class="docutils literal notranslate"><span class="pre">-s</span></code>, e.g.,
+<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">1,2,3</span> <span class="pre">-v</span> <span class="pre">&quot;sgas</span> <span class="pre">&gt;</span> <span class="pre">1e-2&quot;</span> <span class="pre">-distance</span> <span class="pre">max,sensor</span></code> (empty by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-stress</span></code></dt><dd><p>Stress coefficient used to compute pressure limits for <code class="docutils literal notranslate"><span class="pre">limipres</span></code>,
+<code class="docutils literal notranslate"><span class="pre">overpres</span></code>, and <code class="docutils literal notranslate"><span class="pre">objepres</span></code> (<code class="docutils literal notranslate"><span class="pre">0.134</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-rotate</span></code></dt><dd><p>Grid rotation angle in degrees for 2D maps (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-translate</span></code></dt><dd><p>Grid translation in the x and y directions, e.g., <code class="docutils literal notranslate"><span class="pre">[100,-50]</span></code>
+(<code class="docutils literal notranslate"><span class="pre">[0,0]</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-csv</span></code></dt><dd><p>CSV column indices, starting at 1. Use <code class="docutils literal notranslate"><span class="pre">t,value</span></code> for a time series or
+<code class="docutils literal notranslate"><span class="pre">x,y,value</span></code> for a spatial map. Separate specifications for different
+inputs with semicolons; an empty specification skips the corresponding
+input, e.g., <code class="docutils literal notranslate"><span class="pre">;1,2,5</span></code> or <code class="docutils literal notranslate"><span class="pre">1,3;</span></code> (empty by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-tunits</span></code></dt><dd><p>Summary x-axis time units: <code class="docutils literal notranslate"><span class="pre">s</span></code>, <code class="docutils literal notranslate"><span class="pre">m</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span></code>, <code class="docutils literal notranslate"><span class="pre">d</span></code>, <code class="docutils literal notranslate"><span class="pre">w</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dates</span></code>, <code class="docutils literal notranslate"><span class="pre">empty</span></code>, or <code class="docutils literal notranslate"><span class="pre">tstep</span></code> (<code class="docutils literal notranslate"><span class="pre">d</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-save</span></code></dt><dd><p>Output file name (empty by default, i.e., set by plopm).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-p</span></code>, <code class="docutils literal notranslate"><span class="pre">--path</span></code></dt><dd><p>Path or command for the Flow executable, e.g., <code class="docutils literal notranslate"><span class="pre">/home/build/bin/flow</span></code>.
+Used only to generate the grid for VTK output (<code class="docutils literal notranslate"><span class="pre">flow</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-vtkformat</span></code></dt><dd><p>VTK format for each variable: <code class="docutils literal notranslate"><span class="pre">Float64</span></code>, <code class="docutils literal notranslate"><span class="pre">Float32</span></code>, <code class="docutils literal notranslate"><span class="pre">Float16</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Int64</span></code>, <code class="docutils literal notranslate"><span class="pre">UInt64</span></code>, <code class="docutils literal notranslate"><span class="pre">Int32</span></code>, <code class="docutils literal notranslate"><span class="pre">UInt32</span></code>, <code class="docutils literal notranslate"><span class="pre">Int16</span></code>, <code class="docutils literal notranslate"><span class="pre">UInt16</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Int8</span></code>, or <code class="docutils literal notranslate"><span class="pre">UInt8</span></code>. Separate formats for multiple variables with
+commas (<code class="docutils literal notranslate"><span class="pre">Float64</span></code> by default). This option applies only to VTK output.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-vtknames</span></code></dt><dd><p>Custom VTK variable names separated by commas (empty by default, i.e., use
+the names supplied through <code class="docutils literal notranslate"><span class="pre">-v</span></code>). This option applies only to VTK output.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-diff</span></code></dt><dd><p>Base name or full path of the input model to subtract (empty by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-ncolor</span></code></dt><dd><p>Color for inactive cells in 2D maps (<code class="docutils literal notranslate"><span class="pre">w</span></code> by default, i.e., white).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-grid</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code> edge color and line width separated by a comma, e.g.,
+<code class="docutils literal notranslate"><span class="pre">black,1e-3</span></code> (empty by default, i.e., no grid).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-cbsfax</span></code></dt><dd><p>Global colorbar position and size as <code class="docutils literal notranslate"><span class="pre">left,bottom,width,height</span></code>, e.g.,
+<code class="docutils literal notranslate"><span class="pre">0.40,0.01,0.2,0.02</span></code>. Use <code class="docutils literal notranslate"><span class="pre">empty</span></code> to remove it
+(<code class="docutils literal notranslate"><span class="pre">0.40,0.01,0.2,0.02</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-delax</span></code></dt><dd><p>Remove duplicated axis labels in subplots: <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">0</span></code> by
+default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-printv</span></code></dt><dd><p>Print the available variables: <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-dual</span></code></dt><dd><p>Enable dual-grid processing using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-interval</span></code></dt><dd><p>GIF frame interval in milliseconds (<code class="docutils literal notranslate"><span class="pre">1000</span></code> by default). This option
+applies only to GIF output.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-loop</span></code></dt><dd><p>Loop GIFs indefinitely using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default). This
+option applies only to GIF output.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-step</span></code></dt><dd><p>Use <code class="docutils literal notranslate"><span class="pre">ax.step</span></code> instead of <code class="docutils literal notranslate"><span class="pre">ax.plot</span></code>: <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">0</span></code> by
+default).</p>
+</dd>
+</dl>
+</section>
 </section>
 </section>
 
