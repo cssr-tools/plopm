@@ -22,7 +22,7 @@ def test_static(tmp_path, monkeypatch):
     (tmp_path / "SPE11B.UNRST").write_bytes(
         (mainpth / "examples" / "SPE11B.UNRST").read_bytes()
     )
-    main()
+    main([])
     for name in ["porv", "poro", "permx", "permz", "satnum", "fipnum"]:
         assert (tmp_path / f"spe11b_{name}_i,1,k_t5.png").exists()
     main(

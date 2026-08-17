@@ -4,6 +4,7 @@
 
 """Utility functions to set the requiried input values by plopm"""
 
+import argparse
 import copy
 import os
 import shutil
@@ -18,10 +19,10 @@ from opm.io.ecl import ESmry as OpmSummary
 from plopm.config.config import ConfigPlopm
 
 
-def ini_cfg(cmdargs: dict) -> ConfigPlopm:
-    """Initialize the configuration dataclass"""
+def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
+    """Initialize the configuration dataclass."""
 
-    def find_all_cases(folder: str, suffix: str) -> list[str]:
+    def find_all_cases(folder: str, suffix: str) -> list:
         folder_path = folder
         if folder_path[0] != ".":
             folder_path = "./" + folder_path
@@ -43,14 +44,17 @@ def ini_cfg(cmdargs: dict) -> ConfigPlopm:
         return folder
 
     cfg = ConfigPlopm()
-    cfg.output = os.path.abspath(cmdargs["output"])
-    names = cmdargs["input"].split("  ")
+    cfg.output = os.path.abspath(cmdargs.output)
+    names = cmdargs.input.split("  ")
     names = [var.split(" ") for var in names]
     cfg.namens = names
+
     for name in ["gif", "csv", "png", "vtk"]:
-        setattr(cfg, name, cmdargs["mode"] == name)
-    cfg.diff = cmdargs["diff"]
-    cfg.ensemble = int(cmdargs["ensemble"])
+        setattr(cfg, name, cmdargs.mode == name)
+
+    cfg.diff = cmdargs.diff
+    cfg.ensemble = int(cmdargs.ensemble)
+
     if cfg.diff:
         if cfg.diff[-1] in [".", "/"]:
             cfg.diff = find_first_case(cfg.diff, ".EGRID")
@@ -66,27 +70,43 @@ def ini_cfg(cmdargs: dict) -> ConfigPlopm:
                 names[-1] = find_all_cases(folder, ".DATA")
             else:
                 names[-1] = find_all_cases(folder, ".SMSPEC")
+
     cfg.names = names
     cfg.name = names[0][0]
-    cfg.vrs = cmdargs["variable"].lower().split(",")
+    cfg.vrs = cmdargs.variable.lower().split(",")
     handle_blocks(cfg)
-    cfg.stress = float(cmdargs["stress"])
+    cfg.stress = float(cmdargs.stress)
+
     for name in ["vtknames", "save"]:
-        setattr(cfg, name, cmdargs[name].split("  "))
+        setattr(cfg, name, getattr(cmdargs, name).split("  "))
+
     cfg.mass = ["gasm", "dism", "liqm", "vapm", "co2m", "h2om"]
     cfg.xmass = ["xco2l", "xh2ov", "xco2v", "xh2ol"]
     cfg.caprock = ["limipres", "overpres", "objepres"]
+
     for name in ["filter", "restart", "adjust", "vtkformat"]:
-        setattr(cfg, name, cmdargs[name].split(","))
+        setattr(cfg, name, getattr(cmdargs, name).split(","))
+
     if cfg.restart[0] == "-1":
         cfg.restart = [-1]
     elif ":" in cfg.restart[0]:
         cfg.rst_range = True
         vals = cfg.restart[0].split(":")
         if len(vals) == 3:
-            cfg.restart = list(range(int(vals[0]), int(vals[1]) + 1, int(vals[2])))
+            cfg.restart = list(
+                range(
+                    int(vals[0]),
+                    int(vals[1]) + 1,
+                    int(vals[2]),
+                )
+            )
         else:
-            cfg.restart = list(range(int(vals[0]), int(vals[1]) + 1))
+            cfg.restart = list(
+                range(
+                    int(vals[0]),
+                    int(vals[1]) + 1,
+                )
+            )
         if cfg.save[0]:
             width = len(str(cfg.restart[-1]))
             cfg.save = [
@@ -94,7 +114,7 @@ def ini_cfg(cmdargs: dict) -> ConfigPlopm:
                 for restart_value in cfg.restart
             ]
     else:
-        if "," in cmdargs["restart"] and (cfg.png or cfg.csv):
+        if "," in cmdargs.restart and (cfg.png or cfg.csv):
             cfg.rst_range = True
             width = len(str(cfg.restart[-1]))
             cfg.save = [
@@ -102,52 +122,66 @@ def ini_cfg(cmdargs: dict) -> ConfigPlopm:
                 for restart_value in cfg.restart
             ]
         cfg.restart = [int(restart_value) for restart_value in cfg.restart]
+
     for name in ["vtkformat", "adjust", "vtknames"]:
         if len(getattr(cfg, name)) < len(cfg.vrs):
-            setattr(cfg, name, [getattr(cfg, name)[0]] * len(cfg.vrs))
+            setattr(
+                cfg,
+                name,
+                [getattr(cfg, name)[0]] * len(cfg.vrs),
+            )
+
     if not os.path.exists(cfg.output):
         os.makedirs(cfg.output, exist_ok=True)
+
     if cfg.vtk:
         return cfg
-    cfg.csvs = cmdargs["csv"].split(";")
+
+    cfg.csvs = cmdargs.csv.split(";")
     cfg.csvs = [[int(val) if val else "" for val in var.split(",")] for var in cfg.csvs]
+
     allcsvs = True
     for val in cfg.csvs:
         if not val[0]:
             allcsvs = False
-        else:
-            if len(val) == 2:
-                cfg.csvsummary = True
+        elif len(val) == 2:
+            cfg.csvsummary = True
+
     if allcsvs:
         cfg.vrs = ["csv"]
+
     max_count = max(len(cfg.names[0]), len(cfg.vrs))
     if len(cfg.csvs) == 1 and not cfg.csvs[0][0]:
         cfg.csvs = [cfg.csvs[0]] * (max_count + 1)
+
     for name in ["mask", "lw", "linestyle", "ncolor"]:
-        setattr(cfg, name, cmdargs[name].lower())
+        setattr(cfg, name, getattr(cmdargs, name).lower())
+
     for name in ["size", "maskthr", "interval"]:
-        setattr(cfg, name, float(cmdargs[name]))
+        setattr(cfg, name, float(getattr(cmdargs, name)))
+
     for name in ["cticks", "title"]:
-        setattr(cfg, name, cmdargs[name].split("  "))
+        setattr(cfg, name, getattr(cmdargs, name).split("  "))
+
     for name in ["bounds", "translate", "histogram"]:
-        setattr(cfg, name, cmdargs[name].split(" "))
-    for name in [
-        "suptitle",
-        "bandprop",
-        "clabel",
-    ]:
-        setattr(cfg, name, cmdargs[name])
+        setattr(cfg, name, getattr(cmdargs, name).split(" "))
+
+    for name in ["suptitle", "bandprop", "clabel"]:
+        setattr(cfg, name, getattr(cmdargs, name))
+
     cfg.bounds = [var.split(",") for var in cfg.bounds]
     cfg.translate = [var.split(",") for var in cfg.translate]
-    cfg.colors_raw = cmdargs["colors"]
-    cfg.cf = cmdargs["cformat"]
-    cfg.fc = cmdargs["facecolor"]
-    cfg.labels = cmdargs["labels"].split("   ")
+    cfg.colors_raw = cmdargs.colors
+    cfg.cf = cmdargs.cformat
+    cfg.fc = cmdargs.facecolor
+    cfg.labels = cmdargs.labels.split("   ")
     cfg.labels = [var.split("  ") for var in cfg.labels]
-    cfg.rm = [int(val) for val in cmdargs["remove"].split(",")]
-    cfg.global_ = int(cmdargs["global"]) == 1
+    cfg.rm = [int(val) for val in cmdargs.remove.split(",")]
+    cfg.global_ = int(cmdargs.global_) == 1
+
     for name in ["scale", "delax", "loop", "printv", "step"]:
-        setattr(cfg, name, int(cmdargs[name]) == 1)
+        setattr(cfg, name, int(getattr(cmdargs, name)) == 1)
+
     for name in [
         "dimensions",
         "distance",
@@ -157,34 +191,64 @@ def ini_cfg(cmdargs: dict) -> ConfigPlopm:
         "loc",
         "axgrid",
     ]:
-        setattr(cfg, name, cmdargs[name].split(","))
+        setattr(cfg, name, getattr(cmdargs, name).split(","))
+
     for name in ["dpi", "tunits", "cnum", "grid"]:
-        setattr(cfg, name, cmdargs[name].split(","))
+        setattr(cfg, name, getattr(cmdargs, name).split(","))
+
     for name in ["dual", "subfigs", "vmin", "vmax"]:
-        setattr(cfg, name, cmdargs[name].split(","))
+        setattr(cfg, name, getattr(cmdargs, name).split(","))
+
     for axis_name in ["x", "y"]:
-        setattr(cfg, f"{axis_name}units", cmdargs[f"{axis_name}units"])
-        setattr(cfg, f"{axis_name}label", cmdargs[f"{axis_name}label"].split("  "))
-        setattr(cfg, f"{axis_name}format", cmdargs[f"{axis_name}format"].split(","))
-        setattr(cfg, f"{axis_name}lnum", cmdargs[f"{axis_name}lnum"].split(","))
-        setattr(cfg, f"{axis_name}log", cmdargs[f"{axis_name}log"].split(","))
-        setattr(cfg, f"{axis_name}lim", cmdargs[f"{axis_name}lim"].split(" "))
+        setattr(
+            cfg,
+            f"{axis_name}units",
+            getattr(cmdargs, f"{axis_name}units"),
+        )
+        setattr(
+            cfg,
+            f"{axis_name}label",
+            getattr(cmdargs, f"{axis_name}label").split("  "),
+        )
+        setattr(
+            cfg,
+            f"{axis_name}format",
+            getattr(cmdargs, f"{axis_name}format").split(","),
+        )
+        setattr(
+            cfg,
+            f"{axis_name}lnum",
+            getattr(cmdargs, f"{axis_name}lnum").split(","),
+        )
+        setattr(
+            cfg,
+            f"{axis_name}log",
+            getattr(cmdargs, f"{axis_name}log").split(","),
+        )
+        setattr(
+            cfg,
+            f"{axis_name}lim",
+            getattr(cmdargs, f"{axis_name}lim").split(" "),
+        )
         setattr(
             cfg,
             f"{axis_name}lim",
             [var.split(",") for var in getattr(cfg, f"{axis_name}lim")],
         )
-    if cmdargs["clogthks"]:
-        cfg.clogthks = [float(val) for val in cmdargs["clogthks"][1:-1].split(",")]
+
+    if cmdargs.clogthks:
+        cfg.clogthks = [float(val) for val in cmdargs.clogthks[1:-1].split(",")]
+
     if cfg.cticks[0]:
         for index, values in enumerate(cfg.cticks):
             cfg.cticks[index] = [val.strip() for val in values[1:-1].split(",")]
-    if cmdargs["cbsfax"] != "empty":
+    if cmdargs.cbsfax != "empty":
         cfg.cbsfax = cast(
             tuple[float, float, float, float],
-            tuple(map(float, cmdargs["cbsfax"].split(","))),
+            tuple(map(float, cmdargs.cbsfax.split(","))),
         )
-    cfg.slide = cmdargs["slide"].split(" ")
+
+    cfg.slide = cmdargs.slide.split(" ")
     cfg.slide = [
         [val if val else [-2, -2] for val in var.split(",")] for var in cfg.slide
     ]
@@ -325,7 +389,7 @@ def ini_cfg(cmdargs: dict) -> ConfigPlopm:
                 setattr(cfg, val, [getattr(cfg, val)[0]] * len(cfg.restart))
 
     if len(cfg.restart) > 1 and cfg.subfigs[0]:
-        cfg.save = [cmdargs["save"]]
+        cfg.save = [cmdargs.save]
 
     if cfg.diff:
         cfg.how = [cfg.how[0]] * 2
