@@ -32,7 +32,7 @@ for n in range(2):
                 filename,
                 "-o",
                 f"ens{n}/ens{n}run{i}",
-                "-g",
+                "-m",
                 "single",
             ]
         )
