@@ -9,6 +9,7 @@ import re
 import shlex
 import shutil
 import subprocess
+from typing import NoReturn
 
 from plopm.utils.initialization import (
     ini_cfg,
@@ -21,7 +22,7 @@ from plopm.utils.write_twod import make_maps
 from plopm.utils.write_vtk import make_vtks
 
 
-def main(argv=None) -> None:
+def main(argv: list[str] | None = None) -> None:
     """Main function for the plopm executable"""
     cmdargs = load_parser(argv)
     check_cmdargs(cmdargs)
@@ -29,7 +30,7 @@ def main(argv=None) -> None:
     print("\nExecuting plopm, please wait.")
     if cfg.vtk:
         make_vtks(
-            cmdargs["path"],
+            cmdargs.path,
             cfg.names,
             cfg.output,
             cfg.save,
@@ -67,7 +68,7 @@ def main(argv=None) -> None:
     )
 
 
-def load_parser(argv: list[str] | None) -> dict:
+def load_parser(argv: list[str] | None = None) -> argparse.Namespace:
     """CLI arguments"""
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -384,6 +385,7 @@ def load_parser(argv: list[str] | None) -> dict:
     parser.add_argument(
         "-global",
         "--global",
+        dest="global_",
         type=str.strip,
         choices=["0", "1"],
         default="0",
@@ -594,10 +596,10 @@ def load_parser(argv: list[str] | None) -> dict:
         default="0",
         help="Use ax.step instead of ax.plot",
     )
-    return vars(parser.parse_known_args(argv)[0])
+    return parser.parse_args(argv)
 
 
-def check_cmdargs(cmdargs: dict[str, str]) -> None:
+def check_cmdargs(cmdargs: argparse.Namespace) -> None:
     """Validate command-line arguments and incompatible operations.
 
     Parameters
@@ -611,7 +613,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
         If an argument is invalid or an incompatible combination is requested.
     """
 
-    def fail(message: str) -> None:
+    def fail(message: str) -> NoReturn:
         print(message)
         raise SystemExit(1)
 
@@ -642,18 +644,18 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
             )
         return numbers
 
-    mode = cmdargs["mode"]
+    mode = cmdargs.mode
     vtk_mode = mode == "vtk"
     gif_mode = mode == "gif"
     number = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
     positive_integer = r"[1-9]\d*"
     non_negative_integer = r"\d+"
 
-    if not cmdargs["input"]:
+    if not cmdargs.input:
         fail("Invalid value for '-i', the input cannot be empty.")
-    if not cmdargs["output"]:
+    if not cmdargs.output:
         fail("Invalid value for '-o', the output folder cannot be empty.")
-    if not cmdargs["variable"]:
+    if not cmdargs.variable:
         fail("Invalid value for '-v', the variable cannot be empty.")
 
     positive_number_options = [
@@ -665,11 +667,11 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
         ("-interval", "interval"),
     ]
     for option, name in positive_number_options:
-        value = parse_number(option, cmdargs[name])
+        raw_value = getattr(cmdargs, name)
+        value = parse_number(option, raw_value)
         if value <= 0:
             fail(
-                f"Invalid value '{option} {cmdargs[name]}', expected a positive "
-                "number."
+                f"Invalid value '{option} {raw_value}', expected a positive " "number."
             )
 
     number_options = [
@@ -677,29 +679,27 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
         ("-rotate", "rotate"),
     ]
     for option, name in number_options:
-        parse_number(option, cmdargs[name])
-    parse_number_list("-a", cmdargs["adjust"])
+        parse_number(option, getattr(cmdargs, name))
+
+    parse_number_list("-a", cmdargs.adjust)
 
     optional_number_options = [
         ("-vmin", "vmin"),
         ("-vmax", "vmax"),
     ]
     for option, name in optional_number_options:
-        if cmdargs[name]:
-            parse_number(option, cmdargs[name])
+        value = getattr(cmdargs, name)
+        if value:
+            parse_number(option, value)
 
-    if (
-        cmdargs["vmin"]
-        and cmdargs["vmax"]
-        and float(cmdargs["vmin"]) > float(cmdargs["vmax"])
-    ):
+    if cmdargs.vmin and cmdargs.vmax and float(cmdargs.vmin) > float(cmdargs.vmax):
         fail(
-            f"Invalid values '-vmin {cmdargs['vmin']}' and "
-            f"'-vmax {cmdargs['vmax']}', the minimum threshold must not "
+            f"Invalid values '-vmin {cmdargs.vmin}' and "
+            f"'-vmax {cmdargs.vmax}', the minimum threshold must not "
             "be greater than the maximum threshold."
         )
 
-    colorbar_tick_numbers = cmdargs["cnum"]
+    colorbar_tick_numbers = cmdargs.cnum
     if colorbar_tick_numbers:
         cnum_entries = colorbar_tick_numbers.split(",")
         if any(not re.fullmatch(positive_integer, entry) for entry in cnum_entries):
@@ -716,25 +716,26 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
         ("-loop", "loop"),
     ]
     for option, name in boolean_options:
-        values = cmdargs[name].split(",")
+        raw_value = getattr(cmdargs, name)
+        values = raw_value.split(",")
         if any(value not in ["0", "1"] for value in values):
             fail(
-                f"Invalid value '{option} {cmdargs[name]}', expected values "
+                f"Invalid value '{option} {raw_value}', expected values "
                 "containing only 0 or 1, separated by commas."
             )
 
     dimensions = parse_number_list(
         "-d",
-        cmdargs["dimensions"],
+        cmdargs.dimensions,
         2,
     )
     if any(value <= 0 for value in dimensions):
         fail(
-            f"Invalid value '-d {cmdargs['dimensions']}', figure dimensions "
+            f"Invalid value '-d {cmdargs.dimensions}', figure dimensions "
             "must be positive."
         )
 
-    translation = cmdargs["translate"]
+    translation = cmdargs.translate
     if not re.fullmatch(
         rf"\[\s*{number}\s*,\s*{number}\s*\]",
         translation,
@@ -750,17 +751,17 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
         ("-x", "xlim"),
         ("-y", "ylim"),
     ]:
-        valu = cmdargs[name]
-        if not valu:
+        value = getattr(cmdargs, name)
+        if not value:
             continue
-        for interval_value in valu.split():
+        for interval_value in value.split():
             if not interval_pattern.fullmatch(interval_value):
                 fail(
                     f"Invalid value '{option} {interval_value}', expected two "
                     "numeric bounds enclosed by brackets, e.g., '[0,10]'."
                 )
 
-    aggregation_methods = cmdargs["how"]
+    aggregation_methods = cmdargs.how
     if aggregation_methods:
         valid_aggregation_methods = [
             "min",
@@ -780,7 +781,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
                 f"{', '.join(valid_aggregation_methods)}."
             )
 
-    slide = cmdargs["slide"]
+    slide = cmdargs.slide
     slides = slide.split()
     slide_entry_pattern = re.compile(
         rf"(?:{positive_integer}|" rf"{positive_integer}:{positive_integer}|:)?"
@@ -788,7 +789,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
     if not slides:
         fail("Invalid value for '-s', the slide selection cannot be empty.")
 
-    slide_entries = []
+    slide_entries: list[list[str]] = []
     for selection in slides:
         entries = selection.split(",")
         if len(entries) != 3 or any(
@@ -822,7 +823,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
             )
         slide_entries.append(entries)
 
-    restart = cmdargs["restart"]
+    restart = cmdargs.restart
     restart_pattern = re.compile(
         rf"(?:-1|"
         rf"{non_negative_integer}(?:,{non_negative_integer})*|"
@@ -848,17 +849,17 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
         ("-e", "linestyle"),
     ]
     for option, name in list_options:
-        valu = cmdargs[name]
-        if valu and any(not entry for entry in valu.split(",")):
-            fail(f"Invalid value '{option} {valu}', entries cannot be empty.")
+        value = getattr(cmdargs, name)
+        if value and any(not entry for entry in value.split(",")):
+            fail(f"Invalid value '{option} {value}', entries cannot be empty.")
 
-    line_widths = cmdargs["lw"]
+    line_widths = cmdargs.lw
     if line_widths:
         width_values = parse_number_list("-lw", line_widths)
         if any(width <= 0 for width in width_values):
             fail(f"Invalid value '-lw {line_widths}', line widths must be " "positive.")
 
-    remove = cmdargs["remove"]
+    remove = cmdargs.remove
     remove_entries = remove.split(",")
     if len(remove_entries) != 4 or any(
         entry not in ["0", "1"] for entry in remove_entries
@@ -868,7 +869,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
             "containing only 0 or 1."
         )
 
-    subfigs = cmdargs["subfigs"]
+    subfigs = cmdargs.subfigs
     if subfigs:
         subfig_entries = subfigs.split(",")
         if len(subfig_entries) != 2 or any(
@@ -879,7 +880,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
                 "integers separated by a comma, e.g., '-subfigs 2,2'."
             )
 
-    colorbar_axis = cmdargs["cbsfax"]
+    colorbar_axis = cmdargs.cbsfax
     if colorbar_axis != "empty":
         colorbar_axis_values = parse_number_list(
             "-cbsfax",
@@ -897,7 +898,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
                 "must be positive."
             )
 
-    grid = cmdargs["grid"]
+    grid = cmdargs.grid
     if grid:
         grid_entries = grid.split(",")
         if len(grid_entries) != 2 or not grid_entries[0] or not grid_entries[1]:
@@ -908,7 +909,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
         if parse_number("-grid", grid_entries[1]) < 0:
             fail(f"Invalid value '-grid {grid}', the line width cannot be " "negative.")
 
-    csv_columns = cmdargs["csv"]
+    csv_columns = cmdargs.csv
     if csv_columns:
         csv_specifications = csv_columns.split(";")
         for specification in csv_specifications:
@@ -929,7 +930,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
                     "each specification must be different."
                 )
 
-    histogram = cmdargs["histogram"]
+    histogram = cmdargs.histogram
     if histogram:
         histogram_specifications = histogram.split()
         for specification in histogram_specifications:
@@ -956,7 +957,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
                     "distributions are 'norm' and 'lognorm'."
                 )
 
-    band_properties = cmdargs["bandprop"]
+    band_properties = cmdargs.bandprop
     if band_properties:
         band_entries = band_properties.split(",")
         if len(band_entries) % 2 != 0 or any(not color for color in band_entries[::2]):
@@ -973,34 +974,29 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
                 f"Invalid value '-bandprop {band_properties}', alpha values "
                 "must be between 0 and 1."
             )
-        if cmdargs["ensemble"] not in ["1", "3"]:
+        if cmdargs.ensemble not in ["1", "3"]:
             fail(
                 "Invalid combination, '-bandprop' can only be used with "
                 "'-ensemble 1' or '-ensemble 3'."
             )
 
-    log_values = cmdargs["log"].split(",")
-    if any(value not in ["0", "1"] for value in log_values):
-        fail(
-            f"Invalid value '-log {cmdargs['log']}', expected values containing "
-            "only 0 or 1, separated by commas."
-        )
+    log_values = cmdargs.log.split(",")
 
-    if cmdargs["clogthks"] and "1" not in log_values:
+    if cmdargs.clogthks and "1" not in log_values:
         fail(
             "Invalid combination, '-clogthks' requires at least one logarithmic "
             "color scale enabled with '-log'."
         )
 
-    if cmdargs["maskthr"] != "1e-3" and not cmdargs["mask"]:
+    if cmdargs.maskthr != "1e-3" and not cmdargs.mask:
         fail(
             "Invalid combination, '-maskthr' can only be changed when '-mask' "
             "is used."
         )
 
     if (
-        cmdargs["distance"]
-        and "sensor" in cmdargs["distance"]
+        cmdargs.distance
+        and "sensor" in cmdargs.distance
         and any(
             any(not re.fullmatch(positive_integer, entry) for entry in entries)
             for entries in slide_entries
@@ -1011,7 +1007,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
             "provided with '-s' to contain three positive indices."
         )
 
-    vtk_names = cmdargs["vtknames"]
+    vtk_names = cmdargs.vtknames
     if vtk_names:
         vtk_name_entries = vtk_names.split(",")
         if any(not name for name in vtk_name_entries):
@@ -1033,10 +1029,10 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
         "Int8",
         "UInt8",
     ]
-    vtk_formats = cmdargs["vtkformat"].split(",")
+    vtk_formats = cmdargs.vtkformat.split(",")
     if any(vtk_format not in valid_vtk_formats for vtk_format in vtk_formats):
         fail(
-            f"Invalid value '-vtkformat {cmdargs['vtkformat']}', valid "
+            f"Invalid value '-vtkformat {cmdargs.vtkformat}', valid "
             f"formats are {', '.join(valid_vtk_formats)}."
         )
 
@@ -1049,7 +1045,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
         invalid_options = [
             option
             for option, (name, default) in vtk_options.items()
-            if cmdargs[name] != default
+            if getattr(cmdargs, name) != default
         ]
         if invalid_options:
             fail(
@@ -1058,12 +1054,12 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
             )
     else:
         try:
-            flow_arguments = shlex.split(cmdargs["path"])
+            flow_arguments = shlex.split(cmdargs.path)
         except ValueError:
             flow_arguments = []
 
         if not flow_arguments:
-            fail(f"Invalid OPM Flow command '-p {cmdargs['path']}'.")
+            fail(f"Invalid OPM Flow command '-p {cmdargs.path}'.")
 
         try:
             flow_result = subprocess.run(
@@ -1077,7 +1073,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
 
         if flow_result is None or flow_result.returncode != 0:
             fail(
-                f"The OPM Flow executable '-p {cmdargs['path']}' is not "
+                f"The OPM Flow executable '-p {cmdargs.path}' is not "
                 "available or not working."
             )
 
@@ -1089,7 +1085,7 @@ def check_cmdargs(cmdargs: dict[str, str]) -> None:
         invalid_options = [
             option
             for option, (name, default) in gif_options.items()
-            if cmdargs[name] != default
+            if getattr(cmdargs, name) != default
         ]
         if invalid_options:
             fail(

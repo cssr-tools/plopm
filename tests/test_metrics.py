@@ -57,7 +57,6 @@ def test_metrics(tmp_path):
             str(mainpth / "examples" / "SPE11B"),
             "-m",
             "csv",
-            "SPE11B",
             "-o",
             str(tmp_path),
             "-v",
