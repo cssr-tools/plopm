@@ -51,6 +51,7 @@ test_outputs/docs_generic_deck/spe10_model2_permz_i,4,k_t0.png
 "
 
 missing_file="test_outputs/missing_docs_files.txt"
+missing=0
 
 rm -f "$missing_file"
 
@@ -58,14 +59,9 @@ printf '%s\n' "$files" | while IFS= read -r f; do
     [ -z "$f" ] && continue
     if [ ! -f "$f" ]; then
         echo "$f" >> "$missing_file"
+        missing=$((missing + 1))
     fi
 done
-
-if [ -f "$missing_file" ]; then
-    missing=$(wc -l < "$missing_file")
-else
-    missing=0
-fi
 
 if [ "$missing" -eq 0 ]; then
     echo "All figures and files exist."
