@@ -379,6 +379,8 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
             ):
                 continue
             if val == "slide":
+                if cfg.gif and len(cfg.slide) >= len(cfg.names[0]):
+                    continue
                 current = getattr(cfg, val)
                 setattr(
                     cfg,
