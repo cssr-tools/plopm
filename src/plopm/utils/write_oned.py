@@ -104,6 +104,17 @@ def make_plots(cfg: ConfigPlopm) -> None:
 
     deckn = get_deck_name(cfg.names[0][0])
     fig, _ = plt.subplots(1, 1)
+    if cfg.ensemble == 0 and len(cfg.names[0]) < len(cfg.vrs):
+        cfg.names[0] = [cfg.names[0][0]] * len(cfg.vrs)
+        if len(cfg.lw[0]) < len(cfg.vrs):
+            cfg.lw[0] = [cfg.lw[0][0]] * len(cfg.vrs)
+            cfg.lw = [cfg.lw[0]] * len(cfg.vrs)
+        if len(cfg.colors[0]) < len(cfg.vrs):
+            cfg.colors[0] = [cfg.colors[0][0]] * len(cfg.vrs)
+            cfg.colors = [cfg.colors[0]] * len(cfg.vrs)
+        if len(cfg.linestyle[0]) < len(cfg.vrs):
+            cfg.linestyle[0] = [cfg.linestyle[0][0]] * len(cfg.vrs)
+            cfg.linestyle = [cfg.linestyle[0]] * len(cfg.vrs)
     if cfg.subfigs[0]:
         plt.close()
         fig, axiss = plt.subplots(

@@ -57,6 +57,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#caprock-integrity">Caprock integrity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reading-from-csv-files">Reading from csv files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convert-to-vtk">Convert to VTK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rel-perms-and-capillary-pressure">Rel perms and capillary pressure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#different-input-files-and-ensembles">Different input files and ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#filters">Filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gif-and-mask">GIF and mask</a></li>
@@ -390,6 +391,26 @@ such as component mass (e.g., co2, h2o). This is when <strong>plopm</strong> can
 </div>
 </div>
 </section>
+<section id="rel-perms-and-capillary-pressure">
+<h2>Rel perms and capillary pressure<a class="headerlink" href="#rel-perms-and-capillary-pressure" title="Link to this heading"></a></h2>
+<p><strong>plopm</strong> supports the plotting of saturation functions using the ‘-v’ flag, namely ‘krw’, ‘krg’, ‘krow’, ‘krog’, ‘pcow’, ‘pcog’, and ‘pcwg’.
+By default, the saturation function is plotted for SATNUM=1. For a different table, this can be achieved by adding the number at the end of the variable, e.g., ‘pcog5’.
+In addition, if the model includes hysteresis, then to plot both drainage and imbibition curves this can be achieved by adding ‘h’ at the end of the variable, e.g., ‘krg3h’.
+However, by plotting individually the drainage and imbibition tables one can set the labels, colors, and styles for each of them.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;H2HYSTERESIS&#39;</span><span class="w"> </span>-v<span class="w"> </span>krgh,krwh<span class="w"> </span>-labels<span class="w"> </span><span class="s2">&quot;Hydrogen  Brine&quot;</span><span class="w"> </span>-c<span class="w"> </span>r,#0314fc<span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,1]&#39;</span><span class="w"> </span>-lw<span class="w"> </span><span class="m">5</span><span class="w"> </span>-f<span class="w"> </span><span class="m">18</span><span class="w"> </span>-d<span class="w"> </span><span class="m">8</span>,6<span class="w"> </span>-ylabel<span class="w"> </span><span class="s1">&#39;Relative permeability, $k_r$ [-]&#39;</span><span class="w"> </span>-xlabel<span class="w"> </span><span class="s1">&#39; Liquid saturation, $s_w$ [-]&#39;</span><span class="w">  </span>-e<span class="w"> </span>solid,solid<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">6</span><span class="w">  </span>-ylnum<span class="w"> </span><span class="m">6</span>
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;H2HYSTERESIS&#39;</span><span class="w"> </span>-v<span class="w"> </span>krg1,krg2,krw1,krw2<span class="w"> </span>-labels<span class="w"> </span><span class="s2">&quot;Drainage hydrogen  Imbibition hydrogen  Drainage brine  Imbibition brine&quot;</span><span class="w"> </span>-c<span class="w"> </span>r,r,#0314fc,#0314fc<span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,1]&#39;</span><span class="w"> </span>-lw<span class="w"> </span><span class="m">5</span><span class="w"> </span>-f<span class="w"> </span><span class="m">18</span><span class="w"> </span>-d<span class="w"> </span><span class="m">8</span>,6<span class="w"> </span>-ylabel<span class="w"> </span><span class="s1">&#39;Relative permeability, $k_r$ [-]&#39;</span><span class="w"> </span>-xlabel<span class="w"> </span><span class="s1">&#39;Liquid saturation, $s_w$ [-]&#39;</span><span class="w"> </span>-e<span class="w"> </span>solid,dashed,solid,dashed<span class="w">  </span>-xlnum<span class="w"> </span><span class="m">6</span><span class="w">  </span>-ylnum<span class="w"> </span><span class="m">6</span>
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;H2HYSTERESIS&#39;</span><span class="w"> </span>-v<span class="w"> </span>pcwg<span class="w"> </span>-c<span class="w"> </span>k<span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,1]&#39;</span><span class="w"> </span>-lw<span class="w"> </span><span class="m">5</span><span class="w"> </span>-loc<span class="w"> </span>empty<span class="w"> </span>-f<span class="w"> </span><span class="m">18</span><span class="w"> </span>-d<span class="w"> </span><span class="m">8</span>,6<span class="w"> </span>-ylabel<span class="w"> </span><span class="s1">&#39;Capillary pressure, $p_c$ [bar]&#39;</span><span class="w"> </span>-xlabel<span class="w"> </span><span class="s1">&#39;Liquid saturation, $s_w$ [-]&#39;</span><span class="w"> </span>-e<span class="w"> </span>solid,dashed,solid,dashed<span class="w">  </span>-xlnum<span class="w"> </span><span class="m">6</span><span class="w">  </span>-ylog<span class="w"> </span><span class="m">1</span>
+</pre></div>
+</div>
+<img alt="_images/saturation_functions.png" src="_images/saturation_functions.png" />
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>These figures can be generated by (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_rel_perms_and_capillary_pressure.sh">docs_rel_perms_and_capillary_pressure.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_rel_perms_and_capillary_pressure.sh
+</pre></div>
+</div>
+</div>
+</section>
 <section id="different-input-files-and-ensembles">
 <h2>Different input files and ensembles<a class="headerlink" href="#different-input-files-and-ensembles" title="Link to this heading"></a></h2>
 <p>Let us assume we have two different runs in different folders for the spe11b case, where the firsts results are save
@@ -428,12 +449,6 @@ ensembles using <a class="reference external" href="https://github.com/cssr-tool
 <p><span class="caption-text">Example of visualizing ensembles using <strong>plopm</strong> (example0.png and example3_formated.png respectively).</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>As seen in this example, <strong>plopm</strong> supports the plotting of saturation functions using the ‘-v’ flag, namely ‘krw’, ‘krg’, ‘krow’, ‘krog’, ‘pcow’, ‘pcog’, and ‘pcwg’.
-By default, the saturation function is plotted for SATNUM=1. For a different table, this can be achieved by adding the number at the end of the variable, e.g., ‘pcog5’.
-In addition, if the model includes hysteresis, then to plot both drainage and imbibition curves this can be achieved by adding ‘h’ at the end of the variable, e.g., ‘krg3h’.</p>
-</div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_different_files_and_ensembles.sh">docs_different_files_and_ensembles.sh</a>):</p>

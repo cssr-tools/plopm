@@ -15,12 +15,12 @@ temperature = [40,40] #Top and bottom temperatures [C]
 initialphase = 0 #Initial phase in the reservoir (0 wetting, 1 non-wetting) 
 pvmult = -1 #Pore volume multiplier on the boundary [-] (-1 to ignore; 0 to use well producers instead)
 rockcomp = 8.5e-5 #Rock compressibility [1/Bar]
-hysteresis = "Killough" #Add hysteresis (Killough or Carlson, 0 by default, i.e., no hysteresis)
+ehystr = "1* 2 2* KR" #Define Hysteresis model and parameters (see EHYSTR in the OPM Flow manual)
 
 #Set the saturation functions
-krw = "krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw"        #Wetting rel perm saturation function [-]
-krn = "krn * ((1.0 - sw - sni) / (1.0 - sni - swi)) ** nkrn" #Non-wetting rel perm saturation function [-]
-pcap = "pen * ((sw - swi) / (1.0 - swi)) ** (-(1.0 / npen))" #Capillary pressure saturation function [Bar]
+krw = "krw * ((sw - swi) / (1.0 -swi)) ** nkrw"        #Wetting rel perm saturation function [-]
+krn = "krn * ((1.0 - sw - sni) / (1.0 - swi - sni)) ** nkrn" #Non-wetting rel perm saturation function [-]
+pcap = "pen * ((sw - swi) / (1.0 - swi)) ** (-(1.0 / npen))" #Capillary pressure saturation function [bar]
 
 #Properties sat functions: 1) swi [-], 2) sni [-], 3) krw [-], 4) krn [-], 5) pen [Bar], 6) nkrw [-],
 #7) nkrn [-], 8) npen [-], 9) threshold cP evaluation, 10) ignore swi for cP? (sl* for cplog)

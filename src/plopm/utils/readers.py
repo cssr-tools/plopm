@@ -601,6 +601,7 @@ def read_oned(
     quans = quan.split(" ")
     csv_flag = cfg.csvs[n][0]
     q0_low = quans[0]
+    use_sw = "krw" in "".join(cfg.vrs)
     if csv_flag:
         csvv = np.genfromtxt(f"{case}.csv", delimiter=",", skip_header=1)
         col_t = cfg.csvs[n][0] - 1
@@ -666,7 +667,7 @@ def read_oned(
         nsnum = tabdim[25]
         vunit = ""
         if what == "krg":
-            tunit = "s$_g$ [-]"
+            tunit = "s$_w$ [-]" if use_sw else "s$_g$ [-]"
             sht = tabdim[23] - 1
             base = sht + (snu - 1) * nswe
             time = table[base : base + nswe]
@@ -693,6 +694,8 @@ def read_oned(
                     ),
                 )
                 time = np.append(time, np.flip(timeh))
+            if use_sw:
+                time = 1.0 - time
         elif what == "krow":
             nswe = tabdim[21]
             tunit = "s$_w$ [-]"
@@ -720,11 +723,25 @@ def read_oned(
             time = table[base : base + nswe]
             time = time[time <= 1.0]
             count_v = len(time)
-            if tabdim[22] == 2:
-                sht += nswe
             var = table[
                 sht + nswe * nsnum + (snu - 1) * nswe : sht + nswe * nsnum + snu * nswe
             ][:count_v]
+            if hyst:
+                base2 = sht + (nsnum // 2 + snu - 1) * nswe
+                timeh = table[base2 : base2 + nswe]
+                timeh = timeh[timeh <= 1.0]
+                count_v = len(timeh)
+                var = np.append(
+                    np.flip(var),
+                    table[
+                        sht
+                        + nswe * nsnum
+                        + (nsnum // 2 + snu - 1) * nswe : sht
+                        + nswe * nsnum
+                        + (nsnum // 2 + snu) * nswe
+                    ][:count_v],
+                )
+                time = np.append(np.flip(time), timeh)
         elif what == "pcow":
             nswe = tabdim[21]
             tunit = "s$_w$ [-]"
@@ -754,12 +771,13 @@ def read_oned(
                 + 2 * nswe * nsnum
                 + snu * nswe
             ][:count_v]
-    elif quan[:6] == "pcfact":
+    elif quan[:6] == "pcfact" or quan[:8] == "permfact":
+        cap = 6 if quan[:6] == "pcfact" else 8
         tmp0 = []
         tmp2 = []
         found = False
-        snu = int(quans[0][6:])
-        vec = quans[0].upper()[:6]
+        snu = int(quans[0][cap:])
+        vec = quans[0].upper()[:cap]
         file_name = where_at(case, vec)
         count = 0
         with open(file_name, "r", encoding="utf8") as file:

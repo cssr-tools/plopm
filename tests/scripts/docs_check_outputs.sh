@@ -48,6 +48,9 @@ test_outputs/docs_filters/spe11b_fipnum_i,1,k_t5.png
 test_outputs/docs_generic_deck/spe10_model2_grid_i,j,1_t0.png
 test_outputs/docs_generic_deck/spe10_model2_wells_i,j,1_t0.png
 test_outputs/docs_generic_deck/spe10_model2_permz_i,4,k_t0.png
+test_outputs/docs_rel_perms_and_capillary_pressure/h2hysteresis_krwh.png
+test_outputs/docs_rel_perms_and_capillary_pressure/h2hysteresis_krw2.png
+test_outputs/docs_rel_perms_and_capillary_pressure/h2hysteresis_pcwg.png
 "
 
 missing_file="test_outputs/missing_docs_files.txt"
