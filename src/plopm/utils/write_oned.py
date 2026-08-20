@@ -104,7 +104,7 @@ def make_plots(cfg: ConfigPlopm) -> None:
 
     deckn = get_deck_name(cfg.names[0][0])
     fig, _ = plt.subplots(1, 1)
-    if cfg.ensemble == 0 and len(cfg.names[0]) < len(cfg.vrs):
+    if cfg.ensemble == 0 and not cfg.subfigs[0] and len(cfg.names[0]) < len(cfg.vrs):
         cfg.names[0] = [cfg.names[0][0]] * len(cfg.vrs)
         if len(cfg.lw[0]) < len(cfg.vrs):
             cfg.lw[0] = [cfg.lw[0][0]] * len(cfg.vrs)
