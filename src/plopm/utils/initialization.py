@@ -571,6 +571,7 @@ def is_summary(cfg: ConfigPlopm) -> bool:
         first_var[:3] in ["krw", "krg"]
         or first_var[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
         or first_var[:6] == "pcfact"
+        or first_var[:8] == "permfact"
     ):
         return True
     smspec_file = f"{name}.SMSPEC"
