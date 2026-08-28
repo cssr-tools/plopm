@@ -2,9 +2,13 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=W3301,R0912,R0913,R0914,R0915,R0917,E1102
 
-"""Utility methods to write the vtks"""
+"""Create VTK files from OPM Flow simulation results.
 
-import csv
+The module runs a minimal OPM Flow job when grid geometry is unavailable,
+populates VTU cell-data arrays for selected restart steps, and writes the PVD
+collection used to open the resulting time series.
+"""
+
 import os
 import shlex
 import shutil
@@ -16,8 +20,8 @@ import numpy as np
 from alive_progress import alive_bar
 from numpy.typing import NDArray
 
-from plopm.config.config import ReadData
-from plopm.utils.readers import get_quantity, get_readers
+from plopm.config.config import SimData
+from plopm.utils.readers import read_case, read_quantity
 from plopm.utils.terminal import cli_error_value, plopm_error, plopm_warning
 
 VTK_DTYPES = {
@@ -41,20 +45,64 @@ def make_vtks(
     output: str,
     save: list,
     restart: list,
-    vrs: list,
+    variables: list,
     vtkformat_list: list,
     vtknames: list,
     gif: bool,
     vtk: bool,
     filters: list,
-    skl: list[str],
+    scales: list[str],
     mass: list[str],
     mass_all: list[str],
     caprock: list[str],
     stress: float,
     filterss: list[str],
 ) -> list:
-    """Use OPM Flow to generate and populate VTK files."""
+    """Create VTK time-series output for the configured cases.
+
+    A minimal OPM Flow run creates the grid-only VTU file when needed. Selected
+    properties are then read from INIT or UNRST output and written to one VTU
+    file per restart step.
+
+    Parameters
+    ----------
+    flow : str
+        Command used to run OPM Flow.
+    names : list
+        Simulation-case stems grouped by the CLI input.
+    output : str
+        Directory in which VTK files are written.
+    save : list
+        Optional output stems for each case.
+    restart : list
+        Restart report steps to export.
+    variables : list
+        Variables or expressions written as cell data.
+    vtkformat_list : list
+        VTK data type selected for each variable.
+    vtknames : list
+        Optional VTK array names for each variable.
+    gif, vtk : bool
+        Output-mode flags passed to the simulation readers.
+    filters : list
+        Property filters used while loading each case.
+    scales : list[str]
+        Scale factor applied to each variable.
+    mass, mass_all : list[str]
+        Mass variables and all supported mass-related variables.
+    caprock : list[str]
+        Supported caprock-integrity variables.
+    stress : float
+        Vertical stress coefficient used for caprock quantities.
+    filterss : list[str]
+        Filter expressions applied while reading exported quantities.
+
+    Returns
+    -------
+    list[str]
+        Names of the generated PVD collection files.
+
+    """
     generated_files: list[str] = []
 
     for k, case in enumerate(names[0]):
@@ -76,7 +124,7 @@ def make_vtks(
                 if len(case.split("/")) > 1:
                     os.chdir("/".join(case.split("/")[:-1]))
                 dryrun_parent = os.getcwd()
-                flags, thermal = get_flags()
+                flags, thermal = _vtk_flags()
                 flow_command = shlex.split(flow)
                 dryrun_deck = f"{dname}_DRYRUN_{os.getpid()}.DATA"
                 dryrun_folder = f"plopm_{os.getpid()}"
@@ -109,18 +157,18 @@ def make_vtks(
 
         generated_files.append(grid_name)
 
-        read = get_readers(case, gif, vtk, vrs, restart, filters)
-        opmtovtk(
+        data = read_case(case, gif, vtk, variables, restart, filters)
+        _write_vtk_data(
             case,
-            read,
+            data,
             output,
             dname,
             save,
-            vrs,
+            variables,
             vtkformat_list,
             vtknames,
             k,
-            skl,
+            scales,
             mass,
             mass_all,
             caprock,
@@ -130,14 +178,14 @@ def make_vtks(
 
         where = save[k] if save[k] else dname
         generated_files.extend(
-            f"{where}-{int(restart_index):04d}.vtu" for restart_index in read.restart
+            f"{where}-{int(restart_index):04d}.vtu" for restart_index in data.steps
         )
 
-        writepvd(
+        _write_pvd(
             save,
             dname,
-            read.restart,
-            read.tnrst,
+            data.steps,
+            data.times,
             output,
             k,
         )
@@ -146,13 +194,30 @@ def make_vtks(
     return list(dict.fromkeys(generated_files))
 
 
-def writepvd(
+def _write_pvd(
     save: list, dname: str, restart: list, tnrst: list, output: str, k: int
 ) -> None:
-    """Generate the pvd file"""
+    """Write a PVD collection for a VTU time series.
+
+    Parameters
+    ----------
+    save : list
+        Optional output stems for each case.
+    dname : str
+        Default case name.
+    restart : list
+        Restart report steps included in the collection.
+    tnrst : list
+        Simulation times indexed by restart report step.
+    output : str
+        Output directory.
+    k : int
+        Case index used to select the output stem.
+
+    """
     where = save[k] if save[k] else dname
-    base_pvd = []
-    base_pvd.append(
+    pvd_lines = []
+    pvd_lines.append(
         "<?xml version='1.0'?>\n"
         + "<VTKFile type='Collection'\n"
         + "         version='0.1'\n"
@@ -161,73 +226,103 @@ def writepvd(
         + " <Collection>\n"
     )
     for i in restart:
-        base_pvd.append(
+        pvd_lines.append(
             f"   <DataSet timestep='{tnrst[i]}' file='{where}-{int(i):04d}.vtu'/>\n"
         )
-    base_pvd.append(" </Collection>\n</VTKFile>")
+    pvd_lines.append(" </Collection>\n</VTKFile>")
     with open(
         f"{output}/{where}.pvd",
         "w",
         encoding="utf8",
     ) as file:
-        file.write("".join(base_pvd))
+        file.write("".join(pvd_lines))
 
 
-def warn_once(warning_keys: set, warning_key, message: str) -> None:
-    """Print a warning once"""
+def _warn_once(warning_keys: set, warning_key, message: str) -> None:
+    """Emit a warning once for a unique key.
+
+    Parameters
+    ----------
+    warning_keys : set
+        Keys for warnings already emitted.
+    warning_key
+        Hashable key identifying the warning condition.
+    message : str
+        Warning message.
+
+    """
     if warning_key not in warning_keys:
         plopm_warning(message)
         warning_keys.add(warning_key)
 
 
-def check_integer_conversion(
-    quan: NDArray,
+def _check_integer_conversion(
+    values: NDArray,
     var: str,
     vtkformat: str,
     target_dtype: type,
     warning_keys: set[tuple[str, str, str]],
 ) -> None:
-    """Warn about risky integer conversions"""
+    """Warn about unsafe conversion to an integer VTK type.
+
+    Warnings cover non-numeric or non-finite values, negative values converted
+    to unsigned integers, decimal truncation, and values outside the target
+    integer range.
+
+    Parameters
+    ----------
+    values : np.ndarray
+        Quantity values to inspect.
+    var : str
+        Variable name used in warning messages.
+    vtkformat : str
+        Requested VTK data type.
+    target_dtype : type
+        NumPy dtype used for conversion.
+    warning_keys : set[tuple[str, str, str]]
+        Keys for warnings already emitted.
+
+    """
     try:
-        numeric_quan = np.asarray(quan, dtype=np.float64)
+        numeric_values = np.asarray(values, dtype=np.float64)
     except TypeError:
-        warn_once(
+        _warn_once(
             warning_keys,
             (var.upper(), vtkformat, "non_numeric"),
             f"{var.upper()} contains non-numeric values but is written as {vtkformat}.",
         )
         return
-    if not numeric_quan.size:
+    if not numeric_values.size:
         return
-    finite_mask = np.isfinite(numeric_quan)
-    finite_quan = numeric_quan[finite_mask]
-    if finite_quan.size != numeric_quan.size:
-        warn_once(
+    finite_mask = np.isfinite(numeric_values)
+    finite_values = numeric_values[finite_mask]
+    if finite_values.size != numeric_values.size:
+        _warn_once(
             warning_keys,
             (var.upper(), vtkformat, "non_finite"),
             f"{var.upper()} contains non-finite values but is written as {vtkformat}.",
         )
-    if not finite_quan.size:
+    if not finite_values.size:
         return
     dtype_info = np.iinfo(target_dtype)
-    min_val = finite_quan.min()
-    max_val = finite_quan.max()
+    min_val = finite_values.min()
+    max_val = finite_values.max()
     if np.issubdtype(target_dtype, np.unsignedinteger) and min_val < 0:
-        warn_once(
+        _warn_once(
             warning_keys,
             (var.upper(), vtkformat, "negative_unsigned"),
             f"{var.upper()} contains negative values but is written as {vtkformat}; "
             "NumPy may wrap them.",
         )
-    if np.any(finite_quan != np.trunc(finite_quan)):
-        warn_once(
+    if np.any(finite_values != np.trunc(finite_values)):
+        _warn_once(
             warning_keys,
             (var.upper(), vtkformat, "float_truncation"),
             f"{var.upper()} contains float values but is written as {vtkformat}; "
             "NumPy will truncate decimals.",
         )
     if min_val < dtype_info.min or max_val > dtype_info.max:
-        warn_once(
+        _warn_once(
             warning_keys,
             (var.upper(), vtkformat, "out_of_range"),
             f"{var.upper()} contains values outside {vtkformat} range [{dtype_info.min}, "
@@ -235,38 +330,85 @@ def check_integer_conversion(
         )
 
 
-def format_data_array(quan: NDArray, target_dtype: type) -> str:
-    """Format values for an ascii VTK DataArray"""
-    quan = np.ravel(np.asarray(quan, dtype=target_dtype))
+def _format_vtk_array(values: NDArray, target_dtype: type) -> str:
+    """Format values for an ASCII VTK DataArray.
+
+    Parameters
+    ----------
+    values : np.ndarray
+        Values to flatten and convert.
+    target_dtype : type
+        NumPy dtype used for the output values.
+
+    Returns
+    -------
+    str
+        Tab-indented values ready for insertion into a VTU file.
+
+    """
+    values = np.ravel(np.asarray(values, dtype=target_dtype))
     if np.issubdtype(np.dtype(target_dtype), np.floating):
-        quan = np.char.mod("%.8f", quan)
-        quan = np.char.rstrip(np.char.rstrip(quan, "0"), ".")
-        quan = np.where(quan == "-0", "0", quan)
+        values = np.char.mod("%.8f", values)
+        values = np.char.rstrip(np.char.rstrip(values, "0"), ".")
+        values = np.where(values == "-0", "0", values)
     else:
-        quan = quan.astype(str)
-    return "\t\t\t\t\t " + " ".join(quan) + "\n\t\t\t\t\t</DataArray>"
+        values = values.astype(str)
+    return "\t\t\t\t\t " + " ".join(values) + "\n\t\t\t\t\t</DataArray>"
 
 
-def opmtovtk(
+def _write_vtk_data(
     case: str,
-    read: ReadData,
+    data: SimData,
     output: str,
     dname: str,
     save: list,
-    vrs: list,
+    variables: list,
     vtkformat_list: list,
     vtknames: list,
     k: int,
-    skl: list[str],
+    scales: list[str],
     mass: list[str],
     mass_all: list[str],
     caprock: list[str],
     stress: float,
     filterss: str,
 ) -> None:
-    """Generate the vtks"""
-    restart = read.restart
-    base_vtk = []
+    """Populate grid VTU files with simulation cell data.
+
+    Parameters
+    ----------
+    case : str
+        Simulation-case stem.
+    data : SimData
+        Loaded OPM simulation data.
+    output : str
+        Output directory.
+    dname : str
+        Default case name.
+    save : list
+        Optional output stems for each case.
+    variables : list
+        Variables or expressions written as cell data.
+    vtkformat_list : list
+        VTK data type selected for each variable.
+    vtknames : list
+        Optional VTK array names.
+    k : int
+        Case index used to select output settings.
+    scales : list[str]
+        Scale factor applied to each variable.
+    mass, mass_all : list[str]
+        Mass variables and all supported mass-related variables.
+    caprock : list[str]
+        Supported caprock-integrity variables.
+    stress : float
+        Vertical stress coefficient used for caprock quantities.
+    filterss : str
+        Filter expression applied while reading quantities.
+
+    """
+    restart = data.steps
+    vtk_lines = []
     skip = False
     warning_keys: set[tuple[str, str, str]] = set()
     with open(f"{output}/{dname}-GRID.vtu", encoding="utf8") as file:
@@ -277,11 +419,11 @@ def opmtovtk(
             if "CellData" in line:
                 skip = True
             if not skip:
-                base_vtk.append(line)
+                vtk_lines.append(line)
     where = save[k] if save[k] else dname
     show_progress = sys.stdout.isatty()
     if show_progress:
-        bar_ctx = alive_bar(len(restart) * len(vrs), bar="fish")
+        bar_ctx = alive_bar(len(restart) * len(variables), bar="fish")
     else:
         bar_ctx = nullcontext()
     with bar_ctx as bar_animation:
@@ -289,15 +431,15 @@ def opmtovtk(
             cell_data = [
                 "\t\t\t\t<CellData Scalars='File created by https://github.com/cssr-tools/plopm'>",
             ]
-            for n, var in enumerate(vrs):
+            for n, var in enumerate(variables):
                 if show_progress:
                     bar_animation()
-                unit, quan = get_quantity(
+                unit, values = read_quantity(
                     case,
-                    read,
+                    data,
                     var,
                     i,
-                    float(skl[n]),
+                    float(scales[n]),
                     mass,
                     mass_all,
                     caprock,
@@ -312,8 +454,8 @@ def opmtovtk(
                 vtkformat = vtkformat_list[n]
                 target_dtype = VTK_DTYPES[vtkformat]
                 if np.issubdtype(target_dtype, np.integer):
-                    check_integer_conversion(
-                        quan, var, vtkformat, target_dtype, warning_keys
+                    _check_integer_conversion(
+                        values, var, vtkformat, target_dtype, warning_keys
                     )
                 # VTK XML interoperability for Float16 is limited in many readers,
                 # so we emit Float32 in the DataArray type while preserving values.
@@ -324,38 +466,25 @@ def opmtovtk(
                     + f"'{vtknames[n] if vtknames[n] else var+unit}' "
                     + "NumberOfComponents='1' format='ascii'>\n"
                 )
-                cell_data.append(format_data_array(quan, target_dtype))
+                cell_data.append(_format_vtk_array(values, target_dtype))
             cell_data.append("\n\t\t\t\t</CellData>\n")
             with open(
                 f"{output}/{where}-{int(i):04d}.vtu",
                 "w",
                 encoding="utf8",
             ) as file:
-                file.write("".join(base_vtk[:4] + cell_data + base_vtk[4:]))
+                file.write("".join(vtk_lines[:4] + cell_data + vtk_lines[4:]))
 
 
-def make_dry_deck(dname: str) -> None:
-    """Create a deck for the dry run"""
-    lol = []
-    with open(dname + ".DATA", "r", encoding="utf8") as file:
-        for row in csv.reader(file):
-            nrwo = str(row)[2:-2].strip()
-            if nrwo == "SCHEDULE":
-                lol.append(nrwo)
-                lol.append("RPTRST\n'BASIC=2'/\n")
-                lol.append("TSTEP\n0.0001/\n")
-                break
-            lol.append(nrwo)
-    with open(
-        dname + "_DRYRUN.DATA",
-        "w",
-        encoding="utf8",
-    ) as file:
-        file.writelines(line + "\n" for line in lol)
+def _vtk_flags() -> tuple[str, str]:
+    """Build OPM Flow options for a minimal VTK run.
 
+    Returns
+    -------
+    tuple[str, str]
+        General VTK options and optional thermal-model options.
 
-def get_flags() -> tuple[str, str]:
-    """Load the flags to remove all vtk properties and perform a minimal run"""
+    """
     flags = (
         " --enable-vtk-output=1 --enable-ecl-output=0 --output-mode=none"
         + " --vtk-write-temperature=0 --vtk-write-densities=0 --vtk-write-mole-fractions=0 "

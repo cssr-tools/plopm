@@ -83,47 +83,182 @@
              
   <section id="module-plopm.utils.initialization">
 <span id="plopm-utils-initialization-module"></span><h1>plopm.utils.initialization module<a class="headerlink" href="#module-plopm.utils.initialization" title="Link to this heading"></a></h1>
-<p>Utility functions to set the requiried input values by plopm</p>
+<p>Build and normalize configuration for plopm workflows.</p>
+<p>The module converts parsed CLI arguments into <code class="xref py py-class docutils literal notranslate"><span class="pre">PlopmConfig</span></code>, discovers
+simulation cases, normalizes per-variable plotting settings, selects summary or
+spatial processing, and defines unit conversions used by the readers.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.initialization.handle_blocks">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">handle_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.initialization.handle_blocks" title="Link to this definition"></a></dt>
-<dd><p>For block i,j,k quantities, do not split the commas</p>
+<dt class="sig sig-object py" id="plopm.utils.initialization._find_all_cases">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">_find_all_cases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#plopm.utils.initialization._find_all_cases" title="Link to this definition"></a></dt>
+<dd><p>Find all simulation cases below a folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>folder</strong><span class="classifier">str</span></dt><dd><p>Folder to search recursively.</p>
+</dd>
+<dt><strong>suffix</strong><span class="classifier">str</span></dt><dd><p>File suffix identifying a simulation case.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>list[str]</dt><dd><p>Sorted case paths without the identifying suffix.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.initialization.ini_cfg">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">ini_cfg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></span><a class="headerlink" href="#plopm.utils.initialization.ini_cfg" title="Link to this definition"></a></dt>
-<dd><p>Initialize the configuration dataclass.</p>
+<dt class="sig sig-object py" id="plopm.utils.initialization._find_first_case">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">_find_first_case</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.initialization._find_first_case" title="Link to this definition"></a></dt>
+<dd><p>Find the first simulation case below a folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>folder</strong><span class="classifier">str</span></dt><dd><p>Folder to search recursively.</p>
+</dd>
+<dt><strong>suffix</strong><span class="classifier">str</span></dt><dd><p>File suffix identifying a simulation case.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>First case path without the suffix, or the input folder when no
+matching file is found.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.initialization.ini_properties">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">ini_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.initialization.ini_properties" title="Link to this definition"></a></dt>
-<dd><p>Define the properties to plot</p>
+<dt class="sig sig-object py" id="plopm.utils.initialization._join_block_vars">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">_join_block_vars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.initialization._join_block_vars" title="Link to this definition"></a></dt>
+<dd><p>Rejoin comma-separated indices in block variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Configuration whose variable expressions are updated in place.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.initialization.ini_summary">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">ini_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.initialization.ini_summary" title="Link to this definition"></a></dt>
-<dd><p>Initialize the needed objects for the summary plots</p>
+<dt class="sig sig-object py" id="plopm.utils.initialization.build_config">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">build_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></span><a class="headerlink" href="#plopm.utils.initialization.build_config" title="Link to this definition"></a></dt>
+<dd><p>Build a plopm configuration from parsed CLI arguments.</p>
+<p>The function expands case and difference-input paths, parses list-like
+options, normalizes slice and restart selections, and initializes plotting
+defaults shared by summary, map, and VTK workflows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cmdargs</strong><span class="classifier">argparse.Namespace</span></dt><dd><p>Command-line arguments returned by the plopm parser.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>PlopmConfig</dt><dd><p>Parsed and partially normalized runtime configuration.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.initialization.initialize_mass">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">initialize_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mskl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.initialization.initialize_mass" title="Link to this definition"></a></dt>
-<dd><p>Initialize the mass properties according to the given variable</p>
+<dt class="sig sig-object py" id="plopm.utils.initialization.init_maps">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">init_maps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.initialization.init_maps" title="Link to this definition"></a></dt>
+<dd><p>Normalize settings used by spatial maps.</p>
+<p>The function selects default units, colorbar formats, and colormaps; expands
+per-variable limits and formats; and initializes spatial coordinate scales.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Configuration updated in place for map generation.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.initialization.initialize_spatial">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">initialize_spatial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.initialization.initialize_spatial" title="Link to this definition"></a></dt>
-<dd><p>Handle the units for the axis in the spatial maps</p>
+<dt class="sig sig-object py" id="plopm.utils.initialization.init_summary">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">init_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.initialization.init_summary" title="Link to this definition"></a></dt>
+<dd><p>Normalize settings used by one-dimensional plots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Configuration updated in place with per-variable styles and labels.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.initialization.is_summary">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">is_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#plopm.utils.initialization.is_summary" title="Link to this definition"></a></dt>
-<dd><p>Check flag arguments and files for summary plot</p>
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">is_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#plopm.utils.initialization.is_summary" title="Link to this definition"></a></dt>
+<dd><p>Determine whether the request uses one-dimensional output.</p>
+<p>The decision considers explicit series options, special tabulated
+properties, summary-vector availability, and requests to list variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized configuration and primary case path.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when the request should use the summary plotting workflow.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.initialization.mass_unit">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">mass_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mskl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.initialization.mass_unit" title="Link to this definition"></a></dt>
+<dd><p>Get the display unit for a mass scale factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mskl</strong><span class="classifier">float</span></dt><dd><p>Factor applied to quantities stored in kilograms.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Matplotlib-formatted mass unit, or an empty string when unknown.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.initialization.spatial_unit">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.initialization.</span></span><span class="sig-name descname"><span class="pre">spatial_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.initialization.spatial_unit" title="Link to this definition"></a></dt>
+<dd><p>Get the conversion and label for a spatial unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>unit</strong><span class="classifier">str</span></dt><dd><p>Spatial-unit code.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[float, str]</dt><dd><p>Factor converting metres and the formatted unit label.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

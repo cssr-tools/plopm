@@ -12,12 +12,12 @@ from PIL import Image
 
 from plopm.core.plopm import main
 from plopm.utils.readers import (
-    get_indices,
+    _aggregate,
+    _apply_filter,
+    _apply_operator,
+    _grid_indices,
     get_unit,
-    handle_filter,
-    initialize_time,
-    operate,
-    project,
+    time_unit,
 )
 
 testpth: Path = Path(__file__).parent
@@ -342,22 +342,22 @@ def test_readers_index_arithmetic_in_quantity(tmp_path):
 
 
 def test_readers_direct_utility_functions():
-    assert initialize_time("m")[1] == "Time [minutes]"
+    assert time_unit("m")[1] == "Time [minutes]"
     assert get_unit("disperc") == " [m]"
     assert get_unit("rpr") == " [bar]"
     assert get_unit("fgit") == " [sm$^3$]"
-    assert get_indices("index_i", 2, 2, 2) == [1, 2, 1, 2, 1, 2, 1, 2]
-    assert get_indices("index_j", 2, 2, 2) == [1, 1, 2, 2, 1, 1, 2, 2]
-    assert get_indices("index_k", 2, 2, 2) == [1, 1, 1, 1, 2, 2, 2, 2]
+    assert _grid_indices("index_i", 2, 2, 2) == [1, 2, 1, 2, 1, 2, 1, 2]
+    assert _grid_indices("index_j", 2, 2, 2) == [1, 1, 2, 2, 1, 1, 2, 2]
+    assert _grid_indices("index_k", 2, 2, 2) == [1, 1, 1, 1, 2, 2, 2, 2]
 
 
 def test_readers_error_branches():
     with pytest.raises(SystemExit):
-        operate(np.array([1.0]), 1.0, ["bad"][0])
+        _apply_operator(np.array([1.0]), 1.0, ["bad"][0])
     with pytest.raises(SystemExit):
-        handle_filter([1.0], [1.0], "bad", 1.0)
+        _apply_filter([1.0], [1.0], "bad", 1.0)
     with pytest.raises(SystemExit):
-        project(np.array([1.0]), "bad", np.array([1.0]))
+        _aggregate(np.array([1.0]), "bad", np.array([1.0]))
 
 
 def test_readers_missing_input_exits(tmp_path):

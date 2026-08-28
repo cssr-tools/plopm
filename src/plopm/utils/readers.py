@@ -2,7 +2,12 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=R0911,R0912,R0913,R0915,R0917,R1702,R0914,C0302,E1102
 
-"""Utility functions to read the OPM Flow simulator type output files"""
+"""Read and derive plotting quantities from OPM Flow output.
+
+The module opens INIT, UNRST, EGRID, SMSPEC, deck, and CSV data; constructs
+plotting coordinates; evaluates variable expressions; and derives saturation,
+mass, caprock, distance, well, and fault quantities.
+"""
 
 import csv
 import datetime
@@ -18,8 +23,8 @@ from opm.io.ecl import EGrid as OpmGrid
 from opm.io.ecl import ERst as OpmRestart
 from opm.io.ecl import ESmry as OpmSummary
 
-from plopm.config.config import ConfigPlopm, ReadData
-from plopm.utils.initialization import initialize_mass, initialize_spatial
+from plopm.config.config import PlopmConfig, SimData
+from plopm.utils.initialization import mass_unit, spatial_unit
 from plopm.utils.terminal import (
     cli_error_value,
     cli_info_value,
@@ -33,16 +38,38 @@ GAS_DEN_REF = 1.86843
 WAT_DEN_REF = 998.108
 
 
-def get_readers(
+def read_case(
     deck: str,
     gif: bool,
     vtk: bool,
-    vrs: list,
+    variables: list,
     restart: list,
     filters: list,
     n: int = 0,
-) -> ReadData:
-    """Load the opm parsing methods"""
+) -> SimData:
+    """Open the OPM output required for one simulation case.
+
+    Parameters
+    ----------
+    deck : str
+        Simulation-case stem without an extension.
+    gif, vtk : bool
+        Output modes controlling restart and grid loading.
+    variables : list
+        Requested variables or expressions.
+    restart : list
+        Requested restart report steps.
+    filters : list
+        Property-filter expressions.
+    n : int, default: 0
+        Case index used to select per-case settings.
+
+    Returns
+    -------
+    SimData
+        Loaded readers, grid properties, and report-step metadata.
+
+    """
     if os.path.isfile(f"{deck}.INIT"):
         init = OpmFile(f"{deck}.INIT")
     else:
@@ -74,7 +101,7 @@ def get_readers(
             if init.count(key):
                 arr = np.array(init[key])
                 mask = porv0 > 0
-                porv[mask] = handle_filter(porv[mask], arr, filte[1], float(filte[2]))
+                porv[mask] = _apply_filter(porv[mask], arr, filte[1], float(filte[2]))
 
     if unrst:
         steps = unrst.report_steps
@@ -91,7 +118,7 @@ def get_readers(
     if egrid:
         dim = egrid.dimension
         nx, ny, nz = dim
-    elif "index_i" in vrs or "index_j" in vrs or "index_k" in vrs:
+    elif "index_i" in variables or "index_j" in variables or "index_k" in variables:
         grid = OpmGrid(f"{deck}.EGRID")
         dim = grid.dimension
         nx, ny, nz = dim
@@ -99,7 +126,7 @@ def get_readers(
     if not tnrst:
         tnrst = [0] * len(restart)
 
-    return ReadData(
+    return SimData(
         init,
         unrst,
         egrid,
@@ -119,11 +146,27 @@ def get_readers(
     )
 
 
-def get_yzcoords(cfg: ConfigPlopm, read: ReadData, n: int) -> tuple[NDArray, NDArray]:
-    """Handle the coordinates from the OPM Grid to the 2D yz-mesh using opm"""
-    xyz_func = read.egrid.xyz_from_ijk
-    ny_val = read.ny
-    nz_val = read.nz
+def get_yz_coords(cfg: PlopmConfig, data: SimData, n: int) -> tuple[NDArray, NDArray]:
+    """Build coordinate meshes for a yz slice.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Initialized map configuration.
+    data : SimData
+        Loaded grid data.
+    n : int
+        Slice index.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        Y- and z-coordinate meshes.
+
+    """
+    xyz_func = data.grid.xyz_from_ijk
+    ny_val = data.ny
+    nz_val = data.nz
     base_i_all = cfg.slice[n][0][0]
     total_size = nz_val * 4 * ny_val
     xc_list = [0] * total_size
@@ -155,11 +198,27 @@ def get_yzcoords(cfg: ConfigPlopm, read: ReadData, n: int) -> tuple[NDArray, NDA
     )
 
 
-def get_xzcoords(cfg: ConfigPlopm, read: ReadData, n: int) -> tuple[NDArray, NDArray]:
-    """Handle the coordinates from the OPM Grid to the 2D xz-mesh using opm"""
-    xyz_func = read.egrid.xyz_from_ijk
-    nx_val = read.nx
-    nz_val = read.nz
+def get_xz_coords(cfg: PlopmConfig, data: SimData, n: int) -> tuple[NDArray, NDArray]:
+    """Build coordinate meshes for an xz slice.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Initialized map configuration.
+    data : SimData
+        Loaded grid data.
+    n : int
+        Slice index.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        X- and z-coordinate meshes.
+
+    """
+    xyz_func = data.grid.xyz_from_ijk
+    nx_val = data.nx
+    nz_val = data.nz
     base_j_all = cfg.slice[n][1][0]
     total_size = nz_val * 4 * nx_val
     xc_list = [0] * total_size
@@ -191,11 +250,27 @@ def get_xzcoords(cfg: ConfigPlopm, read: ReadData, n: int) -> tuple[NDArray, NDA
     )
 
 
-def get_xycoords(cfg: ConfigPlopm, read: ReadData, n: int) -> tuple[NDArray, NDArray]:
-    """Handle the coordinates from the OPM Grid to the 2D xy-mesh"""
-    xyz_func = read.egrid.xyz_from_ijk
-    nx_val = read.nx
-    ny_val = read.ny
+def get_xy_coords(cfg: PlopmConfig, data: SimData, n: int) -> tuple[NDArray, NDArray]:
+    """Build coordinate meshes for an xy slice.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Initialized map configuration.
+    data : SimData
+        Loaded grid data.
+    n : int
+        Slice index.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        X- and y-coordinate meshes.
+
+    """
+    xyz_func = data.grid.xyz_from_ijk
+    nx_val = data.nx
+    ny_val = data.ny
     base_k_all = cfg.slice[n][2][0]
     total_size = ny_val * 4 * nx_val
     xc_list = [0] * total_size
@@ -226,101 +301,163 @@ def get_xycoords(cfg: ConfigPlopm, read: ReadData, n: int) -> tuple[NDArray, NDA
     )
 
 
-def resolve_variable(
-    cfg: ConfigPlopm,
-    read: ReadData,
+def _resolve_var(
+    cfg: PlopmConfig,
+    data: SimData,
     key_up: str,
     key_low: str,
-    nrst: int,
+    step: int,
     init: OpmFile,
     unrst: OpmRestart,
     mass_all: list,
     caprock_list: list,
 ):
-    """Handle the variable"""
+    """Resolve a variable from stored or derived quantities.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Initialized configuration.
+    data : SimData
+        Loaded simulation data.
+    key_up, key_low : str
+        OPM keyword and normalized variable name.
+    step : int
+        Restart report step.
+    init : OpmFile
+        INIT reader.
+    unrst : OpmRestart
+        UNRST reader.
+    mass_all, caprock_list : list
+        Supported derived variable names.
+
+    Returns
+    -------
+    np.ndarray or None
+        Resolved values, or ``None`` when unavailable.
+
+    """
     if init.count(key_up):
         return 1.0 * init[key_up, 0]
-    if unrst is not None and unrst.count(key_up, nrst):
-        return 1.0 * unrst[key_up, nrst]
+    if unrst is not None and unrst.count(key_up, step):
+        return 1.0 * unrst[key_up, step]
     if key_low in mass_all:
-        return handle_mass(read, key_low, nrst)
+        return _get_mass(data, key_low, step)
     if key_low in caprock_list:
-        val, _ = handle_caprock(read, key_low, nrst, cfg.stress_coefficient)
+        val, _ = _get_caprock(data, key_low, step, cfg.stress_coefficient)
         return val
     if key_low in ["swat", "soil", "sgas"]:
-        return handle_saturation(read.unrst, key_low, nrst)
+        return _get_saturation(data.unrst, key_low, step)
     return None
 
 
-def get_histogram(cfg: ConfigPlopm, read: ReadData, quans: list, nrst: int) -> NDArray:
-    """Get the required variables from the histogram"""
-    quan0_low = quans[0]
+def _read_histogram(
+    cfg: PlopmConfig, data: SimData, tokens: list, step: int
+) -> NDArray:
+    """Read values used to create a histogram.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Initialized configuration.
+    data : SimData
+        Loaded simulation data.
+    tokens : list
+        Parsed variable-expression tokens.
+    step : int
+        Restart report step.
+
+    Returns
+    -------
+    np.ndarray
+        Values in global cell order with inactive cells set to NaN.
+
+    """
+    quan0_low = tokens[0]
     quan0 = quan0_low.upper()
-    porv = read.porv
-    nxyz = read.nxyz
-    init_dic = read.init
-    unrst_dic = read.unrst
-    mass_all = cfg.mass + cfg.xmass
-    caprock_list = cfg.caprock
+    porv = data.porv
+    nxyz = data.ncells
+    init = data.init
+    unrst = data.unrst
+    mass_all = cfg.mass_vars + cfg.mass_fracs
+    caprock_list = cfg.caprock_vars
     if quan0 != "PORV":
         act = porv > 0
     else:
         act = porv > -1
     var = np.nan * np.ones(nxyz, dtype=float)
-    result = resolve_variable(
-        cfg, read, quan0, quan0_low, nrst, init_dic, unrst_dic, mass_all, caprock_list
+    result = _resolve_var(
+        cfg, data, quan0, quan0_low, step, init, unrst, mass_all, caprock_list
     )
     if result is not None:
         var[act] = result
     else:
-        plopm_error(f"not found {cli_error_value(f'-v {quans[0]}')}.")
-    if len(quans) > 1:
-        ops = quans[1::2]
-        for j, val in enumerate(quans[2::2]):
+        plopm_error(f"not found {cli_error_value(f'-v {tokens[0]}')}.")
+    if len(tokens) > 1:
+        ops = tokens[1::2]
+        for j, val in enumerate(tokens[2::2]):
             val_up = val.upper()
             if val[0].isdigit() and not val[-1].isdigit():
-                if unrst_dic is None:
+                if unrst is None:
                     plopm_error(f"not found {cli_error_value(f'-v {val}')}.")
-                quan1 = 1.0 * unrst_dic[val[1:].upper(), int(val[0])]
+                other = 1.0 * unrst[val[1:].upper(), int(val[0])]
             elif val[0].isdigit() and val[-1].isdigit():
-                quan1 = np.full_like(var[act], float(val))
+                other = np.full_like(var[act], float(val))
             else:
-                quan1 = resolve_variable(
+                other = _resolve_var(
                     cfg,
-                    read,
+                    data,
                     val_up,
                     val,
-                    nrst,
-                    init_dic,
-                    unrst_dic,
+                    step,
+                    init,
+                    unrst,
                     mass_all,
                     caprock_list,
                 )
-                if quan1 is None:
+                if other is None:
                     plopm_error(f"not found {cli_error_value(f'-v {val}')}.")
             var_act = var[act]
-            var[act] = operate(var_act, quan1, ops[j])
+            var[act] = _apply_operator(var_act, other, ops[j])
     return var
 
 
-def compute_distance(
-    cfg: ConfigPlopm, read: ReadData, quans: list, n: int
+def _compute_distance(
+    cfg: PlopmConfig, data: SimData, tokens: list, n: int
 ) -> tuple[NDArray, NDArray]:
-    """Get the required variables from the simulation files"""
-    xyz_func = read.egrid.xyz_from_ijk
-    nx_val = read.nx
-    ny_val = read.ny
-    nz_val = read.nz
-    nxyz = read.nxyz
-    ntot = read.ntot
-    porv = read.porv
-    init_dic = read.init
-    unrst_dic = read.unrst
-    mass_all = cfg.mass + cfg.xmass
+    """Compute distance from selected cells to target points.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Distance and sensor configuration.
+    data : SimData
+        Loaded simulation data.
+    tokens : list
+        Parsed expression selecting active cells.
+    n : int
+        Plot index.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        Finite distances and their simulation times.
+
+    """
+    xyz_func = data.grid.xyz_from_ijk
+    nx_val = data.nx
+    ny_val = data.ny
+    nz_val = data.nz
+    nxyz = data.ncells
+    ntot = data.nsteps
+    porv = data.porv
+    init = data.init
+    unrst = data.unrst
+    mass_all = cfg.mass_vars + cfg.mass_fracs
     distance_type = cfg.distance[0]
     xyz = np.zeros((nxyz, 3), dtype=float)
     act = porv > 0
-    time = np.array(read.tnrst)
+    time = np.array(data.times)
     distance = np.nan * np.ones(ntot)
     index = 0
     for k in range(nz_val):
@@ -338,7 +475,7 @@ def compute_distance(
         sensor_loc = f"[{points[0][0]:.2E},{points[0][1]:.2E},{points[0][2]:.2E}]"
         plopm_info(
             f"computing the {cli_info_value(cfg.distance[0])} distance of "
-            f"{cli_info_value(quans[0])} to the sensor "
+            f"{cli_info_value(tokens[0])} to the sensor "
             f"{cli_info_value(sensor_loc)} [m]"
         )
     else:
@@ -364,7 +501,7 @@ def compute_distance(
                         points.append(xyz[ind])
         plopm_info(
             f"computing the {cli_info_value(cfg.distance[0])} distance of "
-            f"{cli_info_value(quans[0])} to the model boundaries"
+            f"{cli_info_value(tokens[0])} to the model boundaries"
         )
     show_progress = sys.stdout.isatty()
     if show_progress:
@@ -372,50 +509,50 @@ def compute_distance(
     else:
         bar_ctx = nullcontext()
     with bar_ctx as bar_animation:
-        for nrst in unrst_dic.report_steps:
+        for step in unrst.report_steps:
             xyzt = np.copy(xyz)
             var = np.nan * np.ones(nxyz, dtype=float)
-            quan0_low = quans[0]
-            quan0_up = quans[0].upper()
+            quan0_low = tokens[0]
+            quan0_up = tokens[0].upper()
             if quan0_low in ["index_i", "index_j", "index_k"]:
-                var[act] = get_indices(quan0_low, nx_val, ny_val, nz_val)
-            elif unrst_dic.count(quan0_up, nrst):
-                var[act] = 1.0 * unrst_dic[quan0_up, nrst]
+                var[act] = _grid_indices(quan0_low, nx_val, ny_val, nz_val)
+            elif unrst.count(quan0_up, step):
+                var[act] = 1.0 * unrst[quan0_up, step]
             elif quan0_low in mass_all:
-                var[act] = handle_mass(read, quan0_low, nrst)
+                var[act] = _get_mass(data, quan0_low, step)
             elif quan0_low in ["swat", "soil", "sgas"]:
-                var[act] = handle_saturation(read.unrst, quan0_low, nrst)
+                var[act] = _get_saturation(data.unrst, quan0_low, step)
             else:
                 flag = f"-dist {','.join(cfg.distance)}"
                 plopm_error(
-                    f"invalid {cli_error_value(f'-v {quans[0]}')} for "
+                    f"invalid {cli_error_value(f'-v {tokens[0]}')} for "
                     f"{cli_info_value(flag)}."
                 )
-            if len(quans) > 1:
-                ops = quans[1::2]
-                for j, val in enumerate(quans[2::2]):
+            if len(tokens) > 1:
+                ops = tokens[1::2]
+                for j, val in enumerate(tokens[2::2]):
                     val_up = val.upper()
                     if val[0].isdigit() and not val[-1].isdigit():
-                        quan1 = 1.0 * unrst_dic[val[1:].upper(), int(val[0])]
+                        other = 1.0 * unrst[val[1:].upper(), int(val[0])]
                     elif val[0].isdigit() and val[-1].isdigit():
-                        quan1 = np.full_like(var[act], float(val))
-                    elif init_dic.count(val_up):
-                        quan1 = 1.0 * init_dic[val_up, 0]
+                        other = np.full_like(var[act], float(val))
+                    elif init.count(val_up):
+                        other = 1.0 * init[val_up, 0]
                         if val_up == "PORV":
-                            quan1 = quan1[act]
+                            other = other[act]
                     elif val in ["index_i", "index_j", "index_k"]:
-                        var[act] = get_indices(val, nx_val, ny_val, nz_val)
+                        var[act] = _grid_indices(val, nx_val, ny_val, nz_val)
                         continue
-                    elif unrst_dic.count(val_up, nrst):
-                        quan1 = 1.0 * unrst_dic[val_up, nrst]
+                    elif unrst.count(val_up, step):
+                        other = 1.0 * unrst[val_up, step]
                     elif val in mass_all:
-                        quan1 = handle_mass(read, val, nrst)
+                        other = _get_mass(data, val, step)
                     elif val in ["swat", "soil", "sgas"]:
-                        quan1 = handle_saturation(read.unrst, val, nrst)
+                        other = _get_saturation(data.unrst, val, step)
                     else:
                         plopm_error(f"not found {cli_error_value(f'-v {val}')}.")
                     var_act = var[act]
-                    var[act] = operate(var_act, quan1, ops[j])
+                    var[act] = _apply_operator(var_act, other, ops[j])
             else:
                 var[var > 0] = 1
             xyzt[var != 1] = np.nan
@@ -431,14 +568,28 @@ def compute_distance(
                         temp[point_index] = np.nanmax(vals)
             if not np.isnan(temp).all():
                 if distance_type == "min":
-                    distance[nrst] = np.nanmin(temp)
+                    distance[step] = np.nanmin(temp)
                 else:
-                    distance[nrst] = np.nanmax(temp)
+                    distance[step] = np.nanmax(temp)
     return distance[~np.isnan(distance)], time[~np.isnan(distance)]
 
 
-def get_indices(name: str, nx: int, ny: int, nz: int) -> list:
-    """Compute the i, j, or k indices"""
+def _grid_indices(name: str, nx: int, ny: int, nz: int) -> list:
+    """Create one-based grid indices in global cell order.
+
+    Parameters
+    ----------
+    name : {"index_i", "index_j", "index_k"}
+        Grid axis to index.
+    nx, ny, nz : int
+        Grid dimensions.
+
+    Returns
+    -------
+    list[int]
+        One-based indices for all grid cells.
+
+    """
     nxyz = nx * ny * nz
     if name == "index_i":
         return [(grid_index % nx) + 1 for grid_index in range(nxyz)]
@@ -447,30 +598,66 @@ def get_indices(name: str, nx: int, ny: int, nz: int) -> list:
     return [(grid_index // (nx * ny)) + 1 for grid_index in range(nxyz)]
 
 
-def project(var: NDArray, oper: str, porv: NDArray) -> NDArray:
-    """Applied the requested projection"""
-    if oper == "min":
+def _aggregate(var: NDArray, op: str, porv: NDArray) -> NDArray:
+    """_aggregate values with the selected method.
+
+    Parameters
+    ----------
+    var : np.ndarray
+        Values to _aggregate.
+    op : str
+        Aggregation method.
+    porv : np.ndarray
+        Pore-volume weights used by ``"pvmean"``.
+
+    Returns
+    -------
+    np.ndarray or float
+        _aggregated values.
+
+    """
+    if op == "min":
         return np.min(var)
-    if oper == "max":
+    if op == "max":
         return np.max(var)
-    if oper == "sum":
+    if op == "sum":
         return np.sum(var)
-    if oper == "mean":
+    if op == "mean":
         return np.mean(var)
-    if oper == "pvmean":
+    if op == "pvmean":
         return np.sum(var * porv) / np.sum(porv)
-    plopm_error(f"unknow/unsupported aggregation {cli_error_value(f'-agg {oper}')}.")
+    plopm_error(f"unknow/unsupported aggregation {cli_error_value(f'-agg {op}')}.")
 
 
-def do_read_variables(
-    cfg: ConfigPlopm, read: ReadData, quans: list, n: int, ntot: list
+def _read_values(
+    cfg: PlopmConfig, data: SimData, tokens: list, n: int, ntot: list
 ) -> tuple[NDArray, NDArray]:
-    """Get the required variables from the simulation files"""
+    """Read an _aggregated time series or grid-axis profile.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Initialized series configuration.
+    data : SimData
+        Loaded simulation data.
+    tokens : list
+        Parsed variable-expression tokens.
+    n : int
+        Plot index.
+    ntot : list
+        Restart report steps to evaluate.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        Values and corresponding time or grid coordinates.
+
+    """
     slide = cfg.slice[n]
     axis_index = slide.index(-1) if -1 in slide else -1
-    nx_val = read.nx
-    ny_val = read.ny
-    nz_val = read.nz
+    nx_val = data.nx
+    ny_val = data.ny
+    nz_val = data.nz
     if axis_index == 0:
         xsize = nx_val
     elif axis_index == 1:
@@ -481,22 +668,22 @@ def do_read_variables(
         xsize = 1
     if len(ntot) > 1:
         tsize = len(ntot)
-        time = np.array(read.tnrst)
+        time = np.array(data.times)
         var = 0.0 * np.ones(tsize)
     else:
         time = np.array(range(xsize), dtype=float)
         var = 0.0 * np.ones(xsize)
-    init_dic = read.init
-    unrst_dic = read.unrst
-    mass_all = cfg.mass + cfg.xmass
-    caprock_list = cfg.caprock
-    pv_all = read.pv
+    init = data.init
+    unrst = data.unrst
+    mass_all = cfg.mass_vars + cfg.mass_fracs
+    caprock_list = cfg.caprock_vars
+    pv_all = data.active_pv
     layer_flag = cfg.layer
-    egrid = read.egrid
-    quan0_low = quans[0]
+    egrid = data.grid
+    quan0_low = tokens[0]
     quan0_up = quan0_low.upper()
-    ops = quans[1::2] if len(quans) > 1 else []
-    for output_index, nrst in enumerate(ntot):
+    ops = tokens[1::2] if len(tokens) > 1 else []
+    for output_index, step in enumerate(ntot):
         temp = np.ones(xsize, dtype=float)
         porv = np.ones(xsize, dtype=float)
         inds = [0] * xsize
@@ -515,72 +702,72 @@ def do_read_variables(
             for index in range(xsize):
                 inds[index] = ind0
         if quan0_low in mass_all:
-            arr_main = handle_mass(read, quan0_low, nrst)
+            arr_main = _get_mass(data, quan0_low, step)
         elif quan0_low in caprock_list:
-            arr_main, _ = handle_caprock(read, quan0_low, nrst, cfg.stress_coefficient)
+            arr_main, _ = _get_caprock(data, quan0_low, step, cfg.stress_coefficient)
         elif quan0_low in ["swat", "soil", "sgas"]:
-            arr_main = handle_saturation(read.unrst, quan0_low, nrst)
+            arr_main = _get_saturation(data.unrst, quan0_low, step)
         else:
             arr_main = None
-        if len(quans) > 1:
+        if len(tokens) > 1:
             arr_vals = []
-            for val in quans[2::2]:
+            for val in tokens[2::2]:
                 if val in mass_all:
-                    arr_vals.append(handle_mass(read, val, nrst))
+                    arr_vals.append(_get_mass(data, val, step))
                 elif val in caprock_list:
-                    arr, _ = handle_caprock(read, val, nrst, cfg.stress_coefficient)
+                    arr, _ = _get_caprock(data, val, step, cfg.stress_coefficient)
                     arr_vals.append(arr)
                 elif val in ["swat", "soil", "sgas"]:
-                    arr_vals.append(handle_saturation(read.unrst, val, nrst))
+                    arr_vals.append(_get_saturation(data.unrst, val, step))
                 else:
                     arr_vals.append(np.full_like(temp, np.nan))
         inds_arr = np.array(inds)
 
-        if unrst_dic.count("RPORV", nrst):
-            porv = unrst_dic["RPORV", nrst][inds_arr]
+        if unrst.count("RPORV", step):
+            porv = unrst["RPORV", step][inds_arr]
         else:
             porv = pv_all[inds_arr]
 
-        if unrst_dic.count(quan0_up, nrst):
-            temp = 1.0 * unrst_dic[quan0_up, nrst][inds_arr]
+        if unrst.count(quan0_up, step):
+            temp = 1.0 * unrst[quan0_up, step][inds_arr]
             # porv-weighted pressure for the dual model
             if cfg.dual_grid[n] == "1" and cfg.sensor:
                 indd = egrid.active_index(
-                    slide[0], slide[1] + int((read.ny - 1) / 2) + 1, slide[2]
+                    slide[0], slide[1] + int((data.ny - 1) / 2) + 1, slide[2]
                 )
-                presd = unrst_dic[quan0_up, nrst][indd]
-                if unrst_dic.count("RPORV", nrst):
-                    porvd = unrst_dic["RPORV", nrst][indd]
+                presd = unrst[quan0_up, step][indd]
+                if unrst.count("RPORV", step):
+                    porvd = unrst["RPORV", step][indd]
                 else:
                     porvd = pv_all[indd]
                 temp = (temp * porv + presd * porvd) / (porv + porvd)
-        elif init_dic.count(quan0_up):
-            temp = 1.0 * init_dic[quan0_up, 0][inds_arr]
+        elif init.count(quan0_up):
+            temp = 1.0 * init[quan0_up, 0][inds_arr]
         elif arr_main is not None:
             temp = arr_main[inds_arr]
         else:
-            plopm_error(f"not found {cli_error_value(f'-v {quans[0]}')}.")
+            plopm_error(f"not found {cli_error_value(f'-v {tokens[0]}')}.")
 
-        if len(quans) > 1:
-            for j, val in enumerate(quans[2::2]):
+        if len(tokens) > 1:
+            for j, val in enumerate(tokens[2::2]):
                 val_up = val.upper()
                 arr_val = arr_vals[j]
                 if val[0].isdigit() and not val[-1].isdigit():
-                    quan1 = 1.0 * unrst_dic[val[1:].upper(), int(val[0])][inds_arr]
+                    other = 1.0 * unrst[val[1:].upper(), int(val[0])][inds_arr]
                 elif val[0].isdigit() and val[-1].isdigit():
-                    quan1 = np.full_like(temp, float(val))
-                elif init_dic.count(val_up):
-                    quan1 = 1.0 * init_dic[val_up, 0][inds_arr]
-                elif unrst_dic.count(val_up, nrst):
-                    quan1 = 1.0 * unrst_dic[val_up, nrst][inds_arr]
+                    other = np.full_like(temp, float(val))
+                elif init.count(val_up):
+                    other = 1.0 * init[val_up, 0][inds_arr]
+                elif unrst.count(val_up, step):
+                    other = 1.0 * unrst[val_up, step][inds_arr]
                 elif not np.isnan(arr_val).all():
-                    quan1 = arr_val[inds_arr]
+                    other = arr_val[inds_arr]
                 else:
                     plopm_error(f"not found {cli_error_value(f'-v {val}')}.")
-                temp = operate(temp, quan1, ops[j])
+                temp = _apply_operator(temp, other, ops[j])
         ll = np.arange(xsize) + output_index
         if cfg.aggregation[0]:
-            var[output_index] = project(temp, cfg.aggregation[0], porv)
+            var[output_index] = _aggregate(temp, cfg.aggregation[0], porv)
         elif layer_flag:
             var = temp
         else:
@@ -602,16 +789,38 @@ def do_read_variables(
     return var, time
 
 
-def read_oned(
-    cfg: ConfigPlopm, case: str, quan: str, tunit: str, qskl: float, n: int
+def read_series(
+    cfg: PlopmConfig, case: str, values: str, tunit: str, qskl: float, n: int
 ) -> tuple[NDArray, NDArray, str, str]:
-    """Handle the oned vectors"""
+    """Read one one-dimensional series for plotting.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Initialized series configuration.
+    case : str
+        Simulation-case stem or CSV path.
+    values : str
+        Variable name or expression.
+    tunit : str
+        Requested time-unit code.
+    qskl : float
+        Scale factor applied to values.
+    n : int
+        Plot or case index.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray, str, str]
+        Coordinates, values, coordinate unit, and value unit.
+
+    """
     time, vunit = np.array([0, 1]), ""
-    tskl, tunit = initialize_time(tunit)
-    quans = quan.split(" ")
+    tskl, tunit = time_unit(tunit)
+    tokens = values.split(" ")
     csv_flag = cfg.csv_columns[n][0]
-    q0_low = quans[0]
-    use_sw = "krw" in "".join(cfg.vrs)
+    q0_low = tokens[0]
+    use_sw = "krw" in "".join(cfg.variables)
     if csv_flag:
         csvv = np.genfromtxt(f"{case}.csv", delimiter=",", skip_header=1)
         col_t = cfg.csv_columns[n][0] - 1
@@ -619,31 +828,47 @@ def read_oned(
         time = tskl * csvv[:, col_t] / 86400.0
         var = csvv[:, col_v]
     elif cfg.distance[0]:
-        xskl, xunit = initialize_spatial(cfg.xunits)
-        read = get_readers(case, cfg.gif, cfg.vtk, cfg.vrs, cfg.restart, cfg.filter)
-        var, time = compute_distance(cfg, read, quans, n)
+        xskl, xunit = spatial_unit(cfg.xunits)
+        data = read_case(
+            case, cfg.gif, cfg.vtk, cfg.variables, cfg.restart, cfg.filters
+        )
+        var, time = _compute_distance(cfg, data, tokens, n)
         vunit = f" ({cfg.distance[0]} distance to {cfg.distance[1]} in {xunit})"
         var *= xskl
     elif cfg.histogram[0]:
-        read = get_readers(case, cfg.gif, cfg.vtk, cfg.vrs, cfg.restart, cfg.filter)
-        var = get_histogram(cfg, read, quans, read.restart[0])
+        data = read_case(
+            case, cfg.gif, cfg.vtk, cfg.variables, cfg.restart, cfg.filters
+        )
+        var = _read_histogram(cfg, data, tokens, data.steps[0])
         tunit = ""
     elif cfg.sensor or cfg.aggregation[0]:
-        read = get_readers(case, cfg.gif, cfg.vtk, cfg.vrs, cfg.restart, cfg.filter)
-        var, time = do_read_variables(cfg, read, quans, n, read.unrst.report_steps)
+        data = read_case(
+            case, cfg.gif, cfg.vtk, cfg.variables, cfg.restart, cfg.filters
+        )
+        var, time = _read_values(cfg, data, tokens, n, data.unrst.report_steps)
         time *= tskl
         if tunit == "Dates":
-            tmp = []
-            unrst_dic = read.unrst
-            for index in range(len(unrst_dic)):
-                values = unrst_dic["INTEHEAD", index]
-                tmp.append(datetime.date(values[66], values[65], values[64]))
-            time = np.array(tmp)
+            dates = []
+            unrst = data.unrst
+
+            for step in range(len(unrst)):
+                intehead = unrst["INTEHEAD", step]
+                dates.append(
+                    datetime.date(
+                        year=int(intehead[66]),
+                        month=int(intehead[65]),
+                        day=int(intehead[64]),
+                    )
+                )
+
+            time = np.asarray(dates)
     elif cfg.layer:
-        xskl, tunit = initialize_spatial(cfg.xunits)
-        read = get_readers(case, cfg.gif, cfg.vtk, cfg.vrs, cfg.restart, cfg.filter)
-        tmp = read.restart[n] if n < len(cfg.restart) else read.restart[0]
-        var, time = do_read_variables(cfg, read, quans, n, [tmp])
+        xskl, tunit = spatial_unit(cfg.xunits)
+        data = read_case(
+            case, cfg.gif, cfg.vtk, cfg.variables, cfg.restart, cfg.filters
+        )
+        tmp = data.steps[n] if n < len(cfg.restart) else data.steps[0]
+        var, time = _read_values(cfg, data, tokens, n, [tmp])
         time *= xskl
     elif q0_low[:3] in ["krw", "krg"] or q0_low[:4] in [
         "krog",
@@ -656,17 +881,17 @@ def read_oned(
         hyst = False
         if q0_low[-1] == "h":
             hyst = True
-            q0_low = quans[0][:-1]
+            q0_low = tokens[0][:-1]
         if len(q0_low) == 3:
             what = q0_low[:3]
         elif q0_low in ["krow", "krog", "pcow", "pcog", "pcwg"]:
             what = q0_low[:4]
         elif q0_low[:3] in ["krw", "krg"]:
             what = q0_low[:3]
-            snu = int(quans[0][3:])
+            snu = int(tokens[0][3:])
         else:
             what = q0_low[:4]
-            snu = int(quans[0][4:])
+            snu = int(tokens[0][4:])
         if not os.path.isfile(f"{case}.INIT"):
             plopm_error(
                 f"Missing {cli_error_value(f'{case}.INIT')}, required by "
@@ -783,14 +1008,14 @@ def read_oned(
                 + 2 * nswe * nsnum
                 + snu * nswe
             ][:count_v]
-    elif quan[:6] == "pcfact" or quan[:8] == "permfact":
-        cap = 6 if quan[:6] == "pcfact" else 8
-        snu = int(quans[0][cap:]) if not quan in ["pcfact", "permfact"] else 1
+    elif values[:6] == "pcfact" or values[:8] == "permfact":
+        cap = 6 if values[:6] == "pcfact" else 8
+        snu = int(tokens[0][cap:]) if not values in ["pcfact", "permfact"] else 1
         tmp0 = []
         tmp2 = []
         found = False
-        vec = quans[0].upper()[:cap]
-        file_name = where_at(case, vec)
+        vec = tokens[0].upper()[:cap]
+        file_name = _find_keyword(case, vec)
         count = 0
         with open(file_name, "r", encoding="utf8") as file:
             for row in csv.reader(file, delimiter=" "):
@@ -817,27 +1042,27 @@ def read_oned(
                     ):
                         count += 1
         if not tmp2:
-            plopm_error(f"not found {cli_error_value(f'-v {quans[0]}')}.")
+            plopm_error(f"not found {cli_error_value(f'-v {tokens[0]}')}.")
         var = np.array(tmp2)
         time = np.array(tmp0)
     else:
         summary = OpmSummary(f"{case}.SMSPEC")
-        key = quans[0].upper()
+        key = tokens[0].upper()
         keys = summary.keys()
-        if quans[0] in cfg.smass:
+        if tokens[0] in cfg.summary_mass:
             var = summary[key[:-1]]
         elif key in summary:
             var = summary[key]
         else:
-            plopm_error(f"no {cli_error_value(f'-v {quans[0]}')} found.")
-        if len(quans) > 1:
-            ops = quans[1::2]
-            for index, val in enumerate(quans[2::2]):
+            plopm_error(f"no {cli_error_value(f'-v {tokens[0]}')} found.")
+        if len(tokens) > 1:
+            ops = tokens[1::2]
+            for index, val in enumerate(tokens[2::2]):
                 if val.upper() in keys:
-                    quan1 = summary[val.upper()]
+                    other = summary[val.upper()]
                 else:
-                    quan1 = float(val)
-                var = operate(var, quan1, ops[index])
+                    other = float(val)
+                var = _apply_operator(var, other, ops[index])
         if tunit == "Dates":
             smsp_dates = 86400 * summary["TIME"]
             time = np.array(
@@ -848,18 +1073,32 @@ def read_oned(
             )
         else:
             time = summary["TIME"] * tskl
-    if quans[0] in ["fgip", "fgit"]:
+    if tokens[0] in ["fgip", "fgit"]:
         vunit = " [sm$^3$]"
-    elif quans[0] in cfg.smass:
+    elif tokens[0] in cfg.summary_mass:
         var *= GAS_DEN_REF
-        vunit = initialize_mass(qskl)
-    elif quans[0] in ["time"]:
+        vunit = mass_unit(qskl)
+    elif tokens[0] in ["time"]:
         vunit = " [d]"
     return time, var * qskl, tunit, vunit
 
 
-def where_at(case: str, vec: str) -> str:
-    """Using the input deck (.DATA) to read the i,j fault locations"""
+def _find_keyword(case: str, vec: str) -> str:
+    """Find the deck file containing an OPM keyword.
+
+    Parameters
+    ----------
+    case : str
+        Simulation-case stem.
+    vec : str
+        OPM keyword to locate.
+
+    Returns
+    -------
+    str
+        DATA or included file containing the keyword.
+
+    """
     include = False
     path = ""
     parts = case.split("/")
@@ -903,40 +1142,66 @@ def where_at(case: str, vec: str) -> str:
     plopm_error(f"not found keyword {cli_error_value(f'-v {vec}')} " f"in {files}.")
 
 
-def operate(
-    var: NDArray[np.float64], quan1: NDArray[np.float64], oper: str
+def _apply_operator(
+    var: NDArray[np.float64], other: NDArray[np.float64], op: str
 ) -> NDArray[np.float64]:
-    """Applied the requested operation"""
-    if oper == "+":
-        return var + quan1
-    if oper == "-":
-        return var - quan1
-    if oper == "*":
-        return var * quan1
-    if oper == "/":
-        return var / quan1
+    """Apply an arithmetic or comparison operator.
+
+    Parameters
+    ----------
+    var, other : np.ndarray
+        Left- and right-hand values.
+    op : str
+        Arithmetic or comparison operator.
+
+    Returns
+    -------
+    np.ndarray
+        Operation result. Failed comparisons are NaN.
+
+    """
+    if op == "+":
+        return var + other
+    if op == "-":
+        return var - other
+    if op == "*":
+        return var * other
+    if op == "/":
+        return var / other
     mask = ~np.isnan(var)
-    qmask = ~np.isnan(quan1)
+    qmask = ~np.isnan(other)
     mask = mask & qmask
-    if oper == "==":
-        var[mask] = np.where(var[mask] == quan1[mask], 1.0, np.nan)
-    elif oper == ">=":
-        var[mask] = np.where(var[mask] >= quan1[mask], 1.0, np.nan)
-    elif oper == "<=":
-        var[mask] = np.where(var[mask] <= quan1[mask], 1.0, np.nan)
-    elif oper == "<":
-        var[mask] = np.where(var[mask] < quan1[mask], 1.0, np.nan)
-    elif oper == ">":
-        var[mask] = np.where(var[mask] > quan1[mask], 1.0, np.nan)
-    elif oper == "!=":
-        var[mask] = np.where(var[mask] != quan1[mask], 1.0, np.nan)
+    if op == "==":
+        var[mask] = np.where(var[mask] == other[mask], 1.0, np.nan)
+    elif op == ">=":
+        var[mask] = np.where(var[mask] >= other[mask], 1.0, np.nan)
+    elif op == "<=":
+        var[mask] = np.where(var[mask] <= other[mask], 1.0, np.nan)
+    elif op == "<":
+        var[mask] = np.where(var[mask] < other[mask], 1.0, np.nan)
+    elif op == ">":
+        var[mask] = np.where(var[mask] > other[mask], 1.0, np.nan)
+    elif op == "!=":
+        var[mask] = np.where(var[mask] != other[mask], 1.0, np.nan)
     else:
-        plopm_error(f"unknow operation {cli_error_value(f'-v {oper}')}.")
+        plopm_error(f"unknow operation {cli_error_value(f'-v {op}')}.")
     return var
 
 
-def initialize_time(times: str) -> tuple[float, str]:
-    """Handle the time units for the x axis in the summary"""
+def time_unit(times: str) -> tuple[float, str]:
+    """Get the conversion and label for a time unit.
+
+    Parameters
+    ----------
+    times : str
+        Time-unit code or ``"dates"``.
+
+    Returns
+    -------
+    tuple[float, str]
+        Factor converting OPM days and the axis label.
+
+    """
     if times == "s":
         return 86400.0, "Time [seconds]"
     if times == "m":
@@ -954,10 +1219,26 @@ def initialize_time(times: str) -> tuple[float, str]:
     return 86400.0, "Time [seconds]"
 
 
-def get_csvs(
-    cfg: ConfigPlopm, deck: str, n: int
+def read_csv_grid(
+    cfg: PlopmConfig, deck: str, n: int
 ) -> tuple[NDArray, NDArray, int, int, str, str]:
-    """Read the csv quantities"""
+    """Read coordinate meshes from a regular CSV grid.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        CSV column and animation configuration.
+    deck : str
+        CSV path without the extension.
+    n : int
+        Map index.
+
+    Returns
+    -------
+    tuple
+        Coordinate meshes, dimensions, and axis names.
+
+    """
     if cfg.gif:
         file_name = deck.replace("PLOPM", str(cfg.restart[0]))
     else:
@@ -980,27 +1261,57 @@ def get_csvs(
     return xmx[None, :], ymy[::-1][:, None], mx, my, xname, yname
 
 
-def handle_filter(porvs: NDArray, quan1: NDArray, oper: str, value: float) -> NDArray:
-    """Apply the requested filter"""
-    if oper == "==":
-        mask = quan1 == value
-    elif oper == ">=":
-        mask = quan1 >= value
-    elif oper == "<=":
-        mask = quan1 <= value
-    elif oper == "<":
-        mask = quan1 < value
-    elif oper == ">":
-        mask = quan1 > value
-    elif oper == "!=":
-        mask = quan1 != value
+def _apply_filter(porvs: NDArray, other: NDArray, op: str, value: float) -> NDArray:
+    """Apply a comparison filter to pore-volume values.
+
+    Parameters
+    ----------
+    porvs : np.ndarray
+        Pore-volume values.
+    other : np.ndarray
+        Values tested by the filter.
+    op : str
+        Comparison operator.
+    value : float
+        Comparison threshold.
+
+    Returns
+    -------
+    np.ndarray
+        Pore volume where the condition is true and zero elsewhere.
+
+    """
+    if op == "==":
+        mask = other == value
+    elif op == ">=":
+        mask = other >= value
+    elif op == "<=":
+        mask = other <= value
+    elif op == "<":
+        mask = other < value
+    elif op == ">":
+        mask = other > value
+    elif op == "!=":
+        mask = other != value
     else:
-        plopm_error(f"unknow filter operation {cli_error_value(f'-flt {oper}')}.")
+        plopm_error(f"unknow filter operation {cli_error_value(f'-flt {op}')}.")
     return np.where(mask, porvs, 0)
 
 
 def get_unit(name: str) -> str:
-    """Get the variable unit"""
+    """Get the display unit for a variable.
+
+    Parameters
+    ----------
+    name : str
+        Variable name.
+
+    Returns
+    -------
+    str
+        Matplotlib-formatted unit label.
+
+    """
     name_low = name.lower()
     if name_low in {"disperc", "depth", "dx", "dy", "dz"}:
         return " [m]"
@@ -1015,12 +1326,12 @@ def get_unit(name: str) -> str:
     return " [-]"
 
 
-def get_quantity(
+def read_quantity(
     deck: str,
-    read: ReadData,
+    data: SimData,
     name: str,
-    nrst: int,
-    skl: float,
+    step: int,
+    scale: float,
     mass: list[str],
     mass_all: list[str],
     caprock: list[str],
@@ -1031,112 +1342,160 @@ def get_quantity(
     vmax: str,
     cvs: list,
 ) -> tuple[str, NDArray]:
-    """Handle the quantity from the OPM output files"""
+    """Read and transform one spatial or VTK quantity.
+
+    Parameters
+    ----------
+    deck : str
+        Simulation-case stem or CSV path.
+    data : SimData
+        Loaded simulation data.
+    name : str
+        Variable name or expression.
+    step : int
+        Restart report step.
+    scale : float
+        Scale factor applied to derived values.
+    mass, mass_all, caprock : list[str]
+        Supported derived-variable groups.
+    stress : float
+        Stress coefficient for caprock quantities.
+    filters : str
+        Property-filter expression.
+    isgif : bool
+        Whether the CSV path contains a restart placeholder.
+    vmin, vmax : str
+        Optional value thresholds.
+    cvs : list
+        CSV input and column settings.
+
+    Returns
+    -------
+    tuple[str, np.ndarray]
+        Unit label and quantity values.
+
+    """
     names = name.split(" ")
     unit = get_unit(name)
     name0_low = names[0]
     name0 = name0_low.upper()
     if cvs[0]:
         if isgif:
-            file_name = deck.replace("PLOPM", str(nrst))
+            file_name = deck.replace("PLOPM", str(step))
         else:
             file_name = deck
         csvv = np.genfromtxt(f"{file_name}.csv", delimiter=",", skip_header=1)
         col = cvs[2] - 1
-        quan = csvv[:, col]
+        values = csvv[:, col]
     else:
-        if read.init.count(name0):
-            quan = np.array(read.init[name0], dtype=float)
+        if data.init.count(name0):
+            values = np.array(data.init[name0], dtype=float)
             if name0_low == "porv":
-                quan = read.pv
+                values = data.active_pv
         elif name0_low in ["wells", "faults", "grid"]:
-            quan = np.zeros_like(read.init["SATNUM"])
+            values = np.zeros_like(data.init["SATNUM"])
         elif name0_low in ["index_i", "index_j", "index_k"]:
-            quan = np.array(
-                get_indices(name0_low, read.nx, read.ny, read.nz), dtype=float
+            values = np.array(
+                _grid_indices(name0_low, data.nx, data.ny, data.nz), dtype=float
             )
-            quan = quan[read.porv > 0]
-        elif read.unrst.count(name0, nrst):
-            quan = read.unrst[name0, nrst]
-            if read.unrst.count("RPORV", nrst):
+            values = values[data.porv > 0]
+        elif data.unrst.count(name0, step):
+            values = data.unrst[name0, step]
+            if data.unrst.count("RPORV", step):
                 if filters:
-                    porv0 = np.array(read.init["PORV"])
+                    porv0 = np.array(data.init["PORV"])
                     mask = porv0 > 0
-                    base_rporv = np.array(read.unrst["RPORV", nrst])
+                    base_rporv = np.array(data.unrst["RPORV", step])
                     for value in filters.split("&"):
                         filte = value.strip().split(" ")
                         key = filte[0].upper()
-                        if read.init.count(key):
-                            q1 = np.array(read.init[key])
-                        elif read.unrst.count(key, nrst):
-                            q1 = np.array(read.unrst[key, nrst])
+                        if data.init.count(key):
+                            q1 = np.array(data.init[key])
+                        elif data.unrst.count(key, step):
+                            q1 = np.array(data.unrst[key, step])
                         else:
                             plopm_error(
                                 f"unknow filter quantity {cli_error_value(f'-flt {key}')}."
                             )
-                        base_rporv = handle_filter(
+                        base_rporv = _apply_filter(
                             base_rporv, q1, filte[1], float(filte[2])
                         )
-                    read.porv[mask] = base_rporv
+                    data.porv[mask] = base_rporv
                 else:
-                    read.porv[read.porv > 0] = np.array(read.unrst["RPORV", nrst])
+                    data.porv[data.porv > 0] = np.array(data.unrst["RPORV", step])
         elif name0_low in mass_all:
-            quan = handle_mass(read, name0_low, nrst) * skl
+            values = _get_mass(data, name0_low, step) * scale
             if name0_low in mass:
-                unit = initialize_mass(skl)
+                unit = mass_unit(scale)
         elif name0_low in caprock:
-            quan, unit = handle_caprock(read, name0_low, nrst, stress)
+            values, unit = _get_caprock(data, name0_low, step, stress)
         elif name0_low in ["swat", "soil", "sgas"]:
-            quan = handle_saturation(read.unrst, name0_low, nrst) * skl
+            values = _get_saturation(data.unrst, name0_low, step) * scale
         else:
             plopm_error(f"not found {cli_error_value(f'-v {name0}')}.")
         if len(names) > 1:
             ops = names[1::2]
             for j, val in enumerate(names[2::2]):
                 if val[0].isdigit() and not val[-1].isdigit():
-                    q1 = read.unrst[val[1:].upper(), int(val[0])]
+                    q1 = data.unrst[val[1:].upper(), int(val[0])]
                 elif val[0].isdigit() and val[-1].isdigit():
-                    q1 = np.full_like(quan, float(val))
-                elif read.init.count(val.upper()):
-                    q1 = np.array(read.init[val.upper()])
+                    q1 = np.full_like(values, float(val))
+                elif data.init.count(val.upper()):
+                    q1 = np.array(data.init[val.upper()])
                     if val.upper() == "PORV":
-                        q1 = q1[read.porv > 0]
+                        q1 = q1[data.porv > 0]
                 elif val in ["index_i", "index_j", "index_k"]:
                     q1 = np.array(
-                        get_indices(val, read.nx, read.ny, read.nz),
+                        _grid_indices(val, data.nx, data.ny, data.nz),
                         dtype=float,
                     )
-                    q1 = q1[read.porv > 0]
-                elif read.unrst.count(val.upper(), nrst):
-                    q1 = read.unrst[val.upper(), nrst]
+                    q1 = q1[data.porv > 0]
+                elif data.unrst.count(val.upper(), step):
+                    q1 = data.unrst[val.upper(), step]
                 elif val in mass_all:
-                    q1 = handle_mass(read, val, nrst) * skl
+                    q1 = _get_mass(data, val, step) * scale
                 elif val in caprock:
-                    q1, unit = handle_caprock(read, val, nrst, stress)
+                    q1, unit = _get_caprock(data, val, step, stress)
                 else:
                     plopm_error(f"not found {cli_error_value(f'-v {val}')}.")
-                quan = operate(quan, q1, ops[j])
+                values = _apply_operator(values, q1, ops[j])
     if vmin:
-        quan = np.asarray(quan)
-        quan[quan < float(vmin)] = np.nan
+        values = np.asarray(values)
+        values[values < float(vmin)] = np.nan
     if vmax:
-        quan = np.asarray(quan)
-        quan[quan > float(vmax)] = np.nan
-    return unit, quan
+        values = np.asarray(values)
+        values[values > float(vmax)] = np.nan
+    return unit, values
 
 
-def handle_saturation(unrst: OpmRestart, name: str, nrst: int) -> NDArray:
-    """Compute the oil saturation"""
-    if unrst.count("SOIL", nrst):
-        soil = np.array(unrst["SOIL", nrst])
+def _get_saturation(unrst: OpmRestart, name: str, step: int) -> NDArray:
+    """Derive a missing phase saturation.
+
+    Parameters
+    ----------
+    unrst : OpmRestart
+        UNRST reader.
+    name : {"soil", "swat", "sgas"}
+        Saturation to derive.
+    step : int
+        Restart report step.
+
+    Returns
+    -------
+    np.ndarray
+        Requested phase saturation.
+
+    """
+    if unrst.count("SOIL", step):
+        soil = np.array(unrst["SOIL", step])
     else:
         soil = np.array(0)
-    if unrst.count("SGAS", nrst):
-        sgas = np.array(unrst["SGAS", nrst])
+    if unrst.count("SGAS", step):
+        sgas = np.array(unrst["SGAS", step])
     else:
         sgas = np.array(0)
-    if unrst.count("SWAT", nrst):
-        swat = np.array(unrst["SWAT", nrst])
+    if unrst.count("SWAT", step):
+        swat = np.array(unrst["SWAT", step])
     else:
         swat = np.array(0)
     if name == "soil":
@@ -1146,23 +1505,39 @@ def handle_saturation(unrst: OpmRestart, name: str, nrst: int) -> NDArray:
     return 1 - soil - swat
 
 
-def handle_mass(read: ReadData, name: str, nrst: int) -> NDArray:
-    """Compute the mass (intensive quantities)"""
-    sgas = np.array(read.unrst["SGAS", nrst])
-    rhog = np.array(read.unrst["GAS_DEN", nrst])
-    rhow = np.array(read.unrst["WAT_DEN", nrst])
-    if read.unrst.count("RSW", nrst):
-        rsw = np.array(read.unrst["RSW", nrst])
+def _get_mass(data: SimData, name: str, step: int) -> NDArray:
+    """Compute component masses and mass fractions.
+
+    Parameters
+    ----------
+    data : SimData
+        Loaded restart data and pore volume.
+    name : str
+        Requested derived variable.
+    step : int
+        Restart report step.
+
+    Returns
+    -------
+    np.ndarray
+        Requested component quantity.
+
+    """
+    sgas = np.array(data.unrst["SGAS", step])
+    rhog = np.array(data.unrst["GAS_DEN", step])
+    rhow = np.array(data.unrst["WAT_DEN", step])
+    if data.unrst.count("RSW", step):
+        rsw = np.array(data.unrst["RSW", step])
     else:
         rsw = np.zeros_like(sgas)
-    if read.unrst.count("RVW", nrst):
-        rvw = np.array(read.unrst["RVW", nrst])
+    if data.unrst.count("RVW", step):
+        rvw = np.array(data.unrst["RVW", step])
     else:
         rvw = np.zeros_like(sgas)
-    if read.unrst.count("RPORV", nrst):
-        rpv = np.array(read.unrst["RPORV", nrst])
+    if data.unrst.count("RPORV", step):
+        rpv = np.array(data.unrst["RPORV", step])
     else:
-        rpv = read.pv
+        rpv = data.active_pv
     denom_l = rsw + WAT_DEN_REF / GAS_DEN_REF
     denom_g = rvw + GAS_DEN_REF / WAT_DEN_REF
     x_l_co2 = np.zeros_like(rsw)
@@ -1178,10 +1553,10 @@ def handle_mass(read: ReadData, name: str, nrst: int) -> NDArray:
     co2_d = x_l_co2 * inv_sgas * rhow * rpv
     h2o_l = inv_xl * inv_sgas * rhow * rpv
     h2o_v = x_g_h2o * sgas * rhog * rpv
-    return type_of_mass(name, co2_g, co2_d, h2o_l, h2o_v, x_l_co2, x_g_h2o)
+    return _select_mass(name, co2_g, co2_d, h2o_l, h2o_v, x_l_co2, x_g_h2o)
 
 
-def type_of_mass(
+def _select_mass(
     name: str,
     co2_g: NDArray,
     co2_d: NDArray,
@@ -1190,7 +1565,25 @@ def type_of_mass(
     x_l_co2: NDArray,
     x_g_h2o: NDArray,
 ) -> NDArray:
-    """From the given variable return the associated mass"""
+    """Select a mass or mass-fraction result by name.
+
+    Parameters
+    ----------
+    name : str
+        Requested derived variable.
+    co2_g, co2_d : np.ndarray
+        Free and dissolved CO2 masses.
+    h2o_l, h2o_v : np.ndarray
+        Liquid and vapor water masses.
+    x_l_co2, x_g_h2o : np.ndarray
+        CO2-in-liquid and water-in-gas mass fractions.
+
+    Returns
+    -------
+    np.ndarray
+        Selected mass or mass fraction.
+
+    """
     if name == "gasm":
         return co2_g
     if name == "dism":
@@ -1212,27 +1605,45 @@ def type_of_mass(
     return co2_g + co2_d
 
 
-def handle_caprock(
-    read: ReadData, name: str, nrst: int, stress: float
+def _get_caprock(
+    data: SimData, name: str, step: int, stress: float
 ) -> tuple[NDArray, str]:
-    """Compute quantities related to the caprock integrity"""
-    init_dic = read.init
-    unrst_dic = read.unrst
-    dz = np.array(init_dic["DZ", 0])
-    depth = np.array(init_dic["DEPTH", 0])
+    """Compute a caprock-integrity quantity.
+
+    Parameters
+    ----------
+    data : SimData
+        Loaded static and restart properties.
+    name : str
+        Requested caprock variable.
+    step : int
+        Restart report step.
+    stress : float
+        Vertical stress coefficient.
+
+    Returns
+    -------
+    tuple[np.ndarray, str]
+        Computed values and unit label.
+
+    """
+    init = data.init
+    unrst = data.unrst
+    dz = np.array(init["DZ", 0])
+    depth = np.array(init["DEPTH", 0])
     dz_half = 0.5 * dz
     dz_corr = 0.5 * dz
-    if unrst_dic.count("WAT_DEN", 0) and unrst_dic.count("WAT_DEN", nrst):
-        den0 = np.array(unrst_dic["WAT_DEN", 0])
-        den1 = np.array(unrst_dic["WAT_DEN", nrst])
+    if unrst.count("WAT_DEN", 0) and unrst.count("WAT_DEN", step):
+        den0 = np.array(unrst["WAT_DEN", 0])
+        den1 = np.array(unrst["WAT_DEN", step])
     else:
         den0 = np.array(1000.0)
         den1 = np.array(1000.0)
     fac = 9.81 / 1e5
     pz_c0 = fac * dz_corr * den0
     pz_c1 = fac * dz_corr * den1
-    pressure0 = np.array(unrst_dic["PRESSURE", 0])
-    pressure1 = np.array(unrst_dic["PRESSURE", nrst])
+    pressure0 = np.array(unrst["PRESSURE", 0])
+    pressure1 = np.array(unrst["PRESSURE", step])
     limipres = stress * (depth - dz_half)
     overpres = limipres - (pressure1 - pz_c1)
     limipres -= pressure0 - pz_c0
@@ -1246,14 +1657,28 @@ def handle_caprock(
     return objepres, " [-]"
 
 
-def get_wells(cfg: ConfigPlopm, n: int) -> tuple[list, list]:
-    """Using the input deck (.DATA) to read the i,j well locations"""
+def get_wells(cfg: PlopmConfig, n: int) -> tuple[list, list]:
+    """Read wells intersecting the selected slice.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Case and slice configuration.
+    n : int
+        Case index.
+
+    Returns
+    -------
+    tuple[list, list[str]]
+        Completion intervals grouped by well and the well names.
+
+    """
     wells: list[list[list[int]]] = []
     lwells: list[str] = []
     well_map = {}
     haswells = False
     sources = False
-    with open(f"{cfg.names[0][n]}.DATA", "r", encoding="utf8") as file:
+    with open(f"{cfg.cases[0][n]}.DATA", "r", encoding="utf8") as file:
         for row in csv.reader(file):
             if not row:
                 continue
@@ -1311,7 +1736,7 @@ def get_wells(cfg: ConfigPlopm, n: int) -> tuple[list, list]:
         sld_x = cfg.slice[n][0]
         sld_y = cfg.slice[n][1]
         sld_z = cfg.slice[n][2]
-        whow = cfg.whow
+        whow = cfg.slice_mode
         for i, wells_list in enumerate(wells):
             for j, well in enumerate(wells_list):
                 if not well:
@@ -1340,13 +1765,27 @@ def get_wells(cfg: ConfigPlopm, n: int) -> tuple[list, list]:
     return wells, lwells
 
 
-def get_faults(cfg: ConfigPlopm, n: int) -> tuple[list, list]:
-    """Using the input deck (.DATA) to read the i,j fault locations"""
+def get_faults(cfg: PlopmConfig, n: int) -> tuple[list, list]:
+    """Read faults intersecting the selected slice.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Case and slice configuration.
+    n : int
+        Case index.
+
+    Returns
+    -------
+    tuple[list, list[str]]
+        Grid segments grouped by fault and the fault names.
+
+    """
     faults: list[list[list[int]]] = []
     lfaults: list[str] = []
     fault_map = {}
     hasfaults = False
-    with open(f"{cfg.names[0][n]}.DATA", "r", encoding="utf8") as file:
+    with open(f"{cfg.cases[0][n]}.DATA", "r", encoding="utf8") as file:
         for row in csv.reader(file):
             if not row:
                 continue
@@ -1382,7 +1821,7 @@ def get_faults(cfg: ConfigPlopm, n: int) -> tuple[list, list]:
         sld_x = cfg.slice[n][0]
         sld_y = cfg.slice[n][1]
         sld_z = cfg.slice[n][2]
-        whow = cfg.whow
+        whow = cfg.slice_mode
         for i, flist in enumerate(faults):
             for j, fault in enumerate(flist):
                 if not fault:

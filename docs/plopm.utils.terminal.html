@@ -83,95 +83,273 @@
              
   <section id="module-plopm.utils.terminal">
 <span id="plopm-utils-terminal-module"></span><h1>plopm.utils.terminal module<a class="headerlink" href="#module-plopm.utils.terminal" title="Link to this heading"></a></h1>
-<p>Terminal output utilities for the plopm command-line interface.</p>
+<p>Format plopm help text and command-line messages.</p>
+<p>The module hides deprecated aliases from <code class="docutils literal notranslate"><span class="pre">--help</span></code>, reports their replacements,
+and applies ANSI colors only when supported by the selected output stream.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="plopm.utils.terminal.PlopmHelpFormatter">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">PlopmHelpFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prog</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent_increment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_help_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">24</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.terminal.PlopmHelpFormatter" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ArgumentDefaultsHelpFormatter</span></code></p>
-<p>Hide deprecated aliases while preserving argparse help styling.</p>
+<p>Argparse formatter that hides deprecated option aliases.</p>
+<p>Current options retain the standard
+<code class="xref py py-class docutils literal notranslate"><span class="pre">argparse.ArgumentDefaultsHelpFormatter</span></code> layout and default values.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plopm.utils.terminal.PlopmHelpFormatter._format_action_invocation">
 <span class="sig-name descname"><span class="pre">_format_action_invocation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.terminal.PlopmHelpFormatter._format_action_invocation" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Format one argparse action using current option names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>action</strong><span class="classifier">argparse.Action</span></dt><dd><p>Action whose option invocation is displayed in CLI help.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Formatted invocation with deprecated aliases omitted.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.terminal._colorize">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">_colorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stderr&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.terminal._colorize" title="Link to this definition"></a></dt>
+<dd><p>Wrap text in an ANSI color sequence when supported.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to format.</p>
+</dd>
+<dt><strong>code</strong><span class="classifier">str</span></dt><dd><p>ANSI Select Graphic Rendition code.</p>
+</dd>
+<dt><strong>stream</strong><span class="classifier">object, default: sys.stderr</span></dt><dd><p>Output stream used to determine color support.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Colored text, or the original text when colors are unavailable.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.terminal._supports_color">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">_supports_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stderr&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#plopm.utils.terminal._supports_color" title="Link to this definition"></a></dt>
+<dd><p>Check whether an output stream supports ANSI colors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>stream</strong><span class="classifier">object, default: sys.stderr</span></dt><dd><p>Output stream to inspect.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> for an interactive stream unless colors are disabled by
+<code class="docutils literal notranslate"><span class="pre">NO_COLOR</span></code> or <code class="docutils literal notranslate"><span class="pre">TERM=dumb</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.cli_current_value">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">cli_current_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.terminal.cli_current_value" title="Link to this definition"></a></dt>
-<dd><p>Format a command-line option or value.</p>
+<dd><p>Format a current CLI option or value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>value</strong><span class="classifier">str</span></dt><dd><p>Option or value to display.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Quoted value with current-option styling when supported.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.cli_deprecated_value">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">cli_deprecated_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.terminal.cli_deprecated_value" title="Link to this definition"></a></dt>
-<dd><p>Format a deprecated command-line option or value.</p>
+<dd><p>Format a deprecated CLI option or value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>value</strong><span class="classifier">str</span></dt><dd><p>Option or value to display.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Quoted value with deprecated-option styling when supported.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.cli_error_value">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">cli_error_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.terminal.cli_error_value" title="Link to this definition"></a></dt>
-<dd><p>Format an error command-line option or value.</p>
+<dd><p>Format an invalid CLI option or value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>value</strong><span class="classifier">str</span></dt><dd><p>Option or value to display.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Quoted value with error styling when supported.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.cli_info_value">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">cli_info_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.terminal.cli_info_value" title="Link to this definition"></a></dt>
-<dd><p>Format an info command-line option or value.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.terminal.colorize">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">colorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stderr&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.terminal.colorize" title="Link to this definition"></a></dt>
-<dd><p>Apply an ANSI color when the stream supports terminal colors.</p>
+<dd><p>Format an informational CLI option or value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>value</strong><span class="classifier">str</span></dt><dd><p>Option or value to display.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Quoted value with informational styling when supported.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.plopm_error">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">plopm_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NoReturn</span></span></span><a class="headerlink" href="#plopm.utils.terminal.plopm_error" title="Link to this definition"></a></dt>
-<dd><p>Display a fatal CLI error and exit with status 1.</p>
+<dd><p>Raise a fatal command-line error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>message</strong><span class="classifier">str</span></dt><dd><p>Error message displayed after the plopm label.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>SystemExit</dt><dd><p>Always raised with the formatted error message.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.plopm_info">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">plopm_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.terminal.plopm_info" title="Link to this definition"></a></dt>
-<dd><p>Display an informational CLI message.</p>
+<dd><p>Display an informational command-line message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>message</strong><span class="classifier">str</span></dt><dd><p>Message displayed on standard output.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.plopm_name">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">plopm_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stderr&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.terminal.plopm_name" title="Link to this definition"></a></dt>
-<dd><p>Return the plopm name with gradient terminal colors.</p>
+<dd><p>Format the plopm program name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>stream</strong><span class="classifier">object, default: sys.stderr</span></dt><dd><p>Output stream used to determine color support.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Program name with gradient colors when supported.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.plopm_success">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">plopm_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.terminal.plopm_success" title="Link to this definition"></a></dt>
-<dd><p>Display the output directory and generated filenames.</p>
+<dd><p>Display the generated output location and filenames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>output_dir</strong><span class="classifier">str</span></dt><dd><p>Directory containing the generated files.</p>
+</dd>
+<dt><strong>filenames</strong><span class="classifier">list[str]</span></dt><dd><p>Generated filenames.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.plopm_tip">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">plopm_tip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.terminal.plopm_tip" title="Link to this definition"></a></dt>
-<dd><p>Display a helpful CLI suggestion.</p>
+<dd><p>Display a command-line suggestion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>message</strong><span class="classifier">str</span></dt><dd><p>Suggestion displayed on standard output.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.plopm_warning">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">plopm_warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.terminal.plopm_warning" title="Link to this definition"></a></dt>
-<dd><p>Display a non-fatal CLI warning.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.terminal.supports_color">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">supports_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stderr&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#plopm.utils.terminal.supports_color" title="Link to this definition"></a></dt>
-<dd><p>Return whether the output stream supports terminal colors.</p>
+<dd><p>Display a non-fatal command-line warning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>message</strong><span class="classifier">str</span></dt><dd><p>Warning message displayed on standard error.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.terminal.warn_deprecated_options">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.terminal.</span></span><span class="sig-name descname"><span class="pre">warn_deprecated_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">argv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.terminal.warn_deprecated_options" title="Link to this definition"></a></dt>
-<dd><p>Warn once for each deprecated command-line option used.</p>
+<dd><p>Warn once for each deprecated option in an argument list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>argv</strong><span class="classifier">Sequence[str]</span></dt><dd><p>Command-line arguments, excluding or including the executable name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

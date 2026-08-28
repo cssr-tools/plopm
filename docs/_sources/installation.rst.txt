@@ -4,7 +4,7 @@ Installation
 
 The following steps work installing the dependencies in Linux via apt-get or in macOS using brew or macports.
 While using packages managers such as Anaconda, Miniforge, or Mamba might work, these are not tested.
-The supported Python versions are 3.11 to 3.14.
+The supported Python versions are 3.12 to 3.14.
 
 .. _vplopm:
 

@@ -1,7 +1,11 @@
 # SPDX-FileCopyrightText: 2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 
-"""Terminal output utilities for the plopm command-line interface."""
+"""Format plopm help text and command-line messages.
+
+The module hides deprecated aliases from ``--help``, reports their replacements,
+and applies ANSI colors only when supported by the selected output stream.
+"""
 
 import argparse
 import os
@@ -139,12 +143,30 @@ ANSI_BLUE = "1;34"
 
 
 class PlopmHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
-    """Hide deprecated aliases while preserving argparse help styling."""
+    """Argparse formatter that hides deprecated option aliases.
+
+    Current options retain the standard
+    :class:`argparse.ArgumentDefaultsHelpFormatter` layout and default values.
+
+    """
 
     def _format_action_invocation(
         self,
         action: argparse.Action,
     ) -> str:
+        """Format one argparse action using current option names.
+
+        Parameters
+        ----------
+        action : argparse.Action
+            Action whose option invocation is displayed in CLI help.
+
+        Returns
+        -------
+        str
+            Formatted invocation with deprecated aliases omitted.
+
+        """
         if not action.option_strings:
             return super()._format_action_invocation(action)
 
@@ -166,7 +188,14 @@ class PlopmHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
 
 def warn_deprecated_options(argv: Sequence[str]) -> None:
-    """Warn once for each deprecated command-line option used."""
+    """Warn once for each deprecated option in an argument list.
+
+    Parameters
+    ----------
+    argv : Sequence[str]
+        Command-line arguments, excluding or including the executable name.
+
+    """
     reported: set[str] = set()
 
     for argument in argv:
@@ -185,8 +214,21 @@ def warn_deprecated_options(argv: Sequence[str]) -> None:
         reported.add(option)
 
 
-def supports_color(stream: object = sys.stderr) -> bool:
-    """Return whether the output stream supports terminal colors."""
+def _supports_color(stream: object = sys.stderr) -> bool:
+    """Check whether an output stream supports ANSI colors.
+
+    Parameters
+    ----------
+    stream : object, default: sys.stderr
+        Output stream to inspect.
+
+    Returns
+    -------
+    bool
+        ``True`` for an interactive stream unless colors are disabled by
+        ``NO_COLOR`` or ``TERM=dumb``.
+
+    """
     return (
         hasattr(stream, "isatty")
         and stream.isatty()
@@ -195,64 +237,170 @@ def supports_color(stream: object = sys.stderr) -> bool:
     )
 
 
-def colorize(
+def _colorize(
     text: str,
     code: str,
     stream: object = sys.stderr,
 ) -> str:
-    """Apply an ANSI color when the stream supports terminal colors."""
-    if not supports_color(stream):
+    """Wrap text in an ANSI color sequence when supported.
+
+    Parameters
+    ----------
+    text : str
+        Text to format.
+    code : str
+        ANSI Select Graphic Rendition code.
+    stream : object, default: sys.stderr
+        Output stream used to determine color support.
+
+    Returns
+    -------
+    str
+        Colored text, or the original text when colors are unavailable.
+
+    """
+    if not _supports_color(stream):
         return text
     return f"\033[{code}m{text}\033[0m"
 
 
 def cli_deprecated_value(value: str) -> str:
-    """Format a deprecated command-line option or value."""
-    return colorize(repr(value), ANSI_YELLOW)
+    """Format a deprecated CLI option or value.
+
+    Parameters
+    ----------
+    value : str
+        Option or value to display.
+
+    Returns
+    -------
+    str
+        Quoted value with deprecated-option styling when supported.
+
+    """
+    return _colorize(repr(value), ANSI_YELLOW)
 
 
 def cli_current_value(value: str) -> str:
-    """Format a command-line option or value."""
-    return colorize(repr(value), ANSI_GREEN)
+    """Format a current CLI option or value.
+
+    Parameters
+    ----------
+    value : str
+        Option or value to display.
+
+    Returns
+    -------
+    str
+        Quoted value with current-option styling when supported.
+
+    """
+    return _colorize(repr(value), ANSI_GREEN)
 
 
 def cli_error_value(value: str) -> str:
-    """Format an error command-line option or value."""
-    return colorize(repr(value), ANSI_RED)
+    """Format an invalid CLI option or value.
+
+    Parameters
+    ----------
+    value : str
+        Option or value to display.
+
+    Returns
+    -------
+    str
+        Quoted value with error styling when supported.
+
+    """
+    return _colorize(repr(value), ANSI_RED)
 
 
 def cli_info_value(value: str) -> str:
-    """Format an info command-line option or value."""
-    return colorize(repr(value), ANSI_BLUE)
+    """Format an informational CLI option or value.
+
+    Parameters
+    ----------
+    value : str
+        Option or value to display.
+
+    Returns
+    -------
+    str
+        Quoted value with informational styling when supported.
+
+    """
+    return _colorize(repr(value), ANSI_BLUE)
 
 
 def plopm_error(message: str) -> NoReturn:
-    """Display a fatal CLI error and exit with status 1."""
-    label = colorize("error", ANSI_BOLD_RED)
+    """Raise a fatal command-line error.
+
+    Parameters
+    ----------
+    message : str
+        Error message displayed after the plopm label.
+
+    Raises
+    ------
+    SystemExit
+        Always raised with the formatted error message.
+
+    """
+    label = _colorize("error", ANSI_BOLD_RED)
     raise SystemExit(f"{plopm_name()}: {label}: {message}")
 
 
 def plopm_warning(message: str) -> None:
-    """Display a non-fatal CLI warning."""
-    label = colorize("warning", ANSI_BOLD_YELLOW)
+    """Display a non-fatal command-line warning.
+
+    Parameters
+    ----------
+    message : str
+        Warning message displayed on standard error.
+
+    """
+    label = _colorize("warning", ANSI_BOLD_YELLOW)
     print(f"{plopm_name()}: {label}: {message}", file=sys.stderr)
 
 
 def plopm_info(message: str) -> None:
-    """Display an informational CLI message."""
-    label = colorize("info", ANSI_BOLD_BLUE, sys.stdout)
+    """Display an informational command-line message.
+
+    Parameters
+    ----------
+    message : str
+        Message displayed on standard output.
+
+    """
+    label = _colorize("info", ANSI_BOLD_BLUE, sys.stdout)
     print(f"{plopm_name()}: {label}: {message}")
 
 
 def plopm_tip(message: str) -> None:
-    """Display a helpful CLI suggestion."""
-    label = colorize("tip", ANSI_BOLD_MAGENTA, sys.stdout)
+    """Display a command-line suggestion.
+
+    Parameters
+    ----------
+    message : str
+        Suggestion displayed on standard output.
+
+    """
+    label = _colorize("tip", ANSI_BOLD_MAGENTA, sys.stdout)
     print(f"{plopm_name(sys.stdout)}: {label}: {message}")
 
 
 def plopm_success(output_dir: str, filenames: list[str]) -> None:
-    """Display the output directory and generated filenames."""
-    label = colorize("success", ANSI_BOLD_GREEN, sys.stdout)
+    """Display the generated output location and filenames.
+
+    Parameters
+    ----------
+    output_dir : str
+        Directory containing the generated files.
+    filenames : list[str]
+        Generated filenames.
+
+    """
+    label = _colorize("success", ANSI_BOLD_GREEN, sys.stdout)
     if not filenames:
         plopm_error("Unreachable code executed")
     elif len(filenames) == 1:
@@ -270,7 +418,19 @@ def plopm_success(output_dir: str, filenames: list[str]) -> None:
 
 
 def plopm_name(stream: object = sys.stderr) -> str:
-    """Return the plopm name with gradient terminal colors."""
+    """Format the plopm program name.
+
+    Parameters
+    ----------
+    stream : object, default: sys.stderr
+        Output stream used to determine color support.
+
+    Returns
+    -------
+    str
+        Program name with gradient colors when supported.
+
+    """
     characters = [
         ("p", "36"),
         ("l", "36"),
@@ -279,5 +439,5 @@ def plopm_name(stream: object = sys.stderr) -> str:
         ("m", "36"),
     ]
     return "".join(
-        colorize(character, color, stream) for character, color in characters
+        _colorize(character, color, stream) for character, color in characters
     )

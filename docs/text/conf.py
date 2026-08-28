@@ -12,11 +12,11 @@ copyright = '2024-2026, NORCE Research AS'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.napoleon']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'numpydoc']
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
+numpydoc_show_class_members = False
 
 
 # -- Options for HTML output -------------------------------------------------
