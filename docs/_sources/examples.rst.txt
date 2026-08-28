@@ -6,12 +6,12 @@ See `this presentation <https://opm-project.org/wp-content/uploads/2025/06/OPM_s
 as well as the one from `the OPM summit 2026 <https://opm-project.org/wp-content/uploads/2026/05/24_David-Landa-Marban.pdf>`_.
 
 .. warning::
-    By default the figure is generated from the front cells on the xy-plane (-s ,1,) and the axes are scaled (-z 1), which for models with large lateral
+    By default the figure is generated from the front cells on the xy-plane (-s ,1,) and the axes are scaled (-asp 1), which for models with large lateral
     extend could lead to a figure such as the below one:
 
     .. figure:: figs/docs_z_flag.png
 
-    Then, you could set these flags to **-s ,,1 -z 0** when you run **plopm** to not scale the axes and to plot the top view of the model.
+    Then, you could set these flags to **-s ,,1 -asp 0** when you run **plopm** to not scale the axes and to plot the top view of the model.
 
 .. tip::
     You can try to generate all figures from the examples below by executing inside the plopm folder:
@@ -39,14 +39,14 @@ the following figure should be generated (this example is used in the `tests <ht
 
 .. figure:: figs/spe11b_satnum_*,1,*_t5.png
 
-See the :ref:`overview` or run `plopm -h` for the definition of the argument options, as well as using `-printv 1` flag to output the available
+See the :ref:`overview` or run `plopm -h` for the definition of the argument options, as well as using `-lv 1` flag to output the available
 summary, init, and restart available variables given an input deck.
 
-For example, for the gas saturation at the report step number 4 with three colorbar labels using a given colormap (-c) and defined colorbar ticks (-cticks):
+For example, for the gas saturation at the report step number 4 with three colorbar labels using a given colormap (-c) and defined colorbar ticks (-cbt):
 
 .. code-block:: bash
 
-    plopm -i SPE11B -v sgas -r 4 -cnum 3 -c cubehelix -cticks '[0, middle, 0.9]'
+    plopm -i SPE11B -v sgas -r 4 -cbn 3 -c cubehelix -cbt '[0, middle, 0.9]'
 
 .. figure:: figs/spe11b_sgas_i,1,k_t4.png
 
@@ -54,7 +54,7 @@ and for the gas in place summary vector given a color, line style, font size, di
 
 .. code-block:: bash
 
-    plopm -i SPE11B -v fgip -c b -e dotted -f 12 -d 5,5 -lw 4 -tunits dates
+    plopm -i SPE11B -v fgip -c b -ls dotted -fz 12 -fs 5,5 -lw 4 -tu dates
 
 .. figure:: figs/fgip.png
     :scale: 7%
@@ -63,7 +63,7 @@ To plot cell values over time, this can be achieved by:
 
 .. code-block:: bash
 
-    plopm -i 'SPE11B SPE11B SPE11B' -v 'pressure - 0pressure' -s '1,1,1 41,1,29 83,1,58' -labels 'Top left corner  Middle  Right lower corner' -ylabel 'Pressure increase at the sensor locations [bar]' -yformat .0f -xlnum 11 -tunits dates
+    plopm -i 'SPE11B SPE11B SPE11B' -v 'pressure - 0pressure' -s '1,1,1 41,1,29 83,1,58' -llb 'Top left corner  Middle  Right lower corner' -yl 'Pressure increase at the sensor locations [bar]' -yf .0f -xnt 11 -tu dates
 
 .. figure:: figs/spe11b_pressure-0pressure.png
     :scale: 20%
@@ -88,7 +88,7 @@ Different colormap formats can be used when making a subfigure, for example:
 
 .. code-block:: bash
 
-    plopm -i SPE11B -v satnum,fipnum,disperc -c '193;147;56 127;148;191 193;127;97 181;73;57 81;124;66 101;64;147 134;133;130',cet_glasbey_bw,'#b6c406 #fffa86' -subfigs 3,1 -delax 1 -cnum 3,6,2 -cformat .0f,.0f,.1f -d 7,4
+    plopm -i SPE11B -v satnum,fipnum,disperc -c '193;147;56 127;148;191 193;127;97 181;73;57 81;124;66 101;64;147 134;133;130',cet_glasbey_bw,'#b6c406 #fffa86' -sg 3,1 -rdl 1 -cbn 3,6,2 -cbf .0f,.0f,.1f -fs 7,4
 
 .. figure:: figs/spe11b_disperc_i,1,k_t5.png
     :scale: 20%
@@ -114,7 +114,7 @@ for an example where **plopm** is used to generate figures from the
 
 .. code-block:: bash
 
-    plopm -i SPE10_MODEL2 -v permz -s ,4, -log 1 -xunits km -yunits km -xlnum 6 -yformat .2f -t 'K$_z$ at the forth slide in the xz plane' -b '[1e-7,1e3]'
+    plopm -i SPE10_MODEL2 -v permz -s ,4, -clog 1 -xu km -yu km -xnt 6 -yf .2f -t 'K$_z$ at the forth slide in the xz plane' -cl '[1e-7,1e3]'
 
 Here, we look at the forth slide in the xz plane and use log scale for the permeability in the z direction, as well as changing the axis units to km, 
 setting the format to the numbers to two floats in the y axis, and setting manually the upper and lower bound for the color map.
@@ -123,7 +123,7 @@ To plot information for the grid, and also the location of the wells from the to
 
 .. code-block:: bash
 
-    plopm -i SPE10_MODEL2 -s ,,1 -d 3,4 -f 8 -v grid -remove 0,0,1,0 && plopm -i SPE10_MODEL2 -s ,,1 -d 3,4 -f 8 -v wells -remove 0,0,0,1
+    plopm -i SPE10_MODEL2 -s ,,1 -fs 3,4 -fz 8 -v grid -hide 0,0,1,0 && plopm -i SPE10_MODEL2 -s ,,1 -fs 3,4 -fz 8 -v wells -hide 0,0,0,1
 
 .. image:: ./figs/wells.png
 
@@ -157,7 +157,7 @@ In order to reduce the white space outside the active cells, as well as to rotat
 
 .. code-block:: bash
 
-    plopm -i NORNE_ATW2013 -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,7600]' -f 8
+    plopm -i NORNE_ATW2013 -s ,,1 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,7600]' -fz 8
 
 .. image:: ./figs/norne_transformed.png
 
@@ -165,8 +165,8 @@ To show all faults in the model and to only show the ones connected all along th
 
 .. code-block:: bash
 
-    plopm -i NORNE_ATW2013 -v faults -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 -global 1
-    plopm -i NORNE_ATW2013 -v faults -s ,,1:22 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 -how max
+    plopm -i NORNE_ATW2013 -v faults -s ,,1 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -fz 8 -gr 1
+    plopm -i NORNE_ATW2013 -v faults -s ,,1:22 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -fz 8 -agg max
 
 .. image:: ./figs/norne_faults.png
 
@@ -174,8 +174,8 @@ To show all wells in the model and to only show the ones with at least one perfo
 
 .. code-block:: bash
 
-    plopm -i NORNE_ATW2013 -v wells -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8 -global 1 -save "norne_wells_global"
-    plopm -i NORNE_ATW2013 -v wells -s ,,1 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -f 8  -save "norne_wells"
+    plopm -i NORNE_ATW2013 -v wells -s ,,1 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -fz 8 -gr 1 -fn "norne_wells_global"
+    plopm -i NORNE_ATW2013 -v wells -s ,,1 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -fz 8  -fn "norne_wells"
 
 .. image:: ./figs/norne_wells.png
 
@@ -199,7 +199,7 @@ Here is an example of making a single figure plotting subfigures and using diffe
 
 .. code-block:: bash
 
-    plopm -i NORNE_ATW2013 -v 'index_k,permx,poro' -s ',,1:22 ,,1:22 ,,1:22' -how 'first,arithmetic,max' -subfigs 1,3 -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -d 24,10 -c 'PuOr,vanimo,jet' -cformat '.0f,.0f,.2f' -cnum '2,4,8' -suptitle 0 -t "Top k values using first  Averaged permx using arithmetic  Values of porosity using max" -f 18
+    plopm -i NORNE_ATW2013 -v 'index_k,permx,poro' -s ',,1:22 ,,1:22 ,,1:22' -agg 'first,arithmetic,max' -sg 1,3 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -fs 24,10 -c 'PuOr,vanimo,jet' -cbf '.0f,.0f,.2f' -cbn '2,4,8' -st 0 -t "Top k values using first  Averaged permx using arithmetic  Values of porosity using max" -fz 18
 
 .. image:: ./figs/norne_atw2013_poro_i,j,1:22_t64.png
 
@@ -220,7 +220,7 @@ respectively, showing also the mean and std which can be used for sampling (see 
 
 .. code-block:: bash
 
-    plopm -i NORNE_ATW2013 -v poro,permx -histogram '20,norm 20,lognorm' -axgrid 0 -subfigs 1,2 -d 15,5 -loc 'upper center' -y '[0,10000] [0,23000]' -c '#7274b3,#cddb6e'
+    plopm -i NORNE_ATW2013 -v poro,permx -hist '20,norm 20,lognorm' -ag 0 -sg 1,2 -fs 15,5 -ll 'upper center' -y '[0,10000] [0,23000]' -c '#7274b3,#cddb6e'
 
 .. image:: ./figs/norne_atw2013_permx.png
 
@@ -239,7 +239,7 @@ Caprock integrity
 Since there is an increase of interest in regional models, then we add three new variables **-v** related to the caprock integrity, 
 i.e., the most top active cells in the given range **-s**: 
 
-#. limipres = stress*z-p0, where stress can be set via the flag **-stress** (0.134 by default, a common value in literature).
+#. limipres = stress*z-p0, where stress can be set via the flag **-sc** (0.134 by default, a common value in literature).
 #. overpres = p-stress*z, i.e., a negative value means the limit pressure has not been reached. 
 #. objepres is the ratio of overpres to limipres, i.e., the value is of order of one and this can be used in optimization routines.
 
@@ -248,7 +248,7 @@ For example, if we would like to estimate these values for norne for future CCS:
 
 .. code-block:: bash
 
-    plopm -i 'NORNE_ATW2013' -s ',,1:22 ,,1:22' -v limipres,overpres -rotate 65 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -d 15,10 -c Spectral,spring -subfigs 1,2 -delax 1
+    plopm -i 'NORNE_ATW2013' -s ',,1:22 ,,1:22' -v limipres,overpres -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -fs 15,10 -c Spectral,spring -sg 1,2 -rdl 1
     plopm -i 'NORNE_ATW2013' -m csv -v objepres -s ',,1:22' 
 
 .. image:: ./figs/norne_atw2013_overpres_i,j,1:22_t64.png
@@ -265,7 +265,7 @@ For example, if we would like to estimate these values for norne for future CCS:
 Reading from csv files
 ======================
 
-Using the flag **-csv** allows to read values from csv files, allowing also to combine values from OPM Flow output files. To ilustrate this,
+Using the flag **-cc** allows to read values from csv files, allowing also to combine values from OPM Flow output files. To ilustrate this,
 let us consider the `pyopmspe11 tool <https://github.com/OPM/pyopmspe11>`_.
 
 .. tip::
@@ -286,16 +286,16 @@ Once you have installed **pyopmspe11**, then run the configuration file:
 
 .. code-block:: bash
 
-    pyopmspe11 -i r1_Cart_10m.toml -o r1_Cart_10m -m deck_flow_data -g all -t 5 -r 70,1,30 -w 0.1 -f 0
+    pyopmspe11 -i r1_Cart_10m.toml -o r1_Cart_10m -m deck_flow_data -g all -t 5 -r 70,1,30 -w 0.1 -fz 0
 
 This generates the output folder r1_Cart_10m, where the OPM Flow output files and the csvs are generated. To compare the spatial maps of the CO2 mass 
 fraction from the simulation grid to the reporting grid (70 by 30), this can be achieved by:
 
 .. code-block:: bash
 
-    plopm -v xco2l -i "r1_Cart_10m/R1_CART_10M r1_Cart_10m/spe11b_spatial_map_500y" -csv ";1,2,5" -subfigs 2,1 -delax 1 -r 100 -d 10,3 -suptitle 0 -t "Simulation grid  Reporting grid" -cbsfax 0.35,0.97,0.3,0.02 -yunits km -xunits km -yformat .1f -xformat .1f -cnum 5 -xlnum 8 -cformat .2f
+    plopm -v xco2l -i "r1_Cart_10m/R1_CART_10M r1_Cart_10m/spe11b_spatial_map_500y" -cc ";1,2,5" -sg 2,1 -rdl 1 -r 100 -fs 10,3 -st 0 -t "Simulation grid  Reporting grid" -cbp 0.35,0.97,0.3,0.02 -yu km -xu km -yf .1f -xf .1f -cbn 5 -xnt 8 -cbf .2f
 
-where the flag **-csv ";1,2,5"** has two main entries (number of input files) separated by **;**, and the first entry is defaulted since the input it is 
+where the flag **-cc ";1,2,5"** has two main entries (number of input files) separated by **;**, and the first entry is defaulted since the input it is 
 an OPM Flow file, while the second entry has three values, where the first two sets the columns in the csv where the x and y coordinates are, and the last entry (5) 
 it is the column for the plotted variable. The previous command generates the following figure:
 
@@ -305,20 +305,20 @@ To compare two summary quantities, this can be achiaved by:
 
 .. code-block:: bash
 
-    plopm -i "r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M" -v ",BWPR:256,1,5" -csv "1,3;" -a "1e-5,1" -e "solid,dotted" -lw "4,4" -ylabel "Sensor pressure [bar]" -labels "From csv file  From OPM Flow output file" -c "r,k"
+    plopm -i "r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M" -v ",BWPR:256,1,5" -cc "1,3;" -sf "1e-5,1" -ls "solid,dotted" -lw "4,4" -yl "Sensor pressure [bar]" -llb "From csv file  From OPM Flow output file" -c "r,k"
 
-where for summary variables, the flag **-v ",BWPR:256,1,5"** needs to have empty entries for corresponding csv **-i** files, and the flag **-a "1e-5,1"** allows to convert the values in Pascal to bar from the csv file, multiplying by 1e-5. The previous command generates the following figure:
+where for summary variables, the flag **-v ",BWPR:256,1,5"** needs to have empty entries for corresponding csv **-i** files, and the flag **-sf "1e-5,1"** allows to convert the values in Pascal to bar from the csv file, multiplying by 1e-5. The previous command generates the following figure:
 
 .. image:: ./figs/spe11b_time_series_BWPR-1944.png
 
 If you download the benchmark data from `this website <https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/DARUS-4750>`_, then you could use **plopm** to compare simulation results. 
 For example, by downloading the  `spe11_opm1.zip <https://darus.uni-stuttgart.de/file.xhtml?fileId=375740&version=1.0&toolType=PREVIEW>`_, `spe11_opm2.zip <https://darus.uni-stuttgart.de/file.xhtml?fileId=375725&version=1.0&toolType=PREVIEW>`_, 
 `spe11_opm3.zip <https://darus.uni-stuttgart.de/file.xhtml?fileId=375754&version=1.0&toolType=PREVIEW>`_, and `spe11_opm4.zip <https://darus.uni-stuttgart.de/file.xhtml?fileId=375726&version=1.0&toolType=PREVIEW>`_, then you could compare 
-your simulations with those results by (to remove the legend, add the flag **-loc empty**):
+your simulations with those results by (to remove the legend, add the flag **-ll empty**):
 
 .. code-block:: bash
 
-    plopm -i "opm1/spe11b_time_series opm2/spe11b_time_series opm3/spe11b_time_series opm4/spe11b_time_series r1_Cart_10m/spe11b_time_series" -csv "1,4;1,4;1,4;1,4;1,4" -tunits y -x "[0,1000]" -ylabel "dissA [kiloton]" -yformat .1f -a 1e-6 -c "#a8d8e3,#a8d8e3,#a8d8e3,#a8d8e3,#fc035a" -lw 5,5,5,5,5 -e solid
+    plopm -i "opm1/spe11b_time_series opm2/spe11b_time_series opm3/spe11b_time_series opm4/spe11b_time_series r1_Cart_10m/spe11b_time_series" -cc "1,4;1,4;1,4;1,4;1,4" -tu y -x "[0,1000]" -yl "dissA [kiloton]" -yf .1f -sf 1e-6 -c "#a8d8e3,#a8d8e3,#a8d8e3,#a8d8e3,#fc035a" -lw 5,5,5,5,5 -ls solid
 
 .. image:: ./figs/spe11b_time_series_csv_ens.png
 
@@ -326,14 +326,14 @@ and for the spatial maps:
 
 .. code-block:: bash
 
-    plopm -i "opm1/spe11b_spatial_map_250y opm2/spe11b_spatial_map_250y opm3/spe11b_spatial_map_250y opm4/spe11b_spatial_map_250y r1_Cart_10m/spe11b_spatial_map_250y"  -csv "1,2,5;1,2,5;1,2,5;1,2,5;1,2,5" -subfigs 3,2 -delax 1 -suptitle 0 -cbsfax 0.35,0.97,0.3,0.02 -yunits km -xunits km -yformat .1f -xformat .1f -cnum 5 -xlnum 8 -cformat .2f -d 14,4 -t "opm1  opm2  opm3  opm4  my simulation" -clabel 'Time 250 years, CO$_2$ mass fraction (liquid phase) [-]' -c inferno
+    plopm -i "opm1/spe11b_spatial_map_250y opm2/spe11b_spatial_map_250y opm3/spe11b_spatial_map_250y opm4/spe11b_spatial_map_250y r1_Cart_10m/spe11b_spatial_map_250y"  -cc "1,2,5;1,2,5;1,2,5;1,2,5;1,2,5" -sg 3,2 -rdl 1 -st 0 -cbp 0.35,0.97,0.3,0.02 -yu km -xu km -yf .1f -xf .1f -cbn 5 -xnt 8 -cbf .2f -fs 14,4 -t "opm1  opm2  opm3  opm4  my simulation" -cbl 'Time 250 years, CO$_2$ mass fraction (liquid phase) [-]' -c inferno
 
 .. image:: ./figs/spe11b_spatial_map_250y_csv_csv_t-1.png
 
 To make a GIF from csvs, then write "PLOPM" in the csv file name (e.g., '-i opm1/spe11b_spatial_map_PLOPMy') where to read the given times from **-r** (see `these examples from pyopmspe11 <https://opm.github.io/pyopmspe11/convergence.html#full-domain>`_). 
 
 .. tip::
-    In general, the ability of plotting from csv files using the flag **-csv** is a game changer, expanding the applicability of **plopm** beyond the format of OPM Flow output files.
+    In general, the ability of plotting from csv files using the flag **-cc** is a game changer, expanding the applicability of **plopm** beyond the format of OPM Flow output files.
 
 .. tip::
 
@@ -352,7 +352,7 @@ from the restart files from the initial (0) to the number 5 restart, using a OPM
 
 .. code-block:: bash
     
-    plopm -i SPE11B -v temp,fipnum,co2m,xco2l -vtkformat Float32,UInt16,Float64,Float16 -r 0,5 -m vtk
+    plopm -i SPE11B -v temp,fipnum,co2m,xco2l -vf Float32,UInt16,Float64,Float16 -r 0,5 -m vtk
 
 .. figure:: ./figs/vtk_temp.png
 
@@ -383,9 +383,9 @@ However, by plotting individually the drainage and imbibition tables one can set
 
 .. code-block:: bash
 
-    plopm -i 'H2HYSTERESIS' -v krgh,krwh -labels "Hydrogen  Brine" -c r,#0314fc -x '[0,1]' -lw 5 -f 18 -d 8,6 -ylabel 'Relative permeability, $k_r$ [-]' -xlabel ' Liquid saturation, $s_w$ [-]'  -e solid,solid -xlnum 6  -ylnum 6
-    plopm -i 'H2HYSTERESIS' -v krg1,krg2,krw1,krw2 -labels "Drainage hydrogen  Imbibition hydrogen  Drainage brine  Imbibition brine" -c r,r,#0314fc,#0314fc -x '[0,1]' -lw 5 -f 18 -d 8,6 -ylabel 'Relative permeability, $k_r$ [-]' -xlabel 'Liquid saturation, $s_w$ [-]' -e solid,dashed,solid,dashed  -xlnum 6  -ylnum 6
-    plopm -i 'H2HYSTERESIS' -v pcwg -c k -x '[0,1]' -lw 5 -loc empty -f 18 -d 8,6 -ylabel 'Capillary pressure, $p_c$ [bar]' -xlabel 'Liquid saturation, $s_w$ [-]' -e solid,dashed,solid,dashed  -xlnum 6  -ylog 1
+    plopm -i 'H2HYSTERESIS' -v krgh,krwh -llb "Hydrogen  Brine" -c r,#0314fc -x '[0,1]' -lw 5 -fz 18 -fs 8,6 -yl 'Relative permeability, $k_r$ [-]' -xl ' Liquid saturation, $s_w$ [-]'  -ls solid,solid -xnt 6  -ynt 6
+    plopm -i 'H2HYSTERESIS' -v krg1,krg2,krw1,krw2 -llb "Drainage hydrogen  Imbibition hydrogen  Drainage brine  Imbibition brine" -c r,r,#0314fc,#0314fc -x '[0,1]' -lw 5 -fz 18 -fs 8,6 -yl 'Relative permeability, $k_r$ [-]' -xl 'Liquid saturation, $s_w$ [-]' -ls solid,dashed,solid,dashed  -xnt 6  -ynt 6
+    plopm -i 'H2HYSTERESIS' -v pcwg -c k -x '[0,1]' -lw 5 -ll empty -fz 18 -fs 8,6 -yl 'Capillary pressure, $p_c$ [bar]' -xl 'Liquid saturation, $s_w$ [-]' -ls solid,dashed,solid,dashed  -xnt 6  -ylog 1
 
 .. image:: ./figs/saturation_functions.png
 
@@ -407,7 +407,7 @@ called spe11b_larger_inj. Then, to plot the summary vector for both runs we can 
 
 .. code-block:: bash
 
-    plopm -i 'spe11b/SPE11B spe11b_larger_inj/SPE11B' -v 'fgmip,fgmip / 1E6,RGMDS:5' -ylabel '[kg]  [Kt]  [kg]' -tunits w -d 10,5 -c r,b -e 'solid,dashed' -t 'Field gas mass in place  Converted to kilotonns   Dissolved CO$_2$ in facie 5' -f 14 -subfigs 2,2 -delax 1 -loc empty,empty,empty,center -save comparison
+    plopm -i 'spe11b/SPE11B spe11b_larger_inj/SPE11B' -v 'fgmip,fgmip / 1E6,RGMDS:5' -yl '[kg]  [Kt]  [kg]' -tu w -fs 10,5 -c r,b -ls 'solid,dashed' -t 'Field gas mass in place  Converted to kilotonns   Dissolved CO$_2$ in facie 5' -fz 14 -sg 2,2 -rdl 1 -ll empty,empty,empty,center -fn comparison
 .. image:: ./figs/comparison.png
     :scale: 6%
 
@@ -420,7 +420,7 @@ To look at the difference between these two simulations for the dynamic variable
 
 .. code-block:: bash
 
-    plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -diff spe11b/SPE11B -remove 0,0,0,1
+    plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -di spe11b/SPE11B -hide 0,0,0,1
 
 .. image:: ./figs/sgas_diff.png
 
@@ -428,7 +428,7 @@ To changue the colormap and setting the colorbar limits manually, this can be ac
 
 .. code-block:: bash
     
-    plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -diff spe11b/SPE11B -remove 0,0,0,1 -c tab20c_r -b '[0,0.8]' -cnum 9 -cformat 0.1 -save formated
+    plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -di spe11b/SPE11B -hide 0,0,0,1 -c tab20c_r -cl '[0,0.8]' -cbn 9 -cbf 0.1 -fn formated
 
 .. image:: ./figs/sgas_diff_edit.png
 
@@ -438,7 +438,7 @@ ensembles using `pyopmnearwell <https://github.com/cssr-tools/pyopmnearwell>`_, 
 .. tip::
     You can install `pyopmnearwell <https://github.com/cssr-tools/pyopmnearwell>`_ by executing in the terminal: pip install git+https://github.com/cssr-tools/pyopmnearwell.git.
 
-Below are two of the generated figures after executing the script (additional figures are generated to show the functionality of the **-ensemble** flag):
+Below are two of the generated figures after executing the script (additional figures are generated to show the functionality of the **-ens** flag):
 
 .. figure:: ./figs/ensemble.png
 
@@ -455,11 +455,11 @@ Below are two of the generated figures after executing the script (additional fi
 =======
 Filters 
 =======
-Using the flag **-filter** allows to remove cells given conditions separated by '&', and it is also possible to set different filters in subfigures. For example:
+Using the flag **-flt** allows to remove cells given conditions separated by '&', and it is also possible to set different filters in subfigures. For example:
 
 .. code-block:: bash
 
-    plopm -i 'SPE11B SPE11B SPE11B' -filter ',fipnum >= 2 & fipnum != 4,satnum == 5' -v fipnum -subfigs 3,1 -delax 1 -cformat .0f -d 7,4 -u resdata -cbsfax 0.15,0.97,0.7,0.02 -t "No filter  fipnum >= 2 and fipnum != 4  satnum == 5" -suptitle 0
+    plopm -i 'SPE11B SPE11B SPE11B' -flt ',fipnum >= 2 & fipnum != 4,satnum == 5' -v fipnum -sg 3,1 -rdl 1 -cbf .0f -fs 7,4 -u resdata -cbp 0.15,0.97,0.7,0.02 -t "No filter  fipnum >= 2 and fipnum != 4  satnum == 5" -st 0
 
 .. image:: ./figs/filter_opm.png
 
@@ -488,10 +488,10 @@ rate, and after using **plopm**):
     pip install git+https://github.com/cssr-tools/pyopmspe11.git
     curl -O https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11b.toml
     cp spe11b.toml spe11b_larger_inj.toml
-    sed -i.bak 's/0.035/0.07/g' spe11b_larger_inj.toml && rm -f spe11b_larger_inj.toml.bak
-    pyopmspe11 -i spe11b.toml -o spe11b -f 0
-    pyopmspe11 -i spe11b_larger_inj.toml -o spe11b_larger_inj -f 0
-    plopm -v xco2l -subfigs 1,2 -i 'spe11b/SPE11B spe11b_larger_inj/SPE11B_LARGER_INJ' -d 16,2.5 -mask satnum -r 0,1,2,3,4,5 -m gif -dpi 1000 -t "spe11b  spe11b larger injection" -f 16 -interval 1000 -loop 1 -cformat .2f -cbsfax 0.30,0.01,0.4,0.02
+    sed -i.bak 's/0.035/0.07/g' spe11b_larger_inj.toml && rm -fz spe11b_larger_inj.toml.bak
+    pyopmspe11 -i spe11b.toml -o spe11b -fz 0
+    pyopmspe11 -i spe11b_larger_inj.toml -o spe11b_larger_inj -fz 0
+    plopm -v xco2l -sg 1,2 -i 'spe11b/SPE11B spe11b_larger_inj/SPE11B_LARGER_INJ' -fs 16,2.5 -mv satnum -r 0,1,2,3,4,5 -m gif -dpi 1000 -t "spe11b  spe11b larger injection" -fz 16 -gi 1000 -gl 1 -cbf .2f -cbp 0.30,0.01,0.4,0.02
 
 .. image:: ./figs/xco2l.gif
 
@@ -501,11 +501,11 @@ To generate a single GIF of the gas saturation without masking and showing the g
 
 .. code-block:: bash
 
-    plopm -i 'spe11b/SPE11B' -v sgas -tunits y -c cet_cwr  -grid 'black,5e-3' -d 16,5 -m gif -dpi 1000 -f 20 -interval 1000 -loop 1 -cformat .2f -z 0 -xunits km -yunits km -xformat .1f -yformat .1f -cnum 5 -clabel 'Gas saturation [-]'
+    plopm -i 'spe11b/SPE11B' -v sgas -tu y -c cet_cwr  -ge 'black,5e-3' -fs 16,5 -m gif -dpi 1000 -fz 20 -gi 1000 -gl 1 -cbf .2f -asp 0 -xu km -yu km -xf .1f -yf .1f -cbn 5 -cbl 'Gas saturation [-]'
 
 .. image:: ./figs/spe11b_sgas.gif
 
-Here we have changed the units for time from days to years using the **-tunits** flag. To remove the dynamic times in the GIF, set **-tunits empty**.
+Here we have changed the units for time from days to years using the **-tu** flag. To remove the dynamic times in the GIF, set **-tu empty**.
 
 .. tip::
 
@@ -529,9 +529,9 @@ The first ilustration is generated from the SPE11B model using `pyopmspe11 <http
     curl -L https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11b.toml -o spe11b_higher_rate.toml
     ex -s +'51c|inj = [[25, 5, 1, 0.07, 10, 1, 0.07, 10]]' -c x spe11b_higher_rate.toml
     sed -i.bak 's/0.035/0.07/g' spe11b_higher_rate.toml
-    pyopmspe11 -i spe11b.toml -o spe11b -f 0
-    pyopmspe11 -i spe11b_higher_rate.toml -o spe11b_higher_rate -f 0
-    plopm -i 'spe11b/SPE11B spe11b_higher_rate/SPE11B_HIGHER_RATE' -v 'fgmip * 1e-6' -c 'r,b' -tunits y -xformat .0f -lw 2 -label 'Base case  Higher injection rate' -xlnum 6 -ylabel 'Total CO$_2$ mass [Kt]' -f 18 -t 'Comparing two runs of the SPE11B model'
+    pyopmspe11 -i spe11b.toml -o spe11b -fz 0
+    pyopmspe11 -i spe11b_higher_rate.toml -o spe11b_higher_rate -fz 0
+    plopm -i 'spe11b/SPE11B spe11b_higher_rate/SPE11B_HIGHER_RATE' -v 'fgmip * 1e-6' -c 'r,b' -tu y -xf .0f -lw 2 -label 'Base case  Higher injection rate' -xnt 6 -yl 'Total CO$_2$ mass [Kt]' -fz 18 -t 'Comparing two runs of the SPE11B model'
 
 The ilustration in the middle is generated from the `NORNE_ATW2013.DATA <https://github.com/OPM/opm-data/blob/master/norne/NORNE_ATW2013.DATA>`_ model:
 
@@ -539,7 +539,7 @@ The ilustration in the middle is generated from the `NORNE_ATW2013.DATA <https:/
 
     git clone https://github.com/OPM/opm-data.git
     flow opm-data//norne/NORNE_ATW2013.DATA --enable-dry-run=1
-    plopm -i opm-data//norne/NORNE_ATW2013 -v permx -log 1 -rotate 65 -s ,,1 -translate '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,7600]' -t "Top view of NORNE" -xunits km -yunits km -f 16 -grid 'black,1e-2' -xformat .1f -yformat .1f -d 8,8
+    plopm -i opm-data//norne/NORNE_ATW2013 -v permx -clog 1 -rot 65 -s ,,1 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,7600]' -t "Top view of NORNE" -xu km -yu km -fz 16 -ge 'black,1e-2' -xf .1f -yf .1f -fs 8,8
 
 The ilustration in the right is generated from the SPE11C model using `pyopmspe11 <https://github.com/OPM/pyopmspe11>`_, specially the corner-point case with
 more than a 100 million cells (`r4_cp_8m-8mish-8mish.toml <https://github.com/OPM/pyopmspe11/blob/main/benchmark/spe11c/r4_cp_8m-8mish-8mish.toml>`_). Since that
@@ -549,8 +549,8 @@ case requires a big computer (run with 1024 CPUs), then the steps below are appl
 
     pip install git+https://github.com/OPM/pyopmspe11.git
     curl -L -O https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11c.toml
-    pyopmspe11 -i spe11c.toml -o spe11c -f 0
-    plopm -i spe11c/SPE11C -v satnum,xco2l -vtkformat UInt16,Float16 -r 0,5 -m vtk
+    pyopmspe11 -i spe11c.toml -o spe11c -fz 0
+    plopm -i spe11c/SPE11C -v satnum,xco2l -vf UInt16,Float16 -r 0,5 -m vtk
 
 The above commands will generate the SPE11C.pvd, SPE11C-000.vtu, and SPE11C_0005.vtu files, which then can be open using `paraview <https://www.paraview.org>`_,
 and using the interactive GUI one can then obtain the most-rigthed figure in the abstract (e.g., using the facie numbers stored as satnum to add the background).

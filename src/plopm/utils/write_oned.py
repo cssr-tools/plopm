@@ -4,6 +4,7 @@
 
 """Utility functions to write the PNGs figures"""
 
+import os
 import warnings
 
 import matplotlib.pyplot as plt
@@ -16,10 +17,12 @@ from scipy.stats import lognorm, norm
 
 from plopm.config.config import ConfigPlopm
 from plopm.utils.readers import read_oned
+from plopm.utils.terminal import cli_info_value, plopm_info
 
 
-def make_plots(cfg: ConfigPlopm) -> None:
-    """Plot the one dimensional variables"""
+def make_plots(cfg: ConfigPlopm) -> list[str]:
+    """Plot the onel variables and return generated filenames."""
+    generated_files: list[str] = []
 
     def clean_name(name: str) -> str:
         name = name.replace(" / ", "_over_")
@@ -37,8 +40,8 @@ def make_plots(cfg: ConfigPlopm) -> None:
         label = name
         if len(name.split("/")) > 1:
             label = name.split("/")[-2] + "/" + name.split("/")[-1]
-        if cfg.labels[0][0]:
-            label = cfg.labels[var_index][name_index]
+        if cfg.legend_labels[0][0]:
+            label = cfg.legend_labels[var_index][name_index]
         return label
 
     def update_limits(
@@ -86,49 +89,66 @@ def make_plots(cfg: ConfigPlopm) -> None:
             axis.set_yticks(ticks)
             axis.set_yticklabels(formatted_labels)
 
-    def save_summary_csv(deckn: str, var: NDArray, quan: str, index: int) -> None:
+    def save_summary_csv(deckn: str, var: NDArray, quan: str, index: int) -> str:
         text = [f"{val}\n" for val in var if not np.isnan(val)]
         name = clean_name(f"{deckn}_{quan}")
-        if cfg.save[index]:
-            name = cfg.save[index]
-        with open(f"{cfg.output}/{name}.csv", "w", encoding="utf8") as file:
+        if cfg.filename[index]:
+            name = cfg.filename[index]
+        filename = f"{name}.csv"
+        with open(
+            os.path.join(cfg.output_dir, filename),
+            "w",
+            encoding="utf8",
+        ) as file:
             file.write("".join(text))
+        return filename
 
-    def save_summary_png(deckn: str, quan: str, index: int, fig: Figure) -> None:
+    def save_summary_png(
+        deckn: str,
+        quan: str,
+        index: int,
+        fig: Figure,
+    ) -> str:
         name = clean_name(f"{deckn}_{quan}")
+        filename = f"{cfg.filename[index] if cfg.filename[index] else name}.png"
         fig.savefig(
-            f"{cfg.output}/{cfg.save[index] if cfg.save[index] else name}.png",
+            os.path.join(cfg.output_dir, filename),
             bbox_inches="tight",
             dpi=int(cfg.dpi[index]),
         )
+        return filename
 
     deckn = get_deck_name(cfg.names[0][0])
     fig, _ = plt.subplots(1, 1)
-    if cfg.ensemble == 0 and not cfg.subfigs[0] and len(cfg.names[0]) < len(cfg.vrs):
+    if (
+        cfg.ensemble == 0
+        and not cfg.subplot_grid[0]
+        and len(cfg.names[0]) < len(cfg.vrs)
+    ):
         cfg.names[0] = [cfg.names[0][0]] * len(cfg.vrs)
-        if len(cfg.lw[0]) < len(cfg.vrs):
-            cfg.lw[0] = [cfg.lw[0][0]] * len(cfg.vrs)
-            cfg.lw = [cfg.lw[0]] * len(cfg.vrs)
+        if len(cfg.linewidth[0]) < len(cfg.vrs):
+            cfg.linewidth[0] = [cfg.linewidth[0][0]] * len(cfg.vrs)
+            cfg.linewidth = [cfg.linewidth[0]] * len(cfg.vrs)
         if len(cfg.colors[0]) < len(cfg.vrs):
             cfg.colors[0] = [cfg.colors[0][0]] * len(cfg.vrs)
             cfg.colors = [cfg.colors[0]] * len(cfg.vrs)
         if len(cfg.linestyle[0]) < len(cfg.vrs):
             cfg.linestyle[0] = [cfg.linestyle[0][0]] * len(cfg.vrs)
             cfg.linestyle = [cfg.linestyle[0]] * len(cfg.vrs)
-    if cfg.subfigs[0]:
+    if cfg.subplot_grid[0]:
         plt.close()
         fig, axiss = plt.subplots(
-            int(cfg.subfigs[0]), int(cfg.subfigs[1]), layout="compressed"
+            int(cfg.subplot_grid[0]), int(cfg.subplot_grid[1]), layout="compressed"
         )
     for j, quan in enumerate(cfg.vrs):
         k = j
-        if not cfg.subfigs[0]:
+        if not cfg.subplot_grid[0]:
             plt.close()
             fig, axiss = plt.subplots(1, 1, layout="compressed")
             axiss = np.array([axiss])
             k = 0
         axis = axiss.flat[k]
-        axis.grid(int(cfg.axgrid[j]))
+        axis.grid(int(cfg.axis_grid[j]))
         if cfg.ensemble > 0:
             tunit, vunit, min_t, max_t, min_v, max_v = handle_ensemble(cfg, axiss)
         else:
@@ -137,31 +157,34 @@ def make_plots(cfg: ConfigPlopm) -> None:
             min_t, max_t, min_v, max_v = 0, 0, 0, 0
             for i, name in enumerate(cfg.names[j]):
                 jj = j
-                if len(cfg.vrs) == len(cfg.names[0]) and not cfg.subfigs[0]:
+                if len(cfg.vrs) == len(cfg.names[0]) and not cfg.subplot_grid[0]:
                     jj = i
                     quan = cfg.vrs[i]
                 time, var, tunit, vunit = read_oned(
-                    cfg, name, quan, cfg.tunits[jj], float(cfg.adjust[jj]), i
+                    cfg, name, quan, cfg.time_units[jj], float(cfg.scale_factor[jj]), i
                 )
                 label = get_label(name, jj, i)
-                if cfg.step:
+                if cfg.step_plot:
                     axis.step(
                         time,
                         var,
                         color=cfg.colors[jj][i % len(cfg.colors[jj])],
                         ls=cfg.linestyle[jj][i % len(cfg.linestyle[jj])],
                         label=label,
-                        lw=float(cfg.lw[jj][i]),
+                        lw=float(cfg.linewidth[jj][i]),
                     )
                 elif cfg.histogram[0]:
                     ij = i + j * len(cfg.names[j])
-                    if len(cfg.vrs) == len(cfg.names[0]) and not cfg.subfigs[0]:
+                    if len(cfg.vrs) == len(cfg.names[0]) and not cfg.subplot_grid[0]:
                         ij = i
                     hist = cfg.histogram[ij].split(",")
                     mean = np.nanmean(var)
                     std = np.nanstd(var)
-                    print(f"Histogram: mean={mean:.6E}, std={std:.6E}")
-                    if not cfg.labels[0][0]:
+                    plopm_info(
+                        f"histogram: {cli_info_value(f'mean={mean:.6E}')}, "
+                        f"{cli_info_value(f'std={std:.6E}')}"
+                    )
+                    if not cfg.legend_labels[0][0]:
                         label += f" (mean={mean:.3E}, std={std:.3E})"
                     counts, bins, _ = axis.hist(
                         var,
@@ -188,7 +211,10 @@ def make_plots(cfg: ConfigPlopm) -> None:
                                 dist = lognorm(s, 0, scale)
                                 dist_pdf = dist.pdf(xnorm)
                                 dist_max = np.max(dist_pdf)
-                                print(f"Distribution: lognorm({s:.6E}, 0, {scale:.6E})")
+                                plopm_info(
+                                    f"distribution: "
+                                    f"{cli_info_value(f'lognorm({s:.6E}, 0, {scale:.6E})')}"
+                                )
                                 if dist_max > 0:
                                     axis.plot(
                                         xnorm,
@@ -204,7 +230,7 @@ def make_plots(cfg: ConfigPlopm) -> None:
                         color=cfg.colors[jj][i % len(cfg.colors[jj])],
                         ls=cfg.linestyle[jj][i % len(cfg.linestyle[jj])],
                         label=label,
-                        lw=float(cfg.lw[jj][i]),
+                        lw=float(cfg.linewidth[jj][i]),
                     )
                 min_t, max_t, min_v, max_v = update_limits(
                     time, var, tunit, min_t, max_t, min_v, max_v, xlow, ylow, i == 0
@@ -215,7 +241,9 @@ def make_plots(cfg: ConfigPlopm) -> None:
                 axis.set_ylim([min_v, max_v])
         else:
             axis.set_ylabel("Histogram of " + quan + vunit)
-        if not cfg.delax or k + int(cfg.subfigs[1]) >= len(cfg.vrs):
+        if not cfg.remove_duplicate_labels or k + int(cfg.subplot_grid[1]) >= len(
+            cfg.vrs
+        ):
             axis.set_xlabel(tunit)
             if cfg.xlabel[0]:
                 axis.set_xlabel(cfg.xlabel[j])
@@ -228,23 +256,23 @@ def make_plots(cfg: ConfigPlopm) -> None:
             xlabels = np.linspace(
                 float(cfg.xlim[j][0][1:]),
                 float(cfg.xlim[j][1][:-1]),
-                int(cfg.xlnum[j]),
+                int(cfg.xtick_count[j]),
             )
         elif tunit != "Dates" and not cfg.histogram[0]:
             if min_v != max_v:
                 axis.set_xlim([min_t, max_t])
-            xlabels = np.linspace(min_t, max_t, int(cfg.xlnum[j]))
+            xlabels = np.linspace(min_t, max_t, int(cfg.xtick_count[j]))
         if len(cfg.ylim[0]) > 1:
             axis.set_ylim([float(cfg.ylim[j][0][1:]), float(cfg.ylim[j][1][:-1])])
             ylabels = np.linspace(
                 float(cfg.ylim[j][0][1:]),
                 float(cfg.ylim[j][1][:-1]),
-                int(cfg.ylnum[j]),
+                int(cfg.ytick_count[j]),
             )
         elif not cfg.histogram[0]:
             if min_v != max_v:
                 axis.set_ylim([min_v, max_v])
-            ylabels = np.linspace(min_v, max_v, int(cfg.ylnum[j]))
+            ylabels = np.linspace(min_v, max_v, int(cfg.ytick_count[j]))
         if cfg.xlog[j] == "1":
             axis.set_xscale("log")
         else:
@@ -260,26 +288,35 @@ def make_plots(cfg: ConfigPlopm) -> None:
                 set_formatted_ticks(axis, ylabels, cfg.yformat[j], "y")
             elif not cfg.histogram[0]:
                 axis.set_yticks(ylabels)
-        if cfg.loc[j] != "empty":
-            axis.legend(loc=cfg.loc[j])
-        if cfg.title[j] != "0" and cfg.rm[3] == 0:
+        if cfg.legend_location[j] != "empty":
+            axis.legend(loc=cfg.legend_location[j])
+        if cfg.title[j] != "0" and cfg.hide_map_elements[3] == 0:
             axis.set_title(cfg.title[j])
-        if cfg.delax and k + int(cfg.subfigs[1]) < len(cfg.vrs):
+        if cfg.remove_duplicate_labels and k + int(cfg.subplot_grid[1]) < len(cfg.vrs):
             axis.tick_params(axis="x", which="both", bottom=False, labelbottom=False)
-        if len(cfg.vrs) == len(cfg.names[0]) and not cfg.subfigs[0]:
+        if len(cfg.vrs) == len(cfg.names[0]) and not cfg.subplot_grid[0]:
             if cfg.csv:
-                save_summary_csv(deckn, var, quan, j)
-                return
-            save_summary_png(deckn, quan, j, fig)
-            return
-        if (not cfg.subfigs[0] and len(cfg.vrs) != len(cfg.names[0])) or j == len(
+                generated_files.append(save_summary_csv(deckn, var, quan, j))
+                return generated_files
+            generated_files.append(save_summary_png(deckn, quan, j, fig))
+            return generated_files
+        if (not cfg.subplot_grid[0] and len(cfg.vrs) != len(cfg.names[0])) or j == len(
             cfg.vrs
         ) - 1:
-            if len(cfg.loc) == j + 2 and j != 0 and len(axiss.flat) - len(cfg.vrs) > 0:
+            if (
+                len(cfg.legend_location) == j + 2
+                and j != 0
+                and len(axiss.flat) - len(cfg.vrs) > 0
+            ):
                 for jj, qua in enumerate(cfg.vrs[: cfg.numc]):
                     for i, name in enumerate(cfg.names[jj]):
                         time, var, tunit, vunit = read_oned(
-                            cfg, name, qua, cfg.tunits[jj], float(cfg.adjust[jj]), i
+                            cfg,
+                            name,
+                            qua,
+                            cfg.time_units[jj],
+                            float(cfg.scale_factor[jj]),
+                            i,
                         )
                         label = get_label(name, jj, i)
                         if cfg.sensor or cfg.layer or cfg.distance[0]:
@@ -289,7 +326,7 @@ def make_plots(cfg: ConfigPlopm) -> None:
                                 color=cfg.colors[jj][i],
                                 ls=cfg.linestyle[jj][i],
                                 label=label,
-                                lw=float(cfg.lw[jj][i]),
+                                lw=float(cfg.linewidth[jj][i]),
                             )
                         else:
                             axiss.flat[-1].step(
@@ -298,10 +335,10 @@ def make_plots(cfg: ConfigPlopm) -> None:
                                 color=cfg.colors[jj][i],
                                 ls=cfg.linestyle[jj][i],
                                 label=label,
-                                lw=float(cfg.lw[jj][i]),
+                                lw=float(cfg.linewidth[jj][i]),
                             )
                 axiss.flat[-1].axis("off")
-                axiss.flat[-1].legend(loc=cfg.loc[-1])
+                axiss.flat[-1].legend(loc=cfg.legend_location[-1])
                 for line in axiss.flat[-1].get_lines():
                     line.remove()
                 for o in range(len(axiss.flat) - len(cfg.vrs) - 1):
@@ -309,8 +346,9 @@ def make_plots(cfg: ConfigPlopm) -> None:
             else:
                 for o in range(len(axiss.flat) - len(cfg.vrs)):
                     fig.delaxes(axiss.flat[-1 - o])
-            save_summary_png(deckn, quan, j, fig)
+            generated_files.append(save_summary_png(deckn, quan, j, fig))
     plt.close()
+    return list(dict.fromkeys(generated_files))
 
 
 def handle_ensemble(
@@ -340,16 +378,16 @@ def handle_ensemble(
             label = cfg.namens[0][names_index] + " (mean)"
             if len(label.split("/")) > 1:
                 label = label.split("/")[-2] + "/" + label.split("/")[-1]
-            if cfg.labels[0][0]:
-                label = cfg.labels[names_index][0]
+            if cfg.legend_labels[0][0]:
+                label = cfg.legend_labels[names_index][0]
             tmp = []
             for name_index, name in enumerate(names):
                 time, var, tunit, vunit = read_oned(
                     cfg,
                     name,
                     var_name,
-                    cfg.tunits[0],
-                    float(cfg.adjust[0]),
+                    cfg.time_units[0],
+                    float(cfg.scale_factor[0]),
                     name_index,
                 )
                 rng = int(1.0 * len(time) / hyst)
@@ -377,11 +415,11 @@ def handle_ensemble(
                 color=cfg.colors[0][names_index],
                 ls=cfg.linestyle[0][names_index],
                 label=plot_label,
-                lw=float(cfg.lw[0][names_index]),
+                lw=float(cfg.linewidth[0][names_index]),
             )
             if cfg.ensemble in [1, 3]:
-                if cfg.bandprop:
-                    band_properties = cfg.bandprop.split(",")
+                if cfg.fill_between_style:
+                    band_properties = cfg.fill_between_style.split(",")
                     color = band_properties[2 * names_index]
                     alpha = float(band_properties[2 * names_index + 1])
                 else:
@@ -404,9 +442,9 @@ def handle_ensemble(
                 mins = np.where(mins == np.min(mins))[0][0]
                 labell = names[mins] + " (lower)"
                 labelu = names[maxs] + " (upper)"
-                if cfg.labels[0][0]:
-                    labell = cfg.labels[names_index][1]
-                    labelu = cfg.labels[names_index][2]
+                if cfg.legend_labels[0][0]:
+                    labell = cfg.legend_labels[names_index][1]
+                    labelu = cfg.legend_labels[names_index][2]
                 lower_label = labell if hyst_index == hyst - 1 else None
                 upper_label = labelu if hyst_index == hyst - 1 else None
                 axis.plot(
@@ -415,7 +453,7 @@ def handle_ensemble(
                     color=cfg.colors[0][ensemble_index],
                     ls=cfg.linestyle[0][ensemble_index],
                     label=lower_label,
-                    lw=float(cfg.lw[0][names_index]),
+                    lw=float(cfg.linewidth[0][names_index]),
                 )
                 axis.plot(
                     thetime,
@@ -423,7 +461,7 @@ def handle_ensemble(
                     color=cfg.colors[0][ensemble_index],
                     ls=cfg.linestyle[0][ensemble_index],
                     label=upper_label,
-                    lw=float(cfg.lw[0][names_index]),
+                    lw=float(cfg.linewidth[0][names_index]),
                 )
                 if np.any(~np.isnan(values[mins])):
                     min_v = min(min_v, np.nanmin(values[mins]))

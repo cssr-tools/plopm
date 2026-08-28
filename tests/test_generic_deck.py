@@ -58,7 +58,7 @@ def test_generic_deck(tmp_path):
                 name,
                 "-s",
                 slide,
-                "-log",
+                "-clog",
                 logs,
             ]
         )

@@ -4,4 +4,4 @@ INC="test_outputs/opm-data/norne/INCLUDE"
 . tests/scripts/initialize_output_folders.sh $OUT
 . tests/scripts/get_opm_data.sh
 . tests/scripts/run_norne_dryrun.sh
-plopm -i $WHR -o $OUT -v poro,permx -histogram '20,norm 20,lognorm' -axgrid 0 -subfigs 1,2 -d 15,5 -loc 'upper center' -y '[0,10000] [0,23000]' -c '#7274b3,#cddb6e'
+plopm -i $WHR -o $OUT -v poro,permx -hist '20,norm 20,lognorm' -ag 0 -sg 1,2 -fs 15,5 -ll 'upper center' -y '[0,10000] [0,23000]' -c '#7274b3,#cddb6e'

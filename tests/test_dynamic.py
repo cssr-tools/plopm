@@ -14,7 +14,7 @@ def test_dynamic(tmp_path):
     """See examples/SPE11B files"""
     main(
         [
-            "-remove",
+            "-hide",
             "0,0,0,1",
             "-i",
             str(mainpth / "examples" / "SPE11B"),
@@ -28,11 +28,11 @@ def test_dynamic(tmp_path):
             "cet_CET_I2",
             "-r",
             "-1",
-            "-clabel",
+            "-cbl",
             "gas saturation [-]",
-            "-save",
+            "-fn",
             "dynamic",
-            "-f",
+            "-fz",
             "8",
         ]
     )

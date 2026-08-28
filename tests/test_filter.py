@@ -14,13 +14,13 @@ def test_filter(tmp_path):
     """See examples/SPE11B"""
     main(
         [
-            "-filter",
+            "-flt",
             ",fipnum >= 2 & fipnum != 4,satnum == 5",
-            "-cbsfax",
+            "-cbp",
             "0.15,0.97,0.7,0.02",
             "-t",
             "No filter  fipnum >= 2 \\& fipnum != 4  satnum == 5",
-            "-suptitle",
+            "-st",
             "0",
             "-o",
             str(tmp_path),
@@ -28,15 +28,15 @@ def test_filter(tmp_path):
             f"{mainpth}/examples/SPE11B {mainpth}/examples/SPE11B {mainpth}/examples/SPE11B",
             "-v",
             "fipnum",
-            "-subfigs",
+            "-sg",
             "3,1",
-            "-delax",
+            "-rdl",
             "1",
-            "-cformat",
+            "-cbf",
             ".0f",
-            "-d",
+            "-fs",
             "7,4",
-            "-save",
+            "-fn",
             "filter",
         ]
     )

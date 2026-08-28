@@ -20,9 +20,9 @@ def test_difference(tmp_path):
             str(mainpth / "examples" / "SPE11B"),
             "-v",
             "rsw",
-            "-diff",
+            "-di",
             str(mainpth / "examples" / "SPE11B"),
-            "-save",
+            "-fn",
             "difference",
         ]
     )
