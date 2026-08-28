@@ -83,149 +83,616 @@
              
   <section id="module-plopm.utils.readers">
 <span id="plopm-utils-readers-module"></span><h1>plopm.utils.readers module<a class="headerlink" href="#module-plopm.utils.readers" title="Link to this heading"></a></h1>
-<p>Utility functions to read the OPM Flow simulator type output files</p>
+<p>Read and derive plotting quantities from OPM Flow output.</p>
+<p>The module opens INIT, UNRST, EGRID, SMSPEC, deck, and CSV data; constructs
+plotting coordinates; evaluates variable expressions; and derives saturation,
+mass, caprock, distance, well, and fault quantities.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.compute_distance">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">compute_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">quans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.compute_distance" title="Link to this definition"></a></dt>
-<dd><p>Get the required variables from the simulation files</p>
+<dt class="sig sig-object py" id="plopm.utils.readers._aggregate">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers._aggregate" title="Link to this definition"></a></dt>
+<dd><p>_aggregate values with the selected method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>var</strong><span class="classifier">np.ndarray</span></dt><dd><p>Values to _aggregate.</p>
+</dd>
+<dt><strong>op</strong><span class="classifier">str</span></dt><dd><p>Aggregation method.</p>
+</dd>
+<dt><strong>porv</strong><span class="classifier">np.ndarray</span></dt><dd><p>Pore-volume weights used by <code class="docutils literal notranslate"><span class="pre">&quot;pvmean&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray or float</dt><dd><p>_aggregated values.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.do_read_variables">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">do_read_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">quans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.do_read_variables" title="Link to this definition"></a></dt>
-<dd><p>Get the required variables from the simulation files</p>
+<dt class="sig sig-object py" id="plopm.utils.readers._apply_filter">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_apply_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">porvs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers._apply_filter" title="Link to this definition"></a></dt>
+<dd><p>Apply a comparison filter to pore-volume values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>porvs</strong><span class="classifier">np.ndarray</span></dt><dd><p>Pore-volume values.</p>
+</dd>
+<dt><strong>other</strong><span class="classifier">np.ndarray</span></dt><dd><p>Values tested by the filter.</p>
+</dd>
+<dt><strong>op</strong><span class="classifier">str</span></dt><dd><p>Comparison operator.</p>
+</dd>
+<dt><strong>value</strong><span class="classifier">float</span></dt><dd><p>Comparison threshold.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Pore volume where the condition is true and zero elsewhere.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.get_csvs">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_csvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deck</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_csvs" title="Link to this definition"></a></dt>
-<dd><p>Read the csv quantities</p>
+<dt class="sig sig-object py" id="plopm.utils.readers._apply_operator">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_apply_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers._apply_operator" title="Link to this definition"></a></dt>
+<dd><p>Apply an arithmetic or comparison operator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>var, other</strong><span class="classifier">np.ndarray</span></dt><dd><p>Left- and right-hand values.</p>
+</dd>
+<dt><strong>op</strong><span class="classifier">str</span></dt><dd><p>Arithmetic or comparison operator.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Operation result. Failed comparisons are NaN.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers._compute_distance">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_compute_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers._compute_distance" title="Link to this definition"></a></dt>
+<dd><p>Compute distance from selected cells to target points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Distance and sensor configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded simulation data.</p>
+</dd>
+<dt><strong>tokens</strong><span class="classifier">list</span></dt><dd><p>Parsed expression selecting active cells.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Plot index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[np.ndarray, np.ndarray]</dt><dd><p>Finite distances and their simulation times.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers._find_keyword">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_find_keyword</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.readers._find_keyword" title="Link to this definition"></a></dt>
+<dd><p>Find the deck file containing an OPM keyword.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>case</strong><span class="classifier">str</span></dt><dd><p>Simulation-case stem.</p>
+</dd>
+<dt><strong>vec</strong><span class="classifier">str</span></dt><dd><p>OPM keyword to locate.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>DATA or included file containing the keyword.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers._get_caprock">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_get_caprock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers._get_caprock" title="Link to this definition"></a></dt>
+<dd><p>Compute a caprock-integrity quantity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded static and restart properties.</p>
+</dd>
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Requested caprock variable.</p>
+</dd>
+<dt><strong>step</strong><span class="classifier">int</span></dt><dd><p>Restart report step.</p>
+</dd>
+<dt><strong>stress</strong><span class="classifier">float</span></dt><dd><p>Vertical stress coefficient.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[np.ndarray, str]</dt><dd><p>Computed values and unit label.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers._get_mass">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_get_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers._get_mass" title="Link to this definition"></a></dt>
+<dd><p>Compute component masses and mass fractions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded restart data and pore volume.</p>
+</dd>
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Requested derived variable.</p>
+</dd>
+<dt><strong>step</strong><span class="classifier">int</span></dt><dd><p>Restart report step.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Requested component quantity.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers._get_saturation">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_get_saturation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ERst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers._get_saturation" title="Link to this definition"></a></dt>
+<dd><p>Derive a missing phase saturation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>unrst</strong><span class="classifier">OpmRestart</span></dt><dd><p>UNRST reader.</p>
+</dd>
+<dt><strong>name</strong><span class="classifier">{“soil”, “swat”, “sgas”}</span></dt><dd><p>Saturation to derive.</p>
+</dd>
+<dt><strong>step</strong><span class="classifier">int</span></dt><dd><p>Restart report step.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Requested phase saturation.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers._grid_indices">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_grid_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#plopm.utils.readers._grid_indices" title="Link to this definition"></a></dt>
+<dd><p>Create one-based grid indices in global cell order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>name</strong><span class="classifier">{“index_i”, “index_j”, “index_k”}</span></dt><dd><p>Grid axis to index.</p>
+</dd>
+<dt><strong>nx, ny, nz</strong><span class="classifier">int</span></dt><dd><p>Grid dimensions.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>list[int]</dt><dd><p>One-based indices for all grid cells.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers._read_histogram">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_read_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers._read_histogram" title="Link to this definition"></a></dt>
+<dd><p>Read values used to create a histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded simulation data.</p>
+</dd>
+<dt><strong>tokens</strong><span class="classifier">list</span></dt><dd><p>Parsed variable-expression tokens.</p>
+</dd>
+<dt><strong>step</strong><span class="classifier">int</span></dt><dd><p>Restart report step.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Values in global cell order with inactive cells set to NaN.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers._read_values">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_read_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers._read_values" title="Link to this definition"></a></dt>
+<dd><p>Read an _aggregated time series or grid-axis profile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized series configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded simulation data.</p>
+</dd>
+<dt><strong>tokens</strong><span class="classifier">list</span></dt><dd><p>Parsed variable-expression tokens.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Plot index.</p>
+</dd>
+<dt><strong>ntot</strong><span class="classifier">list</span></dt><dd><p>Restart report steps to evaluate.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[np.ndarray, np.ndarray]</dt><dd><p>Values and corresponding time or grid coordinates.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers._resolve_var">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_resolve_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_up</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EclFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ERst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caprock_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers._resolve_var" title="Link to this definition"></a></dt>
+<dd><p>Resolve a variable from stored or derived quantities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded simulation data.</p>
+</dd>
+<dt><strong>key_up, key_low</strong><span class="classifier">str</span></dt><dd><p>OPM keyword and normalized variable name.</p>
+</dd>
+<dt><strong>step</strong><span class="classifier">int</span></dt><dd><p>Restart report step.</p>
+</dd>
+<dt><strong>init</strong><span class="classifier">OpmFile</span></dt><dd><p>INIT reader.</p>
+</dd>
+<dt><strong>unrst</strong><span class="classifier">OpmRestart</span></dt><dd><p>UNRST reader.</p>
+</dd>
+<dt><strong>mass_all, caprock_list</strong><span class="classifier">list</span></dt><dd><p>Supported derived variable names.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray or None</dt><dd><p>Resolved values, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when unavailable.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.readers._select_mass">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">_select_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2o_l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2o_v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l_co2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_g_h2o</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers._select_mass" title="Link to this definition"></a></dt>
+<dd><p>Select a mass or mass-fraction result by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Requested derived variable.</p>
+</dd>
+<dt><strong>co2_g, co2_d</strong><span class="classifier">np.ndarray</span></dt><dd><p>Free and dissolved CO2 masses.</p>
+</dd>
+<dt><strong>h2o_l, h2o_v</strong><span class="classifier">np.ndarray</span></dt><dd><p>Liquid and vapor water masses.</p>
+</dd>
+<dt><strong>x_l_co2, x_g_h2o</strong><span class="classifier">np.ndarray</span></dt><dd><p>CO2-in-liquid and water-in-gas mass fractions.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Selected mass or mass fraction.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.readers.get_faults">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_faults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_faults" title="Link to this definition"></a></dt>
-<dd><p>Using the input deck (.DATA) to read the i,j fault locations</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.get_histogram">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">quans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers.get_histogram" title="Link to this definition"></a></dt>
-<dd><p>Get the required variables from the histogram</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.get_indices">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#plopm.utils.readers.get_indices" title="Link to this definition"></a></dt>
-<dd><p>Compute the i, j, or k indices</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.get_quantity">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_quantity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deck</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caprock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cvs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_quantity" title="Link to this definition"></a></dt>
-<dd><p>Handle the quantity from the OPM output files</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.get_readers">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_readers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deck</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></span><a class="headerlink" href="#plopm.utils.readers.get_readers" title="Link to this definition"></a></dt>
-<dd><p>Load the opm parsing methods</p>
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_faults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_faults" title="Link to this definition"></a></dt>
+<dd><p>Read faults intersecting the selected slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Case and slice configuration.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Case index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[list, list[str]]</dt><dd><p>Grid segments grouped by fault and the fault names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.readers.get_unit">
 <span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.readers.get_unit" title="Link to this definition"></a></dt>
-<dd><p>Get the variable unit</p>
+<dd><p>Get the display unit for a variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Variable name.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Matplotlib-formatted unit label.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.readers.get_wells">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_wells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_wells" title="Link to this definition"></a></dt>
-<dd><p>Using the input deck (.DATA) to read the i,j well locations</p>
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_wells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_wells" title="Link to this definition"></a></dt>
+<dd><p>Read wells intersecting the selected slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Case and slice configuration.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Case index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[list, list[str]]</dt><dd><p>Completion intervals grouped by well and the well names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.get_xycoords">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_xycoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_xycoords" title="Link to this definition"></a></dt>
-<dd><p>Handle the coordinates from the OPM Grid to the 2D xy-mesh</p>
+<dt class="sig sig-object py" id="plopm.utils.readers.get_xy_coords">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_xy_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_xy_coords" title="Link to this definition"></a></dt>
+<dd><p>Build coordinate meshes for an xy slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized map configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded grid data.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Slice index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[np.ndarray, np.ndarray]</dt><dd><p>X- and y-coordinate meshes.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.get_xzcoords">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_xzcoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_xzcoords" title="Link to this definition"></a></dt>
-<dd><p>Handle the coordinates from the OPM Grid to the 2D xz-mesh using opm</p>
+<dt class="sig sig-object py" id="plopm.utils.readers.get_xz_coords">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_xz_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_xz_coords" title="Link to this definition"></a></dt>
+<dd><p>Build coordinate meshes for an xz slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized map configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded grid data.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Slice index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[np.ndarray, np.ndarray]</dt><dd><p>X- and z-coordinate meshes.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.get_yzcoords">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_yzcoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_yzcoords" title="Link to this definition"></a></dt>
-<dd><p>Handle the coordinates from the OPM Grid to the 2D yz-mesh using opm</p>
+<dt class="sig sig-object py" id="plopm.utils.readers.get_yz_coords">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">get_yz_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.get_yz_coords" title="Link to this definition"></a></dt>
+<dd><p>Build coordinate meshes for a yz slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized map configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded grid data.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Slice index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[np.ndarray, np.ndarray]</dt><dd><p>Y- and z-coordinate meshes.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.handle_caprock">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">handle_caprock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.handle_caprock" title="Link to this definition"></a></dt>
-<dd><p>Compute quantities related to the caprock integrity</p>
+<dt class="sig sig-object py" id="plopm.utils.readers.read_case">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">read_case</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deck</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></span><a class="headerlink" href="#plopm.utils.readers.read_case" title="Link to this definition"></a></dt>
+<dd><p>Open the OPM output required for one simulation case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>deck</strong><span class="classifier">str</span></dt><dd><p>Simulation-case stem without an extension.</p>
+</dd>
+<dt><strong>gif, vtk</strong><span class="classifier">bool</span></dt><dd><p>Output modes controlling restart and grid loading.</p>
+</dd>
+<dt><strong>variables</strong><span class="classifier">list</span></dt><dd><p>Requested variables or expressions.</p>
+</dd>
+<dt><strong>restart</strong><span class="classifier">list</span></dt><dd><p>Requested restart report steps.</p>
+</dd>
+<dt><strong>filters</strong><span class="classifier">list</span></dt><dd><p>Property-filter expressions.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int, default: 0</span></dt><dd><p>Case index used to select per-case settings.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>SimData</dt><dd><p>Loaded readers, grid properties, and report-step metadata.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.handle_filter">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">handle_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">porvs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quan1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers.handle_filter" title="Link to this definition"></a></dt>
-<dd><p>Apply the requested filter</p>
+<dt class="sig sig-object py" id="plopm.utils.readers.read_csv_grid">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">read_csv_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deck</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.read_csv_grid" title="Link to this definition"></a></dt>
+<dd><p>Read coordinate meshes from a regular CSV grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>CSV column and animation configuration.</p>
+</dd>
+<dt><strong>deck</strong><span class="classifier">str</span></dt><dd><p>CSV path without the extension.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Map index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple</dt><dd><p>Coordinate meshes, dimensions, and axis names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.handle_mass">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">handle_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers.handle_mass" title="Link to this definition"></a></dt>
-<dd><p>Compute the mass (intensive quantities)</p>
+<dt class="sig sig-object py" id="plopm.utils.readers.read_quantity">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">read_quantity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deck</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caprock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cvs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.read_quantity" title="Link to this definition"></a></dt>
+<dd><p>Read and transform one spatial or VTK quantity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>deck</strong><span class="classifier">str</span></dt><dd><p>Simulation-case stem or CSV path.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded simulation data.</p>
+</dd>
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Variable name or expression.</p>
+</dd>
+<dt><strong>step</strong><span class="classifier">int</span></dt><dd><p>Restart report step.</p>
+</dd>
+<dt><strong>scale</strong><span class="classifier">float</span></dt><dd><p>Scale factor applied to derived values.</p>
+</dd>
+<dt><strong>mass, mass_all, caprock</strong><span class="classifier">list[str]</span></dt><dd><p>Supported derived-variable groups.</p>
+</dd>
+<dt><strong>stress</strong><span class="classifier">float</span></dt><dd><p>Stress coefficient for caprock quantities.</p>
+</dd>
+<dt><strong>filters</strong><span class="classifier">str</span></dt><dd><p>Property-filter expression.</p>
+</dd>
+<dt><strong>isgif</strong><span class="classifier">bool</span></dt><dd><p>Whether the CSV path contains a restart placeholder.</p>
+</dd>
+<dt><strong>vmin, vmax</strong><span class="classifier">str</span></dt><dd><p>Optional value thresholds.</p>
+</dd>
+<dt><strong>cvs</strong><span class="classifier">list</span></dt><dd><p>CSV input and column settings.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[str, np.ndarray]</dt><dd><p>Unit label and quantity values.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.handle_saturation">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">handle_saturation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ERst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers.handle_saturation" title="Link to this definition"></a></dt>
-<dd><p>Compute the oil saturation</p>
+<dt class="sig sig-object py" id="plopm.utils.readers.read_series">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">read_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qskl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.read_series" title="Link to this definition"></a></dt>
+<dd><p>Read one one-dimensional series for plotting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized series configuration.</p>
+</dd>
+<dt><strong>case</strong><span class="classifier">str</span></dt><dd><p>Simulation-case stem or CSV path.</p>
+</dd>
+<dt><strong>values</strong><span class="classifier">str</span></dt><dd><p>Variable name or expression.</p>
+</dd>
+<dt><strong>tunit</strong><span class="classifier">str</span></dt><dd><p>Requested time-unit code.</p>
+</dd>
+<dt><strong>qskl</strong><span class="classifier">float</span></dt><dd><p>Scale factor applied to values.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Plot or case index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[np.ndarray, np.ndarray, str, str]</dt><dd><p>Coordinates, values, coordinate unit, and value unit.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.initialize_time">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">initialize_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.initialize_time" title="Link to this definition"></a></dt>
-<dd><p>Handle the time units for the x axis in the summary</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.operate">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">operate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quan1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.operate" title="Link to this definition"></a></dt>
-<dd><p>Applied the requested operation</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.project">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers.project" title="Link to this definition"></a></dt>
-<dd><p>Applied the requested projection</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.read_oned">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">read_oned</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qskl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.read_oned" title="Link to this definition"></a></dt>
-<dd><p>Handle the oned vectors</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.resolve_variable">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">resolve_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_up</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EclFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ERst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caprock_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#plopm.utils.readers.resolve_variable" title="Link to this definition"></a></dt>
-<dd><p>Handle the variable</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.type_of_mass">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">type_of_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">co2_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2o_l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2o_v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l_co2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_g_h2o</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.readers.type_of_mass" title="Link to this definition"></a></dt>
-<dd><p>From the given variable return the associated mass</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.readers.where_at">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">where_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.readers.where_at" title="Link to this definition"></a></dt>
-<dd><p>Using the input deck (.DATA) to read the i,j fault locations</p>
+<dt class="sig sig-object py" id="plopm.utils.readers.time_unit">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.readers.</span></span><span class="sig-name descname"><span class="pre">time_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.readers.time_unit" title="Link to this definition"></a></dt>
+<dd><p>Get the conversion and label for a time unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>times</strong><span class="classifier">str</span></dt><dd><p>Time-unit code or <code class="docutils literal notranslate"><span class="pre">&quot;dates&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[float, str]</dt><dd><p>Factor converting OPM days and the axis label.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

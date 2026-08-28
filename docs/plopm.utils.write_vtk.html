@@ -83,53 +83,202 @@
              
   <section id="module-plopm.utils.write_vtk">
 <span id="plopm-utils-write-vtk-module"></span><h1>plopm.utils.write_vtk module<a class="headerlink" href="#module-plopm.utils.write_vtk" title="Link to this heading"></a></h1>
-<p>Utility methods to write the vtks</p>
+<p>Create VTK files from OPM Flow simulation results.</p>
+<p>The module runs a minimal OPM Flow job when grid geometry is unavailable,
+populates VTU cell-data arrays for selected restart steps, and writes the PVD
+collection used to open the resulting time series.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.write_vtk.check_integer_conversion">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">check_integer_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtkformat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warning_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk.check_integer_conversion" title="Link to this definition"></a></dt>
-<dd><p>Warn about risky integer conversions</p>
+<dt class="sig sig-object py" id="plopm.utils.write_vtk._check_integer_conversion">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">_check_integer_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtkformat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warning_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk._check_integer_conversion" title="Link to this definition"></a></dt>
+<dd><p>Warn about unsafe conversion to an integer VTK type.</p>
+<p>Warnings cover non-numeric or non-finite values, negative values converted
+to unsigned integers, decimal truncation, and values outside the target
+integer range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>values</strong><span class="classifier">np.ndarray</span></dt><dd><p>Quantity values to inspect.</p>
+</dd>
+<dt><strong>var</strong><span class="classifier">str</span></dt><dd><p>Variable name used in warning messages.</p>
+</dd>
+<dt><strong>vtkformat</strong><span class="classifier">str</span></dt><dd><p>Requested VTK data type.</p>
+</dd>
+<dt><strong>target_dtype</strong><span class="classifier">type</span></dt><dd><p>NumPy dtype used for conversion.</p>
+</dd>
+<dt><strong>warning_keys</strong><span class="classifier">set[tuple[str, str, str]]</span></dt><dd><p>Keys for warnings already emitted.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.write_vtk.format_data_array">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">format_data_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk.format_data_array" title="Link to this definition"></a></dt>
-<dd><p>Format values for an ascii VTK DataArray</p>
+<dt class="sig sig-object py" id="plopm.utils.write_vtk._format_vtk_array">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">_format_vtk_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk._format_vtk_array" title="Link to this definition"></a></dt>
+<dd><p>Format values for an ASCII VTK DataArray.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>values</strong><span class="classifier">np.ndarray</span></dt><dd><p>Values to flatten and convert.</p>
+</dd>
+<dt><strong>target_dtype</strong><span class="classifier">type</span></dt><dd><p>NumPy dtype used for the output values.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Tab-indented values ready for insertion into a VTU file.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.write_vtk.get_flags">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">get_flags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.write_vtk.get_flags" title="Link to this definition"></a></dt>
-<dd><p>Load the flags to remove all vtk properties and perform a minimal run</p>
+<dt class="sig sig-object py" id="plopm.utils.write_vtk._vtk_flags">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">_vtk_flags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.write_vtk._vtk_flags" title="Link to this definition"></a></dt>
+<dd><p>Build OPM Flow options for a minimal VTK run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>tuple[str, str]</dt><dd><p>General VTK options and optional thermal-model options.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.write_vtk.make_dry_deck">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">make_dry_deck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk.make_dry_deck" title="Link to this definition"></a></dt>
-<dd><p>Create a deck for the dry run</p>
+<dt class="sig sig-object py" id="plopm.utils.write_vtk._warn_once">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">_warn_once</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">warning_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warning_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk._warn_once" title="Link to this definition"></a></dt>
+<dd><p>Emit a warning once for a unique key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>warning_keys</strong><span class="classifier">set</span></dt><dd><p>Keys for warnings already emitted.</p>
+</dd>
+<dt><strong>warning_key</strong></dt><dd><p>Hashable key identifying the warning condition.</p>
+</dd>
+<dt><strong>message</strong><span class="classifier">str</span></dt><dd><p>Warning message.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.write_vtk._write_pvd">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">_write_pvd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tnrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk._write_pvd" title="Link to this definition"></a></dt>
+<dd><p>Write a PVD collection for a VTU time series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>save</strong><span class="classifier">list</span></dt><dd><p>Optional output stems for each case.</p>
+</dd>
+<dt><strong>dname</strong><span class="classifier">str</span></dt><dd><p>Default case name.</p>
+</dd>
+<dt><strong>restart</strong><span class="classifier">list</span></dt><dd><p>Restart report steps included in the collection.</p>
+</dd>
+<dt><strong>tnrst</strong><span class="classifier">list</span></dt><dd><p>Simulation times indexed by restart report step.</p>
+</dd>
+<dt><strong>output</strong><span class="classifier">str</span></dt><dd><p>Output directory.</p>
+</dd>
+<dt><strong>k</strong><span class="classifier">int</span></dt><dd><p>Case index used to select the output stem.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plopm.utils.write_vtk._write_vtk_data">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">_write_vtk_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtkformat_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtknames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caprock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filterss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk._write_vtk_data" title="Link to this definition"></a></dt>
+<dd><p>Populate grid VTU files with simulation cell data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>case</strong><span class="classifier">str</span></dt><dd><p>Simulation-case stem.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded OPM simulation data.</p>
+</dd>
+<dt><strong>output</strong><span class="classifier">str</span></dt><dd><p>Output directory.</p>
+</dd>
+<dt><strong>dname</strong><span class="classifier">str</span></dt><dd><p>Default case name.</p>
+</dd>
+<dt><strong>save</strong><span class="classifier">list</span></dt><dd><p>Optional output stems for each case.</p>
+</dd>
+<dt><strong>variables</strong><span class="classifier">list</span></dt><dd><p>Variables or expressions written as cell data.</p>
+</dd>
+<dt><strong>vtkformat_list</strong><span class="classifier">list</span></dt><dd><p>VTK data type selected for each variable.</p>
+</dd>
+<dt><strong>vtknames</strong><span class="classifier">list</span></dt><dd><p>Optional VTK array names.</p>
+</dd>
+<dt><strong>k</strong><span class="classifier">int</span></dt><dd><p>Case index used to select output settings.</p>
+</dd>
+<dt><strong>scales</strong><span class="classifier">list[str]</span></dt><dd><p>Scale factor applied to each variable.</p>
+</dd>
+<dt><strong>mass, mass_all</strong><span class="classifier">list[str]</span></dt><dd><p>Mass variables and all supported mass-related variables.</p>
+</dd>
+<dt><strong>caprock</strong><span class="classifier">list[str]</span></dt><dd><p>Supported caprock-integrity variables.</p>
+</dd>
+<dt><strong>stress</strong><span class="classifier">float</span></dt><dd><p>Vertical stress coefficient used for caprock quantities.</p>
+</dd>
+<dt><strong>filterss</strong><span class="classifier">str</span></dt><dd><p>Filter expression applied while reading quantities.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plopm.utils.write_vtk.make_vtks">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">make_vtks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtkformat_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtknames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caprock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filterss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk.make_vtks" title="Link to this definition"></a></dt>
-<dd><p>Use OPM Flow to generate and populate VTK files.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.write_vtk.opmtovtk">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">opmtovtk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtkformat_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtknames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caprock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filterss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk.opmtovtk" title="Link to this definition"></a></dt>
-<dd><p>Generate the vtks</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.write_vtk.warn_once">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">warn_once</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">warning_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warning_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk.warn_once" title="Link to this definition"></a></dt>
-<dd><p>Print a warning once</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.write_vtk.writepvd">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">writepvd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tnrst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk.writepvd" title="Link to this definition"></a></dt>
-<dd><p>Generate the pvd file</p>
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.write_vtk.</span></span><span class="sig-name descname"><span class="pre">make_vtks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restart</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtkformat_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtknames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caprock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filterss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#plopm.utils.write_vtk.make_vtks" title="Link to this definition"></a></dt>
+<dd><p>Create VTK time-series output for the configured cases.</p>
+<p>A minimal OPM Flow run creates the grid-only VTU file when needed. Selected
+properties are then read from INIT or UNRST output and written to one VTU
+file per restart step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>flow</strong><span class="classifier">str</span></dt><dd><p>Command used to run OPM Flow.</p>
+</dd>
+<dt><strong>names</strong><span class="classifier">list</span></dt><dd><p>Simulation-case stems grouped by the CLI input.</p>
+</dd>
+<dt><strong>output</strong><span class="classifier">str</span></dt><dd><p>Directory in which VTK files are written.</p>
+</dd>
+<dt><strong>save</strong><span class="classifier">list</span></dt><dd><p>Optional output stems for each case.</p>
+</dd>
+<dt><strong>restart</strong><span class="classifier">list</span></dt><dd><p>Restart report steps to export.</p>
+</dd>
+<dt><strong>variables</strong><span class="classifier">list</span></dt><dd><p>Variables or expressions written as cell data.</p>
+</dd>
+<dt><strong>vtkformat_list</strong><span class="classifier">list</span></dt><dd><p>VTK data type selected for each variable.</p>
+</dd>
+<dt><strong>vtknames</strong><span class="classifier">list</span></dt><dd><p>Optional VTK array names for each variable.</p>
+</dd>
+<dt><strong>gif, vtk</strong><span class="classifier">bool</span></dt><dd><p>Output-mode flags passed to the simulation readers.</p>
+</dd>
+<dt><strong>filters</strong><span class="classifier">list</span></dt><dd><p>Property filters used while loading each case.</p>
+</dd>
+<dt><strong>scales</strong><span class="classifier">list[str]</span></dt><dd><p>Scale factor applied to each variable.</p>
+</dd>
+<dt><strong>mass, mass_all</strong><span class="classifier">list[str]</span></dt><dd><p>Mass variables and all supported mass-related variables.</p>
+</dd>
+<dt><strong>caprock</strong><span class="classifier">list[str]</span></dt><dd><p>Supported caprock-integrity variables.</p>
+</dd>
+<dt><strong>stress</strong><span class="classifier">float</span></dt><dd><p>Vertical stress coefficient used for caprock quantities.</p>
+</dd>
+<dt><strong>filterss</strong><span class="classifier">list[str]</span></dt><dd><p>Filter expressions applied while reading exported quantities.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>list[str]</dt><dd><p>Names of the generated PVD collection files.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

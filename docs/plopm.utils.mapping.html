@@ -83,47 +83,218 @@
              
   <section id="module-plopm.utils.mapping">
 <span id="plopm-utils-mapping-module"></span><h1>plopm.utils.mapping module<a class="headerlink" href="#module-plopm.utils.mapping" title="Link to this heading"></a></h1>
-<p>Utility function for the grid and locations in the geological models</p>
+<p>Prepare slice geometry and map three-dimensional values to two dimensions.</p>
+<p>The module builds labels and coordinate meshes for xy, xz, and yz slices,
+applies optional rotation and translation, and aggregates active-cell values
+through the selected grid interval.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.mapping.handle_slide_x">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">handle_slide_x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.mapping.handle_slide_x" title="Link to this definition"></a></dt>
-<dd><p>Processing the selected yz slide to obtain the grid properties</p>
+<dt class="sig sig-object py" id="plopm.utils.mapping.get_xy_slice">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">get_xy_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.mapping.get_xy_slice" title="Link to this definition"></a></dt>
+<dd><p>Prepare geometry and labels for an xy slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized map and slice configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded grid data.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Slice index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple</dt><dd><p>Coordinate meshes, display and filename slice labels, mapped grid
+dimensions, and coordinate-axis names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.mapping.handle_slide_y">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">handle_slide_y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.mapping.handle_slide_y" title="Link to this definition"></a></dt>
-<dd><p>Processing the selected xz slide to obtain the grid properties</p>
+<dt class="sig sig-object py" id="plopm.utils.mapping.get_xz_slice">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">get_xz_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.mapping.get_xz_slice" title="Link to this definition"></a></dt>
+<dd><p>Prepare geometry and labels for an xz slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized map and slice configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded grid data.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Slice index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple</dt><dd><p>Coordinate meshes, display and filename slice labels, mapped grid
+dimensions, and coordinate-axis names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.mapping.handle_slide_z">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">handle_slide_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.mapping.handle_slide_z" title="Link to this definition"></a></dt>
-<dd><p>Processing the selected xy slide to obtain the grid properties</p>
+<dt class="sig sig-object py" id="plopm.utils.mapping.get_yz_slice">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">get_yz_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.mapping.get_yz_slice" title="Link to this definition"></a></dt>
+<dd><p>Prepare geometry and labels for a yz slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Initialized map and slice configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded grid data.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Slice index.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple</dt><dd><p>Coordinate meshes, display and filename slice labels, mapped grid
+dimensions, and coordinate-axis names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.mapping.map_xycoords">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">map_xycoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">welult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nwelult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.mapping.map_xycoords" title="Link to this definition"></a></dt>
-<dd><p>Map the properties from the simulations to the 2D slide</p>
+<dt class="sig sig-object py" id="plopm.utils.mapping.map_xy">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">map_xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.mapping.map_xy" title="Link to this definition"></a></dt>
+<dd><p>Aggregate active-cell values onto an xy slice.</p>
+<p>Values are aggregated through the selected k interval. Dual-porosity rows
+are included when enabled, and permeability is weighted according to the
+vertical flow direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Slice, aggregation, and dual-grid configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded grid properties and active-cell mapping.</p>
+</dd>
+<dt><strong>var</strong><span class="classifier">str</span></dt><dd><p>Variable name.</p>
+</dd>
+<dt><strong>values</strong><span class="classifier">np.ndarray</span></dt><dd><p>Values in active-cell order.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Map index.</p>
+</dd>
+<dt><strong>mx, my</strong><span class="classifier">int</span></dt><dd><p>Mapped grid dimensions.</p>
+</dd>
+<dt><strong>features</strong><span class="classifier">list, optional</span></dt><dd><p>Wells or faults grouped by label.</p>
+</dd>
+<dt><strong>feature_id</strong><span class="classifier">int, default: 1</span></dt><dd><p>Category assigned when mapping one feature.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Values on the flattened xy plotting grid.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.mapping.map_xzcoords">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">map_xzcoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">welult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nwelult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.mapping.map_xzcoords" title="Link to this definition"></a></dt>
-<dd><p>Map the properties from the simulations to the 2D slide</p>
+<dt class="sig sig-object py" id="plopm.utils.mapping.map_xz">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">map_xz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.mapping.map_xz" title="Link to this definition"></a></dt>
+<dd><p>Aggregate active-cell values onto an xz slice.</p>
+<p>Values are aggregated through the selected j interval. Permeability uses
+arithmetic or harmonic thickness weighting according to flow direction;
+other properties use the configured aggregation or pore-volume weighting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Slice and aggregation configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded grid properties and active-cell mapping.</p>
+</dd>
+<dt><strong>var</strong><span class="classifier">str</span></dt><dd><p>Variable name.</p>
+</dd>
+<dt><strong>values</strong><span class="classifier">np.ndarray</span></dt><dd><p>Values in active-cell order.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Map index.</p>
+</dd>
+<dt><strong>mx, my</strong><span class="classifier">int</span></dt><dd><p>Mapped grid dimensions.</p>
+</dd>
+<dt><strong>features</strong><span class="classifier">list, optional</span></dt><dd><p>Wells or faults grouped by label.</p>
+</dd>
+<dt><strong>feature_id</strong><span class="classifier">int, default: 1</span></dt><dd><p>Category assigned when mapping one feature.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Values on the flattened xz plotting grid.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.mapping.map_yzcoords">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">map_yzcoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">read</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ReadData" title="plopm.config.config.ReadData"><span class="pre">ReadData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">welult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nwelult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.mapping.map_yzcoords" title="Link to this definition"></a></dt>
-<dd><p>Map the properties from the simulations to the 2D slide</p>
+<dt class="sig sig-object py" id="plopm.utils.mapping.map_yz">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">map_yz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.SimData" title="plopm.config.config.SimData"><span class="pre">SimData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="headerlink" href="#plopm.utils.mapping.map_yz" title="Link to this definition"></a></dt>
+<dd><p>Aggregate active-cell values onto a yz slice.</p>
+<p>Values are aggregated through the selected i interval. Permeability uses
+arithmetic or harmonic thickness weighting according to flow direction;
+other properties use the configured aggregation or pore-volume weighting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Slice and aggregation configuration.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier">SimData</span></dt><dd><p>Loaded grid properties and active-cell mapping.</p>
+</dd>
+<dt><strong>var</strong><span class="classifier">str</span></dt><dd><p>Variable name.</p>
+</dd>
+<dt><strong>values</strong><span class="classifier">np.ndarray</span></dt><dd><p>Values in active-cell order.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Map index.</p>
+</dd>
+<dt><strong>mx, my</strong><span class="classifier">int</span></dt><dd><p>Mapped grid dimensions.</p>
+</dd>
+<dt><strong>features</strong><span class="classifier">list, optional</span></dt><dd><p>Wells or faults grouped by label.</p>
+</dd>
+<dt><strong>feature_id</strong><span class="classifier">int, default: 1</span></dt><dd><p>Category assigned when mapping one feature.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Values on the flattened yz plotting grid.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plopm.utils.mapping.rotate_grid">
-<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">rotate_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.ConfigPlopm" title="plopm.config.config.ConfigPlopm"><span class="pre">ConfigPlopm</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.mapping.rotate_grid" title="Link to this definition"></a></dt>
-<dd><p>Rotate the grid if requiered</p>
+<dt class="sig sig-object py" id="plopm.utils.mapping.transform_grid">
+<span class="sig-prename descclassname"><span class="pre">plopm.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">transform_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="plopm.config.config.html#plopm.config.config.PlopmConfig" title="plopm.config.config.PlopmConfig"><span class="pre">PlopmConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">NDArray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#plopm.utils.mapping.transform_grid" title="Link to this definition"></a></dt>
+<dd><p>Rotate and translate a two-dimensional coordinate mesh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cfg</strong><span class="classifier">PlopmConfig</span></dt><dd><p>Rotation and translation settings.</p>
+</dd>
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Map index.</p>
+</dd>
+<dt><strong>xc, yc</strong><span class="classifier">np.ndarray</span></dt><dd><p>Coordinate meshes to transform.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[np.ndarray, np.ndarray]</dt><dd><p>Transformed x- and y-coordinate meshes.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

@@ -227,7 +227,7 @@ Spatial and temporal selection
 Filtering, masking, and thresholds
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``-flt``, ``--filter``
+``-flt``, ``--filters``
    Cell-selection conditions. Join conditions for one input with ``&`` and
    separate filters for different inputs with commas, e.g.:
 

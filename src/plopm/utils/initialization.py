@@ -2,7 +2,12 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=W0123,R0915,R0912,R1702,R0914,R0916
 
-"""Utility functions to set the requiried input values by plopm"""
+"""Build and normalize configuration for plopm workflows.
+
+The module converts parsed CLI arguments into :class:`PlopmConfig`, discovers
+simulation cases, normalizes per-variable plotting settings, selects summary or
+spatial processing, and defines unit conversions used by the readers.
+"""
 
 import argparse
 import copy
@@ -16,7 +21,7 @@ import matplotlib.pyplot as plt
 from opm.io.ecl import EclFile as OpmFile
 from opm.io.ecl import ESmry as OpmSummary
 
-from plopm.config.config import ConfigPlopm
+from plopm.config.config import PlopmConfig
 from plopm.utils.terminal import (
     cli_current_value,
     cli_error_value,
@@ -26,35 +31,30 @@ from plopm.utils.terminal import (
 )
 
 
-def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
-    """Initialize the configuration dataclass."""
+def build_config(cmdargs: argparse.Namespace) -> PlopmConfig:
+    """Build a plopm configuration from parsed CLI arguments.
 
-    def find_all_cases(folder: str, suffix: str) -> list:
-        folder_path = folder
-        if folder_path[0] != ".":
-            folder_path = "./" + folder_path
-        names_found = []
-        for root, _, files in os.walk(folder_path):
-            for file in files:
-                if file.endswith(suffix):
-                    names_found.append(os.path.join(root, file)[2 : -len(suffix)])
-        return sorted(names_found)
+    The function expands case and difference-input paths, parses list-like
+    options, normalizes slice and restart selections, and initializes plotting
+    defaults shared by summary, map, and VTK workflows.
 
-    def find_first_case(folder: str, suffix: str) -> str:
-        folder_path = folder
-        if folder_path[0] != ".":
-            folder_path = "./" + folder_path
-        for root, _, files in os.walk(folder_path):
-            for file in files:
-                if file.endswith(suffix):
-                    return os.path.join(root, file)[2 : -len(suffix)]
-        return folder
+    Parameters
+    ----------
+    cmdargs : argparse.Namespace
+        Command-line arguments returned by the plopm parser.
 
-    cfg = ConfigPlopm()
+    Returns
+    -------
+    PlopmConfig
+        Parsed and partially normalized runtime configuration.
+
+    """
+
+    cfg = PlopmConfig()
     cfg.output_dir = os.path.abspath(cmdargs.output_dir)
     names = cmdargs.input.split("  ")
     names = [var.split(" ") for var in names]
-    cfg.namens = names
+    cfg.case_labels = names
 
     for name in ["gif", "csv", "png", "vtk"]:
         setattr(cfg, name, cmdargs.format == name)
@@ -64,9 +64,9 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
 
     if cfg.difference_input:
         if cfg.difference_input[-1] in [".", "/"]:
-            cfg.difference_input = find_first_case(cfg.difference_input, ".EGRID")
+            cfg.difference_input = _find_first_case(cfg.difference_input, ".EGRID")
         if names[0][0][-1] in [".", "/"]:
-            names[0][0] = find_first_case(names[0][0], ".EGRID")
+            names[0][0] = _find_first_case(names[0][0], ".EGRID")
     elif names[0][0][-1] in [".", "/"]:
         folders = names[0]
         names = []
@@ -74,14 +74,14 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
             if cfg.ensemble > 0 or index == 0:
                 names.append([])
             if cfg.vtk:
-                names[-1] = find_all_cases(folder, ".DATA")
+                names[-1] = _find_all_cases(folder, ".DATA")
             else:
-                names[-1] = find_all_cases(folder, ".SMSPEC")
+                names[-1] = _find_all_cases(folder, ".SMSPEC")
 
-    cfg.names = names
-    cfg.name = names[0][0]
-    cfg.vrs = cmdargs.variable.lower().split(",")
-    handle_blocks(cfg)
+    cfg.cases = names
+    cfg.case = names[0][0]
+    cfg.variables = cmdargs.variable.lower().split(",")
+    _join_block_vars(cfg)
     cfg.stress_coefficient = float(cmdargs.stress_coefficient)
 
     for cfg_name, cmdarg_name in [
@@ -90,11 +90,11 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
     ]:
         setattr(cfg, cfg_name, getattr(cmdargs, cmdarg_name).split("  "))
 
-    cfg.mass = ["gasm", "dism", "liqm", "vapm", "co2m", "h2om"]
-    cfg.xmass = ["xco2l", "xh2ov", "xco2v", "xh2ol"]
-    cfg.caprock = ["limipres", "overpres", "objepres"]
+    cfg.mass_vars = ["gasm", "dism", "liqm", "vapm", "co2m", "h2om"]
+    cfg.mass_fracs = ["xco2l", "xh2ov", "xco2v", "xh2ol"]
+    cfg.caprock_vars = ["limipres", "overpres", "objepres"]
     for cfg_name, cmdarg_name in [
-        ("filter", "filter"),
+        ("filters", "filters"),
         ("restart", "restart"),
         ("scale_factor", "scale_factor"),
         ("vtk_format", "vtk_format"),
@@ -137,11 +137,11 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
             ]
         cfg.restart = [int(restart_value) for restart_value in cfg.restart]
     for name in ["vtk_format", "scale_factor", "vtk_names"]:
-        if len(getattr(cfg, name)) < len(cfg.vrs):
+        if len(getattr(cfg, name)) < len(cfg.variables):
             setattr(
                 cfg,
                 name,
-                [getattr(cfg, name)[0]] * len(cfg.vrs),
+                [getattr(cfg, name)[0]] * len(cfg.variables),
             )
     if not os.path.exists(cfg.output_dir):
         os.makedirs(cfg.output_dir, exist_ok=True)
@@ -161,9 +161,9 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
             cfg.csv_column_summary = True
 
     if allcsvs:
-        cfg.vrs = ["csv"]
+        cfg.variables = ["csv"]
 
-    max_count = max(len(cfg.names[0]), len(cfg.vrs))
+    max_count = max(len(cfg.cases[0]), len(cfg.variables))
     if len(cfg.csv_columns) == 1 and not cfg.csv_columns[0][0]:
         cfg.csv_columns = [cfg.csv_columns[0]] * (max_count + 1)
 
@@ -332,7 +332,7 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
             for value_index, val in enumerate(var):
                 cfg.slice[slice_index][value_index] = int(val) - 1
 
-    cfg.smass = ["fwcdm", "fgipm"]
+    cfg.summary_mass = ["fwcdm", "fgipm"]
 
     cfg.colors_default = [
         "k",
@@ -369,12 +369,12 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
         (0, (3, 1, 1, 1, 1, 1)),
         (0, ()),
     ]
-    for val in cfg.vrs:
+    for val in cfg.variables:
         for oper in ["=", "<", ">"]:
             if oper in val:
                 cfg.discrete = False
 
-    cfg.linewidth_values = ["1"] * len(cfg.names[0])
+    cfg.linewidth_values = ["1"] * len(cfg.cases[0])
 
     font = {"family": "normal", "weight": "normal", "size": cfg.fontsize}
     matplotlib.rc("font", **font)
@@ -392,29 +392,29 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
         }
     )
 
-    if len(cfg.filename) < len(cfg.vrs):
-        cfg.filename = [cfg.filename[0]] * len(cfg.vrs)
+    if len(cfg.filename) < len(cfg.variables):
+        cfg.filename = [cfg.filename[0]] * len(cfg.variables)
 
-    if len(cfg.clim) < len(cfg.vrs):
-        cfg.clim = [cfg.clim[0]] * len(cfg.vrs)
+    if len(cfg.clim) < len(cfg.variables):
+        cfg.clim = [cfg.clim[0]] * len(cfg.variables)
 
     if cfg.difference_input and len(cfg.rotation) < 2:
         cfg.rotation = [cfg.rotation[0]] * 2
-    elif len(cfg.rotation) < len(cfg.names[0]):
-        cfg.rotation = [cfg.rotation[0]] * len(cfg.names[0])
+    elif len(cfg.rotation) < len(cfg.cases[0]):
+        cfg.rotation = [cfg.rotation[0]] * len(cfg.cases[0])
 
     if cfg.difference_input and len(cfg.translation) < 2:
         cfg.translation = [cfg.translation[0]] * 2
 
-    if len(cfg.translation) < len(cfg.names[0]):
-        cfg.translation = [cfg.translation[0]] * len(cfg.names[0])
+    if len(cfg.translation) < len(cfg.cases[0]):
+        cfg.translation = [cfg.translation[0]] * len(cfg.cases[0])
 
     if cfg.difference_input and len(cfg.slice) < 2:
         cfg.slice = [cfg.slice[0]] * 2
 
     for val in [
         "aggregation",
-        "filter",
+        "filters",
         "colorbar_ticks",
         "csv_columns",
         "dual_grid",
@@ -438,7 +438,7 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
             ):
                 continue
             if val == "slice":
-                if cfg.gif and len(cfg.slice) >= len(cfg.names[0]):
+                if cfg.gif and len(cfg.slice) >= len(cfg.cases[0]):
                     continue
                 current = getattr(cfg, val)
                 setattr(
@@ -453,7 +453,7 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
         cfg.filename = [cmdargs.filename]
     if cfg.difference_input:
         cfg.aggregation = [cfg.aggregation[0]] * 2
-        cfg.filter = [cfg.filter[0]] * 2
+        cfg.filters = [cfg.filters[0]] * 2
 
     for val in [
         "xformat",
@@ -475,35 +475,106 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
         "min_threshold",
         "max_threshold",
     ]:
-        if len(getattr(cfg, val)) < len(cfg.vrs):
-            setattr(cfg, val, [getattr(cfg, val)[0]] * len(cfg.vrs))
+        if len(getattr(cfg, val)) < len(cfg.variables):
+            setattr(cfg, val, [getattr(cfg, val)[0]] * len(cfg.variables))
 
     return cfg
 
 
-def handle_blocks(cfg: ConfigPlopm) -> None:
-    """For block i,j,k quantities, do not split the commas"""
-    vrs_in = cfg.vrs
+def _find_all_cases(folder: str, suffix: str) -> list:
+    """Find all simulation cases below a folder.
+
+    Parameters
+    ----------
+    folder : str
+        Folder to search recursively.
+    suffix : str
+        File suffix identifying a simulation case.
+
+    Returns
+    -------
+    list[str]
+        Sorted case paths without the identifying suffix.
+
+    """
+    folder_path = folder
+    if folder_path[0] != ".":
+        folder_path = "./" + folder_path
+    cases_found = []
+    for root, _, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith(suffix):
+                cases_found.append(os.path.join(root, file)[2 : -len(suffix)])
+    return sorted(cases_found)
+
+
+def _find_first_case(folder: str, suffix: str) -> str:
+    """Find the first simulation case below a folder.
+
+    Parameters
+    ----------
+    folder : str
+        Folder to search recursively.
+    suffix : str
+        File suffix identifying a simulation case.
+
+    Returns
+    -------
+    str
+        First case path without the suffix, or the input folder when no
+        matching file is found.
+
+    """
+    folder_path = folder
+    if folder_path[0] != ".":
+        folder_path = "./" + folder_path
+    for root, _, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith(suffix):
+                return os.path.join(root, file)[2 : -len(suffix)]
+    return folder
+
+
+def _join_block_vars(cfg: PlopmConfig) -> None:
+    """Rejoin comma-separated indices in block variables.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Configuration whose variable expressions are updated in place.
+
+    """
+    vrs_in = cfg.variables
     count = len(vrs_in)
-    vrs = []
+    variables = []
     index = 0
     while index < count:
         if index < count - 2 and ":" in vrs_in[index] and vrs_in[index + 1].isnumeric():
-            vrs.append(
+            variables.append(
                 vrs_in[index] + "," + vrs_in[index + 1] + "," + vrs_in[index + 2]
             )
             index += 3
         else:
-            vrs.append(vrs_in[index])
+            variables.append(vrs_in[index])
             index += 1
-    cfg.vrs = vrs
+    cfg.variables = variables
 
 
-def ini_properties(cfg: ConfigPlopm) -> None:
-    """Define the properties to plot"""
+def init_maps(cfg: PlopmConfig) -> None:
+    """Normalize settings used by spatial maps.
+
+    The function selects default units, colorbar formats, and colormaps; expands
+    per-variable limits and formats; and initializes spatial coordinate scales.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Configuration updated in place for map generation.
+
+    """
     cfg.units = [" [-]", " [mD]", " [mD]", r" [m$^3$]", " [-]", " [-]"]
-    cfg.cb_format = [".1f", ".0f", ".0f", ".2e", ".0f", ".0f"]
-    cfg.cmaps = ["jet", "turbo", "turbo", "terrain", "tab20b", "tab20b"]
+    cfg.cb_formats = [".1f", ".0f", ".0f", ".2e", ".0f", ".0f"]
+    cfg.colormaps = ["jet", "turbo", "turbo", "terrain", "tab20b", "tab20b"]
     cmdisc = [
         "Pastel1",
         "Pastel2",
@@ -526,66 +597,78 @@ def ini_properties(cfg: ConfigPlopm) -> None:
         "cet_glasbey_category10",
         "cet_glasbey_hv",
     ]
-    cfg.cmdisc = [cmap + "_r" for cmap in cmdisc] + cmdisc
+    cfg.disc_colormaps = [cmap + "_r" for cmap in cmdisc] + cmdisc
     if cfg.colors_raw:
-        cfg.cmaps = cfg.colors_raw.split(",")
+        cfg.colormaps = cfg.colors_raw.split(",")
     elif cfg.difference_input:
-        cfg.cmaps = ["RdYlGn"]
+        cfg.colormaps = ["RdYlGn"]
     elif cfg.mask_variable:
-        cfg.cmaps = ["RdGy_r"]
-    vrs = cfg.vrs
-    if vrs:
-        first_var = vrs[0]
-        if first_var in ["wells", "faults"]:
+        cfg.colormaps = ["RdGy_r"]
+    variables = cfg.variables
+    if variables:
+        first_variable = variables[0]
+        if first_variable in ["wells", "faults"]:
             if cfg.aggregation[0]:
                 if cfg.aggregation[0] not in ["min", "max"]:
                     plopm_error(
                         f"Unsuported value {cli_error_value(f'-agg {cfg.aggregation[0]}')} for "
-                        f"{cli_info_value(f'-v {first_var}')}. Supported values are "
+                        f"{cli_info_value(f'-v {first_variable}')}. Supported values are "
                         f"{cli_current_value('-agg min')} and {cli_current_value('-agg max')}."
                     )
-                cfg.whow = cfg.aggregation[0]
+                cfg.slice_mode = cfg.aggregation[0]
             else:
-                cfg.whow = "min"
+                cfg.slice_mode = "min"
             if not cfg.colors_raw:
                 cfg.units = [" [-]"]
-                cfg.cmaps = ["nipy_spectral"]
-                cfg.cb_format = [".0f"]
+                cfg.colormaps = ["nipy_spectral"]
+                cfg.cb_formats = [".0f"]
         if (
-            "num" in first_var
+            "num" in first_variable
             and not cfg.mask_variable
             and not cfg.difference_input
             and not cfg.colors_raw
         ):
-            cfg.cmaps = ["tab20"]
+            cfg.colormaps = ["tab20"]
             cfg.units = [" [-]"]
-            cfg.cb_format = [".0f"]
-        if "index" in first_var:
+            cfg.cb_formats = [".0f"]
+        if "index" in first_variable:
             cfg.units = [" [-]"]
-            cfg.cb_format = [".0f"]
+            cfg.cb_formats = [".0f"]
     if cfg.colorbar_format:
-        cfg.cb_format = cfg.colorbar_format.split(",")
-    elif len(vrs) == 1 and "num" in vrs[0]:
-        cfg.cb_format = [".0f"]
+        cfg.cb_formats = cfg.colorbar_format.split(",")
+    elif len(variables) == 1 and "num" in variables[0]:
+        cfg.cb_formats = [".0f"]
     elif cfg.difference_input:
-        cfg.cb_format = [".1e"]
-    num_vars = len(vrs)
-    if len(cfg.cmaps) < num_vars or (
-        num_vars == len(cfg.names[0]) and len(cfg.names[0]) > 1 and not cfg.colors_raw
+        cfg.cb_formats = [".1e"]
+    nvars = len(variables)
+    if len(cfg.colormaps) < nvars or (
+        nvars == len(cfg.cases[0]) and len(cfg.cases[0]) > 1 and not cfg.colors_raw
     ):
-        cfg.cmaps = [cfg.cmaps[0]] * num_vars
-    if len(cfg.xlim) < num_vars:
-        cfg.xlim = [cfg.xlim[0]] * num_vars
-    if len(cfg.ylim) < num_vars:
-        cfg.ylim = [cfg.ylim[0]] * num_vars
-    if len(cfg.cb_format) < num_vars:
-        cfg.cb_format = [cfg.cb_format[0]] * num_vars
-    cfg.xskl, cfg.xunit = initialize_spatial(cfg.xunits)
-    cfg.yskl, cfg.yunit = initialize_spatial(cfg.yunits)
+        cfg.colormaps = [cfg.colormaps[0]] * nvars
+    if len(cfg.xlim) < nvars:
+        cfg.xlim = [cfg.xlim[0]] * nvars
+    if len(cfg.ylim) < nvars:
+        cfg.ylim = [cfg.ylim[0]] * nvars
+    if len(cfg.cb_formats) < nvars:
+        cfg.cb_formats = [cfg.cb_formats[0]] * nvars
+    cfg.xscale, cfg.xunit = spatial_unit(cfg.xunits)
+    cfg.yscale, cfg.yunit = spatial_unit(cfg.yunits)
 
 
-def initialize_spatial(unit: str) -> tuple[float, str]:
-    """Handle the units for the axis in the spatial maps"""
+def spatial_unit(unit: str) -> tuple[float, str]:
+    """Get the conversion and label for a spatial unit.
+
+    Parameters
+    ----------
+    unit : str
+        Spatial-unit code.
+
+    Returns
+    -------
+    tuple[float, str]
+        Factor converting metres and the formatted unit label.
+
+    """
     return {
         "m": (1.0, " [m]"),
         "km": (1e-3, " [km]"),
@@ -594,8 +677,20 @@ def initialize_spatial(unit: str) -> tuple[float, str]:
     }.get(unit, (1.0, ""))
 
 
-def initialize_mass(mskl: float) -> str:
-    """Initialize the mass properties according to the given variable"""
+def mass_unit(mskl: float) -> str:
+    """Get the display unit for a mass scale factor.
+
+    Parameters
+    ----------
+    mskl : float
+        Factor applied to quantities stored in kilograms.
+
+    Returns
+    -------
+    str
+        Matplotlib-formatted mass unit, or an empty string when unknown.
+
+    """
     return {
         1e-3: " [t]",
         1e-6: " [Kt]",
@@ -606,11 +701,26 @@ def initialize_mass(mskl: float) -> str:
     }.get(mskl, "")
 
 
-def is_summary(cfg: ConfigPlopm) -> bool:
-    """Check flag arguments and files for summary plot"""
-    name = cfg.name
-    vrs = cfg.vrs
-    first_var = vrs[0] if vrs else ""
+def is_summary(cfg: PlopmConfig) -> bool:
+    """Determine whether the request uses one-dimensional output.
+
+    The decision considers explicit series options, special tabulated
+    properties, summary-vector availability, and requests to list variables.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Initialized configuration and primary case path.
+
+    Returns
+    -------
+    bool
+        ``True`` when the request should use the summary plotting workflow.
+
+    """
+    name = cfg.case
+    variables = cfg.variables
+    first_variable = variables[0] if variables else ""
     ntot = 0
     if cfg.list_variables:
         for ext in ["INIT", "UNRST"]:
@@ -645,10 +755,13 @@ def is_summary(cfg: ConfigPlopm) -> bool:
     ):
         return True
     if (
-        first_var[:3] in ["krw", "krg"]
-        or first_var[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
-        or first_var[:6] == "pcfact"
-        or (first_var[:8] == "permfact" and cfg.slice == [[[-2, -2], [0, 1], [-2, -2]]])
+        first_variable[:3] in ["krw", "krg"]
+        or first_variable[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
+        or first_variable[:6] == "pcfact"
+        or (
+            first_variable[:8] == "permfact"
+            and cfg.slice == [[[-2, -2], [0, 1], [-2, -2]]]
+        )
     ):
         return True
     smspec_file = f"{name}.SMSPEC"
@@ -661,8 +774,8 @@ def is_summary(cfg: ConfigPlopm) -> bool:
             )
             print(summary)
             sys.exit(0)
-        smass = cfg.smass
-        for name_v in vrs:
+        smass = cfg.summary_mass
+        for name_v in variables:
             base = name_v.split(" ")[0].upper()
             if base in summary or base.lower() in smass:
                 return True
@@ -671,31 +784,38 @@ def is_summary(cfg: ConfigPlopm) -> bool:
     return False
 
 
-def ini_summary(cfg: ConfigPlopm) -> None:
-    """Initialize the needed objects for the summary plots"""
-    vrs = cfg.vrs
-    nv = len(vrs)
-    cfg.numc = 1 if len(cfg.names) < nv else nv
+def init_summary(cfg: PlopmConfig) -> None:
+    """Normalize settings used by one-dimensional plots.
+
+    Parameters
+    ----------
+    cfg : PlopmConfig
+        Configuration updated in place with per-variable styles and labels.
+
+    """
+    variables = cfg.variables
+    nvars = len(variables)
+    cfg.ncolors = 1 if len(cfg.cases) < nvars else nvars
     for val in ["colors_raw", "linestyle", "linewidth"]:
         if getattr(cfg, val):
             tmp = [var.split(",") for var in getattr(cfg, val).split(":")]
-            if len(tmp) < nv:
-                tmp = [tmp[0]] * nv
+            if len(tmp) < nvars:
+                tmp = [tmp[0]] * nvars
             setattr(cfg, "colors" if val == "colors_raw" else val, tmp)
         elif val == "colors_raw":
-            cfg.colors = [cfg.colors_default] * nv
+            cfg.colors = [cfg.colors_default] * nvars
         elif val == "linestyle":
-            cfg.linestyle = [cfg.linestyle_default] * nv
+            cfg.linestyle = [cfg.linestyle_default] * nvars
         else:
-            cfg.linewidth = [cfg.linewidth_values] * nv
+            cfg.linewidth = [cfg.linewidth_values] * nvars
     for axis_name in ["x", "y"]:
         key = f"{axis_name}lim"
-        if len(getattr(cfg, key)) < nv and getattr(cfg, key)[0]:
-            setattr(cfg, key, [getattr(cfg, key)[0]] * nv)
-    if nv == 1 and len(cfg.linewidth[0]) < len(cfg.names[0]):
-        cfg.linewidth[0] = [cfg.linewidth[0][0]] * len(cfg.names[0])
+        if len(getattr(cfg, key)) < nvars and getattr(cfg, key)[0]:
+            setattr(cfg, key, [getattr(cfg, key)[0]] * nvars)
+    if nvars == 1 and len(cfg.linewidth[0]) < len(cfg.cases[0]):
+        cfg.linewidth[0] = [cfg.linewidth[0][0]] * len(cfg.cases[0])
     for val in [
-        "names",
+        "cases",
         "title",
         "xformat",
         "yformat",
@@ -713,5 +833,5 @@ def ini_summary(cfg: ConfigPlopm) -> None:
         "filename",
         "axis_grid",
     ]:
-        if len(getattr(cfg, val)) < nv:
-            setattr(cfg, val, [getattr(cfg, val)[0]] * nv)
+        if len(getattr(cfg, val)) < nvars:
+            setattr(cfg, val, [getattr(cfg, val)[0]] * nvars)
