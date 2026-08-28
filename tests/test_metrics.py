@@ -20,15 +20,15 @@ def test_metrics(tmp_path):
             str(tmp_path),
             "-v",
             "depth,dz,tranz * 10",
-            "-histogram",
+            "-hist",
             "50,norm 20,lognorm 100",
             "-c",
             "#7274b3,#cddb6e,#db6e8f",
-            "-axgrid",
+            "-ag",
             "0",
-            "-ylabel",
+            "-yl",
             "Histogram",
-            "-save",
+            "-fn",
             "histogram",
         ]
     )
@@ -44,9 +44,9 @@ def test_metrics(tmp_path):
                 str(tmp_path),
                 "-v",
                 name,
-                "-z",
+                "-asp",
                 "0",
-                "-save",
+                "-fn",
                 name,
             ]
         )
@@ -63,9 +63,9 @@ def test_metrics(tmp_path):
             "objepres",
             "-s",
             ",,1:58",
-            "-z",
+            "-asp",
             "0",
-            "-save",
+            "-fn",
             "objepres",
         ]
     )

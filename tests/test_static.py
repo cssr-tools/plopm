@@ -37,7 +37,7 @@ def test_static(tmp_path, monkeypatch):
             str(tmp_path),
             "-c",
             "cubehelix",
-            "-cticks",
+            "-cbt",
             "[0, middle, 0.9]",
         ]
     )

@@ -45,26 +45,27 @@ from plopm.utils.readers import (
     get_wells,
     initialize_time,
 )
+from plopm.utils.terminal import cli_error_value, plopm_error
 
 
 def prepare_maps(
     cfg: ConfigPlopm, deck: str, n: int
 ) -> tuple[ReadData, NDArray, NDArray, str, str, str, int, int, str, str]:
     """Get the spatial coordinates"""
-    if cfg.csvs[n][0]:
+    if cfg.csv_columns[n][0]:
         xc, yc, mx, my, xname, yname = get_csvs(cfg, deck, n)
         slidet, sliden = "", ""
         read = ReadData(restart=cfg.restart)
     else:
         read = get_readers(deck, cfg.gif, cfg.vtk, cfg.vrs, cfg.restart, cfg.filter, n)
-        slide = cfg.slide[n]
+        slide = cfg.slice[n]
         if slide[0][0] != -2:
             xc, yc, slidet, sliden, mx, my, xname, yname = handle_slide_x(cfg, read, n)
         elif slide[1][0] != -2:
             xc, yc, slidet, sliden, mx, my, xname, yname = handle_slide_y(cfg, read, n)
         else:
             xc, yc, slidet, sliden, mx, my, xname, yname = handle_slide_z(cfg, read, n)
-    if int(cfg.rotate[n]) != 0 or cfg.translate[n] != ["[0", "0]"]:
+    if int(cfg.rotation[n]) != 0 or cfg.translation[n] != ["[0", "0]"]:
         xc, yc = rotate_grid(cfg, n, xc, yc)
     return (
         read,
@@ -80,8 +81,9 @@ def prepare_maps(
     )
 
 
-def make_maps(cfg: ConfigPlopm) -> None:
+def make_maps(cfg: ConfigPlopm) -> list[str]:
     """Method to create the 2d maps using pcolormesh"""
+    generated_files: list[str] = []
 
     def create_figure(
         rows: int = 1,
@@ -113,32 +115,35 @@ def make_maps(cfg: ConfigPlopm) -> None:
             if axis_to_remove in fig.axes:
                 fig.delaxes(axis_to_remove)
 
-    def save_animation(im_ani: FuncAnimation, name: str) -> None:
-        if cfg.loop or not writers.is_available("ffmpeg"):
-            im_ani.save(f"{cfg.output}/{name}.gif")
+    def save_animation(im_ani: FuncAnimation, name: str) -> str:
+        filename = f"{name}.gif"
+        output_path = f"{cfg.output_dir}/{filename}"
+        if cfg.gif_loop or not writers.is_available("ffmpeg"):
+            im_ani.save(output_path)
         else:
-            im_ani.save(f"{cfg.output}/{name}.gif", extra_args=["-loop", "-1"])
+            im_ani.save(output_path, extra_args=["-loop", "-1"])
+        return filename
 
     skip = 0
     if (
-        cfg.subfigs[0]
+        cfg.subplot_grid[0]
         and len(cfg.vrs) > 1
         and len(cfg.restart) == 1
         and len(cfg.names[0]) == 1
     ):
         skip = 1
-    if cfg.subfigs[0]:
-        fig, axis = create_figure(int(cfg.subfigs[0]), int(cfg.subfigs[1]))
-        sub1 = int(cfg.subfigs[1])
+    if cfg.subplot_grid[0]:
+        fig, axis = create_figure(int(cfg.subplot_grid[0]), int(cfg.subplot_grid[1]))
+        sub1 = int(cfg.subplot_grid[1])
     else:
         fig, axis = create_figure(1, 1, "compressed")
         sub1 = 1
-    if cfg.subfigs[0] and cfg.gif and len(cfg.names[0]) > 1:
+    if cfg.subplot_grid[0] and cfg.gif and len(cfg.names[0]) > 1:
         _, _, _, cmin, cmax, diffa = find_min_max(cfg)
-        maska = get_mask(cfg) if cfg.mask else []
-        deckd = set_deck_name(cfg.diff) if cfg.diff else ""
+        maska = get_mask(cfg) if cfg.mask_variable else []
+        deckd = set_deck_name(cfg.difference_input) if cfg.difference_input else ""
         fig, axis = create_figure(
-            int(cfg.subfigs[0]), int(cfg.subfigs[1]), "compressed"
+            int(cfg.subplot_grid[0]), int(cfg.subplot_grid[1]), "compressed"
         )
         axiss = normalize_axis(axis)
         read, xc, yc, named, slidet, sliden, mx, my, xname, yname = prepare_maps(
@@ -164,6 +169,7 @@ def make_maps(cfg: ConfigPlopm) -> None:
                 slidet,
                 sliden,
                 cfg,
+                generated_files,
                 0,
                 read,
                 xc,
@@ -176,20 +182,24 @@ def make_maps(cfg: ConfigPlopm) -> None:
                 yname,
             ),
             frames=len(read.restart),
-            interval=cfg.interval,
+            interval=cfg.gif_interval,
             blit=False,
             repeat=False,
         )
-        save_animation(im_ani, cfg.save[0] if cfg.save[0] else cfg.vrs[0])
-    elif cfg.subfigs[0] and cfg.gif and len(cfg.vrs) > 1:
+        generated_files.append(
+            save_animation(im_ani, cfg.filename[0] if cfg.filename[0] else cfg.vrs[0])
+        )
+    elif cfg.subplot_grid[0] and cfg.gif and len(cfg.vrs) > 1:
         read, xc, yc, cmin, cmax, diffa = find_min_max(cfg)
-        deckd = set_deck_name(cfg.diff) if cfg.diff else ""
+        deckd = set_deck_name(cfg.difference_input) if cfg.difference_input else ""
         read, xc, yc, named, slidet, sliden, mx, my, xname, yname = prepare_maps(
             cfg, cfg.names[0][0], 0
         )
-        maska = get_mask(cfg) if cfg.mask else []
+        maska = get_mask(cfg) if cfg.mask_variable else []
         if len(read.restart) > 1:
-            fig, axis = create_figure(int(cfg.subfigs[0]), int(cfg.subfigs[1]))
+            fig, axis = create_figure(
+                int(cfg.subplot_grid[0]), int(cfg.subplot_grid[1])
+            )
         axiss = normalize_axis(axis)
         plt.tight_layout(pad=1.7)
         original_loc, cb = prepare_colorbars(axiss)
@@ -212,6 +222,7 @@ def make_maps(cfg: ConfigPlopm) -> None:
                 slidet,
                 sliden,
                 cfg,
+                generated_files,
                 0,
                 read,
                 xc,
@@ -224,25 +235,29 @@ def make_maps(cfg: ConfigPlopm) -> None:
                 yname,
             ),
             frames=len(read.restart),
-            interval=cfg.interval,
+            interval=cfg.gif_interval,
             blit=False,
             repeat=False,
         )
-        save_animation(im_ani, cfg.save[0] if cfg.save[0] else named)
+        generated_files.append(
+            save_animation(im_ani, cfg.filename[0] if cfg.filename[0] else named)
+        )
     else:
         _, _, _, cmin, cmax, diffa = find_min_max(cfg)
-        maska = get_mask(cfg) if cfg.mask else []
-        deckd = set_deck_name(cfg.diff) if cfg.diff else ""
+        maska = get_mask(cfg) if cfg.mask_variable else []
+        deckd = set_deck_name(cfg.difference_input) if cfg.difference_input else ""
         read, xc, yc, named, slidet, sliden, mx, my, xname, yname = prepare_maps(
             cfg, cfg.names[0][0], 0
         )
         for n, var in enumerate(cfg.vrs):
             if len(read.restart) > 1:
-                if cfg.subfigs[0]:
-                    fig, axis = create_figure(int(cfg.subfigs[0]), int(cfg.subfigs[1]))
+                if cfg.subplot_grid[0]:
+                    fig, axis = create_figure(
+                        int(cfg.subplot_grid[0]), int(cfg.subplot_grid[1])
+                    )
                 else:
                     fig, axis = create_figure(1, 1)
-            if not cfg.subfigs[0] and not cfg.gif:
+            if not cfg.subplot_grid[0] and not cfg.gif:
                 plt.close()
                 fig, axis = create_figure(1, 1, "tight")
             axiss = normalize_axis(axis)
@@ -268,6 +283,7 @@ def make_maps(cfg: ConfigPlopm) -> None:
                         slidet,
                         sliden,
                         cfg,
+                        generated_files,
                         n,
                         read,
                         xc,
@@ -280,17 +296,17 @@ def make_maps(cfg: ConfigPlopm) -> None:
                         yname,
                     ),
                     frames=len(read.restart),
-                    interval=cfg.interval,
+                    interval=cfg.gif_interval,
                     blit=False,
                     repeat=False,
                 )
-                name = f"{cfg.save[0] if cfg.save[0] else named + '_' + var}"
-                save_animation(im_ani, name)
+                name = f"{cfg.filename[0] if cfg.filename[0] else named + '_' + var}"
+                generated_files.append(save_animation(im_ani, name))
             else:
                 if len(cfg.names[0]) > 1:
                     delete_extra_axes(axiss, len(cfg.names[0]), fig)
                 if len(read.restart) > 1 and len(cfg.names[0]) == len(read.restart):
-                    if not cfg.subfigs[0]:
+                    if not cfg.subplot_grid[0]:
                         fig, axis = create_figure(1, 1)
                         axiss = normalize_axis(axis)
                         original_loc, cb = prepare_colorbars(axiss)
@@ -310,6 +326,7 @@ def make_maps(cfg: ConfigPlopm) -> None:
                         slidet,
                         sliden,
                         cfg,
+                        generated_files,
                         n,
                         read,
                         xc,
@@ -323,7 +340,7 @@ def make_maps(cfg: ConfigPlopm) -> None:
                     )
                 else:
                     for t, _ in enumerate(read.restart):
-                        if not cfg.subfigs[0]:
+                        if not cfg.subplot_grid[0]:
                             plt.close()
                             fig, axis = create_figure(1, 1)
                             axiss = normalize_axis(axis)
@@ -344,6 +361,7 @@ def make_maps(cfg: ConfigPlopm) -> None:
                             slidet,
                             sliden,
                             cfg,
+                            generated_files,
                             n,
                             read,
                             xc,
@@ -355,6 +373,7 @@ def make_maps(cfg: ConfigPlopm) -> None:
                             xname,
                             yname,
                         )
+    return list(dict.fromkeys(generated_files))
 
 
 def fill_map_array(
@@ -371,9 +390,9 @@ def fill_map_array(
     """Retrieve the quantity"""
     if use_csv:
         quaa = np.asarray(quan).copy()
-    elif cfg.slide[slide_index][0][0] != -2:
+    elif cfg.slice[slide_index][0][0] != -2:
         quaa = map_yzcoords(cfg, read, var, quan, map_index, mx, my)
-    elif cfg.slide[slide_index][1][0] != -2:
+    elif cfg.slice[slide_index][1][0] != -2:
         quaa = map_xzcoords(cfg, read, var, quan, map_index, mx, my)
     else:
         quaa = map_xycoords(cfg, read, var, quan, map_index, mx, my)
@@ -387,8 +406,8 @@ def find_min_max(
     cmin, cmax = [float("inf")], [float("-inf")]
     diffa: list[NDArray] = []
     xc, yc = np.empty(0), np.empty(0)
-    if (cfg.rst_range and cfg.png and not cfg.subfigs[0]) or (
-        cfg.bounds[0][0] and not cfg.diff
+    if (cfg.rst_range and cfg.png and not cfg.subplot_grid[0]) or (
+        cfg.clim[0][0] and not cfg.difference_input
     ):
         return ReadData(), xc, yc, cmin, cmax, diffa
 
@@ -397,9 +416,9 @@ def find_min_max(
         var_index: int,
         restart_index: int,
     ) -> None:
-        if cfg.diff:
+        if cfg.difference_input:
             quaa -= diffa[restart_index]
-        if int(cfg.log[var_index]) == 1:
+        if int(cfg.color_log[var_index]) == 1:
             quaa[quaa <= 0] = np.nan
 
     def update_color_range(quaa: NDArray) -> None:
@@ -413,25 +432,27 @@ def find_min_max(
         )
     else:
         read = ReadData(restart=cfg.restart)
-    if cfg.diff:
+    if cfg.difference_input:
         var = cfg.vrs[0]
         for t, _ in enumerate(read.restart):
-            read, xc, yc, _, _, _, mx, my, _, _ = prepare_maps(cfg, cfg.diff, 1)
+            read, xc, yc, _, _, _, mx, my, _, _ = prepare_maps(
+                cfg, cfg.difference_input, 1
+            )
             _, quan = get_quantity(
-                cfg.diff,
+                cfg.difference_input,
                 read,
                 var,
                 read.restart[t],
-                float(cfg.adjust[0]),
+                float(cfg.scale_factor[0]),
                 cfg.mass,
                 cfg.mass + cfg.xmass,
                 cfg.caprock,
-                cfg.stress,
+                cfg.stress_coefficient,
                 cfg.filter[0],
                 cfg.gif,
-                cfg.vmin[0],
-                cfg.vmax[0],
-                cfg.csvs[0],
+                cfg.min_threshold[0],
+                cfg.max_threshold[0],
+                cfg.csv_columns[0],
             )
             quaa = fill_map_array(cfg, read, var, quan, 1, 1, mx, my)
             diffa.append(quaa.copy())
@@ -448,16 +469,16 @@ def find_min_max(
                     read,
                     var,
                     read.restart[t],
-                    float(cfg.adjust[m]),
+                    float(cfg.scale_factor[m]),
                     cfg.mass,
                     cfg.mass + cfg.xmass,
                     cfg.caprock,
-                    cfg.stress,
+                    cfg.stress_coefficient,
                     cfg.filter[0],
                     cfg.gif,
-                    cfg.vmin[m],
-                    cfg.vmax[m],
-                    cfg.csvs[0],
+                    cfg.min_threshold[m],
+                    cfg.max_threshold[m],
+                    cfg.csv_columns[0],
                 )
                 quaa = fill_map_array(cfg, read, var, quan, m, m, mx, my)
                 apply_diff_and_log(quaa, m, t)
@@ -474,19 +495,19 @@ def find_min_max(
                         read,
                         var,
                         read.restart[t],
-                        float(cfg.adjust[m]),
+                        float(cfg.scale_factor[m]),
                         cfg.mass,
                         cfg.mass + cfg.xmass,
                         cfg.caprock,
-                        cfg.stress,
+                        cfg.stress_coefficient,
                         cfg.filter[n],
                         cfg.gif,
-                        cfg.vmin[m],
-                        cfg.vmax[m],
-                        cfg.csvs[n],
+                        cfg.min_threshold[m],
+                        cfg.max_threshold[m],
+                        cfg.csv_columns[n],
                     )
                     quaa = fill_map_array(
-                        cfg, read, var, quan, n, n, mx, my, cfg.csvs[n][0]
+                        cfg, read, var, quan, n, n, mx, my, cfg.csv_columns[n][0]
                     )
                     apply_diff_and_log(quaa, m, t)
                     update_color_range(quaa)
@@ -496,7 +517,7 @@ def find_min_max(
 def get_mask(cfg: ConfigPlopm) -> list[NDArray]:
     """Read the mask"""
     maska = []
-    var = cfg.mask
+    var = cfg.mask_variable
     for n, deck in enumerate(cfg.names[0]):
         read, _, _, _, _, _, mx, my, _, _ = prepare_maps(cfg, deck, n)
         _, quan = get_quantity(
@@ -504,16 +525,16 @@ def get_mask(cfg: ConfigPlopm) -> list[NDArray]:
             read,
             var,
             0,
-            float(cfg.adjust[0]),
+            float(cfg.scale_factor[0]),
             cfg.mass,
             cfg.mass + cfg.xmass,
             cfg.caprock,
-            cfg.stress,
+            cfg.stress_coefficient,
             cfg.filter[n],
             cfg.gif,
-            cfg.vmin[0],
-            cfg.vmax[0],
-            cfg.csvs[n],
+            cfg.min_threshold[0],
+            cfg.max_threshold[0],
+            cfg.csv_columns[n],
         )
         maska.append(fill_map_array(cfg, read, var, quan, n, n, mx, my))
     return maska
@@ -542,6 +563,7 @@ def mapit(
     slidet: str,
     sliden: str,
     cfg: ConfigPlopm,
+    generated_files: list[str],
     n: int,
     read: ReadData,
     xc: NDArray,
@@ -555,11 +577,11 @@ def mapit(
 ) -> Iterable[Artist]:
     """Method to coordinate the generation of axis"""
     k = t
-    if not cfg.subfigs[0]:
+    if not cfg.subplot_grid[0]:
         k = 0
     elif len(read.restart) == 1:
         k = n
-    if cfg.subfigs[0] and len(cfg.names[0]) > 1:
+    if cfg.subplot_grid[0] and len(cfg.names[0]) > 1:
         show_progress = sys.stdout.isatty()
         if show_progress:
             bar_ctx = alive_bar(len(cfg.names[0]), bar="fish")
@@ -590,6 +612,7 @@ def mapit(
                         slidet,
                         sliden,
                         cfg,
+                        generated_files,
                         read,
                         t,
                         nn,
@@ -625,6 +648,7 @@ def mapit(
                             slidet,
                             sliden,
                             cfg,
+                            generated_files,
                             read,
                             nn,
                             0,
@@ -653,6 +677,7 @@ def mapit(
                             slidet,
                             sliden,
                             cfg,
+                            generated_files,
                             read,
                             t,
                             0,
@@ -665,7 +690,7 @@ def mapit(
                             xname,
                             yname,
                         )
-    elif cfg.subfigs[0] and len(cfg.vrs) > 1 and skip == 0:
+    elif cfg.subplot_grid[0] and len(cfg.vrs) > 1 and skip == 0:
         show_progress = sys.stdout.isatty()
         if show_progress:
             bar_ctx = alive_bar(len(cfg.vrs), bar="fish")
@@ -690,6 +715,7 @@ def mapit(
                     slidet,
                     sliden,
                     cfg,
+                    generated_files,
                     read,
                     t,
                     nn,
@@ -718,6 +744,7 @@ def mapit(
             slidet,
             sliden,
             cfg,
+            generated_files,
             read,
             t,
             n,
@@ -804,7 +831,7 @@ def handle_axis(
         "num" in name and (cfg.cmaps[n] in cfg.cmdisc or defcol) and cfg.discrete
     )
     namet, time = name, ""
-    if cfg.tunits[0] == "dates":
+    if cfg.time_units[0] == "dates":
         date_values = unrst["INTEHEAD", restart[t]]
         date = datetime.date(
             date_values[66],
@@ -812,27 +839,27 @@ def handle_axis(
             date_values[64],
         )
         time = f" {date}"
-    elif cfg.tunits[0] == "empty":
+    elif cfg.time_units[0] == "empty":
         pass
     else:
-        tskl, tunit = initialize_time(cfg.tunits[0])
+        tskl, tunit = initialize_time(cfg.time_units[0])
         tunit = tunit[5:]
         if unrst and unrst.count("DOUBHEAD", 0):
             time = f" {tskl*unrst['DOUBHEAD', restart[t]][0]:.0f} {tunit}"
-        elif cfg.tunits[0] in ["s", "m", "h", "d", "w", "y"]:
+        elif cfg.time_units[0] in ["s", "m", "h", "d", "w", "y"]:
             time = f" {restart[t]:.0f} {tunit}"
         else:
-            time = f" {restart[t]:.0f} [{cfg.tunits[0]}]"
-    if cfg.scale:
+            time = f" {restart[t]:.0f} [{cfg.time_units[0]}]"
+    if cfg.equal_aspect:
         axis.axis("scaled")
     extra = ""
     if name_lower == "porv":
         extra = f", sum={np.sum(porv):.3e}"
-    elif name_lower in cfg.mass and cfg.diff:
+    elif name_lower in cfg.mass and cfg.difference_input:
         extra = f", |sum|={extinf:.3e} {unit}"
     elif name_lower in cfg.mass:
         extra = f", sum={extinf:.3e} {unit}"
-    elif cfg.diff:
+    elif cfg.difference_input:
         extra = f", |sum|={extinf:.3e}"
     elif cfg.vrs[0] in ["wells", "faults"]:
         time = ""
@@ -840,100 +867,110 @@ def handle_axis(
     elif is_discrete_num:
         time = ""
         namet = ""
-    if cfg.csvs[n][0]:
+    if cfg.csv_columns[n][0]:
         tslide = ""
     elif cfg.vrs[0] in ["wells", "faults"] or is_discrete_num:
         tslide = slidet[2:]
     else:
         tslide = slidet
     if (
-        cfg.subfigs[0]
+        cfg.subplot_grid[0]
         and len(cfg.names[0]) > 1
         and cfg.title[k] == "0"
-        and cfg.rm[3] == 0
+        and cfg.hide_map_elements[3] == 0
     ):
         if name_lower == "porv":
             named += f" (total porv={np.sum(read.porv)})"
         axis.set_title(named)
         if k == 0 and cfg.suptitle != "0":
             fig.suptitle(f"{time[1:]}")
-    elif cfg.subfigs[0] and len(cfg.vrs) > 1 and cfg.title[k] == "0":
+    elif cfg.subplot_grid[0] and len(cfg.vrs) > 1 and cfg.title[k] == "0":
         if k == 0 and cfg.suptitle != "0":
             fig.suptitle(f"{named}{time}")
-    elif cfg.gif and len(cfg.vrs) == 1 and cfg.title[k] == "0" and cfg.rm[3] == 0:
-        if cfg.diff:
+    elif (
+        cfg.gif
+        and len(cfg.vrs) == 1
+        and cfg.title[k] == "0"
+        and cfg.hide_map_elements[3] == 0
+    ):
+        if cfg.difference_input:
             axis.set_title(f"{named}-{deckd}{time}")
         else:
             axis.set_title(f"{named}{time}")
-    elif cfg.gif and len(cfg.vrs) == 1 and cfg.title[k] != "0" and cfg.rm[3] == 0:
-        if not cfg.csvs[n][0]:
+    elif (
+        cfg.gif
+        and len(cfg.vrs) == 1
+        and cfg.title[k] != "0"
+        and cfg.hide_map_elements[3] == 0
+    ):
+        if not cfg.csv_columns[n][0]:
             axis.set_title(f"{cfg.title[k]} {time}")
         else:
             axis.set_title(f"{cfg.title[k]}")
             fig.suptitle(time)
     elif (
         len(restart) > 1
-        and cfg.subfigs[0]
+        and cfg.subplot_grid[0]
         and len(cfg.names[0]) == 1
         and cfg.title[k] == "0"
-        and cfg.rm[3] == 0
+        and cfg.hide_map_elements[3] == 0
     ):
         axis.set_title(f"{unrst['DOUBHEAD', restart[t]][0]} days")
         if k == 0 and cfg.suptitle != "0":
-            if cfg.diff:
+            if cfg.difference_input:
                 fig.suptitle(f"{named}-{deckd}")
             else:
                 fig.suptitle(f"{named}")
-    elif cfg.rm[3] == 0 and cfg.title[k] == "0":
-        if cfg.diff:
+    elif cfg.hide_map_elements[3] == 0 and cfg.title[k] == "0":
+        if cfg.difference_input:
             axis.set_title(f"{named}-{deckd}" + tslide + extra + time)
         else:
             axis.set_title(namet + tslide + extra + time)
-    elif cfg.subfigs[0] and len(cfg.names[0]) > 1:
+    elif cfg.subplot_grid[0] and len(cfg.names[0]) > 1:
         if k == 0 and cfg.suptitle != "0":
-            if cfg.gif and cfg.csvs[n][0]:
-                fig.suptitle(f"{restart[t]} {cfg.tunits[0]}")
+            if cfg.gif and cfg.csv_columns[n][0]:
+                fig.suptitle(f"{restart[t]} {cfg.time_units[0]}")
             elif unrst:
                 fig.suptitle(f"{unrst['DOUBHEAD', restart[t]][0]} days")
             else:
-                fig.suptitle(f"{restart[t]} {cfg.tunits[0]}")
-    if name_lower == "grid" and cfg.rm[3] == 0 and cfg.title[k] == "0":
+                fig.suptitle(f"{restart[t]} {cfg.time_units[0]}")
+    if name_lower == "grid" and cfg.hide_map_elements[3] == 0 and cfg.title[k] == "0":
         axis.set_title(
             f"Grid = [{nx},{ny},{nz}], "
             + f"Total no. active cells = {np.max(actind)+1}"
         )
-    if cfg.title[k] != "0" and cfg.rm[3] == 0 and not cfg.gif:
+    if cfg.title[k] != "0" and cfg.hide_map_elements[3] == 0 and not cfg.gif:
         axis.set_title(cfg.title[k])
-    if cfg.slide[n_s][2][0] == -2 and not axis.yaxis_inverted():
+    if cfg.slice[n_s][2][0] == -2 and not axis.yaxis_inverted():
         axis.invert_yaxis()
     if len(cfg.xlim[n]) > 1:
         axis.set_xlim([float(cfg.xlim[n][0][1:]), float(cfg.xlim[n][1][:-1])])
         xlabels = np.linspace(
             float(cfg.xlim[n][0][1:]) * cfg.xskl,
             float(cfg.xlim[n][1][:-1]) * cfg.xskl,
-            int(cfg.xlnum[n]),
+            int(cfg.xtick_count[n]),
         )
     else:
         xlabels = np.linspace(
             np.min(xc) * cfg.xskl,
             np.max(xc) * cfg.xskl,
-            int(cfg.xlnum[n]),
+            int(cfg.xtick_count[n]),
         )
-    set_axis_ticks("x", xlabels, cfg.xskl, cfg.xformat[n], cfg.rm[1])
+    set_axis_ticks("x", xlabels, cfg.xskl, cfg.xformat[n], cfg.hide_map_elements[1])
     if len(cfg.ylim[n]) > 1:
         axis.set_ylim([float(cfg.ylim[n][0][1:]), float(cfg.ylim[n][1][:-1])])
         ylabels = np.linspace(
             float(cfg.ylim[n][0][1:]) * cfg.yskl,
             float(cfg.ylim[n][1][:-1]) * cfg.yskl,
-            int(cfg.ylnum[n]),
+            int(cfg.ytick_count[n]),
         )
     else:
         ylabels = np.linspace(
             np.min(yc) * cfg.yskl,
             np.max(yc) * cfg.yskl,
-            int(cfg.ylnum[n]),
+            int(cfg.ytick_count[n]),
         )
-    set_axis_ticks("y", ylabels, cfg.yskl, cfg.yformat[n], cfg.rm[0])
+    set_axis_ticks("y", ylabels, cfg.yskl, cfg.yformat[n], cfg.hide_map_elements[0])
 
 
 def mapits(
@@ -951,6 +988,7 @@ def mapits(
     slidet: str,
     sliden: str,
     cfg: ConfigPlopm,
+    generated_files: list[str],
     read: ReadData,
     t: int,
     n: int,
@@ -973,13 +1011,15 @@ def mapits(
     def save_map(named: str, save_index: int) -> None:
         fig.set_facecolor(cfg.fc)
         name = clean_name(f"{named}_{var}_{sliden}_t{read.restart[t]}")
-        if save_index < len(cfg.save) and cfg.save[save_index]:
-            name = cfg.save[save_index]
+        if save_index < len(cfg.filename) and cfg.filename[save_index]:
+            name = cfg.filename[save_index]
+        filename = f"{name}.png"
         fig.savefig(
-            f"{cfg.output}/{name}.png",
+            f"{cfg.output_dir}/{filename}",
             bbox_inches="tight",
             dpi=int(cfg.dpi[0]),
         )
+        generated_files.append(filename)
 
     def remove_colorbar(
         axiss: Any,
@@ -1003,22 +1043,22 @@ def mapits(
         read,
         var,
         read.restart[t],
-        float(cfg.adjust[n]),
+        float(cfg.scale_factor[n]),
         cfg.mass,
         cfg.mass + cfg.xmass,
         cfg.caprock,
-        cfg.stress,
+        cfg.stress_coefficient,
         cfg.filter[k],
         cfg.gif,
-        cfg.vmin[n],
-        cfg.vmax[n],
-        cfg.csvs[k],
+        cfg.min_threshold[n],
+        cfg.max_threshold[n],
+        cfg.csv_columns[k],
     )
     n_s, nwelult, welult = 0, 1, None
     lwelult: list[str] = []
-    if cfg.subfigs[0] and len(cfg.names[0]) > 1:
+    if cfg.subplot_grid[0] and len(cfg.names[0]) > 1:
         n_s = k
-    if cfg.csvs[k][0]:
+    if cfg.csv_columns[k][0]:
         quaa = quan
     else:
         if cfg.vrs[0] == "wells":
@@ -1026,32 +1066,38 @@ def mapits(
         elif cfg.vrs[0] == "faults":
             welult, lwelult = get_faults(cfg, k)
         nwelult = len(lwelult) + 1
-        if cfg.slide[n_s][0][0] != -2:
+        if cfg.slice[n_s][0][0] != -2:
             quaa = map_yzcoords(cfg, read, var, quan, k, mx, my, welult, nwelult)
-        elif cfg.slide[n_s][1][0] != -2:
+        elif cfg.slice[n_s][1][0] != -2:
             quaa = map_xzcoords(cfg, read, var, quan, k, mx, my, welult, nwelult)
         else:
             quaa = map_xycoords(cfg, read, var, quan, k, mx, my, welult, nwelult)
-    if cfg.diff:
+    if cfg.difference_input:
         quaa -= diffa[t]
-    if cfg.mask:
+    if cfg.mask_variable:
         mask = maska[k]
         maxv = np.nanmax(mask)
-        mask_condition = quaa < cfg.maskthr
+        mask_condition = quaa < cfg.mask_threshold
         quaa[mask_condition] = -cmax[n] * (maxv - mask[mask_condition]) / (maxv - 1)
     if cfg.csv:
         text = [f"{val}\n" for val in quaa if not np.isnan(val)]
         name = clean_name(f"{named}_{var}_{sliden}_t{read.restart[t]}")
-        if cfg.save[n]:
-            name = cfg.save[n]
-        with open(f"{cfg.output}/{name}.csv", "w", encoding="utf8") as file:
+        if cfg.filename[n]:
+            name = cfg.filename[n]
+        filename = f"{name}.csv"
+        with open(
+            f"{cfg.output_dir}/{filename}",
+            "w",
+            encoding="utf8",
+        ) as file:
             file.write("".join(text))
+        generated_files.append(filename)
         return
-    if var in cfg.mass and cfg.diff:
+    if var in cfg.mass and cfg.difference_input:
         extinf = np.nansum(np.abs(quaa))
     elif var in cfg.mass:
         extinf = np.sum(quaa[~np.isnan(quaa)])
-    elif cfg.diff:
+    elif cfg.difference_input:
         extinf = np.nansum(np.abs(quaa))
     else:
         extinf = np.empty(0)
@@ -1066,19 +1112,19 @@ def mapits(
         valid_maps = quaa[~np.isnan(quaa)]
         if (
             len(cfg.names[0]) > 1
-            and cfg.subfigs[0]
+            and cfg.subplot_grid[0]
             or len(cfg.vrs) > 1
-            and cfg.subfigs[0]
+            and cfg.subplot_grid[0]
             or len(read.restart) > 1
-            and cfg.subfigs[0]
+            and cfg.subplot_grid[0]
             and len(cfg.names[0]) == 1
             or cfg.gif
-            and not cfg.subfigs[0]
-            or int(cfg.log[n]) == 1
+            and not cfg.subplot_grid[0]
+            or int(cfg.color_log[n]) == 1
         ):
             minc = cmin[n]
             maxc = cmax[n]
-        elif not cfg.global_ and valid_maps.size > 0:
+        elif not cfg.global_range and valid_maps.size > 0:
             minc = np.min(valid_maps)
             maxc = np.max(valid_maps)
         elif valid_maps.size > 0:
@@ -1093,10 +1139,10 @@ def mapits(
         else:
             minc = 0
             maxc = 0
-        if cfg.bounds[n][0]:
-            minc = float(cfg.bounds[n][0][1:])
-            maxc = float(cfg.bounds[n][1][:-1])
-        elif cfg.diff and int(cfg.log[n]) == 0:
+        if cfg.clim[n][0]:
+            minc = float(cfg.clim[n][0][1:])
+            maxc = float(cfg.clim[n][1][:-1])
+        elif cfg.difference_input and int(cfg.color_log[n]) == 0:
             minmax = max(abs(maxc), abs(minc))
             minc = -minmax
             maxc = minmax
@@ -1109,7 +1155,7 @@ def mapits(
             and (minc.is_integer() and maxc.is_integer())
         ):
             ntick = int(maxc - minc + 1)
-        if cfg.mask:
+        if cfg.mask_variable:
             minc = -maxc
     elif var in ["faults", "wells"]:
         minc = 1
@@ -1118,10 +1164,10 @@ def mapits(
         minc = 1
         maxc = 1
     nlc = ntick
-    if cfg.cnum[n] and ntick > 1:
-        ntick = int(cfg.cnum[n])
-    if cfg.clabel:
-        ncolor = cfg.clabel
+    if cfg.colorbar_tick_count[n] and ntick > 1:
+        ntick = int(cfg.colorbar_tick_count[n])
+    if cfg.colorbar_label:
+        ncolor = cfg.colorbar_label
     shc = 0.0
     if abs(minc) < sys.float_info.epsilon:
         minc = 0
@@ -1138,7 +1184,7 @@ def mapits(
         )
         if ntick == 2:
             shc = (maxc - minc) / 2.0
-        elif minc == 0 and "num" not in var and var != "mpi_rank" or cfg.mask:
+        elif minc == 0 and "num" not in var and var != "mpi_rank" or cfg.mask_variable:
             shc = 0
         else:
             shc = 0.5
@@ -1153,31 +1199,32 @@ def mapits(
                     if color.isnumeric():
                         temp0[-1].append(float(color) / 255.0)
                     else:
-                        print("Error for color given in -c:", cfg.cmaps[n])
-                        sys.exit()
+                        plopm_error(
+                            f"Color given in {cli_error_value(f'-c {cfg.cmaps[n]}')} not found."
+                        )
         cmap = colors.ListedColormap(temp0)
-    if cfg.ncolor != "w":
-        cmap = cmap.with_extremes(bad=cfg.ncolor)
+    if cfg.inactive_color != "w":
+        cmap = cmap.with_extremes(bad=cfg.inactive_color)
     axis = axiss.flat[k]
-    if len(cfg.grid) > 1:
+    if len(cfg.grid_edges) > 1:
         if var == "grid":
             imag = axis.pcolormesh(
                 xc,
                 yc,
                 quaa.reshape(my, mx),
                 facecolors="none",
-                edgecolors=cfg.grid[0],
-                lw=float(cfg.grid[1]),
+                edgecolors=cfg.grid_edges[0],
+                lw=float(cfg.grid_edges[1]),
             )
-        elif int(cfg.log[n]) == 0:
+        elif int(cfg.color_log[n]) == 0:
             imag = axis.pcolormesh(
                 xc,
                 yc,
                 quaa.reshape(my, mx),
                 shading="flat",
                 cmap=cmap,
-                edgecolors=cfg.grid[0],
-                lw=float(cfg.grid[1]),
+                edgecolors=cfg.grid_edges[0],
+                lw=float(cfg.grid_edges[1]),
             )
         else:
             imag = axis.pcolormesh(
@@ -1187,8 +1234,8 @@ def mapits(
                 shading="flat",
                 cmap=cmap,
                 norm=colors.LogNorm(vmin=minc, vmax=maxc),
-                edgecolors=cfg.grid[0],
-                lw=float(cfg.grid[1]),
+                edgecolors=cfg.grid_edges[0],
+                lw=float(cfg.grid_edges[1]),
             )
     else:
         if var == "grid":
@@ -1200,7 +1247,7 @@ def mapits(
                 edgecolors="black",
                 lw=0.001,
             )
-        elif int(cfg.log[n]) == 0:
+        elif int(cfg.color_log[n]) == 0:
             imag = axis.pcolormesh(
                 xc,
                 yc,
@@ -1217,14 +1264,19 @@ def mapits(
                 cmap=cmap,
                 norm=colors.LogNorm(vmin=minc, vmax=maxc),
             )
-    if cfg.subfigs[0] and cfg.gif and len(cfg.vrs) > 1 and cb[k] != "":
+    if cfg.subplot_grid[0] and cfg.gif and len(cfg.vrs) > 1 and cb[k] != "":
         axiss, cb = remove_colorbar(axiss, original_loc, cb, k)
-    if cfg.subfigs[0] and cfg.gif and len(cfg.names[0]) > 1 and cb[k] != "":
+    if cfg.subplot_grid[0] and cfg.gif and len(cfg.names[0]) > 1 and cb[k] != "":
         axiss, cb = remove_colorbar(axiss, original_loc, cb, k)
-    if not cfg.subfigs[0] and cb[k] != "" and cfg.gif and cfg.rm[2] == 0:
+    if (
+        not cfg.subplot_grid[0]
+        and cb[k] != ""
+        and cfg.gif
+        and cfg.hide_map_elements[2] == 0
+    ):
         axiss, cb = remove_colorbar(axiss, original_loc, cb, k)
     divider = make_axes_locatable(axis)
-    if cfg.mask:
+    if cfg.mask_variable:
         vect = np.linspace(
             0,
             maxc,
@@ -1238,13 +1290,13 @@ def mapits(
             ntick,
             endpoint=True,
         )
-    frmt = "{:" + cfg.cformat[n] + "}"
+    frmt = "{:" + cfg.cb_format[n] + "}"
 
     def formatter(value: float, _: Any) -> str:
         return frmt.format(value)
 
-    if not cfg.mask:
-        if int(cfg.log[n]) == 1:
+    if not cfg.mask_variable:
+        if int(cfg.color_log[n]) == 1:
             pass
         else:
             for i, val in enumerate(vect):
@@ -1253,23 +1305,23 @@ def mapits(
                     if i == 0:
                         minc = 0
     if var not in ("wells", "grid", "faults"):
-        if int(cfg.log[n]) == 0:
-            if len(read.restart) > 1 and cfg.subfigs[0] and len(cfg.names[0]) == 1:
-                if cfg.cbsfax[0] != -1:
+        if int(cfg.color_log[n]) == 0:
+            if len(read.restart) > 1 and cfg.subplot_grid[0] and len(cfg.names[0]) == 1:
+                if cfg.colorbar_position[0] != -1:
                     cb[0] = fig.colorbar(
                         imag,
-                        cax=fig.add_axes(cfg.cbsfax),
+                        cax=fig.add_axes(cfg.colorbar_position),
                         ticks=vect,
                         label=ncolor,
                         format=(
-                            mticker.FixedFormatter(cfg.cticks[n])
-                            if cfg.cticks[n]
+                            mticker.FixedFormatter(cfg.colorbar_ticks[n])
+                            if cfg.colorbar_ticks[n]
                             else formatter
                         ),
                         shrink=0.2,
                         location="top",
                     )
-            elif not cfg.subfigs[0] or len(cfg.names[0]) == 1:
+            elif not cfg.subplot_grid[0] or len(cfg.names[0]) == 1:
                 cb[k] = fig.colorbar(
                     imag,
                     cax=divider.append_axes("right", size="2%", pad=0.05),
@@ -1277,60 +1329,60 @@ def mapits(
                     ticks=vect,
                     label=ncolor,
                     format=(
-                        mticker.FixedFormatter(cfg.cticks[n])
-                        if cfg.cticks[n]
+                        mticker.FixedFormatter(cfg.colorbar_ticks[n])
+                        if cfg.colorbar_ticks[n]
                         else formatter
                     ),
                 )
-            elif k == 0 and cfg.cbsfax[0] != -1:
+            elif k == 0 and cfg.colorbar_position[0] != -1:
                 cb[0] = fig.colorbar(
                     imag,
-                    cax=fig.add_axes(cfg.cbsfax),
+                    cax=fig.add_axes(cfg.colorbar_position),
                     ticks=vect,
                     label=ncolor,
                     format=(
-                        mticker.FixedFormatter(cfg.cticks[n])
-                        if cfg.cticks[n]
+                        mticker.FixedFormatter(cfg.colorbar_ticks[n])
+                        if cfg.colorbar_ticks[n]
                         else formatter
                     ),
                     shrink=0.2,
                     location="top",
                 )
         else:
-            if cfg.clogthks:
+            if cfg.color_log_ticks:
 
                 class LogTickFormatter(LogFormatter):
                     def set_locs(self, locs: Any | None = None) -> None:
-                        self._sublabels = set(cfg.clogthks)
+                        self._sublabels = set(cfg.color_log_ticks)
 
-            if cfg.subfigs[0]:
-                if cfg.cbsfax[0] != -1:
-                    if cfg.clogthks:
+            if cfg.subplot_grid[0]:
+                if cfg.colorbar_position[0] != -1:
+                    if cfg.color_log_ticks:
                         cb[k] = fig.colorbar(
                             imag,
-                            cax=fig.add_axes(cfg.cbsfax),
+                            cax=fig.add_axes(cfg.colorbar_position),
                             label=ncolor,
                             shrink=0.2,
                             location="top",
-                            ticks=cfg.clogthks,
+                            ticks=cfg.color_log_ticks,
                             format=LogTickFormatter(),
                         )
                     else:
                         cb[k] = fig.colorbar(
                             imag,
-                            cax=fig.add_axes(cfg.cbsfax),
+                            cax=fig.add_axes(cfg.colorbar_position),
                             label=ncolor,
                             shrink=0.2,
                             location="top",
                         )
             else:
-                if cfg.clogthks:
+                if cfg.color_log_ticks:
                     cb[k] = fig.colorbar(
                         imag,
                         cax=divider.append_axes("right", size="5%", pad=0.05),
                         orientation="vertical",
                         label=ncolor,
-                        ticks=cfg.clogthks,
+                        ticks=cfg.color_log_ticks,
                         format=LogTickFormatter(),
                     )
                 else:
@@ -1368,64 +1420,66 @@ def mapits(
         slidet,
         nwelult,
     )
-    if cfg.xlabel[n] and cfg.rm[1] == 0:
+    if cfg.xlabel[n] and cfg.hide_map_elements[1] == 0:
         axis.set_xlabel(cfg.xlabel[n])
     elif (
-        cfg.rm[1] == 0
+        cfg.hide_map_elements[1] == 0
         and len(cfg.vrs) == 1
-        and (k + sub1 >= len(cfg.names[0]) or not cfg.subfigs[0])
+        and (k + sub1 >= len(cfg.names[0]) or not cfg.subplot_grid[0])
     ):
-        if len(read.restart) > 1 and cfg.subfigs[0] and len(cfg.names[0]) == 1:
+        if len(read.restart) > 1 and cfg.subplot_grid[0] and len(cfg.names[0]) == 1:
             if k + sub1 >= len(read.restart):
                 axis.set_xlabel(f"{xname+cfg.xunit}")
         else:
             axis.set_xlabel(f"{xname+cfg.xunit}")
     elif (
-        cfg.rm[1] == 0
+        cfg.hide_map_elements[1] == 0
         and len(cfg.names[0]) == 1
-        and (k + sub1 >= len(cfg.vrs) or not cfg.subfigs[0])
+        and (k + sub1 >= len(cfg.vrs) or not cfg.subplot_grid[0])
     ) or (
-        cfg.rm[1] == 0
+        cfg.hide_map_elements[1] == 0
         and len(cfg.names[0]) == len(cfg.vrs)
         and len(cfg.vrs) > 1
-        and (k + sub1 >= len(cfg.vrs) or not cfg.subfigs[0])
+        and (k + sub1 >= len(cfg.vrs) or not cfg.subplot_grid[0])
     ):
         axis.set_xlabel(f"{xname+cfg.xunit}")
-    if cfg.ylabel[n] and cfg.rm[0] == 0:
+    if cfg.ylabel[n] and cfg.hide_map_elements[0] == 0:
         axis.set_ylabel(cfg.ylabel[n])
-    elif cfg.rm[0] == 0 and (k % sub1 == 0 or not cfg.subfigs[0]):
+    elif cfg.hide_map_elements[0] == 0 and (k % sub1 == 0 or not cfg.subplot_grid[0]):
         axis.set_ylabel(f"{yname+cfg.yunit}")
-    if cfg.rm[2] == 1 and len(fig.axes) > 1:
+    if cfg.hide_map_elements[2] == 1 and len(fig.axes) > 1:
         fig.delaxes(fig.axes[1])
     if (
-        cfg.rm[1] == 1
+        cfg.hide_map_elements[1] == 1
         or (
             k + sub1 < len(cfg.names[0])
-            and cfg.subfigs[0]
+            and cfg.subplot_grid[0]
             and len(cfg.vrs) == 1
-            and cfg.delax
+            and cfg.remove_duplicate_labels
         )
-        or cfg.rm[1] == 1
+        or cfg.hide_map_elements[1] == 1
         or (
             k + sub1 < len(cfg.vrs)
-            and cfg.subfigs[0]
+            and cfg.subplot_grid[0]
             and len(cfg.names[0]) == 1
-            and cfg.delax
+            and cfg.remove_duplicate_labels
         )
         or (
             k + sub1 < len(read.restart)
             and len(read.restart) > 1
-            and cfg.subfigs[0]
+            and cfg.subplot_grid[0]
             and len(cfg.names[0]) == 1
-            and cfg.delax
+            and cfg.remove_duplicate_labels
         )
     ):
         axis.tick_params(axis="x", which="both", bottom=False, labelbottom=False)
-    if cfg.rm[0] == 1 or (k % sub1 > 0 and cfg.subfigs[0] and cfg.delax == 1):
+    if cfg.hide_map_elements[0] == 1 or (
+        k % sub1 > 0 and cfg.subplot_grid[0] and cfg.remove_duplicate_labels == 1
+    ):
         axis.tick_params(axis="y", which="both", left=False, labelleft=False)
     axis.set_facecolor(cfg.fc)
     if not cfg.gif:
-        if cfg.subfigs[0]:
+        if cfg.subplot_grid[0]:
             if (
                 t == len(read.restart) - 1
                 and len(read.restart) > 1

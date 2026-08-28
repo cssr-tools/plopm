@@ -17,6 +17,13 @@ from opm.io.ecl import EclFile as OpmFile
 from opm.io.ecl import ESmry as OpmSummary
 
 from plopm.config.config import ConfigPlopm
+from plopm.utils.terminal import (
+    cli_current_value,
+    cli_error_value,
+    cli_info_value,
+    plopm_error,
+    plopm_info,
+)
 
 
 def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
@@ -44,20 +51,20 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
         return folder
 
     cfg = ConfigPlopm()
-    cfg.output = os.path.abspath(cmdargs.output)
+    cfg.output_dir = os.path.abspath(cmdargs.output_dir)
     names = cmdargs.input.split("  ")
     names = [var.split(" ") for var in names]
     cfg.namens = names
 
     for name in ["gif", "csv", "png", "vtk"]:
-        setattr(cfg, name, cmdargs.mode == name)
+        setattr(cfg, name, cmdargs.format == name)
 
-    cfg.diff = cmdargs.diff
+    cfg.difference_input = cmdargs.difference_input
     cfg.ensemble = int(cmdargs.ensemble)
 
-    if cfg.diff:
-        if cfg.diff[-1] in [".", "/"]:
-            cfg.diff = find_first_case(cfg.diff, ".EGRID")
+    if cfg.difference_input:
+        if cfg.difference_input[-1] in [".", "/"]:
+            cfg.difference_input = find_first_case(cfg.difference_input, ".EGRID")
         if names[0][0][-1] in [".", "/"]:
             names[0][0] = find_first_case(names[0][0], ".EGRID")
     elif names[0][0][-1] in [".", "/"]:
@@ -75,17 +82,24 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
     cfg.name = names[0][0]
     cfg.vrs = cmdargs.variable.lower().split(",")
     handle_blocks(cfg)
-    cfg.stress = float(cmdargs.stress)
+    cfg.stress_coefficient = float(cmdargs.stress_coefficient)
 
-    for name in ["vtknames", "save"]:
-        setattr(cfg, name, getattr(cmdargs, name).split("  "))
+    for cfg_name, cmdarg_name in [
+        ("vtk_names", "vtk_names"),
+        ("filename", "filename"),
+    ]:
+        setattr(cfg, cfg_name, getattr(cmdargs, cmdarg_name).split("  "))
 
     cfg.mass = ["gasm", "dism", "liqm", "vapm", "co2m", "h2om"]
     cfg.xmass = ["xco2l", "xh2ov", "xco2v", "xh2ol"]
     cfg.caprock = ["limipres", "overpres", "objepres"]
-
-    for name in ["filter", "restart", "adjust", "vtkformat"]:
-        setattr(cfg, name, getattr(cmdargs, name).split(","))
+    for cfg_name, cmdarg_name in [
+        ("filter", "filter"),
+        ("restart", "restart"),
+        ("scale_factor", "scale_factor"),
+        ("vtk_format", "vtk_format"),
+    ]:
+        setattr(cfg, cfg_name, getattr(cmdargs, cmdarg_name).split(","))
 
     if cfg.restart[0] == "-1":
         cfg.restart = [-1]
@@ -107,97 +121,132 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
                     int(vals[1]) + 1,
                 )
             )
-        if cfg.save[0]:
+        if cfg.filename[0]:
             width = len(str(cfg.restart[-1]))
-            cfg.save = [
-                cfg.save[0] + f"{restart_value}".zfill(width)
+            cfg.filename = [
+                cfg.filename[0] + f"{restart_value}".zfill(width)
                 for restart_value in cfg.restart
             ]
     else:
         if "," in cmdargs.restart and (cfg.png or cfg.csv):
             cfg.rst_range = True
             width = len(str(cfg.restart[-1]))
-            cfg.save = [
-                cfg.save[0] + f"{restart_value}".zfill(width)
+            cfg.filename = [
+                cfg.filename[0] + f"{restart_value}".zfill(width)
                 for restart_value in cfg.restart
             ]
         cfg.restart = [int(restart_value) for restart_value in cfg.restart]
-
-    for name in ["vtkformat", "adjust", "vtknames"]:
+    for name in ["vtk_format", "scale_factor", "vtk_names"]:
         if len(getattr(cfg, name)) < len(cfg.vrs):
             setattr(
                 cfg,
                 name,
                 [getattr(cfg, name)[0]] * len(cfg.vrs),
             )
-
-    if not os.path.exists(cfg.output):
-        os.makedirs(cfg.output, exist_ok=True)
-
+    if not os.path.exists(cfg.output_dir):
+        os.makedirs(cfg.output_dir, exist_ok=True)
     if cfg.vtk:
         return cfg
 
-    cfg.csvs = cmdargs.csv.split(";")
-    cfg.csvs = [[int(val) if val else "" for val in var.split(",")] for var in cfg.csvs]
+    cfg.csv_columns = cmdargs.csv_columns.split(";")
+    cfg.csv_columns = [
+        [int(val) if val else "" for val in var.split(",")] for var in cfg.csv_columns
+    ]
 
     allcsvs = True
-    for val in cfg.csvs:
+    for val in cfg.csv_columns:
         if not val[0]:
             allcsvs = False
         elif len(val) == 2:
-            cfg.csvsummary = True
+            cfg.csv_column_summary = True
 
     if allcsvs:
         cfg.vrs = ["csv"]
 
     max_count = max(len(cfg.names[0]), len(cfg.vrs))
-    if len(cfg.csvs) == 1 and not cfg.csvs[0][0]:
-        cfg.csvs = [cfg.csvs[0]] * (max_count + 1)
+    if len(cfg.csv_columns) == 1 and not cfg.csv_columns[0][0]:
+        cfg.csv_columns = [cfg.csv_columns[0]] * (max_count + 1)
 
-    for name in ["mask", "lw", "linestyle", "ncolor"]:
-        setattr(cfg, name, getattr(cmdargs, name).lower())
-
-    for name in ["size", "maskthr", "interval"]:
-        setattr(cfg, name, float(getattr(cmdargs, name)))
-
-    for name in ["cticks", "title"]:
-        setattr(cfg, name, getattr(cmdargs, name).split("  "))
-
-    for name in ["bounds", "translate", "histogram"]:
-        setattr(cfg, name, getattr(cmdargs, name).split(" "))
-
-    for name in ["suptitle", "bandprop", "clabel"]:
-        setattr(cfg, name, getattr(cmdargs, name))
-
-    cfg.bounds = [var.split(",") for var in cfg.bounds]
-    cfg.translate = [var.split(",") for var in cfg.translate]
-    cfg.colors_raw = cmdargs.colors
-    cfg.cf = cmdargs.cformat
-    cfg.fc = cmdargs.facecolor
-    cfg.labels = cmdargs.labels.split("   ")
-    cfg.labels = [var.split("  ") for var in cfg.labels]
-    cfg.rm = [int(val) for val in cmdargs.remove.split(",")]
-    cfg.global_ = int(cmdargs.global_) == 1
-
-    for name in ["scale", "delax", "loop", "printv", "step"]:
-        setattr(cfg, name, int(getattr(cmdargs, name)) == 1)
-
-    for name in [
-        "dimensions",
-        "distance",
-        "how",
-        "rotate",
-        "log",
-        "loc",
-        "axgrid",
+    for cfg_name, cmdarg_name in [
+        ("mask_variable", "mask_variable"),
+        ("linewidth", "linewidth"),
+        ("linestyle", "linestyle"),
+        ("inactive_color", "inactive_color"),
     ]:
-        setattr(cfg, name, getattr(cmdargs, name).split(","))
+        setattr(cfg, cfg_name, getattr(cmdargs, cmdarg_name).lower())
 
-    for name in ["dpi", "tunits", "cnum", "grid"]:
-        setattr(cfg, name, getattr(cmdargs, name).split(","))
+    for cfg_name, cmdarg_name in [
+        ("fontsize", "fontsize"),
+        ("mask_threshold", "mask_threshold"),
+        ("gif_interval", "gif_interval"),
+    ]:
+        setattr(cfg, cfg_name, float(getattr(cmdargs, cmdarg_name)))
 
-    for name in ["dual", "subfigs", "vmin", "vmax"]:
-        setattr(cfg, name, getattr(cmdargs, name).split(","))
+    for cfg_name, cmdarg_name in [
+        ("colorbar_ticks", "colorbar_ticks"),
+        ("title", "title"),
+    ]:
+        setattr(cfg, cfg_name, getattr(cmdargs, cmdarg_name).split("  "))
+
+    for cfg_name, cmdarg_name in [
+        ("clim", "clim"),
+        ("translation", "translation"),
+        ("histogram", "histogram"),
+    ]:
+        setattr(cfg, cfg_name, getattr(cmdargs, cmdarg_name).split(" "))
+
+    for cfg_name, cmdarg_name in [
+        ("suptitle", "suptitle"),
+        ("fill_between_style", "fill_between_style"),
+        ("colorbar_label", "colorbar_label"),
+    ]:
+        setattr(cfg, cfg_name, getattr(cmdargs, cmdarg_name))
+
+    cfg.clim = [var.split(",") for var in cfg.clim]
+    cfg.translation = [var.split(",") for var in cfg.translation]
+    cfg.colors_raw = cmdargs.colors
+    cfg.colorbar_format = cmdargs.colorbar_format
+    cfg.fc = cmdargs.facecolor
+    cfg.legend_labels = cmdargs.legend_labels.split("   ")
+    cfg.legend_labels = [var.split("  ") for var in cfg.legend_labels]
+    cfg.hide_map_elements = [int(val) for val in cmdargs.hide_map_elements.split(",")]
+    cfg.global_range = int(cmdargs.global_range) == 1
+
+    for cfg_name, cmdarg_name in [
+        ("equal_aspect", "equal_aspect"),
+        ("remove_duplicate_labels", "remove_duplicate_labels"),
+        ("gif_loop", "gif_loop"),
+        ("list_variables", "list_variables"),
+        ("step_plot", "step_plot"),
+    ]:
+        setattr(cfg, cfg_name, int(getattr(cmdargs, cmdarg_name)) == 1)
+
+    for cfg_name, cmdarg_name in [
+        ("figsize", "figsize"),
+        ("distance", "distance"),
+        ("aggregation", "aggregation"),
+        ("rotation", "rotation"),
+        ("color_log", "color_log"),
+        ("legend_location", "legend_location"),
+        ("axis_grid", "axis_grid"),
+    ]:
+        setattr(cfg, cfg_name, getattr(cmdargs, cmdarg_name).split(","))
+
+    for cfg_name, cmdarg_name in [
+        ("dpi", "dpi"),
+        ("time_units", "time_units"),
+        ("colorbar_tick_count", "colorbar_tick_count"),
+        ("grid_edges", "grid_edges"),
+    ]:
+        setattr(cfg, cfg_name, getattr(cmdargs, cmdarg_name).split(","))
+
+    for cfg_name, cmdarg_name in [
+        ("dual_grid", "dual_grid"),
+        ("subplot_grid", "subplot_grid"),
+        ("min_threshold", "min_threshold"),
+        ("max_threshold", "max_threshold"),
+    ]:
+        setattr(cfg, cfg_name, getattr(cmdargs, cmdarg_name).split(","))
 
     for axis_name in ["x", "y"]:
         setattr(
@@ -217,8 +266,8 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
         )
         setattr(
             cfg,
-            f"{axis_name}lnum",
-            getattr(cmdargs, f"{axis_name}lnum").split(","),
+            f"{axis_name}tick_count",
+            getattr(cmdargs, f"{axis_name}tick_count").split(","),
         )
         setattr(
             cfg,
@@ -236,50 +285,52 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
             [var.split(",") for var in getattr(cfg, f"{axis_name}lim")],
         )
 
-    if cmdargs.clogthks:
-        cfg.clogthks = [float(val) for val in cmdargs.clogthks[1:-1].split(",")]
+    if cmdargs.color_log_ticks:
+        cfg.color_log_ticks = [
+            float(val) for val in cmdargs.color_log_ticks[1:-1].split(",")
+        ]
 
-    if cfg.cticks[0]:
-        for index, values in enumerate(cfg.cticks):
-            cfg.cticks[index] = [val.strip() for val in values[1:-1].split(",")]
-    if cmdargs.cbsfax != "empty":
-        cfg.cbsfax = cast(
+    if cfg.colorbar_ticks[0]:
+        for index, values in enumerate(cfg.colorbar_ticks):
+            cfg.colorbar_ticks[index] = [val.strip() for val in values[1:-1].split(",")]
+    if cmdargs.colorbar_position != "empty":
+        cfg.colorbar_position = cast(
             tuple[float, float, float, float],
-            tuple(map(float, cmdargs.cbsfax.split(","))),
+            tuple(map(float, cmdargs.colorbar_position.split(","))),
         )
 
-    cfg.slide = cmdargs.slide.split(" ")
-    cfg.slide = [
-        [val if val else [-2, -2] for val in var.split(",")] for var in cfg.slide
+    cfg.slice = cmdargs.slice.split(" ")
+    cfg.slice = [
+        [val if val else [-2, -2] for val in var.split(",")] for var in cfg.slice
     ]
-    if [-2, -2] in cfg.slide[0]:
-        for slide_index, var in enumerate(cfg.slide):
+    if [-2, -2] in cfg.slice[0]:
+        for slice_index, var in enumerate(cfg.slice):
             for value_index, val in enumerate(var):
                 if val[0] != -2:
                     if val == ":":
                         pass
                     elif ":" in val:
                         vals = val.split(":")
-                        cfg.slide[slide_index][value_index] = [
+                        cfg.slice[slice_index][value_index] = [
                             int(vals[0]) - 1,
                             int(vals[1]),
                         ]
                     else:
                         int_value = int(val)
-                        cfg.slide[slide_index][value_index] = [int_value - 1, int_value]
-    elif ":" in cfg.slide[0]:
+                        cfg.slice[slice_index][value_index] = [int_value - 1, int_value]
+    elif ":" in cfg.slice[0]:
         cfg.layer = True
-        for slide_index, var in enumerate(cfg.slide):
+        for slice_index, var in enumerate(cfg.slice):
             for value_index, val in enumerate(var):
                 if val != ":":
-                    cfg.slide[slide_index][value_index] = int(val) - 1
+                    cfg.slice[slice_index][value_index] = int(val) - 1
                 else:
-                    cfg.slide[slide_index][value_index] = -1
+                    cfg.slice[slice_index][value_index] = -1
     else:
         cfg.sensor = True
-        for slide_index, var in enumerate(cfg.slide):
+        for slice_index, var in enumerate(cfg.slice):
             for value_index, val in enumerate(var):
-                cfg.slide[slide_index][value_index] = int(val) - 1
+                cfg.slice[slice_index][value_index] = int(val) - 1
 
     cfg.smass = ["fwcdm", "fgipm"]
 
@@ -323,9 +374,9 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
             if oper in val:
                 cfg.discrete = False
 
-    cfg.lw_values = ["1"] * len(cfg.names[0])
+    cfg.linewidth_values = ["1"] * len(cfg.names[0])
 
-    font = {"family": "normal", "weight": "normal", "size": cfg.size}
+    font = {"family": "normal", "weight": "normal", "size": cfg.fontsize}
     matplotlib.rc("font", **font)
     plt.rcParams.update(
         {
@@ -333,37 +384,45 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
             "font.family": "monospace",
             "legend.columnspacing": 0.9,
             "legend.handlelength": 3.5,
-            "legend.fontsize": cfg.size,
+            "legend.fontsize": cfg.fontsize,
             "lines.linewidth": 4,
-            "axes.titlesize": cfg.size,
+            "axes.titlesize": cfg.fontsize,
             "axes.grid": False,
-            "figure.figsize": (float(cfg.dimensions[0]), float(cfg.dimensions[1])),
+            "figure.figsize": (float(cfg.figsize[0]), float(cfg.figsize[1])),
         }
     )
 
-    if len(cfg.save) < len(cfg.vrs):
-        cfg.save = [cfg.save[0]] * len(cfg.vrs)
+    if len(cfg.filename) < len(cfg.vrs):
+        cfg.filename = [cfg.filename[0]] * len(cfg.vrs)
 
-    if len(cfg.bounds) < len(cfg.vrs):
-        cfg.bounds = [cfg.bounds[0]] * len(cfg.vrs)
+    if len(cfg.clim) < len(cfg.vrs):
+        cfg.clim = [cfg.clim[0]] * len(cfg.vrs)
 
-    if cfg.diff and len(cfg.rotate) < 2:
-        cfg.rotate = [cfg.rotate[0]] * 2
-    elif len(cfg.rotate) < len(cfg.names[0]):
-        cfg.rotate = [cfg.rotate[0]] * len(cfg.names[0])
+    if cfg.difference_input and len(cfg.rotation) < 2:
+        cfg.rotation = [cfg.rotation[0]] * 2
+    elif len(cfg.rotation) < len(cfg.names[0]):
+        cfg.rotation = [cfg.rotation[0]] * len(cfg.names[0])
 
-    if cfg.diff and len(cfg.translate) < 2:
-        cfg.translate = [cfg.translate[0]] * 2
+    if cfg.difference_input and len(cfg.translation) < 2:
+        cfg.translation = [cfg.translation[0]] * 2
 
-    if len(cfg.translate) < len(cfg.names[0]):
-        cfg.translate = [cfg.translate[0]] * len(cfg.names[0])
+    if len(cfg.translation) < len(cfg.names[0]):
+        cfg.translation = [cfg.translation[0]] * len(cfg.names[0])
 
-    if cfg.diff and len(cfg.slide) < 2:
-        cfg.slide = [cfg.slide[0]] * 2
+    if cfg.difference_input and len(cfg.slice) < 2:
+        cfg.slice = [cfg.slice[0]] * 2
 
-    for val in ["how", "filter", "cticks", "csvs", "dual", "slide", "title"]:
+    for val in [
+        "aggregation",
+        "filter",
+        "colorbar_ticks",
+        "csv_columns",
+        "dual_grid",
+        "slice",
+        "title",
+    ]:
         if len(getattr(cfg, val)) < max_count:
-            if val == "slide":
+            if val == "slice":
                 current = getattr(cfg, val)
                 setattr(
                     cfg,
@@ -372,14 +431,14 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
                 )
             else:
                 setattr(cfg, val, [getattr(cfg, val)[0]] * max_count)
-        elif len(cfg.restart) > 1 and cfg.subfigs[0]:
+        elif len(cfg.restart) > 1 and cfg.subplot_grid[0]:
             if (
                 len(getattr(cfg, val)) >= max(max_count, len(cfg.restart))
                 and val == "title"
             ):
                 continue
-            if val == "slide":
-                if cfg.gif and len(cfg.slide) >= len(cfg.names[0]):
+            if val == "slice":
+                if cfg.gif and len(cfg.slice) >= len(cfg.names[0]):
                     continue
                 current = getattr(cfg, val)
                 setattr(
@@ -390,11 +449,10 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
             else:
                 setattr(cfg, val, [getattr(cfg, val)[0]] * len(cfg.restart))
 
-    if len(cfg.restart) > 1 and cfg.subfigs[0]:
-        cfg.save = [cmdargs.save]
-
-    if cfg.diff:
-        cfg.how = [cfg.how[0]] * 2
+    if len(cfg.restart) > 1 and cfg.subplot_grid[0]:
+        cfg.filename = [cmdargs.filename]
+    if cfg.difference_input:
+        cfg.aggregation = [cfg.aggregation[0]] * 2
         cfg.filter = [cfg.filter[0]] * 2
 
     for val in [
@@ -404,18 +462,18 @@ def ini_cfg(cmdargs: argparse.Namespace) -> ConfigPlopm:
         "ylog",
         "xlabel",
         "ylabel",
-        "labels",
-        "tunits",
-        "loc",
+        "legend_labels",
+        "time_units",
+        "legend_location",
         "dpi",
-        "ylnum",
-        "xlnum",
-        "save",
-        "axgrid",
-        "cnum",
-        "log",
-        "vmin",
-        "vmax",
+        "ytick_count",
+        "xtick_count",
+        "filename",
+        "axis_grid",
+        "colorbar_tick_count",
+        "color_log",
+        "min_threshold",
+        "max_threshold",
     ]:
         if len(getattr(cfg, val)) < len(cfg.vrs):
             setattr(cfg, val, [getattr(cfg, val)[0]] * len(cfg.vrs))
@@ -444,7 +502,7 @@ def handle_blocks(cfg: ConfigPlopm) -> None:
 def ini_properties(cfg: ConfigPlopm) -> None:
     """Define the properties to plot"""
     cfg.units = [" [-]", " [mD]", " [mD]", r" [m$^3$]", " [-]", " [-]"]
-    cfg.cformat = [".1f", ".0f", ".0f", ".2e", ".0f", ".0f"]
+    cfg.cb_format = [".1f", ".0f", ".0f", ".2e", ".0f", ".0f"]
     cfg.cmaps = ["jet", "turbo", "turbo", "terrain", "tab20b", "tab20b"]
     cmdisc = [
         "Pastel1",
@@ -471,39 +529,46 @@ def ini_properties(cfg: ConfigPlopm) -> None:
     cfg.cmdisc = [cmap + "_r" for cmap in cmdisc] + cmdisc
     if cfg.colors_raw:
         cfg.cmaps = cfg.colors_raw.split(",")
-    elif cfg.diff:
+    elif cfg.difference_input:
         cfg.cmaps = ["RdYlGn"]
-    elif cfg.mask:
+    elif cfg.mask_variable:
         cfg.cmaps = ["RdGy_r"]
     vrs = cfg.vrs
     if vrs:
         first_var = vrs[0]
         if first_var in ["wells", "faults"]:
-            if cfg.how[0]:
-                if cfg.how[0] not in ["min", "max"]:
-                    print(f"Unsuported value -how '{cfg.how[0]}' for wells/faults.")
-                    print("Supported values are 'min' and 'max'.")
-                    sys.exit()
-                cfg.whow = cfg.how[0]
+            if cfg.aggregation[0]:
+                if cfg.aggregation[0] not in ["min", "max"]:
+                    plopm_error(
+                        f"Unsuported value {cli_error_value(f'-agg {cfg.aggregation[0]}')} for "
+                        f"{cli_info_value(f'-v {first_var}')}. Supported values are "
+                        f"{cli_current_value('-agg min')} and {cli_current_value('-agg max')}."
+                    )
+                cfg.whow = cfg.aggregation[0]
             else:
                 cfg.whow = "min"
             if not cfg.colors_raw:
                 cfg.units = [" [-]"]
                 cfg.cmaps = ["nipy_spectral"]
-                cfg.cformat = [".0f"]
-        if "num" in first_var and not cfg.mask and not cfg.diff and not cfg.colors_raw:
+                cfg.cb_format = [".0f"]
+        if (
+            "num" in first_var
+            and not cfg.mask_variable
+            and not cfg.difference_input
+            and not cfg.colors_raw
+        ):
             cfg.cmaps = ["tab20"]
             cfg.units = [" [-]"]
-            cfg.cformat = [".0f"]
+            cfg.cb_format = [".0f"]
         if "index" in first_var:
             cfg.units = [" [-]"]
-            cfg.cformat = [".0f"]
-    if cfg.cf:
-        cfg.cformat = cfg.cf.split(",")
+            cfg.cb_format = [".0f"]
+    if cfg.colorbar_format:
+        cfg.cb_format = cfg.colorbar_format.split(",")
     elif len(vrs) == 1 and "num" in vrs[0]:
-        cfg.cformat = [".0f"]
-    elif cfg.diff:
-        cfg.cformat = [".1e"]
+        cfg.cb_format = [".0f"]
+    elif cfg.difference_input:
+        cfg.cb_format = [".1e"]
     num_vars = len(vrs)
     if len(cfg.cmaps) < num_vars or (
         num_vars == len(cfg.names[0]) and len(cfg.names[0]) > 1 and not cfg.colors_raw
@@ -513,8 +578,8 @@ def ini_properties(cfg: ConfigPlopm) -> None:
         cfg.xlim = [cfg.xlim[0]] * num_vars
     if len(cfg.ylim) < num_vars:
         cfg.ylim = [cfg.ylim[0]] * num_vars
-    if len(cfg.cformat) < num_vars:
-        cfg.cformat = [cfg.cformat[0]] * num_vars
+    if len(cfg.cb_format) < num_vars:
+        cfg.cb_format = [cfg.cb_format[0]] * num_vars
     cfg.xskl, cfg.xunit = initialize_spatial(cfg.xunits)
     cfg.yskl, cfg.yunit = initialize_spatial(cfg.yunits)
 
@@ -547,9 +612,9 @@ def is_summary(cfg: ConfigPlopm) -> bool:
     vrs = cfg.vrs
     first_var = vrs[0] if vrs else ""
     ntot = 0
-    if cfg.printv:
-        for ext, what in (("init", "init"), ("unrst", "restart")):
-            file = f"{name}.{ext.upper()}"
+    if cfg.list_variables:
+        for ext in ["INIT", "UNRST"]:
+            file = f"{name}.{ext}"
             if os.path.isfile(file):
                 reader = OpmFile(file)
                 keys = [
@@ -558,27 +623,42 @@ def is_summary(cfg: ConfigPlopm) -> bool:
                     if var[0]
                     not in ["INTEHEAD", "LOGIHEAD", "DOUBHEAD", "TABDIMS", "TAB"]
                 ]
-                if ext == "unrst":
+                if ext == "UNRST":
                     ntot = reader.count("PRESSURE")
-                print(f"The {what} available variables for {name} are:")
+                plopm_info(
+                    f"the available {cli_info_value('-v')} variables for "
+                    f"{cli_info_value(file)} are:"
+                )
                 print(keys)
-                if ext == "unrst":
-                    print(f"The available restarts for {name} are:")
+                if ext == "UNRST":
+                    plopm_info(
+                        f"the available {cli_info_value('-r')} restarts for "
+                        f"{cli_info_value(file)} are:"
+                    )
                     print(list(range(ntot)))
-    if cfg.sensor or cfg.layer or cfg.distance[0] or cfg.histogram[0] or cfg.csvsummary:
+    if (
+        cfg.sensor
+        or cfg.layer
+        or cfg.distance[0]
+        or cfg.histogram[0]
+        or cfg.csv_column_summary
+    ):
         return True
     if (
         first_var[:3] in ["krw", "krg"]
         or first_var[:4] in ["krow", "krog", "pcow", "pcog", "pcwg"]
         or first_var[:6] == "pcfact"
-        or first_var[:8] == "permfact"
+        or (first_var[:8] == "permfact" and cfg.slice == [[[-2, -2], [0, 1], [-2, -2]]])
     ):
         return True
     smspec_file = f"{name}.SMSPEC"
     if os.path.isfile(smspec_file):
         summary = OpmSummary(smspec_file).keys()
-        if cfg.printv:
-            print(f"The summary available variables for {name} are:")
+        if cfg.list_variables:
+            plopm_info(
+                f"the available {cli_info_value('-v')} variables for "
+                f"{cli_info_value(smspec_file)} are:"
+            )
             print(summary)
             sys.exit(0)
         smass = cfg.smass
@@ -586,7 +666,7 @@ def is_summary(cfg: ConfigPlopm) -> bool:
             base = name_v.split(" ")[0].upper()
             if base in summary or base.lower() in smass:
                 return True
-    if cfg.printv:
+    if cfg.list_variables:
         sys.exit(0)
     return False
 
@@ -596,7 +676,7 @@ def ini_summary(cfg: ConfigPlopm) -> None:
     vrs = cfg.vrs
     nv = len(vrs)
     cfg.numc = 1 if len(cfg.names) < nv else nv
-    for val in ["colors_raw", "linestyle", "lw"]:
+    for val in ["colors_raw", "linestyle", "linewidth"]:
         if getattr(cfg, val):
             tmp = [var.split(",") for var in getattr(cfg, val).split(":")]
             if len(tmp) < nv:
@@ -607,13 +687,13 @@ def ini_summary(cfg: ConfigPlopm) -> None:
         elif val == "linestyle":
             cfg.linestyle = [cfg.linestyle_default] * nv
         else:
-            cfg.lw = [cfg.lw_values] * nv
+            cfg.linewidth = [cfg.linewidth_values] * nv
     for axis_name in ["x", "y"]:
         key = f"{axis_name}lim"
         if len(getattr(cfg, key)) < nv and getattr(cfg, key)[0]:
             setattr(cfg, key, [getattr(cfg, key)[0]] * nv)
-    if nv == 1 and len(cfg.lw[0]) < len(cfg.names[0]):
-        cfg.lw[0] = [cfg.lw[0][0]] * len(cfg.names[0])
+    if nv == 1 and len(cfg.linewidth[0]) < len(cfg.names[0]):
+        cfg.linewidth[0] = [cfg.linewidth[0][0]] * len(cfg.names[0])
     for val in [
         "names",
         "title",
@@ -623,15 +703,15 @@ def ini_summary(cfg: ConfigPlopm) -> None:
         "ylog",
         "xlabel",
         "ylabel",
-        "labels",
-        "tunits",
-        "loc",
+        "legend_labels",
+        "time_units",
+        "legend_location",
         "dpi",
-        "ylnum",
-        "xlnum",
-        "adjust",
-        "save",
-        "axgrid",
+        "ytick_count",
+        "xtick_count",
+        "scale_factor",
+        "filename",
+        "axis_grid",
     ]:
         if len(getattr(cfg, val)) < nv:
             setattr(cfg, val, [getattr(cfg, val)[0]] * nv)

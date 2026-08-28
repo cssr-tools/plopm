@@ -15,10 +15,10 @@ def handle_slide_x(
     cfg: ConfigPlopm, read: ReadData, n: int
 ) -> tuple[NDArray, NDArray, str, str, int, int, str, str]:
     """Processing the selected yz slide to obtain the grid properties"""
-    slide_range = cfg.slide[n][0]
+    slide_range = cfg.slice[n][0]
     nx = read.nx
     if slide_range[0] == ":":
-        cfg.slide[n][0] = [0, nx]
+        cfg.slice[n][0] = [0, nx]
         slidet = f", slide i=0:{nx}"
         sliden = f"0:{nx},j,k"
     elif slide_range[0] == slide_range[1] - 1:
@@ -42,10 +42,10 @@ def handle_slide_y(
     cfg: ConfigPlopm, read: ReadData, n: int
 ) -> tuple[NDArray, NDArray, str, str, int, int, str, str]:
     """Processing the selected xz slide to obtain the grid properties"""
-    slide_range = cfg.slide[n][1]
+    slide_range = cfg.slice[n][1]
     ny = read.ny
     if slide_range[0] == ":":
-        cfg.slide[n][1] = [0, ny]
+        cfg.slice[n][1] = [0, ny]
         slidet = f", slide j=0:{ny}"
         sliden = f"i,0:{ny},k"
     elif slide_range[0] == slide_range[1] - 1:
@@ -69,10 +69,10 @@ def handle_slide_z(
     cfg: ConfigPlopm, read: ReadData, n: int
 ) -> tuple[NDArray, NDArray, str, str, int, int, str, str]:
     """Processing the selected xy slide to obtain the grid properties"""
-    slide_range = cfg.slide[n][2]
+    slide_range = cfg.slice[n][2]
     nz = read.nz
     if slide_range[0] == ":":
-        cfg.slide[n][2] = [0, nz]
+        cfg.slice[n][2] = [0, nz]
         slidet = f", slide k={1}:{nz}"
         sliden = f"i,j,{1}:{nz}"
     elif slide_range[0] == slide_range[1] - 1:
@@ -96,14 +96,14 @@ def rotate_grid(
     cfg: ConfigPlopm, n: int, xc: NDArray, yc: NDArray
 ) -> tuple[NDArray, NDArray]:
     """Rotate the grid if requiered"""
-    grd = int(cfg.rotate[n])
+    grd = int(cfg.rotation[n])
     angle = grd * np.pi / 180
     cos_val = np.cos(angle)
     sin_val = np.sin(angle)
     length = xc[-1][-1] - xc[0][0]
     width = yc[0][-1] - yc[-1][0]
-    x_dis = float(cfg.translate[n][0][1:])
-    y_dis = float(cfg.translate[n][1][:-1])
+    x_dis = float(cfg.translation[n][0][1:])
+    y_dis = float(cfg.translation[n][1][:-1])
     base_x = 1.5 * length
     base_y = 1.5 * width
     dx = xc - base_x
@@ -126,11 +126,11 @@ def map_xzcoords(
     nwelult: int = 1,
 ) -> NDArray:
     """Map the properties from the simulations to the 2D slide"""
-    how = cfg.how[n]
+    how = cfg.aggregation[n]
     nx = read.nx
     ny = read.ny
     nz = read.nz
-    slide_start, slide_end = cfg.slide[n][1]
+    slide_start, slide_end = cfg.slice[n][1]
     layer_size = nx * ny
     porv = read.porv
     actind_array = read.actind
@@ -260,7 +260,7 @@ def map_xzcoords(
                 if value:
                     for k in range(value[2], value[3] + 1):
                         ind = value[0] + value[1] * nx + k * layer_size
-                        if not cfg.global_:
+                        if not cfg.global_range:
                             if porv[ind] > 0 and slide_start <= value[1] < slide_end:
                                 mapped_values[2 * value[0] + 2 * (nz - k - 1) * mx] = (
                                     index + 1
@@ -285,11 +285,11 @@ def map_yzcoords(
     nwelult: int = 1,
 ) -> NDArray:
     """Map the properties from the simulations to the 2D slide"""
-    how = cfg.how[n]
+    how = cfg.aggregation[n]
     nx = read.nx
     ny = read.ny
     nz = read.nz
-    slide_start, slide_end = cfg.slide[n][0]
+    slide_start, slide_end = cfg.slice[n][0]
     layer_size = nx * ny
     porv = read.porv
     actind_array = read.actind
@@ -420,7 +420,7 @@ def map_yzcoords(
                 if value:
                     for k in range(value[2], value[3] + 1):
                         ind = value[0] + value[1] * nx + k * layer_size
-                        if not cfg.global_:
+                        if not cfg.global_range:
                             if porv[ind] > 0 and slide_start <= value[0] < slide_end:
                                 mapped_values[2 * value[1] + 2 * (nz - k - 1) * mx] = (
                                     index + 1
@@ -445,12 +445,12 @@ def map_xycoords(
     nwelult: int = 1,
 ) -> NDArray:
     """Map the properties from the simulations to the 2D slide"""
-    how = cfg.how[n]
+    how = cfg.aggregation[n]
     nx = read.nx
     ny_total = read.ny
-    dual = cfg.dual[n] == "1" if n < len(cfg.dual) else False
+    dual = cfg.dual_grid[n] == "1" if n < len(cfg.dual_grid) else False
     ny = int((ny_total - 1) / 2) if dual else ny_total
-    slide_start, slide_end = cfg.slide[n][2]
+    slide_start, slide_end = cfg.slice[n][2]
     layer_size = nx * ny_total
     porv = read.porv
     actind_array = read.actind
@@ -635,7 +635,7 @@ def map_xycoords(
                 if value:
                     for k in range(value[2], value[3] + 1):
                         ind = value[0] + value[1] * nx + k * layer_size
-                        if not cfg.global_:
+                        if not cfg.global_range:
                             if porv[ind] > 0 and slide_start <= k < slide_end:
                                 mapped_values[2 * value[0] + 2 * value[1] * mx] = (
                                     index + 1
@@ -645,6 +645,6 @@ def map_xycoords(
                                 mapped_values[2 * value[0] + 2 * value[1] * mx] = (
                                     index + 1
                                 )
-    if dual and cfg.diff:
+    if dual and cfg.difference_input:
         mapped_values = mapped_values[: (2 * nx - 1) * (2 * ny - 1)]
     return mapped_values

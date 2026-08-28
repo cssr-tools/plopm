@@ -18,6 +18,7 @@ from numpy.typing import NDArray
 
 from plopm.config.config import ReadData
 from plopm.utils.readers import get_quantity, get_readers
+from plopm.utils.terminal import cli_error_value, plopm_error, plopm_warning
 
 VTK_DTYPES = {
     "Float64": np.float64,
@@ -52,15 +53,20 @@ def make_vtks(
     caprock: list[str],
     stress: float,
     filterss: list[str],
-) -> None:
-    """Use OPM Flow to generate the vtk grid to populate with the given variables"""
+) -> list:
+    """Use OPM Flow to generate and populate VTK files."""
+    generated_files: list[str] = []
+
     for k, case in enumerate(names[0]):
         deck = case
         dname = case.split("/")[-1]
+        grid_name = f"{dname}-GRID.vtu"
+        grid_path = os.path.join(output, grid_name)
+
         if not os.path.isfile(f"{deck}.DATA"):
-            print(f"{deck}.DATA does not exist")
-            sys.exit()
-        if not os.path.isfile(f"{output}/{dname}-GRID.vtu"):
+            plopm_error(f"unable to find {cli_error_value(f'{deck}.DATA')}.")
+
+        if not os.path.isfile(grid_path):
             cwd = os.getcwd()
             output_abs = os.path.abspath(output)
             dryrun_deck = ""
@@ -91,7 +97,7 @@ def make_vtks(
                     run(flow_command + [deck_rel] + shlex.split(flags), check=False)
                 shutil.move(
                     f"{dname}_DRYRUN_{os.getpid()}-00000.vtu",
-                    f"{output_abs}/{dname}-GRID.vtu",
+                    os.path.join(output_abs, grid_name),
                 )
             finally:
                 os.chdir(dryrun_parent)
@@ -100,6 +106,9 @@ def make_vtks(
                 if dryrun_deck and os.path.isfile(dryrun_deck):
                     os.remove(dryrun_deck)
                 os.chdir(cwd)
+
+        generated_files.append(grid_name)
+
         read = get_readers(case, gif, vtk, vrs, restart, filters)
         opmtovtk(
             case,
@@ -118,6 +127,12 @@ def make_vtks(
             stress,
             filterss[k],
         )
+
+        where = save[k] if save[k] else dname
+        generated_files.extend(
+            f"{where}-{int(restart_index):04d}.vtu" for restart_index in read.restart
+        )
+
         writepvd(
             save,
             dname,
@@ -126,6 +141,9 @@ def make_vtks(
             output,
             k,
         )
+        generated_files.append(f"{where}.pvd")
+
+    return list(dict.fromkeys(generated_files))
 
 
 def writepvd(
@@ -158,7 +176,7 @@ def writepvd(
 def warn_once(warning_keys: set, warning_key, message: str) -> None:
     """Print a warning once"""
     if warning_key not in warning_keys:
-        print(message)
+        plopm_warning(message)
         warning_keys.add(warning_key)
 
 
@@ -176,7 +194,7 @@ def check_integer_conversion(
         warn_once(
             warning_keys,
             (var.upper(), vtkformat, "non_numeric"),
-            f"Warning: {var.upper()} contains non-numeric values but is written as {vtkformat}.",
+            f"{var.upper()} contains non-numeric values but is written as {vtkformat}.",
         )
         return
     if not numeric_quan.size:
@@ -187,7 +205,7 @@ def check_integer_conversion(
         warn_once(
             warning_keys,
             (var.upper(), vtkformat, "non_finite"),
-            f"Warning: {var.upper()} contains non-finite values but is written as {vtkformat}.",
+            f"{var.upper()} contains non-finite values but is written as {vtkformat}.",
         )
     if not finite_quan.size:
         return
@@ -198,21 +216,21 @@ def check_integer_conversion(
         warn_once(
             warning_keys,
             (var.upper(), vtkformat, "negative_unsigned"),
-            f"Warning: {var.upper()} contains negative values but is written as {vtkformat}; "
+            f"{var.upper()} contains negative values but is written as {vtkformat}; "
             "NumPy may wrap them.",
         )
     if np.any(finite_quan != np.trunc(finite_quan)):
         warn_once(
             warning_keys,
             (var.upper(), vtkformat, "float_truncation"),
-            f"Warning: {var.upper()} contains float values but is written as {vtkformat}; "
+            f"{var.upper()} contains float values but is written as {vtkformat}; "
             "NumPy will truncate decimals.",
         )
     if min_val < dtype_info.min or max_val > dtype_info.max:
         warn_once(
             warning_keys,
             (var.upper(), vtkformat, "out_of_range"),
-            f"Warning: {var.upper()} contains values outside {vtkformat} range [{dtype_info.min}, "
+            f"{var.upper()} contains values outside {vtkformat} range [{dtype_info.min}, "
             f"{dtype_info.max}]; NumPy may wrap or fail depending on version.",
         )
 
@@ -292,9 +310,6 @@ def opmtovtk(
                 )
 
                 vtkformat = vtkformat_list[n]
-                if vtkformat not in VTK_DTYPES:
-                    print(f"Unknown format ({vtkformat}).")
-                    sys.exit()
                 target_dtype = VTK_DTYPES[vtkformat]
                 if np.issubdtype(target_dtype, np.integer):
                     check_integer_conversion(

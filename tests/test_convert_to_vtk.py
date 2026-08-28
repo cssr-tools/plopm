@@ -22,7 +22,7 @@ def test_convert_to_vtk(tmp_path):
             str(mainpth / "examples" / "SPE11B"),
             "-m",
             "vtk",
-            "-p",
+            "-fp",
             "flow",
         ]
     )
