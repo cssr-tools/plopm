@@ -1,67 +1,83 @@
-=======
-Related
-=======
+.. _related:
+
+Related projects
+================
 
 Below are some tools that might be of interest; check 'em out 🙂.
 
-**********
-pyopmspe11
-**********
+.. grid:: 1 1 2 2
+   :gutter: 3
 
-.. image:: ./figs/pyopmspe11.gif
-    :scale: 50%
+   .. grid-item-card:: pyopmspe11
+      :link: https://github.com/OPM/pyopmspe11
+      :link-type: url
+      :img-top: figs/pyopmspe11.gif
 
-`A Python framework using OPM Flow for the CSP SPE11 benchmark project <https://github.com/OPM/pyopmspe11>`_.
+      A Python framework using OPM Flow for the CSP SPE11 benchmark project.
 
-*****
-pofff
-*****
+      +++
+      Open repository :octicon:`link-external`
 
-.. image:: ./figs/pofff.png
+   .. grid-item-card:: pofff
+      :link: https://github.com/cssr-tools/pofff
+      :link-type: url
+      :img-top: figs/pofff.png
 
-`An image-based history-matching framework for the FluidFlower Benchmark using OPM Flow <https://github.com/cssr-tools/pofff>`_.
+      An image-based history-matching framework for the FluidFlower
+      Benchmark using OPM Flow.
 
-******
-pycopm
-******
+      +++
+      Open repository :octicon:`link-external`
 
-.. image:: ./figs/pycopm.png
-    :scale: 32%
+   .. grid-item-card:: pycopm
+      :link: https://github.com/cssr-tools/pycopm
+      :link-type: url
+      :img-top: figs/pycopm.png
 
-`An open-source tool to tailor OPM Flow geological models <https://github.com/cssr-tools/pycopm>`_.
+      An open-source tool for tailoring OPM Flow geological models.
 
-*************
-pyopmnearwell
-*************
+      +++
+      Open repository :octicon:`link-external`
 
-.. image:: ./figs/pyopmnearwell.png
-    :scale: 60%
+   .. grid-item-card:: pyopmnearwell
+      :link: https://github.com/cssr-tools/pyopmnearwell
+      :link-type: url
+      :img-top: figs/pyopmnearwell.png
 
-`A Python framework to simulate near well dynamics using OPM Flow <https://github.com/cssr-tools/pyopmnearwell>`_.
+      A Python framework for simulating near-well dynamics using OPM Flow.
 
-********
-expreccs
-********
+      +++
+      Open repository :octicon:`link-external`
 
-.. image:: ./figs/expreccs.gif
-    :scale: 50%
+   .. grid-item-card:: expreccs
+      :link: https://github.com/cssr-tools/expreccs
+      :link-type: url
+      :img-top: figs/expreccs.gif
 
-`A Python framework using OPM Flow to simulate regional and site reservoirs for CO2 storage <https://github.com/cssr-tools/expreccs>`_.
+      A Python framework using OPM Flow to simulate regional and site
+      reservoirs for CO2 storage.
 
-*******
-ad-micp
-*******
+      +++
+      Open repository :octicon:`link-external`
 
-.. image:: ./figs/ad-micp.gif
-    :scale: 40%
+   .. grid-item-card:: ad-micp
+      :link: https://github.com/daavid00/ad-micp
+      :link-type: url
+      :img-top: figs/ad-micp.gif
 
-`A module to study CO2 leakage remediation by microbially induced calcite precipitation (MICP) <https://github.com/daavid00/ad-micp>`_.
+      A model for studying CO2 leakage remediation by microbially induced
+      calcite precipitation.
 
-****
-pymm
-****
+      +++
+      Open repository :octicon:`link-external`
 
-.. image:: ./figs/pymm.gif
-    :scale: 15%
+   .. grid-item-card:: pymm
+      :link: https://github.com/cssr-tools/pymm
+      :link-type: url
+      :img-top: figs/pymm.gif
 
-`An open-source image-based framework for CFD in microsystems <https://github.com/cssr-tools/pymm>`_.
+      An open-source image-based framework for computational fluid dynamics
+      in microsystems.
+
+      +++
+      Open repository :octicon:`link-external`

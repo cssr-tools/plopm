@@ -1,0 +1,119 @@
+:root {
+  --pst-color-primary: #1769aa;
+  --pst-color-secondary: #3f8fc5;
+  --pst-color-link: #1769aa;
+  --pst-color-link-hover: #0f4f82;
+}
+
+html[data-theme="dark"] {
+  --pst-color-primary: #71b7e6;
+  --pst-color-secondary: #8cc8ec;
+  --pst-color-link: #71b7e6;
+  --pst-color-link-hover: #a7d8f4;
+}
+
+.bd-main .bd-content .bd-article-container {
+  max-width: 72rem;
+}
+
+.bd-page-width {
+  max-width: 96rem;
+}
+
+.bd-header .navbar-header-items__start {
+  min-width: max-content;
+}
+
+.navbar-brand .title {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.bd-header .navbar-brand img {
+  max-height: 102px;
+}
+
+.sd-card {
+  height: 100%;
+  border-radius: 0.75rem;
+}
+
+.sd-card-title {
+  font-weight: 650;
+}
+
+.sd-card:hover {
+  border-color: var(--pst-color-primary);
+  box-shadow: 0 0.35rem 1rem rgb(0 0 0 / 10%);
+}
+
+.rst-class.lead,
+.lead {
+  font-size: 1.2rem;
+  color: var(--pst-color-text-muted);
+}
+
+div.highlight pre {
+  font-size: 0.9rem;
+}
+
+table.docutils {
+  width: 100%;
+}
+
+.sd-card-img-top {
+  display: block;
+  width: 100%;
+  height: 250px;
+  object-fit: contain;
+  object-position: center;
+  padding: 0.75rem;
+  background: var(--pst-color-surface);
+  border-bottom: 1px solid var(--pst-color-border);
+}
+
+.sd-card {
+  overflow: hidden;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.sd-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--pst-color-primary);
+  box-shadow: 0 0.5rem 1.25rem rgb(0 0 0 / 14%);
+}
+
+.sd-card .sd-card-title {
+  color: var(--pst-color-primary);
+}
+
+.sd-card .sd-card-body {
+  padding: 1rem;
+}
+
+html[data-theme="dark"] .sd-card-img-top {
+  opacity: 0.92;
+}
+
+/* Related-project gallery. */
+.related-projects .sd-card-img-top {
+  width: 100%;
+  height: 260px;
+  object-fit: contain;
+  object-position: center;
+  padding: 1rem;
+  background: var(--pst-color-surface);
+  border-bottom: 1px solid var(--pst-color-border);
+}
+
+.related-projects .sd-card {
+  height: 100%;
+}
+
+.related-projects .sd-card-footer {
+  color: var(--pst-color-primary);
+  font-weight: 600;
+}

@@ -653,8 +653,8 @@ def _read_values(
         Values and corresponding time or grid coordinates.
 
     """
-    slide = cfg.slice[n]
-    axis_index = slide.index(-1) if -1 in slide else -1
+    slc_val = cfg.slice[n]
+    axis_index = slc_val.index(-1) if -1 in slc_val else -1
     nx_val = data.nx
     ny_val = data.ny
     nz_val = data.nz
@@ -690,15 +690,15 @@ def _read_values(
         if layer_flag:
             if axis_index == 0:
                 for index in range(xsize):
-                    inds[index] = egrid.active_index(index, slide[1], slide[2])
+                    inds[index] = egrid.active_index(index, slc_val[1], slc_val[2])
             elif axis_index == 1:
                 for index in range(xsize):
-                    inds[index] = egrid.active_index(slide[0], index, slide[2])
+                    inds[index] = egrid.active_index(slc_val[0], index, slc_val[2])
             elif axis_index == 2:
                 for index in range(xsize):
-                    inds[index] = egrid.active_index(slide[0], slide[1], index)
+                    inds[index] = egrid.active_index(slc_val[0], slc_val[1], index)
         else:
-            ind0 = egrid.active_index(slide[0], slide[1], slide[2])
+            ind0 = egrid.active_index(slc_val[0], slc_val[1], slc_val[2])
             for index in range(xsize):
                 inds[index] = ind0
         if quan0_low in mass_all:
@@ -733,7 +733,7 @@ def _read_values(
             # porv-weighted pressure for the dual model
             if cfg.dual_grid[n] == "1" and cfg.sensor:
                 indd = egrid.active_index(
-                    slide[0], slide[1] + int((data.ny - 1) / 2) + 1, slide[2]
+                    slc_val[0], slc_val[1] + int((data.ny - 1) / 2) + 1, slc_val[2]
                 )
                 presd = unrst[quan0_up, step][indd]
                 if unrst.count("RPORV", step):
@@ -779,13 +779,13 @@ def _read_values(
         xyz_func = egrid.xyz_from_ijk
         if axis_index == 0:
             for i in range(nx_val):
-                time[i] = np.mean(xyz_func(i, slide[1], slide[2], True), axis=1)[0]
+                time[i] = np.mean(xyz_func(i, slc_val[1], slc_val[2], True), axis=1)[0]
         elif axis_index == 1:
             for j in range(ny_val):
-                time[j] = np.mean(xyz_func(slide[0], j, slide[2], True), axis=1)[1]
+                time[j] = np.mean(xyz_func(slc_val[0], j, slc_val[2], True), axis=1)[1]
         else:
             for k in range(nz_val):
-                time[k] = np.mean(xyz_func(slide[0], slide[1], k, True), axis=1)[2]
+                time[k] = np.mean(xyz_func(slc_val[0], slc_val[1], k, True), axis=1)[2]
     return var, time
 
 

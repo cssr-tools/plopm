@@ -1,613 +1,641 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
-<head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction &mdash; plopm  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Introduction &#8212; plopm documentation</title>
   
-      <script src="_static/jquery.js?v=5d32c60e"></script>
-      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=fd6eb6e6"></script>
-      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
-    <script src="_static/js/theme.js"></script>
-    <link rel="author" title="About these documents" href="about.html" />
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c9070fc1" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="_static/documentation_options.js?v=1485e655"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=eef4a3d2"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'introduction';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation" href="installation.html" />
-    <link rel="prev" title="Welcome to plopm’s documentation!" href="index.html" /> 
-</head>
+    <link rel="prev" title="plopm" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2026.10rc0" />
+    <meta name="docbuild:last-update" content="2026-08-30"/>
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search"  style="background: #aaaaaa" >
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
 
-          
-          
-          <a href="index.html">
-            
-              <img src="_static/troll_faults.png" class="logo" alt="Logo"/>
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#concept">Concept</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-line interface</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#basic-usage">Basic usage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#argument-syntax">Argument syntax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#option-reference">Option reference</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#input-and-data-selection">Input and data selection</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#output-options">Output options</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#spatial-and-temporal-selection">Spatial and temporal selection</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#filtering-masking-and-thresholds">Filtering, masking, and thresholds</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#computation-and-data-transformation">Computation and data transformation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#plot-types-and-statistical-representation">Plot types and statistical representation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#figure-and-subplot-layout">Figure and subplot layout</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#titles-labels-and-legends">Titles, labels, and legends</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#axes-coordinates-and-formatting">Axes, coordinates, and formatting</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#color-scales-and-styling">Color scales and styling</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#vtk-output">VTK output</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gif-output">GIF output</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#information-and-diagnostics">Information and diagnostics</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">plopm Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html">About plopm</a></li>
-</ul>
 
-        </div>
-      </div>
-    </nav>
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #aaaaaa" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">plopm</a>
-      </nav>
+  
+    
+  
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Introduction</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="_sources/introduction.rst.txt" rel="nofollow"> View page source</a>
-      </li>
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/plopm-logo.svg" class="logo__image only-light" alt="plopm documentation - Home"/>
+    <img src="_static/plopm-logo.svg" class="logo__image only-dark pst-js-only" alt="plopm documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Introduction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="command-line.html">
+    Command-line reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="related.html">
+    Related projects
+  </a>
+</li>
+
   </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
-<img alt="_images/plopm.png" src="_images/plopm.png" />
-<p>This documentation describes the <strong>plopm</strong> tool hosted in <a class="reference external" href="https://github.com/cssr-tools/plopm">https://github.com/cssr-tools/plopm</a>.</p>
-<section id="concept">
-<h2>Concept<a class="headerlink" href="#concept" title="Link to this heading"></a></h2>
-<p>Simplified and flexible framework for quick visualization of <a class="reference external" href="https://opm-project.org">OPM Flow</a> geological models.
-The approach is the generation of PNG figures from static (e.g, porosity, pore volume fluid in place numbers)
-and dynamic (e.g., pressure, fluid saturations) properties given any 2D slide with the option to generate GIFs (e.g., the middle part of a reservoir in the xy plane),
-as well as plotting any given summary vector (e.g., field gas in place a.k.a fgip).</p>
-<p>The <strong>plopm</strong> tool can be useful for quick inspection of geological models, as well as for generation of nice
-figures for papers/presentations. Also, <strong>plopm</strong> can plot summary results from different simulation cases in the same figure (e.g., using subplots),
-as well as the difference between given dynamic variables (e.g., pressure) for two different simulations cases. In addition, <strong>plopm</strong> can
-convert OPM Flow output files to vtk, which allows to use other visualization/postprocessing tools (e.g., <a class="reference external" href="https://www.paraview.org">paraview</a>).</p>
-</section>
-<section id="command-line-interface">
-<span id="overview"></span><h2>Command-line interface<a class="headerlink" href="#command-line-interface" title="Link to this heading"></a></h2>
-<p>plopm provides command-line options for selecting input data, configuring
-plots, and controlling output. Run the following command to display the
-available options and their default values:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -h</span>
-</pre></div>
-</div>
-<section id="basic-usage">
-<h3>Basic usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h3>
-<p>The general command structure is:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm [options]</span>
-</pre></div>
-</div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>The options have both a short and a long name. For example, <code class="docutils literal notranslate"><span class="pre">-v</span></code> and
-<code class="docutils literal notranslate"><span class="pre">--variable</span></code> refer to the same option:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -v pressure</span>
-<span class="go">plopm --variable pressure</span>
-</pre></div>
-</div>
-<p>The short form is convenient for interactive use, while the long form can
-make scripts and saved commands easier to understand. The examples in this
-documentation use the short forms.</p>
-</div>
-<p>For example, the following command plots pressure and gas saturation from
-<code class="docutils literal notranslate"><span class="pre">SPE11B</span></code> at the last restart step:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11B -v &quot;pressure,sgas&quot; -r -1</span>
-</pre></div>
-</div>
-<p>Options may be combined to configure the data selection, plot appearance,
-and output. For example:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11B -v pressure -s &quot;,,5&quot; -c viridis -cl &quot;[100,300]&quot; -o results -fn pressure_k5</span>
-</pre></div>
-</div>
-</section>
-<section id="argument-syntax">
-<h3>Argument syntax<a class="headerlink" href="#argument-syntax" title="Link to this heading"></a></h3>
-<p>Many plopm options accept multiple values or specifications. Commas normally
-separate components within one specification, while spaces separate repeated
-specifications for different inputs, variables, or plots. Enclose the complete
-argument in quotes when it contains spaces.</p>
-<p>For example:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -v &quot;pressure,sgas&quot;</span>
-<span class="go">plopm -s &quot;1,1,1 41,1,29 83,1,58&quot;</span>
-<span class="go">plopm -y &quot;[0,10000] [0,23000]&quot;</span>
-<span class="go">plopm -hist &quot;50,norm 20,lognorm 100&quot;</span>
-<span class="go">plopm -clog &quot;1,1,0&quot;</span>
-</pre></div>
-</div>
-<p>The separators have the following general meanings:</p>
-<ul class="simple">
-<li><p><strong>Commas</strong> separate components within one specification, such as
-<code class="docutils literal notranslate"><span class="pre">2,4,9</span></code>, <code class="docutils literal notranslate"><span class="pre">0,2,5</span></code>, or <code class="docutils literal notranslate"><span class="pre">[100,-50]</span></code>.</p></li>
-<li><p><strong>Single spaces</strong> separate repeated specifications, such as
-<code class="docutils literal notranslate"><span class="pre">1,1,1</span> <span class="pre">41,1,29</span> <span class="pre">83,1,58</span></code> or <code class="docutils literal notranslate"><span class="pre">[0,10000]</span> <span class="pre">[0,23000]</span></code>.</p></li>
-<li><p><strong>Two spaces</strong> separate free-text labels or titles when each value may
-contain spaces, such as <code class="docutils literal notranslate"><span class="pre">Reference</span> <span class="pre">case</span>&#160; <span class="pre">Modified</span> <span class="pre">case</span></code>.</p></li>
-<li><p><strong>Semicolons</strong> separate CSV column specifications for different inputs.
-An empty specification skips the corresponding input, such as <code class="docutils literal notranslate"><span class="pre">;1,2,5</span></code>.</p></li>
-<li><p><strong>Ampersands (``&amp;``)</strong> join filter conditions for the same input.</p></li>
-<li><p><strong>Commas in ``-flt``</strong> separate filter specifications for different
-inputs.</p></li>
-<li><p><strong>Empty entries</strong> act as placeholders when an option applies only to
-selected inputs.</p></li>
-</ul>
-<p>For example:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -llb &quot;Reference case  Modified case&quot;</span>
-<span class="go">plopm -flt &quot;fluxnum == 2 &amp; sgas &gt;= 0.2, satnum != 5&quot;</span>
-<span class="go">plopm -i &quot;table model&quot; -v &quot;,BWPR:256,1,5&quot; -cc &quot;1,3;&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="option-reference">
-<h3>Option reference<a class="headerlink" href="#option-reference" title="Link to this heading"></a></h3>
-<p>The options are grouped by purpose. Default values are also displayed by
-<code class="docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">--help</span></code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Legacy option names from earlier plopm releases remain available for
-backward compatibility. The documentation uses the preferred option names.</p>
-</div>
-<section id="input-and-data-selection">
-<h4>Input and data selection<a class="headerlink" href="#input-and-data-selection" title="Link to this heading"></a></h4>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">-i</span></code>, <code class="docutils literal notranslate"><span class="pre">--input</span></code></dt><dd><p>Base name or full path of the input. Separate multiple inputs with spaces,
-e.g., <code class="docutils literal notranslate"><span class="pre">SPE11B</span> <span class="pre">/home/user/SPE11B_TUNED</span></code> (<code class="docutils literal notranslate"><span class="pre">SPE11B</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-v</span></code>, <code class="docutils literal notranslate"><span class="pre">--variable</span></code></dt><dd><p>Variable specification(s) to plot. Separate variables with commas, e.g.,
-<code class="docutils literal notranslate"><span class="pre">pressure,sgas</span></code>.</p>
-<p>An empty entry may be used as a placeholder when the corresponding input
-is configured through <code class="docutils literal notranslate"><span class="pre">-cc</span></code>, e.g.:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -v &quot;,BWPR:256,1,5&quot; -cc &quot;1,3;&quot;</span>
-</pre></div>
-</div>
-<p>Special variables include <code class="docutils literal notranslate"><span class="pre">grid</span></code>, <code class="docutils literal notranslate"><span class="pre">wells</span></code>, <code class="docutils literal notranslate"><span class="pre">faults</span></code>, <code class="docutils literal notranslate"><span class="pre">pcfact</span></code>,
-<code class="docutils literal notranslate"><span class="pre">limipres</span></code>, <code class="docutils literal notranslate"><span class="pre">overpres</span></code>, <code class="docutils literal notranslate"><span class="pre">objepres</span></code>, <code class="docutils literal notranslate"><span class="pre">krw</span></code>, <code class="docutils literal notranslate"><span class="pre">krg</span></code>, <code class="docutils literal notranslate"><span class="pre">krow</span></code>,
-<code class="docutils literal notranslate"><span class="pre">krog</span></code>, <code class="docutils literal notranslate"><span class="pre">pcow</span></code>, <code class="docutils literal notranslate"><span class="pre">pcog</span></code>, <code class="docutils literal notranslate"><span class="pre">pcwg</span></code>, <code class="docutils literal notranslate"><span class="pre">gasm</span></code>, <code class="docutils literal notranslate"><span class="pre">dism</span></code>, <code class="docutils literal notranslate"><span class="pre">liqm</span></code>,
-<code class="docutils literal notranslate"><span class="pre">vapm</span></code>, <code class="docutils literal notranslate"><span class="pre">co2m</span></code>, <code class="docutils literal notranslate"><span class="pre">h2om</span></code>, <code class="docutils literal notranslate"><span class="pre">xco2l</span></code>, <code class="docutils literal notranslate"><span class="pre">xh2ov</span></code>, <code class="docutils literal notranslate"><span class="pre">xco2v</span></code>,
-<code class="docutils literal notranslate"><span class="pre">xh2ol</span></code>, <code class="docutils literal notranslate"><span class="pre">fwcdm</span></code>, and <code class="docutils literal notranslate"><span class="pre">fgipm</span></code>.</p>
-<p>The default is
-<code class="docutils literal notranslate"><span class="pre">poro,permx,permz,porv,fipnum,satnum</span></code>.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-r</span></code>, <code class="docutils literal notranslate"><span class="pre">--restart</span></code></dt><dd><p>Restart step(s), where <code class="docutils literal notranslate"><span class="pre">0</span></code> is the initial state and <code class="docutils literal notranslate"><span class="pre">-1</span></code> is the last.
-Separate selected steps with commas, e.g., <code class="docutils literal notranslate"><span class="pre">0,2</span></code> or <code class="docutils literal notranslate"><span class="pre">0,3,10,20</span></code>, or
-use <code class="docutils literal notranslate"><span class="pre">start:end[:step]</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">1:3</span></code>, <code class="docutils literal notranslate"><span class="pre">0:4:2</span></code>, or <code class="docutils literal notranslate"><span class="pre">5:505:250</span></code>.</p>
-<p>The default is <code class="docutils literal notranslate"><span class="pre">-1</span></code>. GIF output uses all available steps by default.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-cc</span></code>, <code class="docutils literal notranslate"><span class="pre">--csv-columns</span></code></dt><dd><p>CSV column indices, starting at 1. Use <code class="docutils literal notranslate"><span class="pre">t,value</span></code> for a time series or
-<code class="docutils literal notranslate"><span class="pre">x,y,value</span></code> for a spatial map.</p>
-<p>Separate specifications for different inputs with semicolons. An empty
-specification skips the corresponding input, e.g., <code class="docutils literal notranslate"><span class="pre">;1,2,5</span></code> or
-<code class="docutils literal notranslate"><span class="pre">1,3;</span></code> (empty by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-fp</span></code>, <code class="docutils literal notranslate"><span class="pre">--flow-path</span></code></dt><dd><p>Path or command for the Flow executable, e.g.,
-<code class="docutils literal notranslate"><span class="pre">/home/build/bin/flow</span></code>. Used only to generate the grid for VTK output
-(<code class="docutils literal notranslate"><span class="pre">flow</span></code> by default).</p>
-</dd>
-</dl>
-</section>
-<section id="output-options">
-<h4>Output options<a class="headerlink" href="#output-options" title="Link to this heading"></a></h4>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">-m</span></code>, <code class="docutils literal notranslate"><span class="pre">--format</span></code></dt><dd><p>Output format: <code class="docutils literal notranslate"><span class="pre">png</span></code>, <code class="docutils literal notranslate"><span class="pre">gif</span></code>, <code class="docutils literal notranslate"><span class="pre">csv</span></code>, or <code class="docutils literal notranslate"><span class="pre">vtk</span></code>
-(<code class="docutils literal notranslate"><span class="pre">png</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-o</span></code>, <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code></dt><dd><p>Base name or full path of the output directory. The default is <code class="docutils literal notranslate"><span class="pre">.</span></code>,
-meaning the directory where plopm is executed.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-fn</span></code>, <code class="docutils literal notranslate"><span class="pre">--filename</span></code></dt><dd><p>Output file name. The default is empty, meaning that the name is set by
-plopm.</p>
-</dd>
-</dl>
-</section>
-<section id="spatial-and-temporal-selection">
-<h4>Spatial and temporal selection<a class="headerlink" href="#spatial-and-temporal-selection" title="Link to this heading"></a></h4>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">-s</span></code>, <code class="docutils literal notranslate"><span class="pre">--slice</span></code></dt><dd><p>Spatial selection in <code class="docutils literal notranslate"><span class="pre">i,j,k</span></code> form. An empty entry selects a plane, e.g.,
-<code class="docutils literal notranslate"><span class="pre">10,,</span></code>; a range projects over cells, e.g., <code class="docutils literal notranslate"><span class="pre">,,5:10</span></code>; <code class="docutils literal notranslate"><span class="pre">:</span></code> selects a
-line, e.g., <code class="docutils literal notranslate"><span class="pre">:,5,7</span></code>; and three indices select a cell over time, e.g.,
-<code class="docutils literal notranslate"><span class="pre">2,4,9</span></code>.</p>
-<p>Separate multiple selections with spaces, e.g.:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -s &quot;1,1,1 41,1,29 83,1,58&quot;</span>
-</pre></div>
-</div>
-<p>The default is <code class="docutils literal notranslate"><span class="pre">,1,</span></code>.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-tu</span></code>, <code class="docutils literal notranslate"><span class="pre">--time-units</span></code></dt><dd><p>Summary-plot x-axis time units: <code class="docutils literal notranslate"><span class="pre">s</span></code>, <code class="docutils literal notranslate"><span class="pre">m</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span></code>, <code class="docutils literal notranslate"><span class="pre">d</span></code>, <code class="docutils literal notranslate"><span class="pre">w</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>,
-<code class="docutils literal notranslate"><span class="pre">dates</span></code>, <code class="docutils literal notranslate"><span class="pre">empty</span></code>, or <code class="docutils literal notranslate"><span class="pre">tstep</span></code> (<code class="docutils literal notranslate"><span class="pre">d</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-dist</span></code>, <code class="docutils literal notranslate"><span class="pre">--distance</span></code></dt><dd><p>Compute the minimum or maximum distance to a sensor or lateral border.
-Supported specifications are <code class="docutils literal notranslate"><span class="pre">min,sensor</span></code>, <code class="docutils literal notranslate"><span class="pre">max,sensor</span></code>,
-<code class="docutils literal notranslate"><span class="pre">min,border</span></code>, and <code class="docutils literal notranslate"><span class="pre">max,border</span></code>.</p>
-<p>For a sensor, provide its <code class="docutils literal notranslate"><span class="pre">i,j,k</span></code> location with <code class="docutils literal notranslate"><span class="pre">-s</span></code>, e.g.:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -s 1,2,3 -v &quot;sgas &gt; 1e-2&quot; -dist max,sensor</span>
-</pre></div>
-</div>
-<p>The default is empty, meaning that no distance is computed.</p>
-</dd>
-</dl>
-</section>
-<section id="filtering-masking-and-thresholds">
-<h4>Filtering, masking, and thresholds<a class="headerlink" href="#filtering-masking-and-thresholds" title="Link to this heading"></a></h4>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">-flt</span></code>, <code class="docutils literal notranslate"><span class="pre">--filters</span></code></dt><dd><p>Cell-selection conditions. Join conditions for one input with <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> and
-separate filters for different inputs with commas, e.g.:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -flt &quot;fluxnum == 2 &amp; sgas &gt;= 0.2, satnum != 5&quot;</span>
-</pre></div>
-</div>
-<p>The default is empty. Dynamic variables such as <code class="docutils literal notranslate"><span class="pre">sgas</span></code> require <code class="docutils literal notranslate"><span class="pre">RPORV</span></code>
-in <code class="docutils literal notranslate"><span class="pre">RPTRST</span></code>.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-vmin</span></code>, <code class="docutils literal notranslate"><span class="pre">--min-threshold</span></code></dt><dd><p>Minimum threshold used to remove variable values (empty by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-vmax</span></code>, <code class="docutils literal notranslate"><span class="pre">--max-threshold</span></code></dt><dd><p>Maximum threshold used to remove variable values (empty by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-mv</span></code>, <code class="docutils literal notranslate"><span class="pre">--mask-variable</span></code></dt><dd><p>Static variable used as the background of a 2D map (empty by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-mt</span></code>, <code class="docutils literal notranslate"><span class="pre">--mask-threshold</span></code></dt><dd><p>Threshold applied to the variable supplied through <code class="docutils literal notranslate"><span class="pre">-mv</span></code>
-(<code class="docutils literal notranslate"><span class="pre">1e-3</span></code> by default).</p>
-</dd>
-</dl>
-</section>
-<section id="computation-and-data-transformation">
-<h4>Computation and data transformation<a class="headerlink" href="#computation-and-data-transformation" title="Link to this heading"></a></h4>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">-agg</span></code>, <code class="docutils literal notranslate"><span class="pre">--aggregation</span></code></dt><dd><p>Aggregation or selection method for 2D slices and projections. Supported
-values are <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">mean</span></code>, <code class="docutils literal notranslate"><span class="pre">pvmean</span></code>, <code class="docutils literal notranslate"><span class="pre">harmonic</span></code>,
-<code class="docutils literal notranslate"><span class="pre">arithmetic</span></code>, <code class="docutils literal notranslate"><span class="pre">first</span></code>, and <code class="docutils literal notranslate"><span class="pre">last</span></code>.</p>
-<p>Separate methods for multiple variables or plots with commas, e.g.:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -agg &quot;first,arithmetic,max&quot;</span>
-</pre></div>
-</div>
-<p>By default, continuous variables are pore-volume weighted, extensive
-quantities are summed, indices retain discrete values, and permeabilities
-use directional harmonic or arithmetic averaging.</p>
-<p>For wells and faults, <code class="docutils literal notranslate"><span class="pre">min</span></code> shows cells containing at least one
-occurrence, while <code class="docutils literal notranslate"><span class="pre">max</span></code> requires all projected cells to contain one.
-The default is empty, meaning that the method is selected automatically.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-sf</span></code>, <code class="docutils literal notranslate"><span class="pre">--scale-factor</span></code></dt><dd><p>Multiplicative scaling factor applied to variable values, e.g., <code class="docutils literal notranslate"><span class="pre">1e-9</span></code>
-to display CO2 mass in Mt.</p>
-<p>Separate factors for multiple variables or plots with commas, e.g.,
-<code class="docutils literal notranslate"><span class="pre">1e-5,1</span></code> (<code class="docutils literal notranslate"><span class="pre">1</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-di</span></code>, <code class="docutils literal notranslate"><span class="pre">--difference-input</span></code></dt><dd><p>Base name or full path of the input model to subtract from the primary
-input (empty by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-sc</span></code>, <code class="docutils literal notranslate"><span class="pre">--stress-coefficient</span></code></dt><dd><p>Stress coefficient used to compute pressure limits for <code class="docutils literal notranslate"><span class="pre">limipres</span></code>,
-<code class="docutils literal notranslate"><span class="pre">overpres</span></code>, and <code class="docutils literal notranslate"><span class="pre">objepres</span></code> (<code class="docutils literal notranslate"><span class="pre">0.134</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-dg</span></code>, <code class="docutils literal notranslate"><span class="pre">--dual-grid</span></code></dt><dd><p>Enable dual-grid processing using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
-</dd>
-</dl>
-</section>
-<section id="plot-types-and-statistical-representation">
-<h4>Plot types and statistical representation<a class="headerlink" href="#plot-types-and-statistical-representation" title="Link to this heading"></a></h4>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">-hist</span></code>, <code class="docutils literal notranslate"><span class="pre">--histogram</span></code></dt><dd><p>Histogram bins and optional distribution, e.g., <code class="docutils literal notranslate"><span class="pre">20</span></code>, <code class="docutils literal notranslate"><span class="pre">20,norm</span></code>, or
-<code class="docutils literal notranslate"><span class="pre">20,lognorm</span></code>.</p>
-<p>Separate specifications for multiple plots with spaces, e.g.:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -hist &quot;50,norm 20,lognorm 100&quot;</span>
-</pre></div>
-</div>
-<p>The default is empty, meaning that no histogram is plotted.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-ens</span></code>, <code class="docutils literal notranslate"><span class="pre">--ensemble</span></code></dt><dd><p>Ensemble plotting mode:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code> disables ensemble plotting.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code> plots the mean and error bands.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">2</span></code> plots the minimum, mean, and maximum.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">3</span></code> plots both representations.</p></li>
-</ul>
-<p>The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-fb</span></code>, <code class="docutils literal notranslate"><span class="pre">--fill-between-style</span></code></dt><dd><p>Fill colors and alpha values used for ensemble error bands, supplied as
-comma-separated pairs, e.g., <code class="docutils literal notranslate"><span class="pre">r,0.1,g,0.2</span></code>.</p>
-<p>This option is used with <code class="docutils literal notranslate"><span class="pre">-ens</span> <span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">-ens</span> <span class="pre">3</span></code>. The default is empty,
-meaning that the mean color is used with an alpha value of <code class="docutils literal notranslate"><span class="pre">0.2</span></code>.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-sp</span></code>, <code class="docutils literal notranslate"><span class="pre">--step-plot</span></code></dt><dd><p>Use <code class="docutils literal notranslate"><span class="pre">ax.step</span></code> instead of <code class="docutils literal notranslate"><span class="pre">ax.plot</span></code>: <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>
-(<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
-</dd>
-</dl>
-</section>
-<section id="figure-and-subplot-layout">
-<h4>Figure and subplot layout<a class="headerlink" href="#figure-and-subplot-layout" title="Link to this heading"></a></h4>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">-fs</span></code>, <code class="docutils literal notranslate"><span class="pre">--figsize</span></code></dt><dd><p>Figure width and height in inches, separated by a comma, e.g., <code class="docutils literal notranslate"><span class="pre">8,16</span></code>
-(<code class="docutils literal notranslate"><span class="pre">7,5</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-sg</span></code>, <code class="docutils literal notranslate"><span class="pre">--subplot-grid</span></code></dt><dd><p>Number of subplot rows and columns, separated by a comma, e.g., <code class="docutils literal notranslate"><span class="pre">2,2</span></code>
-for four subplots.</p>
-<p>The default is empty, meaning that separate figures are created.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-cbp</span></code>, <code class="docutils literal notranslate"><span class="pre">--colorbar-position</span></code></dt><dd><p>Global colorbar position and size as <code class="docutils literal notranslate"><span class="pre">left,bottom,width,height</span></code>, e.g.,
-<code class="docutils literal notranslate"><span class="pre">0.1,0.95,0.8,0.02</span></code>.</p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">empty</span></code> to remove the global colorbar. The default is
-<code class="docutils literal notranslate"><span class="pre">0.2,0.01,0.6,0.02</span></code>.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-rdl</span></code>, <code class="docutils literal notranslate"><span class="pre">--remove-duplicate-labels</span></code></dt><dd><p>Remove duplicated axis labels in subplot layouts using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>
-(<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
-</dd>
-</dl>
-</section>
-<section id="titles-labels-and-legends">
-<h4>Titles, labels, and legends<a class="headerlink" href="#titles-labels-and-legends" title="Link to this heading"></a></h4>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">-t</span></code>, <code class="docutils literal notranslate"><span class="pre">--title</span></code></dt><dd><p>Figure title. Separate titles for multiple plots with two spaces
-(<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
-<p>For example:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -t &quot;Reference case  Modified case&quot;</span>
-</pre></div>
-</div>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-st</span></code>, <code class="docutils literal notranslate"><span class="pre">--suptitle</span></code></dt><dd><p>Title for a group of subplots. Use <code class="docutils literal notranslate"><span class="pre">0</span></code> to remove it. The default is
-empty, meaning that the title is set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-xl</span></code>, <code class="docutils literal notranslate"><span class="pre">--xlabel</span></code></dt><dd><p>X-axis label. Separate labels for multiple plots with two spaces. The
-default is empty, meaning that labels are set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-yl</span></code>, <code class="docutils literal notranslate"><span class="pre">--ylabel</span></code></dt><dd><p>Y-axis label. Separate labels for multiple plots with two spaces. The
-default is empty, meaning that labels are set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-cbl</span></code>, <code class="docutils literal notranslate"><span class="pre">--colorbar-label</span></code></dt><dd><p>Colorbar label. Separate labels for multiple plots with two spaces. The
-default is empty, meaning that labels are set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-llb</span></code>, <code class="docutils literal notranslate"><span class="pre">--legend-labels</span></code></dt><dd><p>Summary-plot legend labels. Separate labels with two spaces, e.g.:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -llb &quot;Reference case  Modified case&quot;</span>
-</pre></div>
-</div>
-<p>The default is empty, meaning that labels are set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-ll</span></code>, <code class="docutils literal notranslate"><span class="pre">--legend-location</span></code></dt><dd><p>Legend location passed to <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.legend</span></code>. Supported values
-are <code class="docutils literal notranslate"><span class="pre">best</span></code>, <code class="docutils literal notranslate"><span class="pre">upper</span> <span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">upper</span> <span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">lower</span> <span class="pre">left</span></code>,
-<code class="docutils literal notranslate"><span class="pre">lower</span> <span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">center</span> <span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">center</span> <span class="pre">right</span></code>,
-<code class="docutils literal notranslate"><span class="pre">lower</span> <span class="pre">center</span></code>, <code class="docutils literal notranslate"><span class="pre">upper</span> <span class="pre">center</span></code>, and <code class="docutils literal notranslate"><span class="pre">center</span></code>.</p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">empty</span></code> to remove the legend (<code class="docutils literal notranslate"><span class="pre">best</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-hide</span></code>, <code class="docutils literal notranslate"><span class="pre">--hide-map-elements</span></code></dt><dd><p>Hide the left axis, bottom axis, colorbar, and title using four
-comma-separated values of <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>, in that order.</p>
-<p>For example, <code class="docutils literal notranslate"><span class="pre">1,0,1,0</span></code> hides the left axis and colorbar while retaining
-the bottom axis and title. The default is <code class="docutils literal notranslate"><span class="pre">0,0,0,0</span></code>.</p>
-</dd>
-</dl>
-</section>
-<section id="axes-coordinates-and-formatting">
-<h4>Axes, coordinates, and formatting<a class="headerlink" href="#axes-coordinates-and-formatting" title="Link to this heading"></a></h4>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">-x</span></code>, <code class="docutils literal notranslate"><span class="pre">--xlim</span></code></dt><dd><p>X-axis limits in the requested display order, e.g., <code class="docutils literal notranslate"><span class="pre">[-100,200]</span></code> or
-<code class="docutils literal notranslate"><span class="pre">[200,-100]</span></code>.</p>
-<p>Separate limits for multiple plots with spaces, e.g.:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -x &quot;[-100,200] [500,0]&quot;</span>
-</pre></div>
-</div>
-<p>The default is empty.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-y</span></code>, <code class="docutils literal notranslate"><span class="pre">--ylim</span></code></dt><dd><p>Y-axis limits in the requested display order, e.g., <code class="docutils literal notranslate"><span class="pre">[0,70]</span></code> or
-<code class="docutils literal notranslate"><span class="pre">[70,0]</span></code>.</p>
-<p>Separate limits for multiple plots with spaces, e.g.:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -y &quot;[0,10000] [0,23000]&quot;</span>
-</pre></div>
-</div>
-<p>The default is empty.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-xu</span></code>, <code class="docutils literal notranslate"><span class="pre">--xunits</span></code></dt><dd><p>Spatial-map x-axis units: <code class="docutils literal notranslate"><span class="pre">mm</span></code>, <code class="docutils literal notranslate"><span class="pre">cm</span></code>, <code class="docutils literal notranslate"><span class="pre">m</span></code>, or <code class="docutils literal notranslate"><span class="pre">km</span></code>
-(<code class="docutils literal notranslate"><span class="pre">m</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-yu</span></code>, <code class="docutils literal notranslate"><span class="pre">--yunits</span></code></dt><dd><p>Spatial-map y-axis units: <code class="docutils literal notranslate"><span class="pre">mm</span></code>, <code class="docutils literal notranslate"><span class="pre">cm</span></code>, <code class="docutils literal notranslate"><span class="pre">m</span></code>, or <code class="docutils literal notranslate"><span class="pre">km</span></code>
-(<code class="docutils literal notranslate"><span class="pre">m</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-asp</span></code>, <code class="docutils literal notranslate"><span class="pre">--equal-aspect</span></code></dt><dd><p>Scale the axes equally in 2D maps using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>
-(<code class="docutils literal notranslate"><span class="pre">1</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-rot</span></code>, <code class="docutils literal notranslate"><span class="pre">--rotation</span></code></dt><dd><p>Grid rotation angle in degrees for 2D maps (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-tr</span></code>, <code class="docutils literal notranslate"><span class="pre">--translation</span></code></dt><dd><p>Grid translation in the x and y directions, e.g., <code class="docutils literal notranslate"><span class="pre">[100,-50]</span></code>
-(<code class="docutils literal notranslate"><span class="pre">[0,0]</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-xlog</span></code>, <code class="docutils literal notranslate"><span class="pre">--xlog</span></code></dt><dd><p>Enable the logarithmic x-axis using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
-<p>Comma-separated settings are accepted when different plots require
-different values (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-ylog</span></code>, <code class="docutils literal notranslate"><span class="pre">--ylog</span></code></dt><dd><p>Enable the logarithmic y-axis using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
-<p>Comma-separated settings are accepted when different plots require
-different values (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-xf</span></code>, <code class="docutils literal notranslate"><span class="pre">--xformat</span></code></dt><dd><p>X-axis number format, e.g., <code class="docutils literal notranslate"><span class="pre">.2e</span></code>. The default is empty, meaning that
-the format is set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-yf</span></code>, <code class="docutils literal notranslate"><span class="pre">--yformat</span></code></dt><dd><p>Y-axis number format, e.g., <code class="docutils literal notranslate"><span class="pre">.1f</span></code>. The default is empty, meaning that
-the format is set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-xnt</span></code>, <code class="docutils literal notranslate"><span class="pre">--xtick-count</span></code></dt><dd><p>Number of x-axis ticks (<code class="docutils literal notranslate"><span class="pre">5</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-ynt</span></code>, <code class="docutils literal notranslate"><span class="pre">--ytick-count</span></code></dt><dd><p>Number of y-axis ticks (<code class="docutils literal notranslate"><span class="pre">5</span></code> by default).</p>
-</dd>
-</dl>
-</section>
-<section id="color-scales-and-styling">
-<h4>Color scales and styling<a class="headerlink" href="#color-scales-and-styling" title="Link to this heading"></a></h4>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">-c</span></code>, <code class="docutils literal notranslate"><span class="pre">--colors</span></code></dt><dd><p>Colormap for spatial plots, e.g., <code class="docutils literal notranslate"><span class="pre">jet</span></code>, or summary-plot colors
-separated by commas, e.g., <code class="docutils literal notranslate"><span class="pre">b,r</span></code>.</p>
-<p>The default is empty, meaning that colors are selected by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-cl</span></code>, <code class="docutils literal notranslate"><span class="pre">--clim</span></code></dt><dd><p>Color-scale limits in the requested display order, e.g., <code class="docutils literal notranslate"><span class="pre">[-0.1,11]</span></code> or
-<code class="docutils literal notranslate"><span class="pre">[11,-0.1]</span></code>.</p>
-<p>Separate limits for multiple plots with spaces. The default is empty.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-clog</span></code>, <code class="docutils literal notranslate"><span class="pre">--color-log</span></code></dt><dd><p>Enable logarithmic color scaling using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
-<p>Separate settings for multiple variables with commas, e.g.:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -clog &quot;1,1,0&quot;</span>
-</pre></div>
-</div>
-<p>The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-clt</span></code>, <code class="docutils literal notranslate"><span class="pre">--color-log-ticks</span></code></dt><dd><p>Tick values for logarithmic color scales, enclosed by brackets and
-separated by commas, e.g., <code class="docutils literal notranslate"><span class="pre">[1,10,100]</span></code>.</p>
-<p>At least one corresponding <code class="docutils literal notranslate"><span class="pre">-clog</span></code> setting must be <code class="docutils literal notranslate"><span class="pre">1</span></code>. The default
-is empty.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-gr</span></code>, <code class="docutils literal notranslate"><span class="pre">--global-range</span></code></dt><dd><p>Use the value range of the current slice or the entire 3D model for color
-scaling:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code> uses the current slice range.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code> uses the whole-model range.</p></li>
-</ul>
-<p>The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-cbf</span></code>, <code class="docutils literal notranslate"><span class="pre">--colorbar-format</span></code></dt><dd><p>Colorbar number format, e.g., <code class="docutils literal notranslate"><span class="pre">.2f</span></code>. The default is empty, meaning that
-the format is set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-cbn</span></code>, <code class="docutils literal notranslate"><span class="pre">--colorbar-tick-count</span></code></dt><dd><p>Number of colorbar ticks. Separate values for multiple plots with commas,
-e.g., <code class="docutils literal notranslate"><span class="pre">3,6,2</span></code>.</p>
-<p>The default is empty, meaning that the number of ticks is set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-cbt</span></code>, <code class="docutils literal notranslate"><span class="pre">--colorbar-ticks</span></code></dt><dd><p>Custom colorbar tick labels enclosed by brackets and separated by commas,
-e.g., <code class="docutils literal notranslate"><span class="pre">[G,F,E,D,C,ESF]</span></code> (empty by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-lw</span></code>, <code class="docutils literal notranslate"><span class="pre">--linewidth</span></code></dt><dd><p>Line widths separated by commas, e.g., <code class="docutils literal notranslate"><span class="pre">1,2,1.5</span></code>. The default is empty,
-meaning that line widths are set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-ls</span></code>, <code class="docutils literal notranslate"><span class="pre">--linestyle</span></code></dt><dd><p>Line styles separated by commas, e.g., <code class="docutils literal notranslate"><span class="pre">solid,dotted</span></code>. The default is
-empty, meaning that line styles are set by plopm.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-ag</span></code>, <code class="docutils literal notranslate"><span class="pre">--axis-grid</span></code></dt><dd><p>Display the summary-plot axis grid using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>
-(<code class="docutils literal notranslate"><span class="pre">1</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-fc</span></code>, <code class="docutils literal notranslate"><span class="pre">--facecolor</span></code></dt><dd><p>Color outside the spatial map (<code class="docutils literal notranslate"><span class="pre">w</span></code> by default, meaning white).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-ic</span></code>, <code class="docutils literal notranslate"><span class="pre">--inactive-color</span></code></dt><dd><p>Color for inactive cells in 2D maps
-(<code class="docutils literal notranslate"><span class="pre">w</span></code> by default, meaning white).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-ge</span></code>, <code class="docutils literal notranslate"><span class="pre">--grid-edges</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code> edge color and line width separated by a comma, e.g.,
-<code class="docutils literal notranslate"><span class="pre">black,1e-3</span></code>.</p>
-<p>The default is empty, meaning that cell edges are not displayed.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-fz</span></code>, <code class="docutils literal notranslate"><span class="pre">--fontsize</span></code></dt><dd><p>Font size (<code class="docutils literal notranslate"><span class="pre">12</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-dpi</span></code>, <code class="docutils literal notranslate"><span class="pre">--dpi</span></code></dt><dd><p>Figure resolution in dots per inch (<code class="docutils literal notranslate"><span class="pre">500</span></code> by default).</p>
-</dd>
-</dl>
-</section>
-<section id="vtk-output">
-<h4>VTK output<a class="headerlink" href="#vtk-output" title="Link to this heading"></a></h4>
-<p>The following options apply only when <code class="docutils literal notranslate"><span class="pre">-m</span> <span class="pre">vtk</span></code> is selected.</p>
-<dl>
-<dt><code class="docutils literal notranslate"><span class="pre">-vf</span></code>, <code class="docutils literal notranslate"><span class="pre">--vtk-format</span></code></dt><dd><p>VTK data type for each variable. Supported formats are <code class="docutils literal notranslate"><span class="pre">Float64</span></code>,
-<code class="docutils literal notranslate"><span class="pre">Float32</span></code>, <code class="docutils literal notranslate"><span class="pre">Float16</span></code>, <code class="docutils literal notranslate"><span class="pre">Int64</span></code>, <code class="docutils literal notranslate"><span class="pre">UInt64</span></code>, <code class="docutils literal notranslate"><span class="pre">Int32</span></code>, <code class="docutils literal notranslate"><span class="pre">UInt32</span></code>,
-<code class="docutils literal notranslate"><span class="pre">Int16</span></code>, <code class="docutils literal notranslate"><span class="pre">UInt16</span></code>, <code class="docutils literal notranslate"><span class="pre">Int8</span></code>, and <code class="docutils literal notranslate"><span class="pre">UInt8</span></code>.</p>
-<p>Separate formats for multiple variables with commas
-(<code class="docutils literal notranslate"><span class="pre">Float64</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-vn</span></code>, <code class="docutils literal notranslate"><span class="pre">--vtk-names</span></code></dt><dd><p>Custom VTK variable names separated by commas. The default is empty,
-meaning that the names supplied through <code class="docutils literal notranslate"><span class="pre">-v</span></code> are used.</p>
-</dd>
-</dl>
-</section>
-<section id="gif-output">
-<h4>GIF output<a class="headerlink" href="#gif-output" title="Link to this heading"></a></h4>
-<p>The following options apply only when <code class="docutils literal notranslate"><span class="pre">-m</span> <span class="pre">gif</span></code> is selected.</p>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">-gi</span></code>, <code class="docutils literal notranslate"><span class="pre">--gif-interval</span></code></dt><dd><p>GIF frame interval in milliseconds (<code class="docutils literal notranslate"><span class="pre">1000</span></code> by default).</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-gl</span></code>, <code class="docutils literal notranslate"><span class="pre">--gif-loop</span></code></dt><dd><p>Loop GIF animations indefinitely using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>
-(<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
-</dd>
-</dl>
-</section>
-<section id="information-and-diagnostics">
-<h4>Information and diagnostics<a class="headerlink" href="#information-and-diagnostics" title="Link to this heading"></a></h4>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">-lv</span></code>, <code class="docutils literal notranslate"><span class="pre">--list-variables</span></code></dt><dd><p>Print the available variables using <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">0</span></code> by default).</p>
-</dd>
-</dl>
-</section>
-</section>
-</section>
-</section>
-
-
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to plopm’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+</nav></div>
+      
     </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2024-2026, NORCE Research AS.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
         </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+      
+      
+        <div class="navbar-item">
 
-</body>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm/issues/new/choose" title="Report an issue" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-bug fa-lg" aria-hidden="true"></i><span class="visually-hidden">Report an issue</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm" title="GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub repository</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Introduction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="command-line.html">
+    Command-line reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="related.html">
+    Related projects
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm/issues/new/choose" title="Report an issue" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-bug fa-lg" aria-hidden="true"></i><span class="visually-hidden">Report an issue</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm" title="GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub repository</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Introduction</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <img alt="_images/plopm.png" id="introduction" src="_images/plopm.png" />
+<section id="id1">
+<h1>Introduction<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<p><strong>plopm</strong> is a lightweight command-line tool for visualization and
+postprocessing of OPM Flow geological models.</p>
+<p>It can generate:</p>
+<ul class="simple">
+<li><p>two-dimensional maps of static and dynamic quantities;</p></li>
+<li><p>summary plots and comparisons between simulation cases;</p></li>
+<li><p>PNG figures and GIF animations;</p></li>
+<li><p>CSV data for further analysis;</p></li>
+<li><p>VTK files for three-dimensional visualization.</p></li>
+</ul>
+<section id="basic-usage">
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Link to this heading">#</a></h2>
+<p>A typical command selects an input case, a variable, and a model slice:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11C -v pressure -s ,1,</span>
+</pre></div>
+</div>
+<p>This command plots pressure on the plane at <code class="docutils literal notranslate"><span class="pre">j=1</span></code> and writes a PNG to the
+current directory.</p>
+</section>
+<section id="where-to-continue">
+<h2>Where to continue<a class="headerlink" href="#where-to-continue" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>See <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a> to install <strong>plopm</strong> and its optional dependencies.</p></li>
+<li><p>Follow the <a class="reference internal" href="tutorial.html"><span class="doc">Tutorial</span></a> to progress from a first PNG to projections,
+comparisons, animations, and data export.</p></li>
+<li><p>Browse the <a class="reference internal" href="examples.html"><span class="doc">Examples</span></a> for complete visualization recipes.</p></li>
+<li><p>Use the <a class="reference internal" href="command-line.html"><span class="doc">Command-line reference</span></a> for syntax and option descriptions.</p></li>
+<li><p>See the <a class="reference internal" href="api.html"><span class="doc">Python API</span></a> to use <strong>plopm</strong> from Python.</p></li>
+<li><p>See <a class="reference internal" href="contributing.html"><span class="doc">Contributing</span></a> to report issues, request features, or contribute to
+<strong>plopm</strong>.</p></li>
+<li><p>Explore <a class="reference internal" href="related.html"><span class="doc">Related projects</span></a> for complementary open-source tools.</p></li>
+</ul>
+</section>
+<section id="about-the-project">
+<h2>About the project<a class="headerlink" href="#about-the-project" title="Link to this heading">#</a></h2>
+<p><strong>plopm</strong> is funded by the <a class="reference external" href="https://www.norceresearch.no/en/projects/hpc-simulation-software-for-the-gigatonne-storage-challenge">HPC Simulation Software for the Gigatonne
+Storage Challenge project</a>
+(project number 622059) and the <a class="reference external" href="https://cssr.no/">Center for Sustainable Subsurface Resources</a> (project number 331841).</p>
+<p>Contributions are welcome. See <a class="reference internal" href="contributing.html"><span class="doc">Contributing</span></a> to propose changes or
+<a class="reference external" href="https://github.com/cssr-tools/plopm/issues/new/choose">open an issue</a> to
+report a problem or request a feature.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">plopm</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="installation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Installation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-usage">Basic usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-continue">Where to continue</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-the-project">About the project</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/introduction.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, NORCE Research AS.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
 </html>

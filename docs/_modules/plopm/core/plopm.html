@@ -1,0 +1,1986 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plopm.core.plopm &#8212; plopm documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c9070fc1" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=1485e655"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=eef4a3d2"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plopm/core/plopm';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2026.10rc0" />
+    <meta name="docbuild:last-update" content="2026-08-30"/>
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/plopm-logo.svg" class="logo__image only-light" alt="plopm documentation - Home"/>
+    <img src="../../../_static/plopm-logo.svg" class="logo__image only-dark pst-js-only" alt="plopm documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../introduction.html">
+    Introduction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../command-line.html">
+    Command-line reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../related.html">
+    Related projects
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm/issues/new/choose" title="Report an issue" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-bug fa-lg" aria-hidden="true"></i><span class="visually-hidden">Report an issue</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm" title="GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub repository</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../introduction.html">
+    Introduction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../command-line.html">
+    Command-line reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../related.html">
+    Related projects
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm/issues/new/choose" title="Report an issue" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-bug fa-lg" aria-hidden="true"></i><span class="visually-hidden">Report an issue</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm" title="GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub repository</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plopm.core.plopm</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for plopm.core.plopm</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-FileCopyrightText: 2024-2026 NORCE Research AS</span>
+<span class="c1"># SPDX-License-Identifier: GPL-3.0</span>
+<span class="c1"># pylint: disable=C0302,R1702,W0123,W1401,R0912,R0914,R0915</span>
+
+<span class="sd">&quot;&quot;&quot;Command-line entry point and top-level workflow coordination for plopm.</span>
+
+<span class="sd">plopm supports three output workflows for OPM Flow simulation results:</span>
+
+<span class="sd">* One-dimensional plots and CSV files can be generated from summary vectors,</span>
+<span class="sd">  tabulated functions, grid-cell sensors, layers, histograms, and distances.</span>
+<span class="sd">* Two-dimensional PNG figures and GIF animations can be generated for selected</span>
+<span class="sd">  grid slices, with optional aggregation, masking, differences, wells, and faults.</span>
+<span class="sd">* VTK time series can be generated by combining OPM grid geometry with selected</span>
+<span class="sd">  INIT and UNRST properties.</span>
+
+<span class="sd">This module parses and validates command-line arguments, builds the runtime</span>
+<span class="sd">configuration, selects the appropriate workflow, and reports the generated</span>
+<span class="sd">files. Data reading, numerical processing, plotting, and file generation are</span>
+<span class="sd">implemented in the utility modules.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shlex</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">plopm.utils.initialization</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">build_config</span><span class="p">,</span>
+    <span class="n">init_maps</span><span class="p">,</span>
+    <span class="n">init_summary</span><span class="p">,</span>
+    <span class="n">is_summary</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plopm.utils.terminal</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PlopmHelpFormatter</span><span class="p">,</span>
+    <span class="n">cli_error_value</span><span class="p">,</span>
+    <span class="n">plopm_error</span><span class="p">,</span>
+    <span class="n">plopm_info</span><span class="p">,</span>
+    <span class="n">plopm_name</span><span class="p">,</span>
+    <span class="n">plopm_success</span><span class="p">,</span>
+    <span class="n">plopm_tip</span><span class="p">,</span>
+    <span class="n">warn_deprecated_options</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plopm.utils.write_oned</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_plots</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plopm.utils.write_twod</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_maps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plopm.utils.write_vtk</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_vtks</span>
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../api/plopm.core.plopm.html#plopm.core.plopm.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the plopm command-line workflow.</span>
+
+<span class="sd">    The function parses and validates CLI arguments, builds the shared</span>
+<span class="sd">    configuration, and dispatches VTK export, one-dimensional plotting, or</span>
+<span class="sd">    two-dimensional map generation. It reports the generated files after the</span>
+<span class="sd">    selected workflow completes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    argv : list[str], optional</span>
+<span class="sd">        Arguments to parse instead of ``sys.argv[1:]``. This is primarily used</span>
+<span class="sd">        by tests and programmatic callers.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cmdargs</span> <span class="o">=</span> <span class="n">_load_parser</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">_check_cmdargs</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">)</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">build_config</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">vtk</span><span class="p">:</span>
+        <span class="n">plopm_info</span><span class="p">(</span><span class="s2">&quot;processing, please wait...&quot;</span><span class="p">)</span>
+        <span class="n">generated_files</span> <span class="o">=</span> <span class="n">make_vtks</span><span class="p">(</span>
+            <span class="n">cmdargs</span><span class="o">.</span><span class="n">flow_path</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">restart</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">vtk_format</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">vtk_names</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">gif</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">vtk</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">scale_factor</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">mass_vars</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">mass_vars</span> <span class="o">+</span> <span class="n">cfg</span><span class="o">.</span><span class="n">mass_fracs</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">caprock_vars</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">stress_coefficient</span><span class="p">,</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;latex&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plopm_tip</span><span class="p">(</span>
+                <span class="s2">&quot;install LaTeX for improved fonts and text formatting; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;see the </span><span class="si">{</span><span class="n">plopm_name</span><span class="p">()</span><span class="si">}</span><span class="s2"> documentation for installation instructions.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_summary</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+            <span class="n">plopm_info</span><span class="p">(</span><span class="s2">&quot;processing, please wait...&quot;</span><span class="p">)</span>
+            <span class="n">init_summary</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+            <span class="n">generated_files</span> <span class="o">=</span> <span class="n">make_plots</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plopm_info</span><span class="p">(</span><span class="s2">&quot;processing, please wait...&quot;</span><span class="p">)</span>
+            <span class="n">init_maps</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+            <span class="n">generated_files</span> <span class="o">=</span> <span class="n">make_maps</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+    <span class="n">plopm_success</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">generated_files</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_parser</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the CLI parser and parse plopm arguments.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    argv : list[str], optional</span>
+<span class="sd">        Arguments to parse instead of ``sys.argv[1:]``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    argparse.Namespace</span>
+<span class="sd">        Parsed command-line arguments.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">PlopmHelpFormatter</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;plopm: Simplified and flexible Python tool for quick visualization &quot;</span>
+            <span class="s2">&quot;of OPM Flow geological models. See the online documentation for &quot;</span>
+            <span class="s2">&quot;examples and detailed option descriptions: &quot;</span>
+            <span class="s2">&quot;https://cssr-tools.github.io/plopm/introduction.html#option-reference&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Input and data selection</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Input and data selection&quot;</span><span class="p">)</span>
+
+    <span class="n">inputs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-i&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--input&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;SPE11B&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Base name or full path of the input. Separate multiple inputs &quot;</span>
+            <span class="s1">&#39;with spaces, e.g. &quot;SPE11B /home/user/SPE11B_TUNED&quot;&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">inputs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-v&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--variable&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;poro,permx,permz,porv,fipnum,satnum&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Variable specification(s) to plot, including standard variables, &quot;</span>
+            <span class="s2">&quot;special variables, and expressions. Separate variables with commas&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">inputs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-r&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--restart&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Restart step(s): a single step, comma-separated steps, or &quot;</span>
+            <span class="s1">&#39;start:end[:step], e.g. &quot;-1&quot;, &quot;0,3,10&quot;, or &quot;5:505:250&quot;&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">inputs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-cc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--csv-columns&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--csv&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;CSV column indices starting at 1. Use t,value for time series or &quot;</span>
+            <span class="s2">&quot;x,y,value for spatial maps; separate inputs with semicolons&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">inputs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-fp&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--flow-path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-p&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--path&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path or command for the Flow executable used for VTK grid generation&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Output options</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Output options&quot;</span><span class="p">)</span>
+
+    <span class="n">output</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--format&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--mode&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;vtk&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output format&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--output-dir&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Base name or full path of the output directory&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-fn&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--filename&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-save&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--save&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output file name&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Spatial and temporal selection</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">selection</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Spatial and temporal selection&quot;</span><span class="p">)</span>
+
+    <span class="n">selection</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--slice&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--slide&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;,1,&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Spatial selection in i,j,k form, e.g. &quot;</span>
+            <span class="s1">&#39;&quot;10,,&quot; for a plane, &quot;,,5:10&quot; for a range, &#39;</span>
+            <span class="s1">&#39;&quot;:,5,7&quot; for a line, or &quot;2,4,9&quot; for a cell over time&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">selection</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-tu&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--time-units&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-tunits&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--tunits&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;dates&quot;</span><span class="p">,</span> <span class="s2">&quot;empty&quot;</span><span class="p">,</span> <span class="s2">&quot;tstep&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;d&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Summary-plot x-axis time units&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">selection</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-dist&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--distance&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-distance&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;min,sensor&quot;</span><span class="p">,</span> <span class="s2">&quot;max,sensor&quot;</span><span class="p">,</span> <span class="s2">&quot;min,border&quot;</span><span class="p">,</span> <span class="s2">&quot;max,border&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Compute the minimum or maximum distance to a sensor or lateral border&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Filtering, masking, and thresholds</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">filtering</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Filtering, masking, and thresholds&quot;</span><span class="p">)</span>
+
+    <span class="n">filtering</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-flt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--filters&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-filter&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Cell-selection conditions. Join conditions for one input with &#39;&amp;&#39; &quot;</span>
+            <span class="s2">&quot;and separate filters for different inputs with commas&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">filtering</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-vmin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--min-threshold&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--vmin&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Minimum threshold used to remove variable values&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">filtering</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-vmax&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--max-threshold&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--vmax&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum threshold used to remove variable values&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">filtering</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-mv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--mask-variable&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-mask&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--mask&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Static variable used as the background of a 2D map&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">filtering</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-mt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--mask-threshold&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-maskthr&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--maskthr&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1e-3&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Threshold applied to the mask variable&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Computation and data transformation</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">computation</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Computation and data transformation&quot;</span><span class="p">)</span>
+
+    <span class="n">computation</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-agg&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--aggregation&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-how&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--how&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Aggregation or selection method for 2D slices and projections: &quot;</span>
+            <span class="s2">&quot;min, max, sum, mean, pvmean, harmonic, arithmetic, first, or last&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">computation</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-sf&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--scale-factor&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-a&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--adjust&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Multiplicative scaling factor applied to variable values, &quot;</span>
+            <span class="s2">&quot;e.g. 1e-9 to display mass in Mt&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">computation</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-di&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--difference-input&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-diff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--diff&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Base name or full path of the input model to subtract&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">computation</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-sc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--stress-coefficient&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-stress&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--stress&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0.134&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Stress coefficient used to compute pressure limits for &quot;</span>
+            <span class="s2">&quot;limipres, overpres, and objepres&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">computation</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-dg&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--dual-grid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-dual&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--dual&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable dual-grid processing using 0 or 1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Plot types and statistical representation</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">plot_types</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Plot types and statistical representation&quot;</span><span class="p">)</span>
+
+    <span class="n">plot_types</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-hist&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--histogram&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-histogram&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Histogram bins and optional distribution, e.g. &quot;</span>
+            <span class="s1">&#39;&quot;20&quot;, &quot;20,norm&quot;, or &quot;20,lognorm&quot;&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">plot_types</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-ens&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--ensemble&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-ensemble&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Ensemble plotting mode: 0 disables it, 1 plots mean and error &quot;</span>
+            <span class="s2">&quot;bands, 2 plots minimum, mean, and maximum, and 3 plots both&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">plot_types</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-fb&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--fill-between-style&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-bandprop&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--bandprop&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Fill colors and alpha values for ensemble error bands&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plot_types</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-sp&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--step-plot&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-step&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--step&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use ax.step instead of ax.plot&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Figure and subplot layout</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">layout</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Figure and subplot layout&quot;</span><span class="p">)</span>
+
+    <span class="n">layout</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-fs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--figsize&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-d&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--dimensions&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;7,5&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Figure width and height in inches, e.g. &quot;8,16&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-sg&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--subplot-grid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-subfigs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--subfigs&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Number of subplot rows and columns, e.g. &quot;2,2&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-cbp&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--colorbar-position&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-cbsfax&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--cbsfax&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0.2,0.01,0.6,0.02&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Global colorbar position and size as left,bottom,width,height; &quot;</span>
+            <span class="s2">&quot;use &#39;empty&#39; to remove it&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">layout</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-rdl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--remove-duplicate-labels&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-delax&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--delax&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Remove duplicated axis labels in subplot layouts&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Titles, labels, and legends</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Titles, labels, and legends&quot;</span><span class="p">)</span>
+
+    <span class="n">text</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--title&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Figure title; separate titles for multiple plots with two spaces&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">text</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-st&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--suptitle&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-suptitle&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Title for a group of subplots; use 0 to remove it&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">text</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-xl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--xlabel&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-xlabel&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;X-axis label; separate labels for multiple plots with two spaces&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">text</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-yl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--ylabel&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-ylabel&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Y-axis label; separate labels for multiple plots with two spaces&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">text</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-cbl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--colorbar-label&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-clabel&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--clabel&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Colorbar label; separate labels for multiple plots with two spaces&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">text</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-llb&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--legend-labels&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-labels&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--labels&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Summary-plot legend labels separated by two spaces&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">text</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-ll&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--legend-location&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-loc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--loc&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Legend location passed to matplotlib; use &#39;empty&#39; to remove it&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">text</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-hide&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--hide-map-elements&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-remove&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--remove&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0,0,0,0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Hide the left axis, bottom axis, colorbar, and title using four &quot;</span>
+            <span class="s2">&quot;comma-separated values of 0 or 1&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Axes, coordinates, and formatting</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Axes, coordinates, and formatting&quot;</span><span class="p">)</span>
+
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-x&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--xlim&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;X-axis limits in display order, e.g. &quot;[-100,200]&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-y&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--ylim&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Y-axis limits in display order, e.g. &quot;[0,300]&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-xu&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--xunits&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-xunits&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mm&quot;</span><span class="p">,</span> <span class="s2">&quot;cm&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;km&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Spatial-map x-axis units&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-yu&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--yunits&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-yunits&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mm&quot;</span><span class="p">,</span> <span class="s2">&quot;cm&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;km&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Spatial-map y-axis units&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-asp&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--equal-aspect&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-z&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--scale&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Scale the axes equally in 2D maps&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-rot&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--rotation&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-rotate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--rotate&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Grid rotation angle in degrees for 2D maps&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-tr&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--translation&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-translate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--translate&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;[0,0]&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Grid translation in the x and y directions, e.g. &quot;[100,-50]&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-xlog&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--xlog&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable the logarithmic x-axis using 0 or 1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-ylog&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--ylog&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable the logarithmic y-axis using 0 or 1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-xf&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--xformat&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-xformat&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;X-axis number format, e.g. &quot;.2e&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-yf&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--yformat&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-yformat&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Y-axis number format, e.g. &quot;.1f&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-xnt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--xtick-count&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-xlnum&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--xlnum&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;5&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of x-axis ticks&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-ynt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--ytick-count&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-ylnum&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--ylnum&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;5&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of y-axis ticks&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Color scales and styling</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">styling</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Color scales and styling&quot;</span><span class="p">)</span>
+
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--colors&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Colormap or summary-plot colors, e.g. &quot;jet&quot; or &quot;b,r&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-cl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--clim&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--bounds&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Color-scale limits in display order, e.g. &quot;[-0.1,11]&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-clog&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--color-log&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-log&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--log&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable logarithmic color scaling using 0 or 1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-clt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--color-log-ticks&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-clogthks&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--clogthks&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Tick values for logarithmic color scales, e.g. &quot;[1,10,100]&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-gr&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--global-range&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-global&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--global&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use the current slice range or whole-model range for color scaling&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-cbf&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--colorbar-format&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-cformat&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--cformat&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Colorbar number format, e.g. &quot;.2f&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-cbn&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--colorbar-tick-count&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-cnum&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--cnum&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of colorbar ticks&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-cbt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--colorbar-ticks&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-cticks&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--cticks&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Custom colorbar tick labels, e.g. &quot;[A,B,C]&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-lw&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--linewidth&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--lw&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Line widths separated by commas&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-ls&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--linestyle&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-e&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Line styles separated by commas, e.g. &quot;solid,dotted&quot;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-ag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--axis-grid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-axgrid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--axgrid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Display the summary-plot axis grid&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-fc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--facecolor&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-facecolor&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Color outside the spatial map&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-ic&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--inactive-color&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-ncolor&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--ncolor&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Color for inactive cells in 2D maps&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-ge&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--grid-edges&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-grid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--grid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;pcolormesh edge color and line width separated by a comma&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-fz&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--fontsize&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--size&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;12&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Font size&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">styling</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-dpi&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--dpi&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;500&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Figure resolution in dots per inch&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># VTK output</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">vtk</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;VTK output&quot;</span><span class="p">)</span>
+
+    <span class="n">vtk</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-vf&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--vtk-format&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-vtkformat&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--vtkformat&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Float64&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;VTK data type for each variable, separated by commas&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">vtk</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-vn&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--vtk-names&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-vtknames&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--vtknames&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Custom VTK variable names separated by commas&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># GIF output</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">gif</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;GIF output&quot;</span><span class="p">)</span>
+
+    <span class="n">gif</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-gi&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--gif-interval&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-interval&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--interval&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;GIF frame interval in milliseconds&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">gif</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-gl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--gif-loop&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-loop&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--loop&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Loop GIF animations indefinitely using 0 or 1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Information and diagnostics</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">diagnostics</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Information and diagnostics&quot;</span><span class="p">)</span>
+
+    <span class="n">diagnostics</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-lv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--list-variables&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-printv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--printv&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print the available variables&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parsed_argv</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">argv</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">argv</span>
+
+    <span class="n">warn_deprecated_options</span><span class="p">(</span><span class="n">parsed_argv</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">parsed_argv</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_cmdargs</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate command-line values and option combinations.</span>
+
+<span class="sd">    The function checks value syntax, accepted choices, mutually exclusive</span>
+<span class="sd">    operations, mode-specific options, and availability of OPM Flow for VTK</span>
+<span class="sd">    generation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cmdargs : argparse.Namespace</span>
+<span class="sd">        Parsed arguments returned by :func:`_load_parser`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    SystemExit</span>
+<span class="sd">        If a value is invalid or incompatible options are requested.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">format</span>
+    <span class="n">vtk_mode</span> <span class="o">=</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;vtk&quot;</span>
+    <span class="n">gif_mode</span> <span class="o">=</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;gif&quot;</span>
+    <span class="n">number</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?&quot;</span>
+    <span class="n">positive_integer</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;[1-9]\d*&quot;</span>
+    <span class="n">non_negative_integer</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\d+&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">input</span><span class="p">:</span>
+        <span class="n">plopm_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;the input </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-i&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> cannot be empty.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">output_dir</span><span class="p">:</span>
+        <span class="n">plopm_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;the output folder </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> cannot be empty.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">variable</span><span class="p">:</span>
+        <span class="n">plopm_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;the variable </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> cannot be empty.&quot;</span><span class="p">)</span>
+
+    <span class="n">positive_number_options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;-fz&quot;</span><span class="p">,</span> <span class="s2">&quot;fontsize&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-xnt&quot;</span><span class="p">,</span> <span class="s2">&quot;xtick_count&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-ynt&quot;</span><span class="p">,</span> <span class="s2">&quot;ytick_count&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-mt&quot;</span><span class="p">,</span> <span class="s2">&quot;mask_threshold&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-gi&quot;</span><span class="p">,</span> <span class="s2">&quot;gif_interval&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">positive_number_options</span><span class="p">:</span>
+        <span class="n">raw_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">_parse_number</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">raw_value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;expected a positive number, not &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">raw_value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">number_options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;-sc&quot;</span><span class="p">,</span> <span class="s2">&quot;stress_coefficient&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-rot&quot;</span><span class="p">,</span> <span class="s2">&quot;rotation&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">number_options</span><span class="p">:</span>
+        <span class="n">_parse_number</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
+    <span class="n">__parse_number_list</span><span class="p">(</span><span class="s2">&quot;-sf&quot;</span><span class="p">,</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">scale_factor</span><span class="p">)</span>
+
+    <span class="n">optional_number_options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;-vmin&quot;</span><span class="p">,</span> <span class="s2">&quot;min_threshold&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-vmax&quot;</span><span class="p">,</span> <span class="s2">&quot;max_threshold&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">optional_number_options</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">_parse_number</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">cmdargs</span><span class="o">.</span><span class="n">min_threshold</span>
+        <span class="ow">and</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">max_threshold</span>
+        <span class="ow">and</span> <span class="nb">float</span><span class="p">(</span><span class="n">cmdargs</span><span class="o">.</span><span class="n">min_threshold</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">float</span><span class="p">(</span><span class="n">cmdargs</span><span class="o">.</span><span class="n">max_threshold</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;the minimum threshold &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-vmin </span><span class="si">{</span><span class="n">cmdargs</span><span class="o">.</span><span class="n">min_threshold</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> must not be &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;greater than the maximum threshold &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-vmax </span><span class="si">{</span><span class="n">cmdargs</span><span class="o">.</span><span class="n">max_threshold</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">colorbar_tick_numbers</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">colorbar_tick_count</span>
+    <span class="k">if</span> <span class="n">colorbar_tick_numbers</span><span class="p">:</span>
+        <span class="n">cnum_entries</span> <span class="o">=</span> <span class="n">colorbar_tick_numbers</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">positive_integer</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">cnum_entries</span><span class="p">):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="s2">&quot;expected positive integers separated by commas, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;not </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-cbn </span><span class="si">{</span><span class="n">colorbar_tick_numbers</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">boolean_options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;-xlog&quot;</span><span class="p">,</span> <span class="s2">&quot;xlog&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-ylog&quot;</span><span class="p">,</span> <span class="s2">&quot;ylog&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-clog&quot;</span><span class="p">,</span> <span class="s2">&quot;color_log&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-dg&quot;</span><span class="p">,</span> <span class="s2">&quot;dual_grid&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-gl&quot;</span><span class="p">,</span> <span class="s2">&quot;gif_loop&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">boolean_options</span><span class="p">:</span>
+        <span class="n">raw_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">raw_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="s2">&quot;expected values containing only 0 or 1, separated by commas, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;not </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">raw_value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">dimensions</span> <span class="o">=</span> <span class="n">__parse_number_list</span><span class="p">(</span>
+        <span class="s2">&quot;-fs&quot;</span><span class="p">,</span>
+        <span class="n">cmdargs</span><span class="o">.</span><span class="n">figsize</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dimensions</span><span class="p">):</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;figure dimensions must be positive, not &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-fs </span><span class="si">{</span><span class="n">cmdargs</span><span class="o">.</span><span class="n">figsize</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">translation</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">translation</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span>
+        <span class="sa">rf</span><span class="s2">&quot;\[\s*</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">\s*,\s*</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">\s*\]&quot;</span><span class="p">,</span>
+        <span class="n">translation</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;expected two numbers enclosed by brackets, such as &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-tr [10,-5]&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">, not &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-tr </span><span class="si">{</span><span class="n">translation</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">interval_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;\[\s*(</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">)\s*,\s*(</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">)\s*\]&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;-cl&quot;</span><span class="p">,</span> <span class="s2">&quot;clim&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-x&quot;</span><span class="p">,</span> <span class="s2">&quot;xlim&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-y&quot;</span><span class="p">,</span> <span class="s2">&quot;ylim&quot;</span><span class="p">),</span>
+    <span class="p">]:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">interval_value</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">interval_pattern</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">interval_value</span><span class="p">):</span>
+                <span class="n">plopm_error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;expected two numeric bounds enclosed by brackets, such &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;as </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s1"> [0,10]&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">, not &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">interval_value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+
+    <span class="n">aggregation_methods</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">aggregation</span>
+    <span class="k">if</span> <span class="n">aggregation_methods</span><span class="p">:</span>
+        <span class="n">valid_aggregation_methods</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;min&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pvmean&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;harmonic&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;arithmetic&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;first&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;last&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">method_entries</span> <span class="o">=</span> <span class="n">aggregation_methods</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_aggregation_methods</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">method_entries</span><span class="p">):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;expected aggregation methods from &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">valid_aggregation_methods</span><span class="p">)</span><span class="si">}</span><span class="s2">, not &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-agg </span><span class="si">{</span><span class="n">aggregation_methods</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">slice_value</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">slice</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">slice_value</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">slice_entry_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">rf</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">positive_integer</span><span class="si">}</span><span class="s2">|&quot;</span> <span class="sa">rf</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">positive_integer</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">positive_integer</span><span class="si">}</span><span class="s2">|:)?&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">slices</span><span class="p">:</span>
+        <span class="n">plopm_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;the slice selection </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-s&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> cannot be empty.&quot;</span><span class="p">)</span>
+
+    <span class="n">slice_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">selection</span> <span class="ow">in</span> <span class="n">slices</span><span class="p">:</span>
+        <span class="n">entries</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="ow">not</span> <span class="n">slice_entry_pattern</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span>
+        <span class="p">):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;expected three i,j,k entries separated by commas, using &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;positive indices, &#39;:&#39;, or ranges, not &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-s </span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="ow">not</span> <span class="n">entry</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;at least one slice entry must be provided with &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-s </span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">colon_entries</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">colon_entries</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">entry</span> <span class="o">!=</span> <span class="s2">&quot;:&quot;</span><span class="p">:</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="n">end</span><span class="p">:</span>
+                    <span class="n">plopm_error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;the end of range </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span><span class="si">}</span><span class="s2"> in &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-s </span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> must not be smaller &quot;</span>
+                        <span class="s2">&quot;than the start.&quot;</span>
+                    <span class="p">)</span>
+        <span class="k">if</span> <span class="n">colon_entries</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;only one slice direction in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-s </span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> can contain &#39;:&#39; or an index &quot;</span>
+                <span class="s2">&quot;range.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">slice_entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span>
+
+    <span class="n">restart</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">restart</span>
+    <span class="n">restart_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">rf</span><span class="s2">&quot;(?:-1|&quot;</span>
+        <span class="sa">rf</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">non_negative_integer</span><span class="si">}</span><span class="s2">(?:,</span><span class="si">{</span><span class="n">non_negative_integer</span><span class="si">}</span><span class="s2">)*|&quot;</span>
+        <span class="sa">rf</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">non_negative_integer</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">non_negative_integer</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">rf</span><span class="s2">&quot;(?::</span><span class="si">{</span><span class="n">positive_integer</span><span class="si">}</span><span class="s2">)?)&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">restart_pattern</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">restart</span><span class="p">):</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;expected &#39;-1&#39;, non-negative restart indices separated by &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;commas, or &#39;start:end[:step]&#39;, not &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-r </span><span class="si">{</span><span class="n">restart</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">restart</span><span class="p">:</span>
+        <span class="n">restart_range</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">restart</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">restart_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">restart_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;the end of restart range </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-r </span><span class="si">{</span><span class="n">restart</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> must &quot;</span>
+                <span class="s2">&quot;not be smaller than the start.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">list_options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;colors&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;-ls&quot;</span><span class="p">,</span> <span class="s2">&quot;linestyle&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">list_options</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">entry</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;entries in </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> cannot be empty.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">line_widths</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">linewidth</span>
+    <span class="k">if</span> <span class="n">line_widths</span><span class="p">:</span>
+        <span class="n">width_values</span> <span class="o">=</span> <span class="n">__parse_number_list</span><span class="p">(</span><span class="s2">&quot;-lw&quot;</span><span class="p">,</span> <span class="n">line_widths</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">width</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">width</span> <span class="ow">in</span> <span class="n">width_values</span><span class="p">):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;line widths must be positive, not &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-lw </span><span class="si">{</span><span class="n">line_widths</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">remove</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">hide_map_elements</span>
+    <span class="n">remove_entries</span> <span class="o">=</span> <span class="n">remove</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">remove_entries</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">entry</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">remove_entries</span>
+    <span class="p">):</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;expected four values containing only 0 or 1, not &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-hide </span><span class="si">{</span><span class="n">remove</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">subfigs</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">subplot_grid</span>
+    <span class="k">if</span> <span class="n">subfigs</span><span class="p">:</span>
+        <span class="n">subfig_entries</span> <span class="o">=</span> <span class="n">subfigs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subfig_entries</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">positive_integer</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">subfig_entries</span>
+        <span class="p">):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;expected two positive integers separated by a comma, such &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;as </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-sg 2,2&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">, not &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-sg </span><span class="si">{</span><span class="n">subfigs</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">colorbar_axis</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">colorbar_position</span>
+    <span class="k">if</span> <span class="n">colorbar_axis</span> <span class="o">!=</span> <span class="s2">&quot;empty&quot;</span><span class="p">:</span>
+        <span class="n">colorbar_axis_values</span> <span class="o">=</span> <span class="n">__parse_number_list</span><span class="p">(</span>
+            <span class="s2">&quot;-cbp&quot;</span><span class="p">,</span>
+            <span class="n">colorbar_axis</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">colorbar_axis_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">colorbar_axis_values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;the left and bottom positions in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-cbp </span><span class="si">{</span><span class="n">colorbar_axis</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> cannot be negative.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">colorbar_axis_values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">colorbar_axis_values</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;the width and height in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-cbp </span><span class="si">{</span><span class="n">colorbar_axis</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> must be positive.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">grid_edges</span>
+    <span class="k">if</span> <span class="n">grid</span><span class="p">:</span>
+        <span class="n">grid_entries</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">grid_entries</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">grid_entries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">grid_entries</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;expected a color and line width separated by a comma, not &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-ge </span><span class="si">{</span><span class="n">grid</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">_parse_number</span><span class="p">(</span><span class="s2">&quot;-ge&quot;</span><span class="p">,</span> <span class="n">grid_entries</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;the line width in </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-ge </span><span class="si">{</span><span class="n">grid</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> cannot be &quot;</span>
+                <span class="s2">&quot;negative.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">csv_columns</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">csv_columns</span>
+    <span class="k">if</span> <span class="n">csv_columns</span><span class="p">:</span>
+        <span class="n">csv_specifications</span> <span class="o">=</span> <span class="n">csv_columns</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">specification</span> <span class="ow">in</span> <span class="n">csv_specifications</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">specification</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">column_entries</span> <span class="o">=</span> <span class="n">specification</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">column_entries</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">positive_integer</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">column_entries</span>
+            <span class="p">):</span>
+                <span class="n">plopm_error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;each non-empty specification in &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-cc </span><span class="si">{</span><span class="n">csv_columns</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> must contain two &quot;</span>
+                    <span class="s2">&quot;column indices for a time series or three column indices &quot;</span>
+                    <span class="s2">&quot;for a spatial map.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">column_entries</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">column_entries</span><span class="p">):</span>
+                <span class="n">plopm_error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;column indices within each specification in &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-cc </span><span class="si">{</span><span class="n">csv_columns</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> must be different.&quot;</span>
+                <span class="p">)</span>
+
+    <span class="n">histogram</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">histogram</span>
+    <span class="k">if</span> <span class="n">histogram</span><span class="p">:</span>
+        <span class="n">histogram_specifications</span> <span class="o">=</span> <span class="n">histogram</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">specification</span> <span class="ow">in</span> <span class="n">histogram_specifications</span><span class="p">:</span>
+            <span class="n">histogram_entries</span> <span class="o">=</span> <span class="n">specification</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">histogram_entries</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+                <span class="n">plopm_error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;expected &#39;bins&#39;, &#39;bins,norm&#39;, or &#39;bins,lognorm&#39;, not &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-hist </span><span class="si">{</span><span class="n">specification</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span>
+                <span class="n">positive_integer</span><span class="p">,</span>
+                <span class="n">histogram_entries</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="p">):</span>
+                <span class="n">plopm_error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;the number of bins in &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-hist </span><span class="si">{</span><span class="n">specification</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> must be a positive &quot;</span>
+                    <span class="s2">&quot;integer.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">histogram_entries</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">histogram_entries</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;norm&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;lognorm&quot;</span><span class="p">,</span>
+            <span class="p">]:</span>
+                <span class="n">plopm_error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;the distribution in &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-hist </span><span class="si">{</span><span class="n">specification</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> must be &#39;norm&#39; or &quot;</span>
+                    <span class="s2">&quot;&#39;lognorm&#39;.&quot;</span>
+                <span class="p">)</span>
+
+    <span class="n">band_properties</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">fill_between_style</span>
+    <span class="k">if</span> <span class="n">band_properties</span><span class="p">:</span>
+        <span class="n">band_entries</span> <span class="o">=</span> <span class="n">band_properties</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">band_entries</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">color</span> <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">band_entries</span><span class="p">[::</span><span class="mi">2</span><span class="p">]):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;expected color and alpha pairs, not &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-fb </span><span class="si">{</span><span class="n">band_properties</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">alpha_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="k">for</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="n">band_entries</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]]</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">alpha_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">alpha_values</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">alpha</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">alpha</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="n">alpha_values</span><span class="p">):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;alpha values in </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-fb </span><span class="si">{</span><span class="n">band_properties</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> must &quot;</span>
+                <span class="s2">&quot;be between 0 and 1.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">ensemble</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">]:</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-fb&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> can only be used with &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-ens 1&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-ens 3&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">log_values</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">color_log</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">color_log_ticks</span> <span class="ow">and</span> <span class="s2">&quot;1&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">log_values</span><span class="p">:</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-clt&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> requires at least one logarithmic color &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;scale enabled with </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-clog&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">mask_threshold</span> <span class="o">!=</span> <span class="s2">&quot;1e-3&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">mask_variable</span><span class="p">:</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-mt&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> can only be changed when &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-mv&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> is used.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">cmdargs</span><span class="o">.</span><span class="n">distance</span>
+        <span class="ow">and</span> <span class="s2">&quot;sensor&quot;</span> <span class="ow">in</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">distance</span>
+        <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">positive_integer</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">entries</span> <span class="ow">in</span> <span class="n">slice_entries</span>
+        <span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;a sensor distance requires each location provided with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-s&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> to contain three positive indices.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">vtk_names</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">vtk_names</span>
+    <span class="k">if</span> <span class="n">vtk_names</span><span class="p">:</span>
+        <span class="n">vtk_name_entries</span> <span class="o">=</span> <span class="n">vtk_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">vtk_name_entries</span><span class="p">):</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;VTK variable names in </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-vn </span><span class="si">{</span><span class="n">vtk_names</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;cannot be empty.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">valid_vtk_formats</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;Float64&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Float32&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Float16&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Int64&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;UInt64&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Int32&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;UInt32&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Int16&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;UInt16&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Int8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;UInt8&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">vtk_formats</span> <span class="o">=</span> <span class="n">cmdargs</span><span class="o">.</span><span class="n">vtk_format</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">vtk_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_vtk_formats</span> <span class="k">for</span> <span class="n">vtk_format</span> <span class="ow">in</span> <span class="n">vtk_formats</span><span class="p">):</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;expected VTK formats from </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">valid_vtk_formats</span><span class="p">)</span><span class="si">}</span><span class="s2">, not &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-vf </span><span class="si">{</span><span class="n">cmdargs</span><span class="o">.</span><span class="n">vtk_format</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">vtk_options</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;-fp&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;flow_path&quot;</span><span class="p">,</span> <span class="s2">&quot;flow&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;-vf&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;vtk_format&quot;</span><span class="p">,</span> <span class="s2">&quot;Float64&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;-vn&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;vtk_names&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">vtk_mode</span><span class="p">:</span>
+        <span class="n">invalid_options</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">option</span>
+            <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span> <span class="ow">in</span> <span class="n">vtk_options</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="o">!=</span> <span class="n">default</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">invalid_options</span><span class="p">:</span>
+            <span class="n">formatted_options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">cli_error_value</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">invalid_options</span>
+            <span class="p">)</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">formatted_options</span><span class="si">}</span><span class="s2"> can only be used with &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-m vtk&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">, not </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-m </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">flow_arguments</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">cmdargs</span><span class="o">.</span><span class="n">flow_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">flow_arguments</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">flow_arguments</span><span class="p">:</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;the OPM Flow command &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-fp </span><span class="si">{</span><span class="n">cmdargs</span><span class="o">.</span><span class="n">flow_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> cannot be empty.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">flow_result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="p">[</span><span class="o">*</span><span class="n">flow_arguments</span><span class="p">,</span> <span class="s2">&quot;-h&quot;</span><span class="p">],</span>
+                <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span>
+                <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span>
+                <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="n">flow_result</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">flow_result</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">flow_result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;the OPM Flow executable &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-fp </span><span class="si">{</span><span class="n">cmdargs</span><span class="o">.</span><span class="n">flow_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not available or &quot;</span>
+                <span class="s2">&quot;not working.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">gif_mode</span><span class="p">:</span>
+        <span class="n">gif_options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;-gi&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gif_interval&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;-gl&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gif_loop&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="n">invalid_options</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">option</span>
+            <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span> <span class="ow">in</span> <span class="n">gif_options</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="o">!=</span> <span class="n">default</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">invalid_options</span><span class="p">:</span>
+            <span class="n">formatted_options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">cli_error_value</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">invalid_options</span>
+            <span class="p">)</span>
+            <span class="n">plopm_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">formatted_options</span><span class="si">}</span><span class="s2"> can only be used with &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="s1">&#39;-m gif&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">, not </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-m </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_number</span><span class="p">(</span><span class="n">option</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse one numeric command-line value.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    option : str</span>
+<span class="sd">        Option name used in an error message.</span>
+<span class="sd">    value : str</span>
+<span class="sd">        Value to convert.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Parsed numeric value.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    SystemExit</span>
+<span class="sd">        If the value is not numeric.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">plopm_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;expected a number, not </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">number</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">__parse_number_list</span><span class="p">(</span>
+    <span class="n">option</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">expected_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse comma-separated numeric values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    option : str</span>
+<span class="sd">        Option name used in an error message.</span>
+<span class="sd">    value : str</span>
+<span class="sd">        Comma-separated values to convert.</span>
+<span class="sd">    expected_length : int, optional</span>
+<span class="sd">        Required number of values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list[float]</span>
+<span class="sd">        Parsed numeric values.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    SystemExit</span>
+<span class="sd">        If a value is not numeric or the length is invalid.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">entries</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">expected_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="o">!=</span> <span class="n">expected_length</span><span class="p">:</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;expected </span><span class="si">{</span><span class="n">expected_length</span><span class="si">}</span><span class="s2"> numbers separated by commas, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;not </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">plopm_error</span><span class="p">(</span>
+            <span class="s2">&quot;expected numbers separated by commas, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;not </span><span class="si">{</span><span class="n">cli_error_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">numbers</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, NORCE Research AS.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

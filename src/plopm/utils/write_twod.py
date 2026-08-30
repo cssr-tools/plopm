@@ -351,12 +351,12 @@ def _prepare_map(
         data = read_case(
             deck, cfg.gif, cfg.vtk, cfg.variables, cfg.restart, cfg.filters, n
         )
-        slide = cfg.slice[n]
-        if slide[0][0] != -2:
+        slice_value = cfg.slice[n]
+        if slice_value[0][0] != -2:
             xc, yc, slice_title, slice_name, mx, my, xname, yname = get_yz_slice(
                 cfg, data, n
             )
-        elif slide[1][0] != -2:
+        elif slice_value[1][0] != -2:
             xc, yc, slice_title, slice_name, mx, my, xname, yname = get_xz_slice(
                 cfg, data, n
             )
@@ -499,7 +499,7 @@ def _map_values(
     data: SimData,
     var: str,
     values: NDArray,
-    slide_index: int,
+    slice_index: int,
     map_index: int,
     mx: int,
     my: int,
@@ -517,7 +517,7 @@ def _map_values(
         Variable name.
     values : np.ndarray
         Values in active-cell or CSV order.
-    slide_index, map_index : int
+    slice_index, map_index : int
         Indices selecting the slice and its mapping settings.
     mx, my : int
         Mapped grid dimensions.
@@ -532,9 +532,9 @@ def _map_values(
     """
     if use_csv:
         quaa = np.asarray(values).copy()
-    elif cfg.slice[slide_index][0][0] != -2:
+    elif cfg.slice[slice_index][0][0] != -2:
         quaa = map_yz(cfg, data, var, values, map_index, mx, my)
-    elif cfg.slice[slide_index][1][0] != -2:
+    elif cfg.slice[slice_index][1][0] != -2:
         quaa = map_xz(cfg, data, var, values, map_index, mx, my)
     else:
         quaa = map_xy(cfg, data, var, values, map_index, mx, my)
@@ -1140,11 +1140,11 @@ def _set_axis(
         time = ""
         namet = ""
     if cfg.csv_columns[n][0]:
-        tslide = ""
+        tslice = ""
     elif cfg.variables[0] in ["wells", "faults"] or is_discrete_num:
-        tslide = slice_title[2:]
+        tslice = slice_title[2:]
     else:
-        tslide = slice_title
+        tslice = slice_title
     if (
         cfg.subplot_grid[0]
         and len(cfg.cases[0]) > 1
@@ -1195,9 +1195,9 @@ def _set_axis(
                 fig.suptitle(f"{named}")
     elif cfg.hide_map_elements[3] == 0 and cfg.title[k] == "0":
         if cfg.difference_input:
-            axis.set_title(f"{named}-{deckd}" + tslide + extra + time)
+            axis.set_title(f"{named}-{deckd}" + tslice + extra + time)
         else:
-            axis.set_title(namet + tslide + extra + time)
+            axis.set_title(namet + tslice + extra + time)
     elif cfg.subplot_grid[0] and len(cfg.cases[0]) > 1:
         if k == 0 and cfg.suptitle != "0":
             if cfg.gif and cfg.csv_columns[n][0]:

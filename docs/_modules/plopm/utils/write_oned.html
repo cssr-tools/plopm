@@ -1,0 +1,1177 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plopm.utils.write_oned &#8212; plopm documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c9070fc1" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=1485e655"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=eef4a3d2"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plopm/utils/write_oned';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2026.10rc0" />
+    <meta name="docbuild:last-update" content="2026-08-30"/>
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/plopm-logo.svg" class="logo__image only-light" alt="plopm documentation - Home"/>
+    <img src="../../../_static/plopm-logo.svg" class="logo__image only-dark pst-js-only" alt="plopm documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../introduction.html">
+    Introduction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../command-line.html">
+    Command-line reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../related.html">
+    Related projects
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm/issues/new/choose" title="Report an issue" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-bug fa-lg" aria-hidden="true"></i><span class="visually-hidden">Report an issue</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm" title="GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub repository</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../introduction.html">
+    Introduction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../command-line.html">
+    Command-line reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../related.html">
+    Related projects
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm/issues/new/choose" title="Report an issue" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-bug fa-lg" aria-hidden="true"></i><span class="visually-hidden">Report an issue</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm" title="GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub repository</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plopm.utils.write_oned</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for plopm.utils.write_oned</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-FileCopyrightText: 2024-2026 NORCE Research AS</span>
+<span class="c1"># SPDX-License-Identifier: GPL-3.0</span>
+<span class="c1"># pylint: disable=W3301,W0123,R0912,R0915,R0914,R1702,W0611,R0913,R0917,C0302,C0115,R0916,E1102</span>
+
+<span class="sd">&quot;&quot;&quot;Create one-dimensional plots and tabular output from OPM results.</span>
+
+<span class="sd">The module reads summary vectors, grid-derived series, and optional CSV data.</span>
+<span class="sd">It also supports ensemble statistics, subplot layouts, and PNG or CSV output.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.axes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">lognorm</span><span class="p">,</span> <span class="n">norm</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">plopm.config.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlopmConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plopm.utils.readers</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_series</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plopm.utils.terminal</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli_info_value</span><span class="p">,</span> <span class="n">plopm_info</span>
+
+
+<div class="viewcode-block" id="make_plots">
+<a class="viewcode-back" href="../../../api/plopm.utils.write_oned.html#plopm.utils.write_oned.make_plots">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_plots</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the requested one-dimensional plots and CSV files.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Initialized plotting configuration.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list[str]</span>
+<span class="sd">        Names of the generated files.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">generated_files</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">deckn</span> <span class="o">=</span> <span class="n">_get_deck_name</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">ensemble</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">):</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">):</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">):</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span> <span class="o">=</span> <span class="p">[</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;compressed&quot;</span>
+        <span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">quan</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">):</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">j</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;compressed&quot;</span><span class="p">)</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">axes</span><span class="p">])</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">axis_grid</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ensemble</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tunit</span><span class="p">,</span> <span class="n">vunit</span><span class="p">,</span> <span class="n">min_t</span><span class="p">,</span> <span class="n">max_t</span><span class="p">,</span> <span class="n">min_v</span><span class="p">,</span> <span class="n">max_v</span> <span class="o">=</span> <span class="n">_plot_ensemble</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ylow</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ylog</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="n">xlow</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">xlog</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="n">min_t</span><span class="p">,</span> <span class="n">max_t</span><span class="p">,</span> <span class="n">min_v</span><span class="p">,</span> <span class="n">max_v</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
+                <span class="n">jj</span> <span class="o">=</span> <span class="n">j</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">jj</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">quan</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">time</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">tunit</span><span class="p">,</span> <span class="n">vunit</span> <span class="o">=</span> <span class="n">read_series</span><span class="p">(</span>
+                    <span class="n">cfg</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">quan</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">time_units</span><span class="p">[</span><span class="n">jj</span><span class="p">],</span> <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">scale_factor</span><span class="p">[</span><span class="n">jj</span><span class="p">]),</span> <span class="n">i</span>
+                <span class="p">)</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">_get_label</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">step_plot</span><span class="p">:</span>
+                    <span class="n">axis</span><span class="o">.</span><span class="n">step</span><span class="p">(</span>
+                        <span class="n">time</span><span class="p">,</span>
+                        <span class="n">var</span><span class="p">,</span>
+                        <span class="n">color</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">])],</span>
+                        <span class="n">ls</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="n">jj</span><span class="p">])],</span>
+                        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                        <span class="n">lw</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">cfg</span><span class="o">.</span><span class="n">histogram</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">ij</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="ow">and</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="p">):</span>
+                        <span class="n">ij</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">hist</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">histogram</span><span class="p">[</span><span class="n">ij</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                    <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+                    <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+                    <span class="n">plopm_info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;histogram: </span><span class="si">{</span><span class="n">cli_info_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;mean=</span><span class="si">{</span><span class="n">mean</span><span class="si">:</span><span class="s1">.6E</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_info_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;std=</span><span class="si">{</span><span class="n">std</span><span class="si">:</span><span class="s1">.6E</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">legend_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="n">label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (mean=</span><span class="si">{</span><span class="n">mean</span><span class="si">:</span><span class="s2">.3E</span><span class="si">}</span><span class="s2">, std=</span><span class="si">{</span><span class="n">std</span><span class="si">:</span><span class="s2">.3E</span><span class="si">}</span><span class="s2">)&quot;</span>
+                    <span class="n">counts</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
+                        <span class="n">var</span><span class="p">,</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                        <span class="n">color</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">][(</span><span class="n">i</span> <span class="o">+</span> <span class="n">k</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">])],</span>
+                        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">xnorm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1000</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;norm&quot;</span><span class="p">:</span>
+                            <span class="n">norm_pdf</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">xnorm</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+                            <span class="n">norm_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">norm_pdf</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">norm_max</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                                    <span class="n">xnorm</span><span class="p">,</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span> <span class="o">*</span> <span class="n">norm_pdf</span> <span class="o">/</span> <span class="n">norm_max</span><span class="p">,</span>
+                                    <span class="n">color</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">][(</span><span class="n">i</span> <span class="o">+</span> <span class="n">k</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">])],</span>
+                                <span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;lognorm&quot;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">mean</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">std</span> <span class="o">/</span> <span class="n">mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+                                <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+                                <span class="n">scale</span> <span class="o">=</span> <span class="n">mean</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+                                <span class="n">dist</span> <span class="o">=</span> <span class="n">lognorm</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+                                <span class="n">dist_pdf</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">xnorm</span><span class="p">)</span>
+                                <span class="n">dist_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dist_pdf</span><span class="p">)</span>
+                                <span class="n">plopm_info</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s2">&quot;distribution: &quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cli_info_value</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;lognorm(</span><span class="si">{</span><span class="n">s</span><span class="si">:</span><span class="s1">.6E</span><span class="si">}</span><span class="s1">, 0, </span><span class="si">{</span><span class="n">scale</span><span class="si">:</span><span class="s1">.6E</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                                <span class="p">)</span>
+                                <span class="k">if</span> <span class="n">dist_max</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                    <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                                        <span class="n">xnorm</span><span class="p">,</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span> <span class="o">*</span> <span class="n">dist_pdf</span> <span class="o">/</span> <span class="n">dist_max</span><span class="p">,</span>
+                                        <span class="n">color</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span>
+                                            <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">k</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">])</span>
+                                        <span class="p">],</span>
+                                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                        <span class="n">time</span><span class="p">,</span>
+                        <span class="n">var</span><span class="p">,</span>
+                        <span class="n">color</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">])],</span>
+                        <span class="n">ls</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="n">jj</span><span class="p">])],</span>
+                        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                        <span class="n">lw</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                <span class="n">min_t</span><span class="p">,</span> <span class="n">max_t</span><span class="p">,</span> <span class="n">min_v</span><span class="p">,</span> <span class="n">max_v</span> <span class="o">=</span> <span class="n">_update_limits</span><span class="p">(</span>
+                    <span class="n">time</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">tunit</span><span class="p">,</span> <span class="n">min_t</span><span class="p">,</span> <span class="n">max_t</span><span class="p">,</span> <span class="n">min_v</span><span class="p">,</span> <span class="n">max_v</span><span class="p">,</span> <span class="n">xlow</span><span class="p">,</span> <span class="n">ylow</span><span class="p">,</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">quan</span> <span class="o">+</span> <span class="n">vunit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">histogram</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">min_v</span> <span class="o">!=</span> <span class="n">max_v</span><span class="p">:</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">min_v</span><span class="p">,</span> <span class="n">max_v</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Histogram of &quot;</span> <span class="o">+</span> <span class="n">quan</span> <span class="o">+</span> <span class="n">vunit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">remove_duplicate_labels</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">variables</span>
+        <span class="p">):</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">tunit</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">xlabel</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">xlabel</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ylabel</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">ylabel</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">xlabels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ylabels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">xlim</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">xlim</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])])</span>
+            <span class="n">xlabels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">xlim</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">xlim</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">xtick_count</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">tunit</span> <span class="o">!=</span> <span class="s2">&quot;Dates&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">histogram</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">min_v</span> <span class="o">!=</span> <span class="n">max_v</span><span class="p">:</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">min_t</span><span class="p">,</span> <span class="n">max_t</span><span class="p">])</span>
+            <span class="n">xlabels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">min_t</span><span class="p">,</span> <span class="n">max_t</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">xtick_count</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">ylim</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">ylim</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])])</span>
+            <span class="n">ylabels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">ylim</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]),</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">ylim</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">ytick_count</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">histogram</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">min_v</span> <span class="o">!=</span> <span class="n">max_v</span><span class="p">:</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">min_v</span><span class="p">,</span> <span class="n">max_v</span><span class="p">])</span>
+            <span class="n">ylabels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">min_v</span><span class="p">,</span> <span class="n">max_v</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">ytick_count</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">xlog</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tunit</span> <span class="o">!=</span> <span class="s2">&quot;Dates&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">xformat</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">_set_formatted_ticks</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">xlabels</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">xformat</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="s2">&quot;x&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">histogram</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">axis</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">xlabels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ylog</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">yformat</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">_set_formatted_ticks</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ylabels</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">yformat</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">histogram</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">ylabels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">legend_location</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;empty&quot;</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">legend_location</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">title</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;0&quot;</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">hide_map_elements</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">title</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">remove_duplicate_labels</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">variables</span>
+        <span class="p">):</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">csv</span><span class="p">:</span>
+                <span class="n">generated_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_save_summary_csv</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">deckn</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">quan</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">generated_files</span>
+            <span class="n">generated_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_save_summary_png</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">deckn</span><span class="p">,</span> <span class="n">quan</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">fig</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">generated_files</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">subplot_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="n">j</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">legend_location</span><span class="p">)</span> <span class="o">==</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="ow">and</span> <span class="n">j</span> <span class="o">!=</span> <span class="mi">0</span>
+                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="p">):</span>
+                <span class="k">for</span> <span class="n">jj</span><span class="p">,</span> <span class="n">qua</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">[:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ncolors</span><span class="p">]):</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="n">jj</span><span class="p">]):</span>
+                        <span class="n">time</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">tunit</span><span class="p">,</span> <span class="n">vunit</span> <span class="o">=</span> <span class="n">read_series</span><span class="p">(</span>
+                            <span class="n">cfg</span><span class="p">,</span>
+                            <span class="n">name</span><span class="p">,</span>
+                            <span class="n">qua</span><span class="p">,</span>
+                            <span class="n">cfg</span><span class="o">.</span><span class="n">time_units</span><span class="p">[</span><span class="n">jj</span><span class="p">],</span>
+                            <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">scale_factor</span><span class="p">[</span><span class="n">jj</span><span class="p">]),</span>
+                            <span class="n">i</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">label</span> <span class="o">=</span> <span class="n">_get_label</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">sensor</span> <span class="ow">or</span> <span class="n">cfg</span><span class="o">.</span><span class="n">layer</span> <span class="ow">or</span> <span class="n">cfg</span><span class="o">.</span><span class="n">distance</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                            <span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                                <span class="n">time</span><span class="p">,</span>
+                                <span class="n">var</span><span class="p">,</span>
+                                <span class="n">color</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span><span class="p">],</span>
+                                <span class="n">ls</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span><span class="p">],</span>
+                                <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                                <span class="n">lw</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span><span class="p">]),</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">step</span><span class="p">(</span>
+                                <span class="n">time</span><span class="p">,</span>
+                                <span class="n">var</span><span class="p">,</span>
+                                <span class="n">color</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span><span class="p">],</span>
+                                <span class="n">ls</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span><span class="p">],</span>
+                                <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                                <span class="n">lw</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="n">jj</span><span class="p">][</span><span class="n">i</span><span class="p">]),</span>
+                            <span class="p">)</span>
+                <span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+                <span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">legend_location</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_lines</span><span class="p">():</span>
+                    <span class="n">line</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span> <span class="o">-</span> <span class="n">o</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">)):</span>
+                    <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">o</span><span class="p">])</span>
+            <span class="n">generated_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_save_summary_png</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">deckn</span><span class="p">,</span> <span class="n">quan</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">fig</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">generated_files</span><span class="p">))</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a variable expression to a filename-safe stem.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Variable expression or proposed filename stem.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Name with operators and separators replaced.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; / &quot;</span><span class="p">,</span> <span class="s2">&quot;_over_&quot;</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_deck_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a display name from a case or include-file path.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Case path or include filename.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Lowercase basename without an ``.inc`` extension.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">deckn</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;.inc&quot;</span> <span class="ow">in</span> <span class="n">deckn</span><span class="p">:</span>
+        <span class="n">deckn</span> <span class="o">=</span> <span class="n">deckn</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">deckn</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_label</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">var_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">name_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Select the legend label for a plotted series.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Initialized configuration containing ensemble cases and plot styles.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Simulation-case path.</span>
+<span class="sd">    var_index : int</span>
+<span class="sd">        Index of the plotted variable.</span>
+<span class="sd">    name_index : int</span>
+<span class="sd">        Index of the case within the variable group.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        User-defined label or a label derived from the case path.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">legend_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">legend_labels</span><span class="p">[</span><span class="n">var_index</span><span class="p">][</span><span class="n">name_index</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">label</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_update_limits</span><span class="p">(</span>
+    <span class="n">time</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">var</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">tunit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">min_t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">max_t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">min_v</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">max_v</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">xlow</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">ylow</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">first</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update the data limits from one plotted series.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time, var : np.ndarray</span>
+<span class="sd">        Time coordinates and variable values.</span>
+<span class="sd">    tunit : str</span>
+<span class="sd">        Time-axis label. ``&quot;Dates&quot;`` selects date handling.</span>
+<span class="sd">    min_t, max_t : float</span>
+<span class="sd">        Current time limits.</span>
+<span class="sd">    min_v, max_v : float</span>
+<span class="sd">        Current variable limits.</span>
+<span class="sd">    xlow, ylow : float</span>
+<span class="sd">        Lower bounds used to exclude invalid logarithmic values.</span>
+<span class="sd">    first : bool</span>
+<span class="sd">        Whether this is the first series included in the limits.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple[float, float, float, float]</span>
+<span class="sd">        Updated ``(min_t, max_t, min_v, max_v)`` limits.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">valid_var</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="n">var</span> <span class="o">&gt;</span> <span class="n">ylow</span><span class="p">]</span>
+    <span class="n">valid_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="n">time</span> <span class="o">&gt;</span> <span class="n">xlow</span><span class="p">]</span> <span class="k">if</span> <span class="n">tunit</span> <span class="o">!=</span> <span class="s2">&quot;Dates&quot;</span> <span class="k">else</span> <span class="n">time</span>
+    <span class="k">if</span> <span class="n">valid_var</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">current_min_v</span> <span class="o">=</span> <span class="n">min_v</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">first</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">current_min_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">valid_var</span><span class="p">)</span>
+    <span class="n">current_max_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">var</span><span class="p">))</span> <span class="k">else</span> <span class="n">max_v</span>
+    <span class="n">current_max_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tunit</span> <span class="o">!=</span> <span class="s2">&quot;Dates&quot;</span><span class="p">:</span>
+        <span class="n">current_min_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">valid_time</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_time</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">min_t</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">current_min_t</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">first</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">current_min_t</span><span class="p">,</span> <span class="n">current_max_t</span><span class="p">,</span> <span class="n">current_min_v</span><span class="p">,</span> <span class="n">current_max_v</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="nb">min</span><span class="p">(</span><span class="n">min_t</span><span class="p">,</span> <span class="n">current_min_t</span><span class="p">),</span>
+        <span class="nb">max</span><span class="p">(</span><span class="n">max_t</span><span class="p">,</span> <span class="n">current_max_t</span><span class="p">),</span>
+        <span class="nb">min</span><span class="p">(</span><span class="n">min_v</span><span class="p">,</span> <span class="n">current_min_v</span><span class="p">),</span>
+        <span class="nb">max</span><span class="p">(</span><span class="n">max_v</span><span class="p">,</span> <span class="n">current_max_v</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_formatted_ticks</span><span class="p">(</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">value_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">axis_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set explicitly formatted ticks on one axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    axis : matplotlib.axes.Axes</span>
+<span class="sd">        Axis to update.</span>
+<span class="sd">    labels : np.ndarray</span>
+<span class="sd">        Numeric tick locations.</span>
+<span class="sd">    value_format : str</span>
+<span class="sd">        Python format specification for each label.</span>
+<span class="sd">    axis_name : {&quot;x&quot;, &quot;y&quot;}</span>
+<span class="sd">        Coordinate axis to update.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">formatted_labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value_format</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+    <span class="n">ticks</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">formatted_labels</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">axis_name</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">formatted_labels</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">formatted_labels</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_summary_csv</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span> <span class="n">deckn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">var</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">quan</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write non-NaN summary values to a CSV file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Initialized configuration containing ensemble cases and plot styles.</span>
+<span class="sd">    deckn : str</span>
+<span class="sd">        Case name used in the default filename.</span>
+<span class="sd">    var : np.ndarray</span>
+<span class="sd">        Values to write.</span>
+<span class="sd">    quan : str</span>
+<span class="sd">        Variable expression used in the default filename.</span>
+<span class="sd">    index : int</span>
+<span class="sd">        Plot index used to select a custom filename.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Name of the generated CSV file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">var</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">val</span><span class="p">)]</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">_clean_name</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">deckn</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">quan</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">filename</span><span class="p">[</span><span class="n">index</span><span class="p">]:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">filename</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span>
+        <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">filename</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_summary_png</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span>
+    <span class="n">deckn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">quan</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">fig</span><span class="p">:</span> <span class="n">Figure</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save a summary figure as a PNG file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Initialized configuration containing ensemble cases and plot styles.</span>
+<span class="sd">    deckn : str</span>
+<span class="sd">        Case name used in the default filename.</span>
+<span class="sd">    quan : str</span>
+<span class="sd">        Variable expression used in the default filename.</span>
+<span class="sd">    index : int</span>
+<span class="sd">        Plot index used to select filename and resolution settings.</span>
+<span class="sd">    fig : matplotlib.figure.Figure</span>
+<span class="sd">        Figure to save.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Name of the generated PNG file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">_clean_name</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">deckn</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">quan</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">filename</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">cfg</span><span class="o">.</span><span class="n">filename</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">name</span><span class="si">}</span><span class="s2">.png&quot;</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">dpi</span><span class="p">[</span><span class="n">index</span><span class="p">]),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">filename</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_plot_ensemble</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span> <span class="n">axes</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot ensemble statistics for the first requested variable.</span>
+
+<span class="sd">    Each realization is interpolated to a shared coordinate array. Depending on</span>
+<span class="sd">    ``cfg.ensemble``, the function plots the mean, a one-standard-deviation band,</span>
+<span class="sd">    the bounding realizations, or both.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Initialized configuration containing ensemble cases and plot styles.</span>
+<span class="sd">    axes : matplotlib.axes.Axes or np.ndarray</span>
+<span class="sd">        Axis, or array of axes, on which to draw the ensemble.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple[str, str, float, float, float, float]</span>
+<span class="sd">        Time unit, value unit, and ``(min_t, max_t, min_v, max_v)`` limits.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">axes</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">Axes</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">axes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">thetime</span><span class="p">,</span> <span class="n">timeeval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">min_v</span><span class="p">,</span> <span class="n">max_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">hyst</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">var_name</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">var_name</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;krw&quot;</span><span class="p">,</span> <span class="s2">&quot;krg&quot;</span><span class="p">]</span>
+        <span class="ow">or</span> <span class="n">var_name</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;krow&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;krog&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pcow&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pcog&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pcwg&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="ow">and</span> <span class="n">var_name</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;h&quot;</span>
+    <span class="p">):</span>
+        <span class="n">hyst</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">for</span> <span class="n">hyst_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">hyst</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">names_index</span><span class="p">,</span> <span class="n">names</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">):</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">case_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">names_index</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; (mean)&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">legend_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">legend_labels</span><span class="p">[</span><span class="n">names_index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">name_index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+                <span class="n">time</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">tunit</span><span class="p">,</span> <span class="n">vunit</span> <span class="o">=</span> <span class="n">read_series</span><span class="p">(</span>
+                    <span class="n">cfg</span><span class="p">,</span>
+                    <span class="n">name</span><span class="p">,</span>
+                    <span class="n">var_name</span><span class="p">,</span>
+                    <span class="n">cfg</span><span class="o">.</span><span class="n">time_units</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">scale_factor</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                    <span class="n">name_index</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">rng</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">/</span> <span class="n">hyst</span><span class="p">)</span>
+                <span class="n">time</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="n">hyst_index</span> <span class="o">*</span> <span class="n">rng</span> <span class="p">:</span> <span class="p">(</span><span class="n">hyst_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="p">]</span>
+                <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="n">hyst_index</span> <span class="o">*</span> <span class="n">rng</span> <span class="p">:</span> <span class="p">(</span><span class="n">hyst_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">thetime</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                    <span class="n">thetime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">tunit</span> <span class="o">==</span> <span class="s2">&quot;Dates&quot;</span><span class="p">:</span>
+                    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">value</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">time</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">timeeval</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                        <span class="n">timeeval</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">timeeval</span> <span class="o">=</span> <span class="n">thetime</span>
+                <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interp1d</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">value</span><span class="p">(</span><span class="n">timeeval</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">])</span>
+            <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Mean of empty slice&quot;</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Degrees of freedom &lt;= 0&quot;</span><span class="p">)</span>
+                <span class="n">means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">stdev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">plot_label</span> <span class="o">=</span> <span class="n">label</span> <span class="k">if</span> <span class="n">hyst_index</span> <span class="o">==</span> <span class="n">hyst</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">thetime</span><span class="p">,</span>
+                <span class="n">means</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">names_index</span><span class="p">],</span>
+                <span class="n">ls</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">names_index</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">plot_label</span><span class="p">,</span>
+                <span class="n">lw</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">names_index</span><span class="p">]),</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ensemble</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">fill_between_style</span><span class="p">:</span>
+                    <span class="n">band_properties</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">fill_between_style</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">band_properties</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">names_index</span><span class="p">]</span>
+                    <span class="n">alpha</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">band_properties</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">names_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">names_index</span><span class="p">]</span>
+                    <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.2</span>
+                <span class="n">lower_band</span> <span class="o">=</span> <span class="n">means</span> <span class="o">-</span> <span class="n">stdev</span>
+                <span class="n">upper_band</span> <span class="o">=</span> <span class="n">means</span> <span class="o">+</span> <span class="n">stdev</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+                    <span class="n">thetime</span><span class="p">,</span> <span class="n">lower_band</span><span class="p">,</span> <span class="n">upper_band</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">lower_band</span><span class="p">)):</span>
+                    <span class="n">min_v</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">min_v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">lower_band</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">upper_band</span><span class="p">)):</span>
+                    <span class="n">max_v</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">upper_band</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ensemble</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+                <span class="n">ensemble_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">)</span> <span class="o">+</span> <span class="n">names_index</span>
+                <span class="n">maxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">values</span> <span class="o">+</span> <span class="n">means</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">mins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">values</span> <span class="o">-</span> <span class="n">means</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">maxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">maxs</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">maxs</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">mins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mins</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">mins</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">labell</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">mins</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; (lower)&quot;</span>
+                <span class="n">labelu</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">maxs</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; (upper)&quot;</span>
+                <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">legend_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">labell</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">legend_labels</span><span class="p">[</span><span class="n">names_index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">labelu</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">legend_labels</span><span class="p">[</span><span class="n">names_index</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">lower_label</span> <span class="o">=</span> <span class="n">labell</span> <span class="k">if</span> <span class="n">hyst_index</span> <span class="o">==</span> <span class="n">hyst</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">upper_label</span> <span class="o">=</span> <span class="n">labelu</span> <span class="k">if</span> <span class="n">hyst_index</span> <span class="o">==</span> <span class="n">hyst</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">thetime</span><span class="p">,</span>
+                    <span class="n">values</span><span class="p">[</span><span class="n">mins</span><span class="p">],</span>
+                    <span class="n">color</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">ensemble_index</span><span class="p">],</span>
+                    <span class="n">ls</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">ensemble_index</span><span class="p">],</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">lower_label</span><span class="p">,</span>
+                    <span class="n">lw</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">names_index</span><span class="p">]),</span>
+                <span class="p">)</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">thetime</span><span class="p">,</span>
+                    <span class="n">values</span><span class="p">[</span><span class="n">maxs</span><span class="p">],</span>
+                    <span class="n">color</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">ensemble_index</span><span class="p">],</span>
+                    <span class="n">ls</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">linestyle</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">ensemble_index</span><span class="p">],</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">upper_label</span><span class="p">,</span>
+                    <span class="n">lw</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">linewidth</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">names_index</span><span class="p">]),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">mins</span><span class="p">])):</span>
+                    <span class="n">min_v</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">min_v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">mins</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">maxs</span><span class="p">])):</span>
+                    <span class="n">max_v</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">maxs</span><span class="p">]))</span>
+    <span class="n">min_t</span><span class="p">,</span> <span class="n">max_t</span> <span class="o">=</span> <span class="n">thetime</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">thetime</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">tunit</span><span class="p">,</span> <span class="n">vunit</span><span class="p">,</span> <span class="n">min_t</span><span class="p">,</span> <span class="n">max_t</span><span class="p">,</span> <span class="n">min_v</span><span class="p">,</span> <span class="n">max_v</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, NORCE Research AS.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
