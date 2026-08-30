@@ -51,6 +51,18 @@ test_outputs/docs_generic_deck/spe10_model2_permz_i,4,k_t0.png
 test_outputs/docs_rel_perms_and_capillary_pressure/h2hysteresis_krwh.png
 test_outputs/docs_rel_perms_and_capillary_pressure/h2hysteresis_krw2.png
 test_outputs/docs_rel_perms_and_capillary_pressure/h2hysteresis_pcwg.png
+test_outputs/docs_tutorial/pressure_end_simulation.csv
+test_outputs/docs_tutorial/sgas_beautiful.png
+test_outputs/docs_tutorial/spe11b_sgas_i,1,k_t5.png
+test_outputs/docs_tutorial/SPE11B-0005.vtu
+test_outputs/docs_tutorial/SPE11B-GRID.vtu
+test_outputs/docs_tutorial/SPE11B.pvd
+test_outputs/docs_tutorial/spe11c_pressure_i,j,1:120_t2.png
+test_outputs/docs_tutorial/spe11c_satnum_i,14,k_t2.png
+test_outputs/docs_tutorial/spe11c_sgas_55,j,k_t2.png
+test_outputs/docs_tutorial/spe11c_sgas_i,14,k_t2.png
+test_outputs/docs_tutorial/spe11c_sgas_i,j,14_t2.png
+test_outputs/docs_tutorial/spe11c_temp.gif
 "
 
 missing_file="test_outputs/missing_docs_files.txt"

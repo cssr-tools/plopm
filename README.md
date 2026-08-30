@@ -24,8 +24,6 @@ If you are interested in a specific version (e.g., v2026.04) or in modifying the
 git clone https://github.com/cssr-tools/plopm.git
 # Get inside the folder
 cd plopm
-# For a specific version (e.g., v2026.04), or else skip this step (i.e., edge version)
-git checkout v2026.04
 # Create virtual environment
 python3 -m venv vplopm
 # Activate virtual environment

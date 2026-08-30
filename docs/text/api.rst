@@ -1,10 +1,16 @@
-================
-plopm Python API
-================
+.. _api-reference:
 
-The main script for the **plopm** executable is located in the `core <https://github.com/cssr-tools/plopm/blob/main/src/plopm/core>`_ folder.
-The `config <https://github.com/cssr-tools/plopm/blob/main/src/plopm/config>`_ folder contains the two dataclass used. 
-The `utils <https://github.com/cssr-tools/plopm/blob/main/src/plopm/utils>`_ folder contains all different methods to handle the plotting.
+Python API
+==========
 
+The Python API documents the public modules and functions provided by
+**plopm**. For command syntax and options, see the
+:doc:`Command-line reference <command-line>`.
 
-.. include:: modules.rst
+API documentation
+-----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   api/modules

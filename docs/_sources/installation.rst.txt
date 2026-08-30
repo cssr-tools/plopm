@@ -1,121 +1,186 @@
-============
+.. _installation:
+
 Installation
 ============
 
-The following steps work installing the dependencies in Linux via apt-get or in macOS using brew or macports.
-While using packages managers such as Anaconda, Miniforge, or Mamba might work, these are not tested.
-The supported Python versions are 3.12 to 3.14.
+The following instructions cover dependency installation on Linux with
+``apt-get`` and on macOS with Homebrew or MacPorts. Package managers such as
+Anaconda, Miniforge, and Mamba might work, but they are not tested.
+
+**plopm** supports Python 3.12 to 3.14.
 
 .. _vplopm:
 
 Python package
 --------------
 
-To install the **plopm** executable from the development version in an existing Python environment: 
-
-.. code-block:: bash
-
-    pip install git+https://github.com/cssr-tools/plopm.git
-
-If you are interested in a specific version (e.g., v2026.04) or in modifying the source code, then you can clone the repository and 
-install the Python requirements in a virtual environment with the following commands:
+Install the development version of **plopm** in an existing Python
+environment:
 
 .. code-block:: console
 
-    # Clone the repo
-    git clone https://github.com/cssr-tools/plopm.git
-    # Get inside the folder
-    cd plopm
-    # For a specific version (e.g., v2026.04), or skip this step (i.e., edge version)
-    git checkout v2026.04
-    # Create virtual environment
-    python3 -m venv vplopm
-    # Activate virtual environment
-    source vplopm/bin/activate
-    # Upgrade pip, setuptools, and wheel
-    pip install --upgrade pip setuptools wheel
-    # Install the plopm package
-    pip install -e .
-    # For contributions/testing/linting, install the dev-requirements
-    pip install -r dev-requirements.txt
+   pip install git+https://github.com/cssr-tools/plopm.git
+
+To install a specific version, modify the source code, or contribute to the
+project, clone the repository and create a virtual environment:
+
+.. code-block:: console
+
+   # Clone the repository
+   git clone https://github.com/cssr-tools/plopm.git
+
+   # Enter the repository
+   cd plopm
+
+   # Optional: select a release, or skip this step to use the development version
+   git checkout v2026.04
+
+   # Create a virtual environment
+   python3 -m venv vplopm
+
+   # Activate the virtual environment
+   source vplopm/bin/activate
+
+   # Upgrade the packaging tools
+   pip install --upgrade pip setuptools wheel
+
+   # Install plopm in editable mode
+   pip install -e .
+
+   # Optional: install requirements for contributions, testing, and linting
+   pip install -r dev-requirements.txt
 
 .. tip::
 
-    Typing **git tag -l** writes all available specific versions.
+   Run ``git tag -l`` to list the available releases.
 
-.. note::
-  
-    For not macOS users, to install the (optional but recommended) dependencies used for the figure's LaTeX formatting, execute 
-    
-    **sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super**
+Optional LaTeX formatting
+-------------------------
 
-    For macOS users, the LaTeX dependency can be installed from https://www.tug.org/mactex/.
+LaTeX support is optional but recommended for figure formatting.
+
+On Linux distributions using ``apt-get``, install:
+
+.. code-block:: console
+
+   sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super
+
+On macOS, install `MacTeX <https://www.tug.org/mactex/>`_.
+
+.. _opm-flow-installation:
 
 OPM Flow
 --------
-To use the convertion from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST) to vtk, you also need to install:
 
-* OPM Flow (https://opm-project.org, Release 2026.04 or current master branches)
+OPM Flow is required to convert OPM Flow output files such as ``.EGRID``,
+``.INIT``, and ``.UNRST`` to VTK. Use OPM Flow Release 2026.04 or the current
+master branches.
+
+See the `OPM project website <https://opm-project.org/>`_ for general
+information.
 
 Binary packages
 +++++++++++++++
 
-See the `downloading and installing <https://opm-project.org/?page_id=36>`_ OPM Flow online documentation for 
-instructions to install the binary packages in Ubuntu and Red Hat Enterprise Linux, and for other platforms which are
-supported either via source builds or through running a virtual machine.
+See the OPM Flow `download and installation instructions
+<https://opm-project.org/?page_id=36>`_ for binary packages on Ubuntu and Red
+Hat Enterprise Linux. The same page describes other supported platforms,
+including source builds and virtual-machine-based installations.
 
 .. tip::
 
-    See the `CI.yml <https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml>`_ script 
-    for installation of OPM Flow (binary packages), LaTeX (optional) libraries, and the plopm package in Ubuntu 26.04 and Python 3.14.
+   The plopm `CI workflow
+   <https://github.com/cssr-tools/plopm/blob/main/.github/workflows/CI.yml>`_
+   shows the installation of OPM Flow binary packages, optional LaTeX
+   libraries, and **plopm** on Ubuntu 26.04 with Python 3.14.
 
-Source build in Linux/Windows
-+++++++++++++++++++++++++++++
-If you are a Linux user (including the Windows subsystem for Linux), then you could try to build Flow (after installing the `prerequisites <https://opm-project.org/?page_id=239>`_) from the master branches with mpi support by running
-in the terminal the following lines (which in turn should build flow in the folder ./build/opm-simulators/bin/flow): 
+Source build on Linux
++++++++++++++++++++++
+
+After installing the OPM `prerequisites
+<https://opm-project.org/?page_id=239>`_, build Flow from the current master
+branches with MPI support. The following commands create the executable at
+``./build/opm-simulators/bin/flow``:
+
+.. code-block:: bash
+
+   CURRENT_DIRECTORY="$PWD"
+
+   mkdir build
+
+   for repo in common grid simulators
+   do
+       git clone https://github.com/OPM/opm-$repo.git
+       mkdir build/opm-$repo
+       cd build/opm-$repo
+       cmake -DUSE_MPI=1 -DWITH_NDEBUG=1 -DCMAKE_BUILD_TYPE=Release $CURRENT_DIRECTORY/opm-$repo
+       if [[ $repo == simulators ]]; then
+           make -j5 flow
+       else
+           make -j5 opm$repo
+       fi
+       cd ../..
+   done
+
+.. tip::
+
+   Save the commands in a shell script, for example
+   ``build_opm_mpi.sh``, and run it with:
+
+   .. code-block:: console
+
+      . ./build_opm_mpi.sh
+
+The resulting Flow executable can be selected explicitly when generating VTK
+files:
 
 .. code-block:: console
 
-    CURRENT_DIRECTORY="$PWD"
+   plopm -i SPE11C -m vtk -fp ./build/opm-simulators/bin/flow
 
-    mkdir build
-
-    for repo in common grid simulators
-    do  git clone https://github.com/OPM/opm-$repo.git
-        mkdir build/opm-$repo
-        cd build/opm-$repo
-        cmake -DUSE_MPI=1 -DWITH_NDEBUG=1 -DCMAKE_BUILD_TYPE=Release $CURRENT_DIRECTORY/opm-$repo
-        if [[ $repo == simulators ]]; then
-            make -j5 flow
-        else
-            make -j5 opm$repo
-        fi
-        cd ../..
-    done
-
-.. tip::
-
-    You can create a .sh file (e.g., build_opm_mpi.sh), copy the previous lines, and run in the terminal **. ./build_opm_mpi.sh**  
+See :option:`plopm -fp` and :ref:`options-vtk`.
 
 .. _macOS:
 
-Brew formula for macOS
-++++++++++++++++++++++
-For macOS, there are no available binary packages, so OPM Flow needs to be built from source. Recently, a formula to build flow using brew has
-been added in `https://github.com/cssr-tools/homebrew-opm <https://github.com/cssr-tools/homebrew-opm>`_. 
-Then, you can try to install flow (v2026.07 interim release) by simply typing:
+Homebrew formula for macOS
+++++++++++++++++++++++++++
+
+Binary OPM Flow packages are not available for macOS, so Flow must be built
+from source. The `cssr-tools/homebrew-opm
+<https://github.com/cssr-tools/homebrew-opm>`_ repository provides a Homebrew
+formula for this purpose.
+
+Install the OPM Flow v2026.07 interim release with:
 
 .. code-block:: console
 
-    brew tap cssr-tools/opm
-    brew trust cssr-tools/opm
-    brew install cssr-tools/opm/opm-simulators -y
+   brew tap cssr-tools/opm
+   brew trust cssr-tools/opm
+   brew install cssr-tools/opm/opm-simulators -y
 
-You can check if the installation of OPM Flow succeded by typing in the terminal **flow \-\-help**.
+Verify the installation:
+
+.. code-block:: console
+
+   flow --help
 
 .. tip::
-    See the actions in the `cssr-tools/homebrew-opm <https://github.com/cssr-tools/homebrew-opm/actions>`_ repository. 
 
-Source build in macOS
+   See the `homebrew-opm workflow results
+   <https://github.com/cssr-tools/homebrew-opm/actions>`_ for tested builds.
+
+Source build on macOS
 +++++++++++++++++++++
-See `this repository <https://github.com/daavid00/OPM-Flow_macOS>`_ dedicated to build OPM Flow from source in macOS 26 (GitHub actions), and tested with **pycopm**, another repository in cssr-tools.
+
+See the `OPM-Flow_macOS repository
+<https://github.com/daavid00/OPM-Flow_macOS>`_ for a source-build workflow for
+OPM Flow on macOS 26. The workflow runs with GitHub Actions and is tested with
+**pycopm**, another project in the ``cssr-tools`` organization.
+
+Next steps
+----------
+
+* Follow the :doc:`tutorial` to progress from a first PNG to SPE11C
+  projections and comparisons.
+* Browse the :doc:`examples` for task-oriented workflows.
+* Use the :doc:`command-line` for syntax and option descriptions.

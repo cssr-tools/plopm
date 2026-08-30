@@ -37,20 +37,20 @@ def get_yz_slice(
         dimensions, and coordinate-axis names.
 
     """
-    slide_range = cfg.slice[n][0]
+    slice_range = cfg.slice[n][0]
     nx = data.nx
-    if slide_range[0] == ":":
+    if slice_range[0] == ":":
         cfg.slice[n][0] = [0, nx]
-        slice_title = f", slide i=0:{nx}"
+        slice_title = f", slice i=0:{nx}"
         slice_name = f"0:{nx},j,k"
-    elif slide_range[0] == slide_range[1] - 1:
-        start_index = slide_range[0] + 1
-        slice_title = f", slide i={start_index}"
+    elif slice_range[0] == slice_range[1] - 1:
+        start_index = slice_range[0] + 1
+        slice_title = f", slice i={start_index}"
         slice_name = f"{start_index},j,k"
     else:
-        start_index = slide_range[0] + 1
-        end_index = slide_range[1]
-        slice_title = f", slide i={start_index}:{end_index}"
+        start_index = slice_range[0] + 1
+        end_index = slice_range[1]
+        slice_title = f", slice i={start_index}:{end_index}"
         slice_name = f"{start_index}:{end_index},j,k"
     xc, yc = get_yz_coords(cfg, data, n)
     mx = 2 * data.ny - 1
@@ -81,20 +81,20 @@ def get_xz_slice(
         dimensions, and coordinate-axis names.
 
     """
-    slide_range = cfg.slice[n][1]
+    slice_range = cfg.slice[n][1]
     ny = data.ny
-    if slide_range[0] == ":":
+    if slice_range[0] == ":":
         cfg.slice[n][1] = [0, ny]
-        slice_title = f", slide j=0:{ny}"
+        slice_title = f", slice j=0:{ny}"
         slice_name = f"i,0:{ny},k"
-    elif slide_range[0] == slide_range[1] - 1:
-        start_index = slide_range[0] + 1
-        slice_title = f", slide j={start_index}"
+    elif slice_range[0] == slice_range[1] - 1:
+        start_index = slice_range[0] + 1
+        slice_title = f", slice j={start_index}"
         slice_name = f"i,{start_index},k"
     else:
-        start_index = slide_range[0] + 1
-        end_index = slide_range[1]
-        slice_title = f", slide j={start_index}:{end_index}"
+        start_index = slice_range[0] + 1
+        end_index = slice_range[1]
+        slice_title = f", slice j={start_index}:{end_index}"
         slice_name = f"i,{start_index}:{end_index},k"
     xc, yc = get_xz_coords(cfg, data, n)
     mx = 2 * data.nx - 1
@@ -125,20 +125,20 @@ def get_xy_slice(
         dimensions, and coordinate-axis names.
 
     """
-    slide_range = cfg.slice[n][2]
+    slice_range = cfg.slice[n][2]
     nz = data.nz
-    if slide_range[0] == ":":
+    if slice_range[0] == ":":
         cfg.slice[n][2] = [0, nz]
-        slice_title = f", slide k={1}:{nz}"
+        slice_title = f", slice k={1}:{nz}"
         slice_name = f"i,j,{1}:{nz}"
-    elif slide_range[0] == slide_range[1] - 1:
-        start_index = slide_range[0] + 1
-        slice_title = f", slide k={start_index}"
+    elif slice_range[0] == slice_range[1] - 1:
+        start_index = slice_range[0] + 1
+        slice_title = f", slice k={start_index}"
         slice_name = f"i,j,{start_index}"
     else:
-        start_index = slide_range[0] + 1
-        end_index = slide_range[1]
-        slice_title = f", slide k={start_index}:{end_index}"
+        start_index = slice_range[0] + 1
+        end_index = slice_range[1]
+        slice_title = f", slice k={start_index}:{end_index}"
         slice_name = f"i,j,{start_index}:{end_index}"
     xc, yc = get_xy_coords(cfg, data, n)
     mx = 2 * data.nx - 1
@@ -232,7 +232,7 @@ def map_xz(
     nx = data.nx
     ny = data.ny
     nz = data.nz
-    slide_start, slide_end = cfg.slice[n][1]
+    slice_start, slice_end = cfg.slice[n][1]
     layer_size = nx * ny
     porv = data.porv
     active_idx = data.active_idx
@@ -256,7 +256,7 @@ def map_xz(
                 val = np.inf
             if how == "max":
                 val = -np.inf
-            for sld in range(slide_start, slide_end):
+            for sld in range(slice_start, slice_end):
                 ind = i + sld * nx + layer_offset
                 cell_pv = porv[ind]
                 if cell_pv > 0:
@@ -365,7 +365,7 @@ def map_xz(
                     for k in range(value[2], value[3] + 1):
                         ind = value[0] + value[1] * nx + k * layer_size
                         if not cfg.global_range:
-                            if porv[ind] > 0 and slide_start <= value[1] < slide_end:
+                            if porv[ind] > 0 and slice_start <= value[1] < slice_end:
                                 mapped_values[2 * value[0] + 2 * (nz - k - 1) * mx] = (
                                     index + 1
                                 )
@@ -423,7 +423,7 @@ def map_yz(
     nx = data.nx
     ny = data.ny
     nz = data.nz
-    slide_start, slide_end = cfg.slice[n][0]
+    slice_start, slice_end = cfg.slice[n][0]
     layer_size = nx * ny
     porv = data.porv
     active_idx = data.active_idx
@@ -448,7 +448,7 @@ def map_yz(
                 val = np.inf
             if how == "max":
                 val = -np.inf
-            for sld in range(slide_start, slide_end):
+            for sld in range(slice_start, slice_end):
                 ind = sld + row_offset + layer_offset
                 cell_pv = porv[ind]
                 if cell_pv > 0:
@@ -557,7 +557,7 @@ def map_yz(
                     for k in range(value[2], value[3] + 1):
                         ind = value[0] + value[1] * nx + k * layer_size
                         if not cfg.global_range:
-                            if porv[ind] > 0 and slide_start <= value[0] < slide_end:
+                            if porv[ind] > 0 and slice_start <= value[0] < slice_end:
                                 mapped_values[2 * value[1] + 2 * (nz - k - 1) * mx] = (
                                     index + 1
                                 )
@@ -616,7 +616,7 @@ def map_xy(
     ny_total = data.ny
     dual = cfg.dual_grid[n] == "1" if n < len(cfg.dual_grid) else False
     ny = int((ny_total - 1) / 2) if dual else ny_total
-    slide_start, slide_end = cfg.slice[n][2]
+    slice_start, slice_end = cfg.slice[n][2]
     layer_size = nx * ny_total
     porv = data.porv
     active_idx = data.active_idx
@@ -640,7 +640,7 @@ def map_xy(
                 val = np.inf
             if how == "max":
                 val = -np.inf
-            for sld in range(slide_start, slide_end):
+            for sld in range(slice_start, slice_end):
                 layer_offset = sld * layer_size
                 ind = i + row_offset + layer_offset
                 idd = i + dual_row_offset + layer_offset
@@ -802,7 +802,7 @@ def map_xy(
                     for k in range(value[2], value[3] + 1):
                         ind = value[0] + value[1] * nx + k * layer_size
                         if not cfg.global_range:
-                            if porv[ind] > 0 and slide_start <= k < slide_end:
+                            if porv[ind] > 0 and slice_start <= k < slice_end:
                                 mapped_values[2 * value[0] + 2 * value[1] * mx] = (
                                     index + 1
                                 )

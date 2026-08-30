@@ -27,7 +27,8 @@ wait
 . tests/scripts/docs_filters.sh &
 . tests/scripts/docs_gif_mask.sh &
 . tests/scripts/docs_graphical_abstract.sh &
-. tests/scripts/docs_rel_perms_and_capillary_pressure.sh
+. tests/scripts/docs_rel_perms_and_capillary_pressure.sh &
+. tests/scripts/docs_tutorial.sh
 wait
 
 . tests/scripts/docs_check_outputs.sh

@@ -2,9 +2,12 @@ black
 numpydoc
 mypy
 pillow
+pydata_sphinx_theme
 pylint
 pytest-cov
 pytest-xdist
 ruff
 sphinx
+sphinx_copybutton
+sphinx_design
 sphinx-rtd-theme

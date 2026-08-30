@@ -1,0 +1,1367 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plopm.utils.mapping &#8212; plopm documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c9070fc1" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../../_static/documentation_options.js?v=1485e655"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=eef4a3d2"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plopm/utils/mapping';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2026.10rc0" />
+    <meta name="docbuild:last-update" content="2026-08-30"/>
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/plopm-logo.svg" class="logo__image only-light" alt="plopm documentation - Home"/>
+    <img src="../../../_static/plopm-logo.svg" class="logo__image only-dark pst-js-only" alt="plopm documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../introduction.html">
+    Introduction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../command-line.html">
+    Command-line reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../related.html">
+    Related projects
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm/issues/new/choose" title="Report an issue" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-bug fa-lg" aria-hidden="true"></i><span class="visually-hidden">Report an issue</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm" title="GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub repository</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../introduction.html">
+    Introduction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    Tutorial
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../command-line.html">
+    Command-line reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributing.html">
+    Contributing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../related.html">
+    Related projects
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm/issues/new/choose" title="Report an issue" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-bug fa-lg" aria-hidden="true"></i><span class="visually-hidden">Report an issue</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/cssr-tools/plopm" title="GitHub repository" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub repository</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plopm.utils.mapping</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for plopm.utils.mapping</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-FileCopyrightText: 2024-2026 NORCE Research AS</span>
+<span class="c1"># SPDX-License-Identifier: GPL-3.0</span>
+<span class="c1"># pylint: disable=R1702,R0912,C0325,R0913,R0914,R0915,R0917</span>
+
+<span class="sd">&quot;&quot;&quot;Prepare slice geometry and map three-dimensional values to two dimensions.</span>
+
+<span class="sd">The module builds labels and coordinate meshes for xy, xz, and yz slices,</span>
+<span class="sd">applies optional rotation and translation, and aggregates active-cell values</span>
+<span class="sd">through the selected grid interval.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">plopm.config.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlopmConfig</span><span class="p">,</span> <span class="n">SimData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plopm.utils.readers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_xy_coords</span><span class="p">,</span> <span class="n">get_xz_coords</span><span class="p">,</span> <span class="n">get_yz_coords</span>
+
+
+<div class="viewcode-block" id="get_yz_slice">
+<a class="viewcode-back" href="../../../api/plopm.utils.mapping.html#plopm.utils.mapping.get_yz_slice">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_yz_slice</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">SimData</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare geometry and labels for a yz slice.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Initialized map and slice configuration.</span>
+<span class="sd">    data : SimData</span>
+<span class="sd">        Loaded grid data.</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Slice index.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        Coordinate meshes, display and filename slice labels, mapped grid</span>
+<span class="sd">        dimensions, and coordinate-axis names.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">slice_range</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nx</span>
+    <span class="k">if</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;:&quot;</span><span class="p">:</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">nx</span><span class="p">]</span>
+        <span class="n">slice_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, slice i=0:</span><span class="si">{</span><span class="n">nx</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">slice_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;0:</span><span class="si">{</span><span class="n">nx</span><span class="si">}</span><span class="s2">,j,k&quot;</span>
+    <span class="k">elif</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">start_index</span> <span class="o">=</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">slice_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, slice i=</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">slice_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">,j,k&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">start_index</span> <span class="o">=</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">end_index</span> <span class="o">=</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">slice_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, slice i=</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">end_index</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">slice_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">end_index</span><span class="si">}</span><span class="s2">,j,k&quot;</span>
+    <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span> <span class="o">=</span> <span class="n">get_yz_coords</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">mx</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">ny</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">my</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">nz</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">xname</span> <span class="o">=</span> <span class="s2">&quot;y&quot;</span>
+    <span class="n">yname</span> <span class="o">=</span> <span class="s2">&quot;z&quot;</span>
+    <span class="k">return</span> <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">,</span> <span class="n">slice_title</span><span class="p">,</span> <span class="n">slice_name</span><span class="p">,</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">xname</span><span class="p">,</span> <span class="n">yname</span></div>
+
+
+
+<div class="viewcode-block" id="get_xz_slice">
+<a class="viewcode-back" href="../../../api/plopm.utils.mapping.html#plopm.utils.mapping.get_xz_slice">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_xz_slice</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">SimData</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare geometry and labels for an xz slice.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Initialized map and slice configuration.</span>
+<span class="sd">    data : SimData</span>
+<span class="sd">        Loaded grid data.</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Slice index.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        Coordinate meshes, display and filename slice labels, mapped grid</span>
+<span class="sd">        dimensions, and coordinate-axis names.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">slice_range</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ny</span>
+    <span class="k">if</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;:&quot;</span><span class="p">:</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ny</span><span class="p">]</span>
+        <span class="n">slice_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, slice j=0:</span><span class="si">{</span><span class="n">ny</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">slice_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;i,0:</span><span class="si">{</span><span class="n">ny</span><span class="si">}</span><span class="s2">,k&quot;</span>
+    <span class="k">elif</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">start_index</span> <span class="o">=</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">slice_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, slice j=</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">slice_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;i,</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">,k&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">start_index</span> <span class="o">=</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">end_index</span> <span class="o">=</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">slice_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, slice j=</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">end_index</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">slice_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;i,</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">end_index</span><span class="si">}</span><span class="s2">,k&quot;</span>
+    <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span> <span class="o">=</span> <span class="n">get_xz_coords</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">mx</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">nx</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">my</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">nz</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">xname</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
+    <span class="n">yname</span> <span class="o">=</span> <span class="s2">&quot;z&quot;</span>
+    <span class="k">return</span> <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">,</span> <span class="n">slice_title</span><span class="p">,</span> <span class="n">slice_name</span><span class="p">,</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">xname</span><span class="p">,</span> <span class="n">yname</span></div>
+
+
+
+<div class="viewcode-block" id="get_xy_slice">
+<a class="viewcode-back" href="../../../api/plopm.utils.mapping.html#plopm.utils.mapping.get_xy_slice">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_xy_slice</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">SimData</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare geometry and labels for an xy slice.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Initialized map and slice configuration.</span>
+<span class="sd">    data : SimData</span>
+<span class="sd">        Loaded grid data.</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Slice index.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        Coordinate meshes, display and filename slice labels, mapped grid</span>
+<span class="sd">        dimensions, and coordinate-axis names.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">slice_range</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nz</span>
+    <span class="k">if</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;:&quot;</span><span class="p">:</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">nz</span><span class="p">]</span>
+        <span class="n">slice_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, slice k=</span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">nz</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">slice_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;i,j,</span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">nz</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">elif</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">start_index</span> <span class="o">=</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">slice_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, slice k=</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">slice_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;i,j,</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">start_index</span> <span class="o">=</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">end_index</span> <span class="o">=</span> <span class="n">slice_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">slice_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, slice k=</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">end_index</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">slice_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;i,j,</span><span class="si">{</span><span class="n">start_index</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">end_index</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span> <span class="o">=</span> <span class="n">get_xy_coords</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">mx</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">nx</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">my</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">ny</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">xname</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
+    <span class="n">yname</span> <span class="o">=</span> <span class="s2">&quot;y&quot;</span>
+    <span class="k">return</span> <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">,</span> <span class="n">slice_title</span><span class="p">,</span> <span class="n">slice_name</span><span class="p">,</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">xname</span><span class="p">,</span> <span class="n">yname</span></div>
+
+
+
+<div class="viewcode-block" id="transform_grid">
+<a class="viewcode-back" href="../../../api/plopm.utils.mapping.html#plopm.utils.mapping.transform_grid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">transform_grid</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">xc</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span> <span class="n">yc</span><span class="p">:</span> <span class="n">NDArray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rotate and translate a two-dimensional coordinate mesh.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Rotation and translation settings.</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Map index.</span>
+<span class="sd">    xc, yc : np.ndarray</span>
+<span class="sd">        Coordinate meshes to transform.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple[np.ndarray, np.ndarray]</span>
+<span class="sd">        Transformed x- and y-coordinate meshes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grd</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">rotation</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">grd</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+    <span class="n">cos_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+    <span class="n">sin_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">xc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">yc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">x_dis</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">translation</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">y_dis</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">translation</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">base_x</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">length</span>
+    <span class="n">base_y</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">width</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">xc</span> <span class="o">-</span> <span class="n">base_x</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">yc</span> <span class="o">-</span> <span class="n">base_y</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">base_x</span> <span class="o">+</span> <span class="n">x_dis</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">cos_val</span> <span class="o">-</span> <span class="n">dy</span> <span class="o">*</span> <span class="n">sin_val</span><span class="p">,</span>
+        <span class="n">base_y</span> <span class="o">+</span> <span class="n">y_dis</span> <span class="o">+</span> <span class="n">dy</span> <span class="o">*</span> <span class="n">cos_val</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">sin_val</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="map_xz">
+<a class="viewcode-back" href="../../../api/plopm.utils.mapping.html#plopm.utils.mapping.map_xz">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">map_xz</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">SimData</span><span class="p">,</span>
+    <span class="n">var</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">my</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">features</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">feature_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregate active-cell values onto an xz slice.</span>
+
+<span class="sd">    Values are aggregated through the selected j interval. Permeability uses</span>
+<span class="sd">    arithmetic or harmonic thickness weighting according to flow direction;</span>
+<span class="sd">    other properties use the configured aggregation or pore-volume weighting.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Slice and aggregation configuration.</span>
+<span class="sd">    data : SimData</span>
+<span class="sd">        Loaded grid properties and active-cell mapping.</span>
+<span class="sd">    var : str</span>
+<span class="sd">        Variable name.</span>
+<span class="sd">    values : np.ndarray</span>
+<span class="sd">        Values in active-cell order.</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Map index.</span>
+<span class="sd">    mx, my : int</span>
+<span class="sd">        Mapped grid dimensions.</span>
+<span class="sd">    features : list, optional</span>
+<span class="sd">        Wells or faults grouped by label.</span>
+<span class="sd">    feature_id : int, default: 1</span>
+<span class="sd">        Category assigned when mapping one feature.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Values on the flattened xz plotting grid.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">how</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">aggregation</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nx</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ny</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nz</span>
+    <span class="n">slice_start</span><span class="p">,</span> <span class="n">slice_end</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">layer_size</span> <span class="o">=</span> <span class="n">nx</span> <span class="o">*</span> <span class="n">ny</span>
+    <span class="n">porv</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">porv</span>
+    <span class="n">active_idx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">active_idx</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dy</span>
+    <span class="n">mapped_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">mx</span> <span class="o">*</span> <span class="n">my</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">is_wells_or_faults</span> <span class="o">=</span> <span class="n">features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">is_sum_property</span> <span class="o">=</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">mass_vars</span> <span class="ow">or</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;porv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dy&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tranx&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tranz&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">is_caprock</span> <span class="o">=</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">caprock_vars</span>
+    <span class="n">is_arithmetic_perm</span> <span class="o">=</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;permx&quot;</span><span class="p">,</span> <span class="s2">&quot;permz&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span><span class="p">):</span>
+        <span class="n">layer_offset</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">layer_size</span>
+        <span class="n">output_layer_offset</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">nz</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">mx</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
+            <span class="n">p_v</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">d_y</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+            <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">for</span> <span class="n">sld</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">slice_start</span><span class="p">,</span> <span class="n">slice_end</span><span class="p">):</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">sld</span> <span class="o">*</span> <span class="n">nx</span> <span class="o">+</span> <span class="n">layer_offset</span>
+                <span class="n">cell_pv</span> <span class="o">=</span> <span class="n">porv</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">active_id</span> <span class="o">=</span> <span class="n">active_idx</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">how</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_wells_or_faults</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;first&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_i&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_j&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_k&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="k">break</span>
+                        <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_i&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_j&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_k&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="mf">1.0</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;pvmean&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="n">cell_pv</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">cell_pv</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;harmonic&quot;</span><span class="p">:</span>
+                            <span class="n">cell_value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="n">d_y</span> <span class="o">+=</span> <span class="n">dy</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                                <span class="k">if</span> <span class="n">cell_value</span> <span class="o">==</span> <span class="mi">0</span>
+                                <span class="k">else</span> <span class="n">val</span> <span class="o">+</span> <span class="n">dy</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">/</span> <span class="n">cell_value</span>
+                            <span class="p">)</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="n">cell_pv</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;arithmetic&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dy</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">dy</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">is_sum_property</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                        <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">is_caprock</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">break</span>
+                    <span class="k">elif</span> <span class="n">is_arithmetic_perm</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dy</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">dy</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;permy&quot;</span><span class="p">:</span>
+                        <span class="n">cell_value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">d_y</span> <span class="o">+=</span> <span class="n">dy</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                            <span class="k">if</span> <span class="n">cell_value</span> <span class="o">==</span> <span class="mi">0</span>
+                            <span class="k">else</span> <span class="n">val</span> <span class="o">+</span> <span class="n">dy</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">/</span> <span class="n">cell_value</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;wells&quot;</span><span class="p">,</span> <span class="s2">&quot;faults&quot;</span><span class="p">]:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">feature_id</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_i&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_j&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_k&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">+=</span> <span class="n">cell_pv</span>
+                        <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">cell_pv</span>
+            <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;harmonic&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">how</span> <span class="ow">and</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;permy&quot;</span><span class="p">):</span>
+                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="n">output_layer_offset</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="k">if</span> <span class="n">p_v</span> <span class="o">==</span> <span class="mi">0</span>
+                    <span class="k">else</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">d_y</span> <span class="o">/</span> <span class="n">val</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="n">output_layer_offset</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">p_v</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">val</span> <span class="o">/</span> <span class="n">p_v</span>
+                <span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_wells_or_faults</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="n">ind</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">nx</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">layer_size</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">global_range</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">porv</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">slice_start</span> <span class="o">&lt;=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">slice_end</span><span class="p">:</span>
+                                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">nz</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">mx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+                                <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">porv</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">nz</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">mx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+                                <span class="p">)</span>
+    <span class="k">return</span> <span class="n">mapped_values</span></div>
+
+
+
+<div class="viewcode-block" id="map_yz">
+<a class="viewcode-back" href="../../../api/plopm.utils.mapping.html#plopm.utils.mapping.map_yz">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">map_yz</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">SimData</span><span class="p">,</span>
+    <span class="n">var</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">my</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">features</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">feature_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregate active-cell values onto a yz slice.</span>
+
+<span class="sd">    Values are aggregated through the selected i interval. Permeability uses</span>
+<span class="sd">    arithmetic or harmonic thickness weighting according to flow direction;</span>
+<span class="sd">    other properties use the configured aggregation or pore-volume weighting.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Slice and aggregation configuration.</span>
+<span class="sd">    data : SimData</span>
+<span class="sd">        Loaded grid properties and active-cell mapping.</span>
+<span class="sd">    var : str</span>
+<span class="sd">        Variable name.</span>
+<span class="sd">    values : np.ndarray</span>
+<span class="sd">        Values in active-cell order.</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Map index.</span>
+<span class="sd">    mx, my : int</span>
+<span class="sd">        Mapped grid dimensions.</span>
+<span class="sd">    features : list, optional</span>
+<span class="sd">        Wells or faults grouped by label.</span>
+<span class="sd">    feature_id : int, default: 1</span>
+<span class="sd">        Category assigned when mapping one feature.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Values on the flattened yz plotting grid.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">how</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">aggregation</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nx</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ny</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nz</span>
+    <span class="n">slice_start</span><span class="p">,</span> <span class="n">slice_end</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">layer_size</span> <span class="o">=</span> <span class="n">nx</span> <span class="o">*</span> <span class="n">ny</span>
+    <span class="n">porv</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">porv</span>
+    <span class="n">active_idx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">active_idx</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dx</span>
+    <span class="n">mapped_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">mx</span> <span class="o">*</span> <span class="n">my</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">is_wells_or_faults</span> <span class="o">=</span> <span class="n">features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">is_sum_property</span> <span class="o">=</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">mass_vars</span> <span class="ow">or</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;porv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dx&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;trany&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tranz&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">is_caprock</span> <span class="o">=</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">caprock_vars</span>
+    <span class="n">is_arithmetic_perm</span> <span class="o">=</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;permy&quot;</span><span class="p">,</span> <span class="s2">&quot;permz&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span><span class="p">):</span>
+        <span class="n">layer_offset</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">layer_size</span>
+        <span class="n">output_layer_offset</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">nz</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">mx</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
+            <span class="n">row_offset</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">nx</span>
+            <span class="n">p_v</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">d_x</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+            <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">for</span> <span class="n">sld</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">slice_start</span><span class="p">,</span> <span class="n">slice_end</span><span class="p">):</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">+</span> <span class="n">row_offset</span> <span class="o">+</span> <span class="n">layer_offset</span>
+                <span class="n">cell_pv</span> <span class="o">=</span> <span class="n">porv</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">active_id</span> <span class="o">=</span> <span class="n">active_idx</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">how</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_wells_or_faults</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;first&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_i&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_j&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_k&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="k">break</span>
+                        <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_i&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_j&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_k&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="mf">1.0</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;pvmean&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="n">cell_pv</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">cell_pv</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;harmonic&quot;</span><span class="p">:</span>
+                            <span class="n">cell_value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="n">d_x</span> <span class="o">+=</span> <span class="n">dx</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                                <span class="k">if</span> <span class="n">cell_value</span> <span class="o">==</span> <span class="mi">0</span>
+                                <span class="k">else</span> <span class="n">val</span> <span class="o">+</span> <span class="n">dx</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">/</span> <span class="n">cell_value</span>
+                            <span class="p">)</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="n">cell_pv</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;arithmetic&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dx</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">dx</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">is_sum_property</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                        <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">is_caprock</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">break</span>
+                    <span class="k">elif</span> <span class="n">is_arithmetic_perm</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dx</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">dx</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;permx&quot;</span><span class="p">:</span>
+                        <span class="n">cell_value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">d_x</span> <span class="o">+=</span> <span class="n">dx</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                            <span class="k">if</span> <span class="n">cell_value</span> <span class="o">==</span> <span class="mi">0</span>
+                            <span class="k">else</span> <span class="n">val</span> <span class="o">+</span> <span class="n">dx</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">/</span> <span class="n">cell_value</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;wells&quot;</span><span class="p">,</span> <span class="s2">&quot;faults&quot;</span><span class="p">]:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">feature_id</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_i&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_j&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_k&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">+=</span> <span class="n">cell_pv</span>
+                        <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">cell_pv</span>
+            <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;harmonic&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">how</span> <span class="ow">and</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;permx&quot;</span><span class="p">):</span>
+                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="n">output_layer_offset</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="k">if</span> <span class="n">p_v</span> <span class="o">==</span> <span class="mi">0</span>
+                    <span class="k">else</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">d_x</span> <span class="o">/</span> <span class="n">val</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="n">output_layer_offset</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">p_v</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">val</span> <span class="o">/</span> <span class="n">p_v</span>
+                <span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_wells_or_faults</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="n">ind</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">nx</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">layer_size</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">global_range</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">porv</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">slice_start</span> <span class="o">&lt;=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">slice_end</span><span class="p">:</span>
+                                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">nz</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">mx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+                                <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">porv</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">nz</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">mx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+                                <span class="p">)</span>
+    <span class="k">return</span> <span class="n">mapped_values</span></div>
+
+
+
+<div class="viewcode-block" id="map_xy">
+<a class="viewcode-back" href="../../../api/plopm.utils.mapping.html#plopm.utils.mapping.map_xy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">map_xy</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">PlopmConfig</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">SimData</span><span class="p">,</span>
+    <span class="n">var</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">my</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">features</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">feature_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregate active-cell values onto an xy slice.</span>
+
+<span class="sd">    Values are aggregated through the selected k interval. Dual-porosity rows</span>
+<span class="sd">    are included when enabled, and permeability is weighted according to the</span>
+<span class="sd">    vertical flow direction.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cfg : PlopmConfig</span>
+<span class="sd">        Slice, aggregation, and dual-grid configuration.</span>
+<span class="sd">    data : SimData</span>
+<span class="sd">        Loaded grid properties and active-cell mapping.</span>
+<span class="sd">    var : str</span>
+<span class="sd">        Variable name.</span>
+<span class="sd">    values : np.ndarray</span>
+<span class="sd">        Values in active-cell order.</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Map index.</span>
+<span class="sd">    mx, my : int</span>
+<span class="sd">        Mapped grid dimensions.</span>
+<span class="sd">    features : list, optional</span>
+<span class="sd">        Wells or faults grouped by label.</span>
+<span class="sd">    feature_id : int, default: 1</span>
+<span class="sd">        Category assigned when mapping one feature.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Values on the flattened xy plotting grid.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">how</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">aggregation</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nx</span>
+    <span class="n">ny_total</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ny</span>
+    <span class="n">dual</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">dual_grid</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">dual_grid</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">ny_total</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="n">dual</span> <span class="k">else</span> <span class="n">ny_total</span>
+    <span class="n">slice_start</span><span class="p">,</span> <span class="n">slice_end</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">layer_size</span> <span class="o">=</span> <span class="n">nx</span> <span class="o">*</span> <span class="n">ny_total</span>
+    <span class="n">porv</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">porv</span>
+    <span class="n">active_idx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">active_idx</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dz</span>
+    <span class="n">mapped_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">mx</span> <span class="o">*</span> <span class="n">my</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">is_wells_or_faults</span> <span class="o">=</span> <span class="n">features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">is_sum_property</span> <span class="o">=</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">mass_vars</span> <span class="ow">or</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;porv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dz&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tranx&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;trany&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">is_caprock</span> <span class="o">=</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">caprock_vars</span>
+    <span class="n">is_arithmetic_perm</span> <span class="o">=</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;permx&quot;</span><span class="p">,</span> <span class="s2">&quot;permy&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
+        <span class="n">row_offset</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">nx</span>
+        <span class="n">dual_row_offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">ny</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nx</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
+            <span class="n">p_v</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">d_z</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+            <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">for</span> <span class="n">sld</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">slice_start</span><span class="p">,</span> <span class="n">slice_end</span><span class="p">):</span>
+                <span class="n">layer_offset</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">*</span> <span class="n">layer_size</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">row_offset</span> <span class="o">+</span> <span class="n">layer_offset</span>
+                <span class="n">idd</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">dual_row_offset</span> <span class="o">+</span> <span class="n">layer_offset</span>
+                <span class="n">cell_pv</span> <span class="o">=</span> <span class="n">porv</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                <span class="n">dual_cell_pv</span> <span class="o">=</span> <span class="n">porv</span><span class="p">[</span><span class="n">idd</span><span class="p">]</span> <span class="k">if</span> <span class="n">dual</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">active_id</span> <span class="o">=</span> <span class="n">active_idx</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                    <span class="n">dual_active_id</span> <span class="o">=</span> <span class="n">active_idx</span><span class="p">[</span><span class="n">idd</span><span class="p">]</span> <span class="k">if</span> <span class="n">dual</span> <span class="k">else</span> <span class="n">active_id</span>
+                    <span class="k">if</span> <span class="n">how</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_wells_or_faults</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;first&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_i&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_j&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_k&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="k">break</span>
+                        <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_i&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_j&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_k&quot;</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                            <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">p_v</span> <span class="o">+=</span> <span class="mf">1.0</span>
+                                <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">p_v</span> <span class="o">+=</span> <span class="mf">1.0</span>
+                                <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;pvmean&quot;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">p_v</span> <span class="o">+=</span> <span class="n">cell_pv</span>
+                                <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">cell_pv</span>
+                            <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dual_cell_pv</span>
+                                <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">dual_cell_pv</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;harmonic&quot;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">cell_value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                                <span class="n">d_z</span> <span class="o">+=</span> <span class="n">dz</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                                    <span class="k">if</span> <span class="n">cell_value</span> <span class="o">==</span> <span class="mi">0</span>
+                                    <span class="k">else</span> <span class="n">val</span> <span class="o">+</span> <span class="n">dz</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">/</span> <span class="n">cell_value</span>
+                                <span class="p">)</span>
+                                <span class="n">p_v</span> <span class="o">+=</span> <span class="n">cell_pv</span>
+                            <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">cell_value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                                <span class="n">d_z</span> <span class="o">+=</span> <span class="n">dz</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                                    <span class="k">if</span> <span class="n">cell_value</span> <span class="o">==</span> <span class="mi">0</span>
+                                    <span class="k">else</span> <span class="n">val</span> <span class="o">+</span> <span class="n">dz</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span> <span class="o">/</span> <span class="n">cell_value</span>
+                                <span class="p">)</span>
+                                <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dual_cell_pv</span>
+                        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;arithmetic&quot;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dz</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                                <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">dz</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dz</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                                <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">dz</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">is_sum_property</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                        <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">is_caprock</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mf">1.0</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">break</span>
+                    <span class="k">elif</span> <span class="n">is_arithmetic_perm</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dz</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">dz</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dz</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">dz</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;permz&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">cell_value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="n">d_z</span> <span class="o">+=</span> <span class="n">dz</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                                <span class="k">if</span> <span class="n">cell_value</span> <span class="o">==</span> <span class="mi">0</span>
+                                <span class="k">else</span> <span class="n">val</span> <span class="o">+</span> <span class="n">dz</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">/</span> <span class="n">cell_value</span>
+                            <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">cell_value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                            <span class="n">d_z</span> <span class="o">+=</span> <span class="n">dz</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                                <span class="k">if</span> <span class="n">cell_value</span> <span class="o">==</span> <span class="mi">0</span>
+                                <span class="k">else</span> <span class="n">val</span> <span class="o">+</span> <span class="n">dz</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span> <span class="o">/</span> <span class="n">cell_value</span>
+                            <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;wells&quot;</span><span class="p">,</span> <span class="s2">&quot;faults&quot;</span><span class="p">]:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">feature_id</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_i&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_j&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;index_k&quot;</span><span class="p">:</span>
+                        <span class="n">p_v</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">sld</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="n">cell_pv</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">cell_pv</span>
+                        <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">dual_cell_pv</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">p_v</span> <span class="o">+=</span> <span class="n">dual_cell_pv</span>
+                            <span class="n">val</span> <span class="o">+=</span> <span class="n">values</span><span class="p">[</span><span class="n">dual_active_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">dual_cell_pv</span>
+            <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;harmonic&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">how</span> <span class="ow">and</span> <span class="n">var</span> <span class="o">==</span> <span class="s2">&quot;permz&quot;</span><span class="p">):</span>
+                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="n">mx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="k">if</span> <span class="n">p_v</span> <span class="o">==</span> <span class="mi">0</span>
+                    <span class="k">else</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">d_z</span> <span class="o">/</span> <span class="n">val</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">*</span> <span class="n">mx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">p_v</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">val</span> <span class="o">/</span> <span class="n">p_v</span>
+    <span class="k">if</span> <span class="n">is_wells_or_faults</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="n">ind</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">nx</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">layer_size</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">global_range</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">porv</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">slice_start</span> <span class="o">&lt;=</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">slice_end</span><span class="p">:</span>
+                                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">mx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+                                <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">porv</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">mapped_values</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">mx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+                                <span class="p">)</span>
+    <span class="k">if</span> <span class="n">dual</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">difference_input</span><span class="p">:</span>
+        <span class="n">mapped_values</span> <span class="o">=</span> <span class="n">mapped_values</span><span class="p">[:</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ny</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">mapped_values</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, NORCE Research AS.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

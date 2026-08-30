@@ -1043,19 +1043,19 @@ def _check_cmdargs(cmdargs: argparse.Namespace) -> None:
                 f"{cli_error_value(f'-agg {aggregation_methods}')}."
             )
 
-    slide = cmdargs.slice
-    slides = slide.split()
-    slide_entry_pattern = re.compile(
+    slice_value = cmdargs.slice
+    slices = slice_value.split()
+    slice_entry_pattern = re.compile(
         rf"(?:{positive_integer}|" rf"{positive_integer}:{positive_integer}|:)?"
     )
-    if not slides:
-        plopm_error(f"the slide selection {cli_error_value('-s')} cannot be empty.")
+    if not slices:
+        plopm_error(f"the slice selection {cli_error_value('-s')} cannot be empty.")
 
-    slide_entries: list[list[str]] = []
-    for selection in slides:
+    slice_entries: list[list[str]] = []
+    for selection in slices:
         entries = selection.split(",")
         if len(entries) != 3 or any(
-            not slide_entry_pattern.fullmatch(entry) for entry in entries
+            not slice_entry_pattern.fullmatch(entry) for entry in entries
         ):
             plopm_error(
                 f"expected three i,j,k entries separated by commas, using "
@@ -1064,7 +1064,7 @@ def _check_cmdargs(cmdargs: argparse.Namespace) -> None:
             )
         if all(not entry for entry in entries):
             plopm_error(
-                f"at least one slide entry must be provided with "
+                f"at least one slice entry must be provided with "
                 f"{cli_error_value(f'-s {selection}')}."
             )
         colon_entries = 0
@@ -1082,11 +1082,11 @@ def _check_cmdargs(cmdargs: argparse.Namespace) -> None:
                     )
         if colon_entries > 1:
             plopm_error(
-                f"only one slide direction in "
+                f"only one slice direction in "
                 f"{cli_error_value(f'-s {selection}')} can contain ':' or an index "
                 "range."
             )
-        slide_entries.append(entries)
+        slice_entries.append(entries)
 
     restart = cmdargs.restart
     restart_pattern = re.compile(
@@ -1277,7 +1277,7 @@ def _check_cmdargs(cmdargs: argparse.Namespace) -> None:
         and "sensor" in cmdargs.distance
         and any(
             any(not re.fullmatch(positive_integer, entry) for entry in entries)
-            for entries in slide_entries
+            for entries in slice_entries
         )
     ):
         plopm_error(
