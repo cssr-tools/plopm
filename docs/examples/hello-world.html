@@ -51,12 +51,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Colormaps" href="colormaps.html" />
+    <link rel="next" title="Colormaps and subfigures" href="colormaps-subfigures.html" />
     <link rel="prev" title="Examples" href="../examples.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -501,39 +502,84 @@
                   
   <section id="hello-world">
 <span id="example-hello-world"></span><h1>Hello world<a class="headerlink" href="#hello-world" title="Link to this heading">#</a></h1>
-<p>Create maps, summary plots, and cell time series.</p>
-<p>Run the default command from the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory.</p>
+<p>Create spatial maps, summary plots, and cell time series from an SPE11B model.</p>
+<section id="run-the-default-command">
+<h2>Run the default command<a class="headerlink" href="#run-the-default-command" title="Link to this heading">#</a></h2>
+<p>Run the following command from the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11B</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/spe11b_satnum_*,1,*_t5.png"><img alt="../_images/spe11b_satnum_%2A%2C1%2C%2A_t5.png" src="../_images/spe11b_satnum_%2A%2C1%2C%2A_t5.png" style="width: 90%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/spe11b_satnum_*,1,*_t5.png"><img alt="Default SPE11B SATNUM plot on the middle xz slice" src="../_images/spe11b_satnum_%2A%2C1%2C%2A_t5.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">The default command plots the standard static variables. This figure shows
+<code class="docutils literal notranslate"><span class="pre">satnum</span></code> on the default <code class="docutils literal notranslate"><span class="pre">,1,</span></code> slice at the final restart step.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Plot gas saturation at restart step 4.</p>
+<p>When <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-v</span></code></a> is omitted, <strong>plopm</strong> plots its default variable set.
+The default spatial selection is <code class="docutils literal notranslate"><span class="pre">,1,</span></code>, which displays the first xz slice.</p>
+</section>
+<section id="plot-gas-saturation">
+<h2>Plot gas saturation<a class="headerlink" href="#plot-gas-saturation" title="Link to this heading">#</a></h2>
+<p>Select gas saturation at restart step 4 and customize the colorbar:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11B -v sgas -r 4 -cbn 3 -c cubehelix -cbt &#39;[0, middle, 0.9]&#39;</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/spe11b_sgas_i,1,k_t4.png"><img alt="../_images/spe11b_sgas_i%2C1%2Ck_t4.png" src="../_images/spe11b_sgas_i%2C1%2Ck_t4.png" style="width: 90%;" />
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/spe11b_sgas_i,1,k_t4.png"><img alt="SPE11B gas saturation at restart step 4" src="../_images/spe11b_sgas_i%2C1%2Ck_t4.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Gas saturation on the default xz slice at restart step 4.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Plot field gas in place.</p>
+<p>The command uses:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../options/input-data.html#cmdoption-plopm-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-v</span></code></a> to select <code class="docutils literal notranslate"><span class="pre">sgas</span></code>.</p></li>
+<li><p><a class="reference internal" href="../options/input-data.html#cmdoption-plopm-r"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-r</span></code></a> to select restart step 4.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-c</span></code></a> to select the <code class="docutils literal notranslate"><span class="pre">cubehelix</span></code> colormap.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-cbn"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbn</span></code></a> to use three colorbar ticks.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-cbt"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbt</span></code></a> to replace the numeric tick labels with custom text.</p></li>
+</ul>
+</section>
+<section id="plot-field-gas-in-place">
+<h2>Plot field gas in place<a class="headerlink" href="#plot-field-gas-in-place" title="Link to this heading">#</a></h2>
+<p>Summary quantities are plotted over time rather than on a spatial slice. Plot
+field gas in place with dates on the x-axis:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11B -v fgip -c b -ls dotted -fz 12 -fs 5,5 -lw 4 -tu dates</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/fgip.png"><img alt="../_images/fgip.png" src="../_images/fgip.png" style="width: 90%;" />
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/fgip.png"><img alt="SPE11B field gas in place over time" src="../_images/fgip.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Field gas in place plotted against simulation dates.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Plot pressure increase at three cells.</p>
+<p>Here, <a class="reference internal" href="../options/selection.html#cmdoption-plopm-tu"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-tu</span></code></a> selects dates, while <a class="reference internal" href="../options/styling.html#cmdoption-plopm-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-c</span></code></a>,
+<a class="reference internal" href="../options/styling.html#cmdoption-plopm-ls"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-ls</span></code></a>, and <a class="reference internal" href="../options/styling.html#cmdoption-plopm-lw"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-lw</span></code></a> control the line appearance.</p>
+</section>
+<section id="plot-cell-values-over-time">
+<h2>Plot cell values over time<a class="headerlink" href="#plot-cell-values-over-time" title="Link to this heading">#</a></h2>
+<p>Select three cells and plot pressure increase relative to the initial pressure:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i &#39;SPE11B SPE11B SPE11B&#39; -v &#39;pressure - 0pressure&#39; -s &#39;1,1,1 41,1,29 83,1,58&#39; -llb &#39;Top left corner  Middle  Right lower corner&#39; -yl &#39;Pressure increase at the sensor locations [bar]&#39; -yf .0f -xnt 11 -tu dates</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/spe11b_pressure-0pressure.png"><img alt="../_images/spe11b_pressure-0pressure.png" src="../_images/spe11b_pressure-0pressure.png" style="width: 90%;" />
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/spe11b_pressure-0pressure.png"><img alt="Pressure increase at three SPE11B cells over time" src="../_images/spe11b_pressure-0pressure.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Pressure increase at cells near the top-left corner, middle, and lower-right
+corner of the model.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
+<p>Three indices in <a class="reference internal" href="../options/selection.html#cmdoption-plopm-s"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-s</span></code></a> select one cell over time. The three input
+entries correspond to the three cell selections. The expression
+<code class="docutils literal notranslate"><span class="pre">pressure</span> <span class="pre">-</span> <span class="pre">0pressure</span></code> subtracts the initial pressure from each time step.</p>
+<p>The legend labels are separated by two spaces. <a class="reference internal" href="../options/axes.html#cmdoption-plopm-yf"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-yf</span></code></a> displays
+pressure values without decimal places, and <a class="reference internal" href="../options/axes.html#cmdoption-plopm-xnt"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-xnt</span></code></a> sets eleven
+x-axis ticks.</p>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
@@ -574,11 +620,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="colormaps.html"
+       href="colormaps-subfigures.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Colormaps</p>
+        <p class="prev-next-title">Colormaps and subfigures</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -601,6 +647,10 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-default-command">Run the default command</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-gas-saturation">Plot gas saturation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-field-gas-in-place">Plot field gas in place</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-cell-values-over-time">Plot cell values over time</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>

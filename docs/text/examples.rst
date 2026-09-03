@@ -61,12 +61,12 @@ Example gallery
 
       Create maps, summary plots, and cell time series.
 
-   .. grid-item-card:: Colormaps
+   .. grid-item-card:: Colormaps and subfigures
       :link: example-colormaps
       :link-type: ref
       :img-top: figs/spe11b_disperc_i,1,k_t5.png
 
-      Use named, RGB, and HEX colormaps.
+      Use named, RGB, and HEX colormaps, as well as subfigures.
 
    .. grid-item-card:: Generic deck
       :link: example-generic-deck
@@ -81,6 +81,13 @@ Example gallery
       :img-top: figs/norne_transformed.png
 
       Transform, crop, and inspect Norne.
+
+   .. grid-item-card:: Wells and faults
+      :link: example-wells-faults
+      :link-type: ref
+      :img-top: figs/norne_faults.png
+
+      Show wells and faults in Norne.
 
    .. grid-item-card:: Projections and subfigures
       :link: example-projections
@@ -157,9 +164,10 @@ Example gallery
    :maxdepth: 1
 
    examples/hello-world
-   examples/colormaps
+   examples/colormaps-subfigures
    examples/generic-deck
    examples/transformations
+   examples/wells-faults
    examples/projections
    examples/histograms
    examples/caprock

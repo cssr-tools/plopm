@@ -17,7 +17,7 @@ To install the _plopm_ executable in an existing Python environment:
 pip install git+https://github.com/cssr-tools/plopm.git
 ```
 
-If you are interested in a specific version (e.g., v2026.04) or in modifying the source code, then you can clone the repository and install the Python requirements in a virtual environment with the following commands:
+If you are interested in modifying the source code, then you can clone the repository and install the Python requirements in a virtual environment with the following commands:
 
 ```bash
 # Clone the repo
@@ -46,7 +46,7 @@ plopm -i name(s)_of_input_file(s)
 Run `plopm --help` to see all possible command line argument options.
 
 ## Getting started
-See the [_examples_](https://cssr-tools.github.io/plopm/examples.html) in the [_documentation_](https://cssr-tools.github.io/plopm/introduction.html) and this [_paper_](https://github.com/cssr-tools/plopm/tree/main/paper/paper.pdf).
+See the [_tutorial_](https://cssr-tools.github.io/plopm/tutorial.html) and [_examples_](https://cssr-tools.github.io/plopm/examples.html) in the [_documentation_](https://cssr-tools.github.io/plopm/introduction.html) and this [_paper_](https://github.com/cssr-tools/plopm/tree/main/paper/paper.pdf).
 
 ## Citing
 * Landa-Marbán, D. 2026. plopm: A lightweight and flexible tool for visualization and postprocessing of OPM Flow geological models. [https://doi.org/10.13140/RG.2.2.12046.22081](https://doi.org/10.13140/RG.2.2.12046.22081).
@@ -61,7 +61,7 @@ The following is a list of manuscripts in which _plopm_ is used:
 * Sandve, T.H., Boon, W., Landa-Marbán, D., Tveit, S., Gasda, S.E., 2025. Multi-Scale Simulation Strategies for Managing Pressure Interference in Multi-Site CO2 Storage in Large Regional Aquifers, presented at GET 2025, https://doi.org/10.3997/2214-4609.202521134.
 * Landa-Marbán, D., Lie, K.-A., Lye, K. O., Møyner, O., Rasmussen, A. F., and T. H., Sandve, 2026. Exploring Convergence and Its Limits in Case B of the 11th SPE Comparative Solution Project. SPE J. https://doi.org/10.2118/231853-PA.
 * Landa-Marbán, D., Sandve, T.H., Both, J.W., Nordbotten, J.M., and Gasda, S.E., 2026. Performance of an open-source image-based history matching framework for CO2 storage. Transp Porous Med, https://doi.org/10.1007/s11242-025-02275-0.
-* Landa-Marbán, D., Sandve, T.H., and Gasda, S.E., 2025. A Coarsening Approach to the Troll Aquifer Model. https://arxiv.org/abs/2508.08670.
+* Landa-Marbán, D., Sandve, T.H., and Gasda, S.E., 2026. A coarsening approach to the troll aquifer model. In Nils Anders Røkke, Philip Stefan Ringrose, & Stefan Marcell Götz (Eds.), TCCS-13. CO2 Capture, Transport and Storage Trondheim, Norway | 16–19 June 2025 Short Papers from the 13th Trondheim CCS Conference (pp. 13–20). SINTEF akademisk forlag. https://hdl.handle.net/11250/5559902
 
 The software also supports the online documentation of several open‑source tools, including:
 

@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -501,32 +502,79 @@
                   
   <section id="graphical-abstract">
 <span id="example-graphical-abstract"></span><h1>Graphical abstract<a class="headerlink" href="#graphical-abstract" title="Link to this heading">#</a></h1>
-<p>Reproduce the graphical abstract.</p>
-<p>The graphical abstract combines an SPE11B summary comparison, a Norne map, and an SPE11C VTK visualization.</p>
+<p>Reproduce the main elements of the <strong>plopm</strong> graphical abstract. The workflow
+combines three different uses of <strong>plopm</strong>:</p>
+<ul class="simple">
+<li><p>A summary comparison between two SPE11B simulations.</p></li>
+<li><p>A transformed top view of the Norne model.</p></li>
+<li><p>VTK output from a three-dimensional SPE11C model for visualization in
+ParaView.</p></li>
+</ul>
 <figure class="align-center" id="id1">
-<a class="reference internal image-reference" href="../_images/plopm.png"><img alt="../_images/plopm.png" src="../_images/plopm.png" style="width: 90%;" />
+<a class="reference internal image-reference" href="../_images/plopm.png"><img alt="Graphical abstract showing SPE11B, Norne, and SPE11C visualization workflows" src="../_images/plopm.png" style="width: 90%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The plopm graphical abstract.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+<p><span class="caption-text">The <strong>plopm</strong> graphical abstract combines summary plotting, spatial-map
+generation, and VTK export.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p>Generate the SPE11B comparison.</p>
+<section id="compare-two-spe11b-simulations">
+<h2>Compare two SPE11B simulations<a class="headerlink" href="#compare-two-spe11b-simulations" title="Link to this heading">#</a></h2>
+<p>Generate a base SPE11B case and a second case with a higher injection rate.
+The maintained script downloads the pyopmspe11 configuration, modifies the
+injection rate, and runs both simulations before creating the comparison.</p>
+<p>Plot field gas mass in place for both cases and convert the values from
+kilograms to kilotonnes directly in the variable expression:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i &#39;spe11b/SPE11B spe11b_higher_rate/SPE11B_HIGHER_RATE&#39; -v &#39;fgmip * 1e-6&#39; -c &#39;r,b&#39; -tu y -xf .0f -lw 2 -llb &#39;Base case  Higher injection rate&#39; -xnt 6 -yl &#39;Total CO$_2$ mass [Kt]&#39; -fz 18 -t &#39;Comparing two runs of the SPE11B model&#39;</span>
 </pre></div>
 </div>
-<p>Generate the Norne map.</p>
+<p>The command demonstrates:</p>
+<ul class="simple">
+<li><p>Multiple simulation inputs with <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-i"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-i</span></code></a>.</p></li>
+<li><p>Arithmetic expressions in <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-v</span></code></a>.</p></li>
+<li><p>Time conversion to years with <a class="reference internal" href="../options/selection.html#cmdoption-plopm-tu"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-tu</span></code></a>.</p></li>
+<li><p>Custom colors, labels, line widths, ticks, and title formatting.</p></li>
+</ul>
+</section>
+<section id="generate-the-norne-map">
+<h2>Generate the Norne map<a class="headerlink" href="#generate-the-norne-map" title="Link to this heading">#</a></h2>
+<p>Clone the OPM example-data repository and use an OPM Flow dry run to generate
+the files required by <strong>plopm</strong>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://github.com/OPM/opm-data.git</span>
 <span class="go">flow opm-data/norne/NORNE_ATW2013.DATA --enable-dry-run=1</span>
-<span class="go">plopm -i opm-data/norne/NORNE_ATW2013 -v permx -clog 1 -rot 65 -s ,,1 -tr &#39;[6456335.5,-3476500]&#39; -x &#39;[0,5600]&#39; -y &#39;[0,7600]&#39; -t &#39;Top view of NORNE&#39; -xu km -yu km -fz 16 -ge &#39;black,1e-2&#39; -xf .1f -yf .1f -fs 8,8</span>
 </pre></div>
 </div>
-<p>Generate SPE11C VTK files.</p>
+<p>Plot horizontal permeability on the top layer, then rotate, translate, and crop
+the grid:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i opm-data/norne/NORNE_ATW2013 -v permx -clog 1 -rot 65 -s ,,1 -tr &#39;[6456335.5,-3476500]&#39; -x &#39;[0,5600]&#39; -y &#39;[0,7600]&#39; -t &#39;Top view of NORNE&#39; -xu km -yu km -fz 16 -ge &#39;black,1e-2&#39; -xf .1f -yf .1f -fs 8,8</span>
+</pre></div>
+</div>
+<p>This part of the graphical abstract demonstrates logarithmic color scaling,
+coordinate transformations, spatial cropping, grid edges, and unit conversion.</p>
+</section>
+<section id="generate-spe11c-vtk-files">
+<h2>Generate SPE11C VTK files<a class="headerlink" href="#generate-spe11c-vtk-files" title="Link to this heading">#</a></h2>
+<p>Install <strong>pyopmspe11</strong>, download its SPE11C example configuration, and run the
+case without output subfolders:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install git+https://github.com/OPM/pyopmspe11.git</span>
 <span class="go">curl -L -O https://raw.githubusercontent.com/OPM/pyopmspe11/refs/heads/main/examples/spe11c.toml</span>
-<span class="go">pyopmspe11 -i spe11c.toml -o spe11c -fz 0</span>
-<span class="go">plopm -i spe11c/SPE11C -v satnum,xco2l -vf UInt16,Float16 -r 0,5 -m vtk</span>
+<span class="go">pyopmspe11 -i spe11c.toml -o spe11c -f 0</span>
 </pre></div>
 </div>
+<p>Export facies and liquid-phase CO2 mass fraction at the initial and final
+selected restart steps:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i spe11c/SPE11C -v satnum,xco2l -vf UInt16,Float16 -r 0,5 -m vtk</span>
+</pre></div>
+</div>
+<p>Here, <a class="reference internal" href="../options/vtk.html#cmdoption-plopm-vf"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-vf</span></code></a> assigns an unsigned 16-bit integer type to <code class="docutils literal notranslate"><span class="pre">satnum</span></code>
+and a 16-bit floating-point type to <code class="docutils literal notranslate"><span class="pre">xco2l</span></code>. The generated VTK files can be
+opened in ParaView for three-dimensional inspection.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OPM Flow is required to run the SPE11 simulations and to prepare the Norne
+model. ParaView is required only to inspect the generated VTK files.</p>
+</div>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
@@ -594,6 +642,9 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-two-spe11b-simulations">Compare two SPE11B simulations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-the-norne-map">Generate the Norne map</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-spe11c-vtk-files">Generate SPE11C VTK files</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>

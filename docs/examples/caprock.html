@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Caprock integrity</a></li>
@@ -501,16 +502,67 @@
                   
   <section id="caprock-integrity">
 <span id="example-caprock"></span><h1>Caprock integrity<a class="headerlink" href="#caprock-integrity" title="Link to this heading">#</a></h1>
-<p>Evaluate pressure limits.</p>
-<p><code class="docutils literal notranslate"><span class="pre">limipres</span></code>, <code class="docutils literal notranslate"><span class="pre">overpres</span></code>, and <code class="docutils literal notranslate"><span class="pre">objepres</span></code> support caprock-integrity analysis.</p>
+<p>Evaluate pressure limits and identify regions where reservoir pressure exceeds
+the estimated caprock pressure limit.</p>
+<p>The special variables <code class="docutils literal notranslate"><span class="pre">limipres</span></code>, <code class="docutils literal notranslate"><span class="pre">overpres</span></code>, and <code class="docutils literal notranslate"><span class="pre">objepres</span></code> support
+caprock-integrity analysis:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">limipres</span></code></dt><dd><p>Estimated limiting pressure based on depth and the stress coefficient.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">overpres</span></code></dt><dd><p>Difference between the simulated pressure and the estimated limiting
+pressure. Positive values identify cells where the pressure exceeds the
+estimated limit.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">objepres</span></code></dt><dd><p>Objective value derived from the pressure-limit calculation. This quantity
+can be exported to CSV for use in optimization and sensitivity workflows.</p>
+</dd>
+</dl>
+<p>The pressure-limit calculation uses the stress coefficient selected with
+<a class="reference internal" href="../options/computation.html#cmdoption-plopm-sc"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-sc</span></code></a>.</p>
+<section id="plot-limiting-and-excess-pressure">
+<h2>Plot limiting and excess pressure<a class="headerlink" href="#plot-limiting-and-excess-pressure" title="Link to this heading">#</a></h2>
+<p>Project the first 22 layers of the Norne model and compare <code class="docutils literal notranslate"><span class="pre">limipres</span></code> with
+<code class="docutils literal notranslate"><span class="pre">overpres</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i NORNE_ATW2013 -s &#39;,,1:22 ,,1:22&#39; -v limipres,overpres -rot 65 -tr &#39;[6456335.5,-3476500]&#39; -x &#39;[0,5600]&#39; -y &#39;[0,8800]&#39; -fs 15,10 -c Spectral,spring -sg 1,2 -rdl 1</span>
-<span class="go">plopm -i NORNE_ATW2013 -m csv -v objepres -s &#39;,,1:22&#39;</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/norne_atw2013_overpres_i,j,1:22_t64.png"><img alt="../_images/norne_atw2013_overpres_i%2Cj%2C1%3A22_t64.png" src="../_images/norne_atw2013_overpres_i%2Cj%2C1%3A22_t64.png" style="width: 90%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/norne_atw2013_overpres_i,j,1:22_t64.png"><img alt="Limiting pressure and excess pressure across the first 22 layers of the Norne model" src="../_images/norne_atw2013_overpres_i%2Cj%2C1%3A22_t64.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Limiting pressure and excess pressure projected across layers 1 through 22
+of the Norne model.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
+<p>The command applies the same spatial selection to both quantities:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../options/selection.html#cmdoption-plopm-s"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-s</span></code></a> selects layers 1 through 22.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-rot"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-rot</span></code></a> rotates the Norne grid.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-tr"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-tr</span></code></a> translates the rotated coordinates.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-x"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-x</span></code></a> and <a class="reference internal" href="../options/axes.html#cmdoption-plopm-y"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-y</span></code></a> crop the displayed region.</p></li>
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-sg"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-sg</span></code></a> places both quantities in one row with two panels.</p></li>
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-rdl"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-rdl</span></code></a> removes repeated axis labels from the subplot layout.</p></li>
+</ul>
+</section>
+<section id="export-the-objective-value">
+<h2>Export the objective value<a class="headerlink" href="#export-the-objective-value" title="Link to this heading">#</a></h2>
+<p>Export <code class="docutils literal notranslate"><span class="pre">objepres</span></code> for the same layers as a CSV file:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i NORNE_ATW2013 -m csv -v objepres -s &#39;,,1:22&#39;</span>
+</pre></div>
+</div>
+<p>The CSV output can be used as an objective value in optimization, uncertainty
+quantification, and sensitivity studies.</p>
+</section>
+<section id="change-the-stress-coefficient">
+<h2>Change the stress coefficient<a class="headerlink" href="#change-the-stress-coefficient" title="Link to this heading">#</a></h2>
+<p>The default stress coefficient is <code class="docutils literal notranslate"><span class="pre">0.134</span></code>. Select another value with
+<a class="reference internal" href="../options/computation.html#cmdoption-plopm-sc"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-sc</span></code></a>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i NORNE_ATW2013 -s &#39;,,1:22 ,,1:22&#39; -v limipres,overpres -sc 0.15 -rot 65 -tr &#39;[6456335.5,-3476500]&#39; -x &#39;[0,5600]&#39; -y &#39;[0,8800]&#39; -fs 15,10 -c Spectral,spring -sg 1,2 -rdl 1</span>
+</pre></div>
+</div>
+<p>Changing the stress coefficient changes the estimated limiting pressure and,
+consequently, the calculated excess-pressure and objective values.</p>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
@@ -578,6 +630,9 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-limiting-and-excess-pressure">Plot limiting and excess pressure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#export-the-objective-value">Export the objective value</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#change-the-stress-coefficient">Change the stress coefficient</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>

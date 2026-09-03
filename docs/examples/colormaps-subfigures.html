@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Colormaps &#8212; plopm documentation</title>
+    <title>Colormaps and subfigures &#8212; plopm documentation</title>
   
   
   
@@ -47,7 +47,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=eef4a3d2"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/colormaps';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/colormaps-subfigures';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Colormaps</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -482,7 +483,7 @@
     
     <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Colormaps</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Colormaps and subfigures</span></li>
   </ul>
 </nav>
 </div>
@@ -499,30 +500,135 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="colormaps">
-<span id="example-colormaps"></span><h1>Colormaps<a class="headerlink" href="#colormaps" title="Link to this heading">#</a></h1>
-<p>Use named, RGB, and HEX colormaps.</p>
-<p>Use <a class="reference internal" href="../options/styling.html#cmdoption-plopm-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-c</span></code></a> with Matplotlib or Colorcet names, RGB values, or HEX colors.</p>
+  <section id="colormaps-and-subfigures">
+<span id="example-colormaps"></span><h1>Colormaps and subfigures<a class="headerlink" href="#colormaps-and-subfigures" title="Link to this heading">#</a></h1>
+<p>Use named colormaps, RGB values, or hexadecimal colors to customize discrete
+and continuous variables. Combine several plots in one figure with either
+individual or shared colorbars.</p>
+<section id="select-colors">
+<h2>Select colors<a class="headerlink" href="#select-colors" title="Link to this heading">#</a></h2>
+<p>Use <a class="reference internal" href="../options/styling.html#cmdoption-plopm-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-c</span></code></a> with:</p>
+<ul class="simple">
+<li><p>A Matplotlib colormap name, such as <code class="docutils literal notranslate"><span class="pre">viridis</span></code> or <code class="docutils literal notranslate"><span class="pre">Spectral</span></code>.</p></li>
+<li><p>A Colorcet colormap name, such as <code class="docutils literal notranslate"><span class="pre">cet_glasbey_bw</span></code>.</p></li>
+<li><p>RGB colors written as <code class="docutils literal notranslate"><span class="pre">red;green;blue</span></code> values.</p></li>
+<li><p>Hexadecimal colors written as <code class="docutils literal notranslate"><span class="pre">#RRGGBB</span></code>.</p></li>
+</ul>
+<p>Separate colors belonging to one discrete palette with spaces. Separate the
+color specifications for different plots with commas.</p>
+</section>
+<section id="compare-three-color-specifications">
+<h2>Compare three color specifications<a class="headerlink" href="#compare-three-color-specifications" title="Link to this heading">#</a></h2>
+<p>Plot <code class="docutils literal notranslate"><span class="pre">satnum</span></code>, <code class="docutils literal notranslate"><span class="pre">fipnum</span></code>, and <code class="docutils literal notranslate"><span class="pre">disperc</span></code> with a custom RGB palette, a
+Colorcet colormap, and two hexadecimal colors:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11B -v satnum,fipnum,disperc -c &#39;193;147;56 127;148;191 193;127;97 181;73;57 81;124;66 101;64;147 134;133;130&#39;,cet_glasbey_bw,&#39;#b6c406 #fffa86&#39; -sg 3,1 -rdl 1 -cbn 3,6,2 -cbf .0f,.0f,.1f -fs 7,4</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/spe11b_disperc_i,1,k_t5.png"><img alt="../_images/spe11b_disperc_i%2C1%2Ck_t5.png" src="../_images/spe11b_disperc_i%2C1%2Ck_t5.png" style="width: 90%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/spe11b_disperc_i,1,k_t5.png"><img alt="SPE11B variables displayed with RGB, Colorcet, and hexadecimal colors" src="../_images/spe11b_disperc_i%2C1%2Ck_t5.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">satnum</span></code> uses a custom RGB palette, <code class="docutils literal notranslate"><span class="pre">fipnum</span></code> uses
+<code class="docutils literal notranslate"><span class="pre">cet_glasbey_bw</span></code>, and <code class="docutils literal notranslate"><span class="pre">disperc</span></code> uses two hexadecimal colors.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
+<p>The custom RGB palette contains seven colors, one for each SPE11 facies:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>193;147;56
+127;148;191
+193;127;97
+181;73;57
+81;124;66
+101;64;147
+134;133;130
+</pre></div>
+</div>
+<p>The remaining options control the combined figure:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-sg"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-sg</span></code></a> arranges the three plots in three rows and one column.</p></li>
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-rdl"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-rdl</span></code></a> removes repeated axis labels.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-cbn"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbn</span></code></a> sets 3, 6, and 2 colorbar ticks for the three plots.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-cbf"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbf</span></code></a> sets the corresponding colorbar number formats.</p></li>
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-fs"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-fs</span></code></a> sets the figure size.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Quote color specifications containing spaces, semicolons, or hexadecimal
+values so the shell passes them to <strong>plopm</strong> as one argument.</p>
+</div>
+</section>
+<section id="subfigures-with-individual-colorbars">
+<h2>Subfigures with individual colorbars<a class="headerlink" href="#subfigures-with-individual-colorbars" title="Link to this heading">#</a></h2>
+<p>Combine static and dynamic quantities in one figure. When the plotted
+quantities use different value ranges or colormaps, each subplot has its own
+colorbar:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11B -v poro,sgas,sgas -sg 1,3 -r 0,1,5 -st 0 -fs 25,2 -c terrain,jet,jet -cbn 5 -cbf .1f -fn poro_sgas</span>
+</pre></div>
+</div>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/poro_sgas.png"><img alt="SPE11B porosity and gas saturation shown in three subfigures" src="../_images/poro_sgas.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Porosity and gas saturation at two restart steps, displayed with individual
+colorbars.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The command applies the values in each comma-separated list in subplot order:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">poro</span></code> is plotted at restart step 0 with the <code class="docutils literal notranslate"><span class="pre">terrain</span></code> colormap.</p></li>
+<li><p>The first <code class="docutils literal notranslate"><span class="pre">sgas</span></code> plot uses restart step 1 and the <code class="docutils literal notranslate"><span class="pre">jet</span></code> colormap.</p></li>
+<li><p>The second <code class="docutils literal notranslate"><span class="pre">sgas</span></code> plot uses restart step 5 and the <code class="docutils literal notranslate"><span class="pre">jet</span></code> colormap.</p></li>
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-sg"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-sg</span></code></a> arranges the three plots in one row.</p></li>
+<li><p><a class="reference internal" href="../options/titles-labels.html#cmdoption-plopm-st"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-st</span></code></a> removes the common figure title.</p></li>
+<li><p><a class="reference internal" href="../options/output.html#cmdoption-plopm-fn"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-fn</span></code></a> sets the output filename to <code class="docutils literal notranslate"><span class="pre">poro_sgas</span></code>.</p></li>
+</ul>
+</section>
+<section id="subfigures-with-a-shared-colorbar">
+<h2>Subfigures with a shared colorbar<a class="headerlink" href="#subfigures-with-a-shared-colorbar" title="Link to this heading">#</a></h2>
+<p>When subfigures show the same quantity from different inputs or restart steps,
+use one shared colorbar. Position and size the shared colorbar with
+<a class="reference internal" href="../options/layout.html#cmdoption-plopm-cbp"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbp</span></code></a>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i &#39;SPE11B SPE11C SPE11B SPE11C&#39; -sg 2,2 -v temp -s &#39;,1, ,14, ,1, ,14,&#39; -r 0,0,5,2 -st 0 -fs 10,10 -asp 0 -rdl 1 -c cet_diverging_rainbow_bgymr_45_85_c67_r -cbn 5 -cbp 0.15,0.92,0.7,0.02 -cbl &#39;Temperature [$^o$C]&#39; -t &#39;SPE11B (initial temperature)  SPE11C (initial temperature)  SPE11B (end of simulation, 25 y)  SPE11C (end of simulation, 25 y)&#39; -fz 15</span>
+</pre></div>
+</div>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/spe11c_temp_i,14,k_t2.png"><img alt="SPE11B and SPE11C temperature at initial and final restart steps" src="../_images/spe11c_temp_i%2C14%2Ck_t2.png" style="width: 70%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Initial and final temperatures for SPE11B and SPE11C, displayed with one
+shared colorbar.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The four inputs, slices, restart steps, and titles correspond by position:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>SPE11B -&gt; slice ,1,  -&gt; restart 0 -&gt; initial SPE11B temperature
+SPE11C -&gt; slice ,14, -&gt; restart 0 -&gt; initial SPE11C temperature
+SPE11B -&gt; slice ,1,  -&gt; restart 5 -&gt; SPE11B after 25 years
+SPE11C -&gt; slice ,14, -&gt; restart 2 -&gt; SPE11C after 25 years
+</pre></div>
+</div>
+<p>The shared-colorbar options are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-cbp"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbp</span></code></a> sets <code class="docutils literal notranslate"><span class="pre">left,bottom,width,height</span></code> in figure coordinates.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-cbn"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbn</span></code></a> sets the number of colorbar ticks.</p></li>
+<li><p><a class="reference internal" href="../options/titles-labels.html#cmdoption-plopm-cbl"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbl</span></code></a> sets the shared colorbar label.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-c</span></code></a> applies one common colormap to all four temperature maps.</p></li>
+</ul>
+<p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-asp"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-asp</span></code></a> disables equal axis scaling, while
+<a class="reference internal" href="../options/layout.html#cmdoption-plopm-rdl"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-rdl</span></code></a> removes repeated subplot labels. Two spaces separate the
+four titles supplied through <a class="reference internal" href="../options/titles-labels.html#cmdoption-plopm-t"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-t</span></code></a>.</p>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">. ./tests/scripts/docs_colormaps.sh</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">. ./tests/scripts/docs_colormaps-subfigures.sh</span>
 </pre></div>
 </div>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 docutils">
 <div class="sd-col sd-d-flex-column docutils">
-<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-outline-primary reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_colormaps.sh"><span>View script</span></a></span></p>
+<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-outline-primary reference external" href="https://github.com/cssr-tools/plopm/blob/main/tests/scripts/docs_colormaps-subfigures.sh"><span>View script</span></a></span></p>
 </div>
 <div class="sd-col sd-d-flex-column docutils">
-<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-outline-secondary reference external" href="https://raw.githubusercontent.com/cssr-tools/plopm/main/tests/scripts/docs_colormaps.sh"><span>View raw script</span></a></span></p>
+<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-outline-secondary reference external" href="https://raw.githubusercontent.com/cssr-tools/plopm/main/tests/scripts/docs_colormaps-subfigures.sh"><span>View raw script</span></a></span></p>
 </div>
 </div>
 </div>
@@ -577,6 +683,10 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#select-colors">Select colors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-three-color-specifications">Compare three color specifications</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subfigures-with-individual-colorbars">Subfigures with individual colorbars</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subfigures-with-a-shared-colorbar">Subfigures with a shared colorbar</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>
@@ -584,7 +694,7 @@
   <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="../_sources/examples/colormaps.rst.txt">
+    <a href="../_sources/examples/colormaps-subfigures.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>

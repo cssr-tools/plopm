@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -506,7 +506,7 @@
 </pre></div>
 </div>
 <p>For example:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11C -v pressure -s ,1, -r 5</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11C -v pressure -s ,1, -r 2</span>
 </pre></div>
 </div>
 <p>Use <code class="docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">--help</span></code> for the options supported by the installed version.</p>
@@ -586,7 +586,7 @@ pages show both forms.</p>
 <section id="aggregation">
 <h2>Aggregation<a class="headerlink" href="#aggregation" title="Link to this heading">#</a></h2>
 <p>Select a range with <code class="docutils literal notranslate"><span class="pre">-s</span></code> and apply an aggregation method with <code class="docutils literal notranslate"><span class="pre">-agg</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11C -v pressure -s ,,5:10 -agg mean -r 5</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11C -v pressure -s ,,5:10 -agg mean -r 2</span>
 </pre></div>
 </div>
 <p>Supported methods are <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">mean</span></code>, <code class="docutils literal notranslate"><span class="pre">pvmean</span></code>,

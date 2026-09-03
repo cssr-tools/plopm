@@ -13,7 +13,7 @@ For example:
 
 .. code-block:: console
 
-   plopm -i SPE11C -v pressure -s ,1, -r 5
+   plopm -i SPE11C -v pressure -s ,1, -r 2
 
 Use ``plopm --help`` for the options supported by the installed version.
 
@@ -125,7 +125,7 @@ Select a range with ``-s`` and apply an aggregation method with ``-agg``:
 
 .. code-block:: console
 
-   plopm -i SPE11C -v pressure -s ,,5:10 -agg mean -r 5
+   plopm -i SPE11C -v pressure -s ,,5:10 -agg mean -r 2
 
 Supported methods are ``min``, ``max``, ``sum``, ``mean``, ``pvmean``,
 ``harmonic``, ``arithmetic``, ``first``, and ``last``.

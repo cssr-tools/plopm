@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -501,36 +502,106 @@
                   
   <section id="different-inputs-and-ensembles">
 <span id="example-ensembles"></span><h1>Different inputs and ensembles<a class="headerlink" href="#different-inputs-and-ensembles" title="Link to this heading">#</a></h1>
-<p>Compare cases and ensembles.</p>
-<p>Compare summary quantities from two simulations.</p>
+<p>Compare simulation cases, calculate differences between models, and summarize
+ensembles of related runs.</p>
+<section id="prepare-the-comparison-cases">
+<h2>Prepare the comparison cases<a class="headerlink" href="#prepare-the-comparison-cases" title="Link to this heading">#</a></h2>
+<p>This example uses two SPE11B simulations with different injection rates. The
+base case is written to <code class="docutils literal notranslate"><span class="pre">spe11b</span></code> and the modified case to
+<code class="docutils literal notranslate"><span class="pre">spe11b_larger_inj</span></code>. The maintained Bash script prepares and runs both cases
+before generating the figures below.</p>
+</section>
+<section id="compare-summary-quantities">
+<h2>Compare summary quantities<a class="headerlink" href="#compare-summary-quantities" title="Link to this heading">#</a></h2>
+<p>Pass several input cases to <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-i"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-i</span></code></a> and separate plotted variables
+with commas. The following command compares three related quantities:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i &#39;spe11b/SPE11B spe11b_larger_inj/SPE11B&#39; -v &#39;fgmip,fgmip / 1E6,RGMDS:5&#39; -yl &#39;[kg]  [Kt]  [kg]&#39; -tu w -fs 10,5 -c r,b -ls &#39;solid,dashed&#39; -t &#39;Field gas mass in place  Converted to kilotonnes  Dissolved CO$_2$ in facies 5&#39; -fz 14 -sg 2,2 -rdl 1 -ll empty,empty,empty,center -fn comparison</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/comparison.png"><img alt="../_images/comparison.png" src="../_images/comparison.png" style="width: 90%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/comparison.png"><img alt="Summary quantities from two SPE11B simulations" src="../_images/comparison.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Field gas mass in place, the same quantity converted to kilotonnes, and
+dissolved CO2 mass in facies 5 for the two simulations.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Subtract one case from another.</p>
+<p>The command demonstrates that variable expressions can be entered directly in
+<a class="reference internal" href="../options/input-data.html#cmdoption-plopm-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-v</span></code></a>. Here, <code class="docutils literal notranslate"><span class="pre">fgmip</span> <span class="pre">/</span> <span class="pre">1E6</span></code> converts field gas mass in place from
+kilograms to kilotonnes.</p>
+<p>The remaining options control the comparison:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../options/titles-labels.html#cmdoption-plopm-yl"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-yl</span></code></a> assigns a y-axis label to each quantity.</p></li>
+<li><p><a class="reference internal" href="../options/selection.html#cmdoption-plopm-tu"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-tu</span></code></a> displays time in weeks.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-c</span></code></a> and <a class="reference internal" href="../options/styling.html#cmdoption-plopm-ls"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-ls</span></code></a> distinguish the two cases by
+color and line style.</p></li>
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-sg"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-sg</span></code></a> arranges the three plots in a two-by-two layout.</p></li>
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-rdl"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-rdl</span></code></a> removes repeated subplot labels.</p></li>
+<li><p><a class="reference internal" href="../options/titles-labels.html#cmdoption-plopm-ll"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-ll</span></code></a> removes legends from the first three panels and places
+the shared legend in the remaining panel.</p></li>
+</ul>
+</section>
+<section id="subtract-one-case-from-another">
+<h2>Subtract one case from another<a class="headerlink" href="#subtract-one-case-from-another" title="Link to this heading">#</a></h2>
+<p>Use <a class="reference internal" href="../options/computation.html#cmdoption-plopm-di"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-di</span></code></a> to subtract a reference case from the primary input.
+This command calculates the difference in gas saturation at restart step 3:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -di spe11b/SPE11B -hide 0,0,0,1</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/sgas_diff.png"><img alt="../_images/sgas_diff.png" src="../_images/sgas_diff.png" style="width: 90%;" />
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/sgas_diff.png"><img alt="Difference in gas saturation between two SPE11B simulations" src="../_images/sgas_diff.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Gas saturation in the higher-injection case minus gas saturation in the
+base case.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Format the difference map.</p>
+<p>The input selected with <a class="reference internal" href="../options/computation.html#cmdoption-plopm-di"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-di</span></code></a> must provide the same variable and
+a compatible grid. Positive values indicate a larger gas saturation in the
+primary input; negative values indicate a larger value in the reference case.</p>
+</section>
+<section id="format-the-difference-map">
+<h2>Format the difference map<a class="headerlink" href="#format-the-difference-map" title="Link to this heading">#</a></h2>
+<p>Customize the difference map with a colormap, fixed color limits, colorbar tick
+count, number format, and output filename:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i spe11b_larger_inj/SPE11B -v sgas -r 3 -di spe11b/SPE11B -hide 0,0,0,1 -c tab20c_r -cl &#39;[0,0.8]&#39; -cbn 9 -cbf 0.1 -fn formated</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/sgas_diff_edit.png"><img alt="../_images/sgas_diff_edit.png" src="../_images/sgas_diff_edit.png" style="width: 90%;" />
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/sgas_diff_edit.png"><img alt="Formatted difference in gas saturation between two SPE11B simulations" src="../_images/sgas_diff_edit.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Formatted gas-saturation difference with a fixed color range and nine
+colorbar ticks.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Use <a class="reference internal" href="../options/plot-types.html#cmdoption-plopm-ens"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-ens</span></code></a> for ensemble statistics.</p>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/ensemble.png"><img alt="../_images/ensemble.png" src="../_images/ensemble.png" style="width: 90%;" />
+<p>Use <a class="reference internal" href="../options/styling.html#cmdoption-plopm-cl"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cl</span></code></a> when several difference maps must use the same color
+range. This makes the magnitudes directly comparable between figures.</p>
+</section>
+<section id="plot-ensemble-statistics">
+<h2>Plot ensemble statistics<a class="headerlink" href="#plot-ensemble-statistics" title="Link to this heading">#</a></h2>
+<p>Use <a class="reference internal" href="../options/plot-types.html#cmdoption-plopm-ens"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-ens</span></code></a> to summarize a collection of simulations. Ensemble
+members are identified from the supplied input folders, and the selected mode
+controls which statistical representation is plotted:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-ens</span> <span class="pre">0</span></code> disables ensemble processing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-ens</span> <span class="pre">1</span></code> plots the ensemble mean with error bands.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-ens</span> <span class="pre">2</span></code> plots the minimum, mean, and maximum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-ens</span> <span class="pre">3</span></code> combines both representations.</p></li>
+</ul>
+<p>Use <a class="reference internal" href="../options/plot-types.html#cmdoption-plopm-fb"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-fb</span></code></a> with modes 1 and 3 to customize the fill colors and
+alpha values of the error bands.</p>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/ensemble.png"><img alt="Statistical summary of a simulation ensemble" src="../_images/ensemble.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Ensemble statistics generated from multiple related simulations.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
+<p>The <a class="reference external" href="https://github.com/cssr-tools/plopm/tree/main/examples/ensemble">ensemble example directory</a> contains
+the supporting configuration and generation workflow. The maintained script
+also demonstrates the available <a class="reference internal" href="../options/plot-types.html#cmdoption-plopm-ens"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-ens</span></code></a> modes.</p>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
@@ -598,6 +669,11 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-the-comparison-cases">Prepare the comparison cases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-summary-quantities">Compare summary quantities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subtract-one-case-from-another">Subtract one case from another</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#format-the-difference-map">Format the difference map</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-ensemble-statistics">Plot ensemble statistics</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>

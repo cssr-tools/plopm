@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -501,23 +502,77 @@
                   
   <section id="gifs-and-masks">
 <span id="example-animations"></span><h1>GIFs and masks<a class="headerlink" href="#gifs-and-masks" title="Link to this heading">#</a></h1>
-<p>Animate results and apply masks.</p>
-<p>Create a masked GIF comparing two cases.</p>
+<p>Create GIF animations from restart steps and use a static model property as a
+background mask.</p>
+<section id="prepare-the-comparison-cases">
+<h2>Prepare the comparison cases<a class="headerlink" href="#prepare-the-comparison-cases" title="Link to this heading">#</a></h2>
+<p>This example compares a base SPE11B simulation with a second case that uses
+twice the injection rate.</p>
+<p>Install <strong>pyopmspe11</strong>, download the example configuration, and create the
+higher-rate configuration:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install git+https://github.com/OPM/pyopmspe11.git</span>
+<span class="go">curl -L -O https://raw.githubusercontent.com/OPM/pyopmspe11/main/examples/spe11b.toml</span>
+<span class="go">cp spe11b.toml spe11b_larger_inj.toml</span>
+<span class="go">sed -i.bak &#39;s/0.035/0.07/g&#39; spe11b_larger_inj.toml</span>
+<span class="go">rm -f spe11b_larger_inj.toml.bak</span>
+</pre></div>
+</div>
+<p>Run both simulations:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pyopmspe11 -i spe11b.toml -o spe11b -fz 0</span>
+<span class="go">pyopmspe11 -i spe11b_larger_inj.toml -o spe11b_larger_inj -fz 0</span>
+</pre></div>
+</div>
+<p>The first case uses the injection rate defined in <code class="docutils literal notranslate"><span class="pre">spe11b.toml</span></code>. The second
+configuration replaces <code class="docutils literal notranslate"><span class="pre">0.035</span></code> kg/s with <code class="docutils literal notranslate"><span class="pre">0.07</span></code> kg/s.</p>
+</section>
+<section id="create-a-masked-comparison">
+<h2>Create a masked comparison<a class="headerlink" href="#create-a-masked-comparison" title="Link to this heading">#</a></h2>
+<p>Plot the liquid-phase CO2 mass fraction from both simulations and use
+<code class="docutils literal notranslate"><span class="pre">satnum</span></code> as a static background mask:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -v xco2l -sg 1,2 -i &#39;spe11b/SPE11B spe11b_larger_inj/SPE11B_LARGER_INJ&#39; -fs 16,2.5 -mv satnum -r 0,1,2,3,4,5 -m gif -dpi 1000 -t &#39;spe11b  spe11b larger injection&#39; -fz 16 -gi 1000 -gl 1 -cbf .2f -cbp 0.30,0.01,0.4,0.02</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/xco2l.gif"><img alt="../_images/xco2l.gif" src="../_images/xco2l.gif" style="width: 90%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/xco2l.gif"><img alt="Animated comparison of liquid-phase CO2 mass fraction for two SPE11B injection rates" src="../_images/xco2l.gif" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Liquid-phase CO2 mass fraction for the base case and the case with the
+larger injection rate. <code class="docutils literal notranslate"><span class="pre">satnum</span></code> provides the static background mask.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Create an unmasked gas-saturation GIF with grid edges.</p>
+<p>The principal options are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../options/output.html#cmdoption-plopm-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-m</span></code></a> selects GIF output.</p></li>
+<li><p><a class="reference internal" href="../options/input-data.html#cmdoption-plopm-r"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-r</span></code></a> selects the restart steps used as frames.</p></li>
+<li><p><a class="reference internal" href="../options/filtering.html#cmdoption-plopm-mv"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-mv</span></code></a> selects the static mask variable.</p></li>
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-sg"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-sg</span></code></a> places both cases in one figure.</p></li>
+<li><p><a class="reference internal" href="../options/gif.html#cmdoption-plopm-gi"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-gi</span></code></a> sets the interval between frames in milliseconds.</p></li>
+<li><p><a class="reference internal" href="../options/gif.html#cmdoption-plopm-gl"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-gl</span></code></a> enables continuous looping.</p></li>
+</ul>
+</section>
+<section id="animate-gas-saturation">
+<h2>Animate gas saturation<a class="headerlink" href="#animate-gas-saturation" title="Link to this heading">#</a></h2>
+<p>Create an unmasked gas-saturation animation, display the grid edges, and show
+the spatial coordinates in kilometres:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i spe11b/SPE11B -v sgas -tu y -c cet_cwr -ge &#39;black,5e-3&#39; -fs 16,5 -m gif -dpi 1000 -fz 20 -gi 1000 -gl 1 -cbf .2f -asp 0 -xu km -yu km -xf .1f -yf .1f -cbn 5 -cbl &#39;Gas saturation [-]&#39;</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/spe11b_sgas.gif"><img alt="../_images/spe11b_sgas.gif" src="../_images/spe11b_sgas.gif" style="width: 90%;" />
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/spe11b_sgas.gif"><img alt="Animated SPE11B gas saturation with grid edges" src="../_images/spe11b_sgas.gif" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Gas saturation through time with visible grid edges and distances expressed
+in kilometres.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
+<p>Here, <a class="reference internal" href="../options/styling.html#cmdoption-plopm-ge"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-ge</span></code></a> controls the grid-edge color and width,
+<a class="reference internal" href="../options/axes.html#cmdoption-plopm-asp"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-asp</span></code></a> disables equal axis scaling, and
+<a class="reference internal" href="../options/selection.html#cmdoption-plopm-tu"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-tu</span></code></a> displays time in years.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">-tu</span> <span class="pre">empty</span></code> to hide the time label from the animation.</p>
+</div>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
@@ -585,6 +640,9 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-the-comparison-cases">Prepare the comparison cases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-masked-comparison">Create a masked comparison</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#animate-gas-saturation">Animate gas saturation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>
