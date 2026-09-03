@@ -10,6 +10,7 @@ spatial processing, and defines unit conversions used by the readers.
 """
 
 import argparse
+import ast
 import copy
 import os
 import shutil
@@ -438,7 +439,9 @@ def build_config(cmdargs: argparse.Namespace) -> PlopmConfig:
             ):
                 continue
             if val == "slice":
-                if cfg.gif and len(cfg.slice) >= len(cfg.cases[0]):
+                if (cfg.gif and len(cfg.slice) >= len(cfg.cases[0])) or (
+                    len(cfg.slice) == len(cfg.restart)
+                ):
                     continue
                 current = getattr(cfg, val)
                 setattr(
@@ -798,7 +801,37 @@ def init_summary(cfg: PlopmConfig) -> None:
     cfg.ncolors = 1 if len(cfg.cases) < nvars else nvars
     for val in ["colors_raw", "linestyle", "linewidth"]:
         if getattr(cfg, val):
-            tmp = [var.split(",") for var in getattr(cfg, val).split(":")]
+            if val == "linestyle":
+                tmp = []
+                for var in getattr(cfg, val).split(":"):
+                    styles = []
+                    item = ""
+                    depth = 0
+                    for char in var:
+                        depth += char == "("
+                        depth -= char == ")"
+                        if char == "," and depth == 0:
+                            styles.append(
+                                ast.literal_eval(item.strip())
+                                if item.strip().startswith("(")
+                                else item.strip()
+                            )
+                            item = ""
+                        else:
+                            item += char
+                    if depth:
+                        raise ValueError(
+                            f"Unbalanced parentheses in linestyle specification: {var}"
+                        )
+                    if item.strip():
+                        styles.append(
+                            ast.literal_eval(item.strip())
+                            if item.strip().startswith("(")
+                            else item.strip()
+                        )
+                    tmp.append(styles)
+            else:
+                tmp = [var.split(",") for var in getattr(cfg, val).split(":")]
             if len(tmp) < nvars:
                 tmp = [tmp[0]] * nvars
             setattr(cfg, "colors" if val == "colors_raw" else val, tmp)

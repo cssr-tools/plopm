@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -474,6 +474,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
@@ -904,7 +905,9 @@
             <span class="p">):</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;slice&quot;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">gif</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">gif</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="ow">or</span> <span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">slice</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">restart</span><span class="p">)</span>
+                <span class="p">):</span>
                     <span class="k">continue</span>
                 <span class="n">current</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
                 <span class="nb">setattr</span><span class="p">(</span>
@@ -1279,7 +1282,37 @@
     <span class="n">cfg</span><span class="o">.</span><span class="n">ncolors</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">cases</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nvars</span> <span class="k">else</span> <span class="n">nvars</span>
     <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;colors_raw&quot;</span><span class="p">,</span> <span class="s2">&quot;linestyle&quot;</span><span class="p">,</span> <span class="s2">&quot;linewidth&quot;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-            <span class="n">tmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;linestyle&quot;</span><span class="p">:</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">):</span>
+                    <span class="n">styles</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">var</span><span class="p">:</span>
+                        <span class="n">depth</span> <span class="o">+=</span> <span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span>
+                        <span class="n">depth</span> <span class="o">-=</span> <span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span>
+                        <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;,&quot;</span> <span class="ow">and</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)</span>
+                                <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                            <span class="p">)</span>
+                            <span class="n">item</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">item</span> <span class="o">+=</span> <span class="n">char</span>
+                    <span class="k">if</span> <span class="n">depth</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Unbalanced parentheses in linestyle specification: </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                        <span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)</span>
+                            <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                        <span class="p">)</span>
+                    <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">styles</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)]</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nvars</span><span class="p">:</span>
                 <span class="n">tmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">nvars</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="s2">&quot;colors&quot;</span> <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;colors_raw&quot;</span> <span class="k">else</span> <span class="n">val</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>

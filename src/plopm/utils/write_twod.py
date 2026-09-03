@@ -195,7 +195,16 @@ def make_maps(cfg: PlopmConfig) -> list[str]:
         data, xc, yc, named, slice_title, slice_name, mx, my, xname, yname = (
             _prepare_map(cfg, cfg.cases[0][0], 0)
         )
-        for n, var in enumerate(cfg.variables):
+        paired_variable_restarts = (
+            bool(cfg.subplot_grid[0])
+            and len(cfg.variables) > 1
+            and len(data.steps) == len(cfg.variables)
+        )
+        variable_indices = (
+            range(1) if paired_variable_restarts else range(len(cfg.variables))
+        )
+        for n in variable_indices:
+            var = cfg.variables[n]
             if len(data.steps) > 1:
                 if cfg.subplot_grid[0]:
                     fig, axis = _create_figure(
@@ -285,7 +294,10 @@ def make_maps(cfg: PlopmConfig) -> list[str]:
                         yname,
                     )
                 else:
-                    for t, _ in enumerate(data.steps):
+                    restart_indices = (
+                        range(1) if paired_variable_restarts else range(len(data.steps))
+                    )
+                    for t in restart_indices:
                         if not cfg.subplot_grid[0]:
                             plt.close()
                             fig, axis = _create_figure(1, 1)
@@ -622,6 +634,37 @@ def _get_clim(
                 )
                 quaa = _map_values(cfg, data, var, values, m, m, mx, my)
                 _apply_diff_and_log(cfg, diffa, quaa, m, t)
+                _update_color_range(quaa, cmin, cmax)
+    elif (
+        bool(cfg.subplot_grid[0])
+        and len(cfg.cases[0]) > 1
+        and len(cfg.cases[0]) == len(data.steps)
+    ):
+        for m, var in enumerate(cfg.variables):
+            cmin.append(cmin[-1])
+            cmax.append(cmax[-1])
+            for n, deck in enumerate(cfg.cases[0]):
+                data, xc, yc, _, _, _, mx, my, _, _ = _prepare_map(cfg, deck, n)
+                _, values = read_quantity(
+                    deck,
+                    data,
+                    var,
+                    data.steps[n],
+                    float(cfg.scale_factor[m]),
+                    cfg.mass_vars,
+                    cfg.mass_vars + cfg.mass_fracs,
+                    cfg.caprock_vars,
+                    cfg.stress_coefficient,
+                    cfg.filters[n],
+                    cfg.gif,
+                    cfg.min_threshold[m],
+                    cfg.max_threshold[m],
+                    cfg.csv_columns[n],
+                )
+                quaa = _map_values(
+                    cfg, data, var, values, n, n, mx, my, cfg.csv_columns[n][0]
+                )
+                _apply_diff_and_log(cfg, diffa, quaa, m, n)
                 _update_color_range(quaa, cmin, cmax)
     else:
         for m, var in enumerate(cfg.variables):
@@ -973,9 +1016,11 @@ def _draw_frame(
         else:
             bar_ctx = nullcontext()
         with bar_ctx as bar_animation:
+            paired_variable_restarts = len(data.steps) == len(cfg.variables)
             for nn, _ in enumerate(cfg.variables):
                 if show_progress:
                     bar_animation()
+                restart_index = nn if paired_variable_restarts else t
                 _draw_map(
                     deck,
                     fig,
@@ -993,7 +1038,7 @@ def _draw_frame(
                     cfg,
                     generated_files,
                     data,
-                    t,
+                    restart_index,
                     nn,
                     nn,
                     xc,
@@ -1672,7 +1717,15 @@ def _draw_map(
                         minc = 0
     if var not in ("wells", "grid", "faults"):
         if int(cfg.color_log[n]) == 0:
-            if len(data.steps) > 1 and cfg.subplot_grid[0] and len(cfg.cases[0]) == 1:
+            restart_subplots = (
+                len(data.steps) > 1
+                and cfg.subplot_grid[0]
+                and len(cfg.cases[0]) == 1
+                and not (
+                    len(cfg.variables) > 1 and len(data.steps) == len(cfg.variables)
+                )
+            )
+            if restart_subplots:
                 if cfg.colorbar_position[0] != -1:
                     cb[0] = fig.colorbar(
                         imag,

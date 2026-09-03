@@ -56,14 +56,14 @@ Plot pressure on the plane at ``j=1``:
 
 .. code-block:: console
 
-   plopm -i SPE11B -v pressure -s ,1,
+   plopm -i examples/SPE11B -v pressure -s ,1,
 
 Display the built-in help or list the variables available for an input case:
 
 .. code-block:: console
 
    plopm --help
-   plopm -i SPE11B -lv 1
+   plopm -i examples/SPE11B -lv 1
 
 See the :doc:`tutorial` for a guided workflow and the :doc:`command-line` for
 exact syntax and option descriptions.

@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -501,18 +502,78 @@
                   
   <section id="convert-to-vtk">
 <span id="example-vtk"></span><h1>Convert to VTK<a class="headerlink" href="#convert-to-vtk" title="Link to this heading">#</a></h1>
-<p>Export data for <a class="reference external" href="https://www.paraview.org">ParaView</a>.</p>
-<p>Export selected variables for restart steps 0 and 5.</p>
+<p>Export OPM Flow grid and property data to VTK for three-dimensional inspection
+in <a class="reference external" href="https://www.paraview.org/">ParaView</a>.</p>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h2>
+<p>OPM Flow is required to generate the grid used by the VTK export. If the
+<code class="docutils literal notranslate"><span class="pre">flow</span></code> executable is not available on <code class="docutils literal notranslate"><span class="pre">PATH</span></code>, select it with
+<a class="reference internal" href="../options/input-data.html#cmdoption-plopm-fp"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-fp</span></code></a>.</p>
+</section>
+<section id="export-selected-variables">
+<h2>Export selected variables<a class="headerlink" href="#export-selected-variables" title="Link to this heading">#</a></h2>
+<p>Export temperature, FIP regions, total CO2 mass, and liquid-phase CO2 mass
+fraction for restart steps 0 and 5:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11B -v temp,fipnum,co2m,xco2l -vf Float32,UInt16,Float64,Float16 -r 0,5 -m vtk</span>
 </pre></div>
 </div>
 <figure class="align-center" id="id1">
-<a class="reference internal image-reference" href="../_images/vtk_temp.png"><img alt="../_images/vtk_temp.png" src="../_images/vtk_temp.png" style="width: 90%;" />
+<a class="reference internal image-reference" href="../_images/vtk_temp.png"><img alt="SPE11B grid and temperature after 25 years viewed in ParaView" src="../_images/vtk_temp.png" style="width: 90%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Grid and temperature after 25 years of CO2 injection, viewed in ParaView.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
+</section>
+<section id="select-vtk-data-types">
+<h2>Select VTK data types<a class="headerlink" href="#select-vtk-data-types" title="Link to this heading">#</a></h2>
+<p>Use <a class="reference internal" href="../options/vtk.html#cmdoption-plopm-vf"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-vf</span></code></a> to assign a VTK data type to each variable. The data
+types correspond to the variables in the order supplied through
+<a class="reference internal" href="../options/input-data.html#cmdoption-plopm-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-v</span></code></a>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>temp   -&gt; Float32
+fipnum -&gt; UInt16
+co2m   -&gt; Float64
+xco2l  -&gt; Float16
+</pre></div>
+</div>
+<p>The selected types balance precision and file size:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Float32</span></code></dt><dd><p>Stores temperature with single-precision floating-point values.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">UInt16</span></code></dt><dd><p>Stores the discrete <code class="docutils literal notranslate"><span class="pre">fipnum</span></code> region identifiers as unsigned integers.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Float64</span></code></dt><dd><p>Preserves higher precision for total CO2 mass.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Float16</span></code></dt><dd><p>Reduces storage for the bounded liquid-phase CO2 mass fraction.</p>
+</dd>
+</dl>
+<p>Use a wider type when the expected value range or required numerical precision
+cannot be represented safely by a smaller type.</p>
+</section>
+<section id="select-restart-steps">
+<h2>Select restart steps<a class="headerlink" href="#select-restart-steps" title="Link to this heading">#</a></h2>
+<p>The command uses <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-r"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-r</span></code></a> to export the initial state and restart
+step 5. <strong>plopm</strong> writes the selected variables for each requested step so the
+results can be inspected or animated in ParaView.</p>
+</section>
+<section id="customize-variable-names">
+<h2>Customize variable names<a class="headerlink" href="#customize-variable-names" title="Link to this heading">#</a></h2>
+<p>Use <a class="reference internal" href="../options/vtk.html#cmdoption-plopm-vn"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-vn</span></code></a> to assign custom names in the VTK output:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11B -v temp,fipnum,co2m,xco2l -vn temperature,fip_region,total_co2_mass,liquid_co2_fraction -vf Float32,UInt16,Float64,Float16 -r 0,5 -m vtk</span>
+</pre></div>
+</div>
+<p>The number of names supplied through <a class="reference internal" href="../options/vtk.html#cmdoption-plopm-vn"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-vn</span></code></a> must match the number
+of variables selected with <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-v</span></code></a>.</p>
+</section>
+<section id="use-a-custom-flow-executable">
+<h2>Use a custom Flow executable<a class="headerlink" href="#use-a-custom-flow-executable" title="Link to this heading">#</a></h2>
+<p>If Flow is installed outside <code class="docutils literal notranslate"><span class="pre">PATH</span></code>, provide its executable explicitly:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE11B -v temp,fipnum,co2m,xco2l -vf Float32,UInt16,Float64,Float16 -r 0,5 -m vtk -fp /path/to/flow</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../installation.html#opm-flow-installation"><span class="std std-ref">OPM Flow</span></a> for OPM Flow installation guidance and
+<a class="reference internal" href="../options/vtk.html#options-vtk"><span class="std std-ref">VTK output</span></a> for the complete VTK option reference.</p>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
@@ -580,6 +641,12 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements">Requirements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#export-selected-variables">Export selected variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#select-vtk-data-types">Select VTK data types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#select-restart-steps">Select restart steps</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-variable-names">Customize variable names</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-a-custom-flow-executable">Use a custom Flow executable</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>

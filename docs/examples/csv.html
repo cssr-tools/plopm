@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -501,36 +502,105 @@
                   
   <section id="reading-csv-files">
 <span id="example-csv"></span><h1>Reading CSV files<a class="headerlink" href="#reading-csv-files" title="Link to this heading">#</a></h1>
-<p>Combine CSV and OPM Flow data.</p>
-<p>Use <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-cc"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cc</span></code></a> to combine CSV and OPM Flow data.</p>
+<p>Read time-series and spatial-map CSV files, compare benchmark submissions, and
+combine CSV data with OPM Flow output.</p>
+<section id="csv-column-syntax">
+<h2>CSV column syntax<a class="headerlink" href="#csv-column-syntax" title="Link to this heading">#</a></h2>
+<p>Use <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-cc"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cc</span></code></a> to identify the columns in each CSV input. Column
+indices start at 1:</p>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">time,value</span></code> for a time series, for example <code class="docutils literal notranslate"><span class="pre">1,3</span></code>.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">x,y,value</span></code> for a spatial map, for example <code class="docutils literal notranslate"><span class="pre">1,2,5</span></code>.</p></li>
+<li><p>Separate specifications for multiple inputs with semicolons.</p></li>
+<li><p>Leave one specification empty when the corresponding input is an OPM Flow
+result rather than a CSV file.</p></li>
+</ul>
+</section>
+<section id="compare-simulation-and-reporting-grids">
+<h2>Compare simulation and reporting grids<a class="headerlink" href="#compare-simulation-and-reporting-grids" title="Link to this heading">#</a></h2>
+<p>Compare liquid-phase CO2 mass fraction on the OPM Flow simulation grid with
+the same quantity from the regular benchmark reporting grid:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -v xco2l -i &#39;r1_Cart_10m/R1_CART_10M r1_Cart_10m/spe11b_spatial_map_500y&#39; -cc &#39;;1,2,5&#39; -sg 2,1 -rdl 1 -r 100 -fs 10,3 -st 0 -t &#39;Simulation grid  Reporting grid&#39; -cbp 0.35,0.97,0.3,0.02 -yu km -xu km -yf .1f -xf .1f -cbn 5 -xnt 8 -cbf .2f</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/spe11b_spatial_map_500y_xco2l_csv_t100.png"><img alt="../_images/spe11b_spatial_map_500y_xco2l_csv_t100.png" src="../_images/spe11b_spatial_map_500y_xco2l_csv_t100.png" style="width: 90%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/spe11b_spatial_map_500y_xco2l_csv_t100.png"><img alt="Liquid-phase CO2 mass fraction on the simulation and reporting grids" src="../_images/spe11b_spatial_map_500y_xco2l_csv_t100.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Liquid-phase CO2 mass fraction from the OPM Flow simulation grid and the
+SPE11B reporting-grid CSV file at 500 years.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Compare a CSV series with an OPM summary vector.</p>
+<p>The first column specification is empty because the first input is an OPM Flow
+case. The second input uses columns 1, 2, and 5 for x, y, and the plotted value.</p>
+</section>
+<section id="compare-csv-and-opm-summary-data">
+<h2>Compare CSV and OPM summary data<a class="headerlink" href="#compare-csv-and-opm-summary-data" title="Link to this heading">#</a></h2>
+<p>Compare a pressure time series from a CSV file with the corresponding OPM Flow
+summary vector:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i &#39;r1_Cart_10m/spe11b_time_series r1_Cart_10m/R1_CART_10M&#39; -v &#39;,BWPR:256,1,5&#39; -cc &#39;1,3;&#39; -sf &#39;1e-5,1&#39; -ls &#39;solid,dotted&#39; -lw &#39;4,4&#39; -yl &#39;Sensor pressure [bar]&#39; -llb &#39;From CSV file  From OPM Flow output file&#39; -c &#39;r,k&#39;</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/spe11b_time_series_BWPR-1944.png"><img alt="../_images/spe11b_time_series_BWPR-1944.png" src="../_images/spe11b_time_series_BWPR-1944.png" style="width: 90%;" />
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/spe11b_time_series_BWPR-1944.png"><img alt="Sensor pressure from a CSV file and an OPM Flow summary vector" src="../_images/spe11b_time_series_BWPR-1944.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Sensor pressure read from the SPE11B time-series CSV file and directly from
+the OPM Flow summary output.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Compare several benchmark series.</p>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/spe11b_time_series_csv_ens.png"><img alt="../_images/spe11b_time_series_csv_ens.png" src="../_images/spe11b_time_series_csv_ens.png" style="width: 90%;" />
+<p>The empty first entry in <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-v</span></code></a> is a placeholder for the CSV input.
+The empty second entry in <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-cc"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cc</span></code></a> indicates that the second input
+is read as OPM Flow output. The scale factors convert the two sources to the
+same displayed unit.</p>
+</section>
+<section id="compare-benchmark-time-series">
+<h2>Compare benchmark time series<a class="headerlink" href="#compare-benchmark-time-series" title="Link to this heading">#</a></h2>
+<p>After downloading the selected SPE11 benchmark submissions, compare the same
+CSV quantity from several participants and the pyopmspe11 simulation:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i &#39;opm1/spe11b_time_series opm2/spe11b_time_series opm3/spe11b_time_series opm4/spe11b_time_series r1_Cart_10m/spe11b_time_series&#39; -cc &#39;1,4;1,4;1,4;1,4;1,4&#39; -tu y -x &#39;[0,1000]&#39; -yl &#39;dissA [kiloton]&#39; -yf .1f -sf 1e-6 -c &#39;#a8d8e3,#a8d8e3,#a8d8e3,#a8d8e3,#fc035a&#39; -lw 5,5,5,5,5 -ls solid</span>
+</pre></div>
+</div>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/spe11b_time_series_csv_ens.png"><img alt="Comparison of SPE11B benchmark time series from several submissions" src="../_images/spe11b_time_series_csv_ens.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Dissolved CO2 mass in box A for several benchmark submissions and the
+pyopmspe11 simulation.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Compare several benchmark spatial maps.</p>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/spe11b_spatial_map_250y_csv_csv_t-1.png"><img alt="../_images/spe11b_spatial_map_250y_csv_csv_t-1.png" src="../_images/spe11b_spatial_map_250y_csv_csv_t-1.png" style="width: 90%;" />
+<p>Each input uses columns 1 and 4. The scale factor converts kilograms to
+kilotonnes, and the color selection highlights the local simulation.</p>
+</section>
+<section id="compare-benchmark-spatial-maps">
+<h2>Compare benchmark spatial maps<a class="headerlink" href="#compare-benchmark-spatial-maps" title="Link to this heading">#</a></h2>
+<p>Compare the same CSV spatial quantity from several benchmark submissions in a
+single subplot layout:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i &#39;opm1/spe11b_spatial_map_250y opm2/spe11b_spatial_map_250y opm3/spe11b_spatial_map_250y opm4/spe11b_spatial_map_250y r1_Cart_10m/spe11b_spatial_map_250y&#39; -cc &#39;1,2,5;1,2,5;1,2,5;1,2,5;1,2,5&#39; -sg 3,2 -rdl 1 -st 0 -cbp 0.35,0.97,0.3,0.02 -yu km -xu km -yf .1f -xf .1f -cbn 5 -xnt 8 -cbf .2f -fs 14,4 -t &#39;opm1  opm2  opm3  opm4  my simulation&#39; -cbl &#39;Time 250 years, CO$_2$ mass fraction (liquid phase) [-]&#39; -c inferno</span>
+</pre></div>
+</div>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/spe11b_spatial_map_250y_csv_csv_t-1.png"><img alt="Comparison of SPE11B spatial maps from several submissions" src="../_images/spe11b_spatial_map_250y_csv_csv_t-1.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Liquid-phase CO2 mass fraction at 250 years for several benchmark
+submissions and the pyopmspe11 simulation.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
+<p>All inputs use columns 1, 2, and 5 for x, y, and liquid-phase CO2 mass
+fraction. A global colorbar makes the maps directly comparable.</p>
+</section>
+<section id="create-animations-from-csv-sequences">
+<h2>Create animations from CSV sequences<a class="headerlink" href="#create-animations-from-csv-sequences" title="Link to this heading">#</a></h2>
+<p>To create a GIF from a sequence of CSV spatial-map files, include <code class="docutils literal notranslate"><span class="pre">PLOPM</span></code> in
+the input filename where the time value changes. Select the required times with
+<a class="reference internal" href="../options/input-data.html#cmdoption-plopm-r"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-r</span></code></a> and use <code class="docutils literal notranslate"><span class="pre">-m</span> <span class="pre">gif</span></code>. <strong>plopm</strong> replaces <code class="docutils literal notranslate"><span class="pre">PLOPM</span></code> with each
+selected time when reading the files.</p>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
-<p>Run the complete workflow from the repository root:</p>
+<p>Run the complete workflow from the repository root. The script downloads or
+prepares the required benchmark CSV inputs before generating the figures:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">. ./tests/scripts/docs_reading_csvs.sh</span>
 </pre></div>
 </div>
@@ -595,6 +665,12 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#csv-column-syntax">CSV column syntax</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-simulation-and-reporting-grids">Compare simulation and reporting grids</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-csv-and-opm-summary-data">Compare CSV and OPM summary data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-benchmark-time-series">Compare benchmark time series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-benchmark-spatial-maps">Compare benchmark spatial maps</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-animations-from-csv-sequences">Create animations from CSV sequences</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>

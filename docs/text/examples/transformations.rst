@@ -3,53 +3,53 @@
 Rotation, translation, and zoom
 ===============================
 
-Transform, crop, and inspect Norne.
+Transform, crop, and inspect the Norne grid.
 
-Start with the Norne top view.
+Start with the Norne top view
+-----------------------------
+
+Plot the first layer before applying coordinate transformations:
 
 .. code-block:: console
 
    plopm -i NORNE_ATW2013 -s ,,1
 
 .. figure:: ../figs/norne.png
+   :alt: Original top view of the Norne grid
    :align: center
    :width: 90%
 
-Rotate, translate, and crop the grid.
+   Original top view of the first Norne layer.
+
+Rotate, translate, and crop the grid
+------------------------------------
+
+Rotate the model by 65 degrees, translate the coordinates, and crop the map to
+the selected x and y limits:
 
 .. code-block:: console
 
    plopm -i NORNE_ATW2013 -s ,,1 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,7600]' -fz 8
 
 .. figure:: ../figs/norne_transformed.png
+   :alt: Rotated, translated, and cropped Norne grid
    :align: center
    :width: 90%
 
-Apply the same transformation to faults.
+   Norne after rotation, translation, and spatial cropping.
 
-.. code-block:: console
+The transformation options are applied in the following order:
 
-   plopm -i NORNE_ATW2013 -v faults -s ,,1 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -fz 8 -gr 1
-   plopm -i NORNE_ATW2013 -v faults -s ,,1:22 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -fz 8 -agg max
+* :option:`plopm -rot` rotates the grid counterclockwise by the selected angle
+  in degrees.
+* :option:`plopm -tr` translates the rotated x and y coordinates.
+* :option:`plopm -x` and :option:`plopm -y` crop the displayed coordinate
+  range.
+* :option:`plopm -fz` sets the font size.
 
-.. figure:: ../figs/norne_faults.png
-   :align: center
-   :width: 90%
-
-Plot all wells and wells on the selected layer.
-
-.. code-block:: console
-
-   plopm -i NORNE_ATW2013 -v wells -s ,,1 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -fz 8 -gr 1 -fn norne_wells_global
-   plopm -i NORNE_ATW2013 -v wells -s ,,1 -rot 65 -tr '[6456335.5,-3476500]' -x '[0,5600]' -y '[0,8800]' -fz 8 -fn norne_wells
-
-.. figure:: ../figs/norne_wells.png
-   :align: center
-   :width: 90%
-
-.. note::
-
-   Faults and wells must be declared directly in the input deck.
+Use the same transformation values when comparing properties, faults, wells,
+or other spatial outputs from the same model. See :doc:`wells-faults` for Norne
+fault and well examples using this transformation.
 
 Reproduce this example
 ----------------------

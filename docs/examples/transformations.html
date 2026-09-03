@@ -51,12 +51,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Projections and subfigures" href="projections.html" />
+    <link rel="next" title="Wells and faults" href="wells-faults.html" />
     <link rel="prev" title="Generic deck" href="generic-deck.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -501,45 +502,48 @@
                   
   <section id="rotation-translation-and-zoom">
 <span id="example-transformations"></span><h1>Rotation, translation, and zoom<a class="headerlink" href="#rotation-translation-and-zoom" title="Link to this heading">#</a></h1>
-<p>Transform, crop, and inspect Norne.</p>
-<p>Start with the Norne top view.</p>
+<p>Transform, crop, and inspect the Norne grid.</p>
+<section id="start-with-the-norne-top-view">
+<h2>Start with the Norne top view<a class="headerlink" href="#start-with-the-norne-top-view" title="Link to this heading">#</a></h2>
+<p>Plot the first layer before applying coordinate transformations:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i NORNE_ATW2013 -s ,,1</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/norne.png"><img alt="../_images/norne.png" src="../_images/norne.png" style="width: 90%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/norne.png"><img alt="Original top view of the Norne grid" src="../_images/norne.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Original top view of the first Norne layer.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Rotate, translate, and crop the grid.</p>
+</section>
+<section id="rotate-translate-and-crop-the-grid">
+<h2>Rotate, translate, and crop the grid<a class="headerlink" href="#rotate-translate-and-crop-the-grid" title="Link to this heading">#</a></h2>
+<p>Rotate the model by 65 degrees, translate the coordinates, and crop the map to
+the selected x and y limits:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i NORNE_ATW2013 -s ,,1 -rot 65 -tr &#39;[6456335.5,-3476500]&#39; -x &#39;[0,5600]&#39; -y &#39;[0,7600]&#39; -fz 8</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/norne_transformed.png"><img alt="../_images/norne_transformed.png" src="../_images/norne_transformed.png" style="width: 90%;" />
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/norne_transformed.png"><img alt="Rotated, translated, and cropped Norne grid" src="../_images/norne_transformed.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Norne after rotation, translation, and spatial cropping.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Apply the same transformation to faults.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i NORNE_ATW2013 -v faults -s ,,1 -rot 65 -tr &#39;[6456335.5,-3476500]&#39; -x &#39;[0,5600]&#39; -y &#39;[0,8800]&#39; -fz 8 -gr 1</span>
-<span class="go">plopm -i NORNE_ATW2013 -v faults -s ,,1:22 -rot 65 -tr &#39;[6456335.5,-3476500]&#39; -x &#39;[0,5600]&#39; -y &#39;[0,8800]&#39; -fz 8 -agg max</span>
-</pre></div>
-</div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/norne_faults.png"><img alt="../_images/norne_faults.png" src="../_images/norne_faults.png" style="width: 90%;" />
-</a>
-</figure>
-<p>Plot all wells and wells on the selected layer.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i NORNE_ATW2013 -v wells -s ,,1 -rot 65 -tr &#39;[6456335.5,-3476500]&#39; -x &#39;[0,5600]&#39; -y &#39;[0,8800]&#39; -fz 8 -gr 1 -fn norne_wells_global</span>
-<span class="go">plopm -i NORNE_ATW2013 -v wells -s ,,1 -rot 65 -tr &#39;[6456335.5,-3476500]&#39; -x &#39;[0,5600]&#39; -y &#39;[0,8800]&#39; -fz 8 -fn norne_wells</span>
-</pre></div>
-</div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/norne_wells.png"><img alt="../_images/norne_wells.png" src="../_images/norne_wells.png" style="width: 90%;" />
-</a>
-</figure>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Faults and wells must be declared directly in the input deck.</p>
-</div>
+<p>The transformation options are applied in the following order:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-rot"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-rot</span></code></a> rotates the grid counterclockwise by the selected angle
+in degrees.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-tr"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-tr</span></code></a> translates the rotated x and y coordinates.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-x"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-x</span></code></a> and <a class="reference internal" href="../options/axes.html#cmdoption-plopm-y"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-y</span></code></a> crop the displayed coordinate
+range.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-fz"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-fz</span></code></a> sets the font size.</p></li>
+</ul>
+<p>Use the same transformation values when comparing properties, faults, wells,
+or other spatial outputs from the same model. See <a class="reference internal" href="wells-faults.html"><span class="doc">Wells and faults</span></a> for Norne
+fault and well examples using this transformation.</p>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
@@ -580,11 +584,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="projections.html"
+       href="wells-faults.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Projections and subfigures</p>
+        <p class="prev-next-title">Wells and faults</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -607,6 +611,8 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-with-the-norne-top-view">Start with the Norne top view</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rotate-translate-and-crop-the-grid">Rotate, translate, and crop the grid</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>

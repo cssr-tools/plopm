@@ -52,11 +52,11 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Histograms" href="histograms.html" />
-    <link rel="prev" title="Rotation, translation, and zoom" href="transformations.html" />
+    <link rel="prev" title="Wells and faults" href="wells-faults.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -501,15 +502,71 @@
                   
   <section id="projections-and-subfigures">
 <span id="example-projections"></span><h1>Projections and subfigures<a class="headerlink" href="#projections-and-subfigures" title="Link to this heading">#</a></h1>
-<p>Combine projection methods in one figure.</p>
-<p>Apply a different aggregation to each projected quantity.</p>
+<p>Project several layers onto a two-dimensional map, apply a different
+aggregation method to each variable, and combine the results in one figure.</p>
+<section id="select-the-projected-layers">
+<h2>Select the projected layers<a class="headerlink" href="#select-the-projected-layers" title="Link to this heading">#</a></h2>
+<p>Use <a class="reference internal" href="../options/selection.html#cmdoption-plopm-s"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-s</span></code></a> with the range <code class="docutils literal notranslate"><span class="pre">1:22</span></code> to project the first 22 layers
+of the Norne model. Repeat the spatial selection once for each plotted
+variable:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i NORNE_ATW2013 -v &#39;index_k,permx,poro&#39; -s &#39;,,1:22 ,,1:22 ,,1:22&#39; -agg &#39;first,arithmetic,max&#39; -sg 1,3 -rot 65 -tr &#39;[6456335.5,-3476500]&#39; -x &#39;[0,5600]&#39; -y &#39;[0,8800]&#39; -fs 24,10 -c &#39;PuOr,vanimo,jet&#39; -cbf &#39;.0f,.0f,.2f&#39; -cbn &#39;2,4,8&#39; -st 0 -t &#39;Top k values using first  Averaged permx using arithmetic  Values of porosity using max&#39; -fz 18</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/norne_atw2013_poro_i,j,1:22_t64.png"><img alt="../_images/norne_atw2013_poro_i%2Cj%2C1%3A22_t64.png" src="../_images/norne_atw2013_poro_i%2Cj%2C1%3A22_t64.png" style="width: 90%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/norne_atw2013_poro_i,j,1:22_t64.png"><img alt="Norne layer index, permeability, and porosity projected across layers 1 through 22" src="../_images/norne_atw2013_poro_i%2Cj%2C1%3A22_t64.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Layer index, x-direction permeability, and porosity projected across the
+first 22 layers with three different aggregation methods.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
+</section>
+<section id="apply-different-aggregation-methods">
+<h2>Apply different aggregation methods<a class="headerlink" href="#apply-different-aggregation-methods" title="Link to this heading">#</a></h2>
+<p>Use <a class="reference internal" href="../options/computation.html#cmdoption-plopm-agg"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-agg</span></code></a> to select how values from several cells are combined
+at each projected map location. The methods are applied in the same order as
+the variables:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">first</span></code></dt><dd><p>Selects the first value encountered along the projection direction. Here it
+displays the top <code class="docutils literal notranslate"><span class="pre">index_k</span></code> value.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">arithmetic</span></code></dt><dd><p>Calculates the arithmetic mean. Here it averages <code class="docutils literal notranslate"><span class="pre">permx</span></code> across the
+selected layers.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">max</span></code></dt><dd><p>Selects the maximum value. Here it displays the largest <code class="docutils literal notranslate"><span class="pre">poro</span></code> value
+across the selected layers.</p>
+</dd>
+</dl>
+<p>The command therefore applies:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>index_k -&gt; first
+permx   -&gt; arithmetic
+poro    -&gt; max
+</pre></div>
+</div>
+<p>If <a class="reference internal" href="../options/computation.html#cmdoption-plopm-agg"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-agg</span></code></a> is omitted, <strong>plopm</strong> selects an aggregation method
+based on the variable type. Providing it explicitly is useful when comparing
+projection methods or when the scientific interpretation requires a specific
+calculation.</p>
+</section>
+<section id="arrange-and-format-the-subfigures">
+<h2>Arrange and format the subfigures<a class="headerlink" href="#arrange-and-format-the-subfigures" title="Link to this heading">#</a></h2>
+<p>The remaining options control the combined figure:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-sg"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-sg</span></code></a> arranges the three maps in one row and three columns.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-rot"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-rot</span></code></a> rotates the Norne grid by 65 degrees.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-tr"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-tr</span></code></a> translates the rotated coordinates.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-x"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-x</span></code></a> and <a class="reference internal" href="../options/axes.html#cmdoption-plopm-y"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-y</span></code></a> crop the displayed region.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-c</span></code></a> assigns a different colormap to each variable.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-cbf"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbf</span></code></a> applies separate colorbar number formats.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-cbn"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbn</span></code></a> uses 2, 4, and 8 colorbar ticks for the three maps.</p></li>
+<li><p><a class="reference internal" href="../options/titles-labels.html#cmdoption-plopm-st"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-st</span></code></a> removes the common figure title.</p></li>
+<li><p><a class="reference internal" href="../options/titles-labels.html#cmdoption-plopm-t"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-t</span></code></a> assigns one title to each subplot. Two spaces separate
+consecutive titles.</p></li>
+</ul>
+<p>The lists supplied to <a class="reference internal" href="../options/computation.html#cmdoption-plopm-agg"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-agg</span></code></a>, <a class="reference internal" href="../options/styling.html#cmdoption-plopm-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-c</span></code></a>,
+<a class="reference internal" href="../options/styling.html#cmdoption-plopm-cbf"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbf</span></code></a>, and <a class="reference internal" href="../options/styling.html#cmdoption-plopm-cbn"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cbn</span></code></a> correspond to the variables in
+the order supplied through <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-v</span></code></a>.</p>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
@@ -541,12 +598,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="transformations.html"
+       href="wells-faults.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Rotation, translation, and zoom</p>
+        <p class="prev-next-title">Wells and faults</p>
       </div>
     </a>
     <a class="right-next"
@@ -577,6 +634,9 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#select-the-projected-layers">Select the projected layers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apply-different-aggregation-methods">Apply different aggregation methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arrange-and-format-the-subfigures">Arrange and format the subfigures</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>

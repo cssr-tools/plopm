@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generic-deck.html">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -501,15 +502,60 @@
                   
   <section id="histograms">
 <span id="example-histograms"></span><h1>Histograms<a class="headerlink" href="#histograms" title="Link to this heading">#</a></h1>
-<p>Plot property distributions.</p>
-<p>Plot porosity and permeability histograms with fitted distributions.</p>
+<p>Plot distributions of static reservoir properties and optionally fit
+probability distributions to the data.</p>
+<section id="plot-porosity-and-permeability-distributions">
+<h2>Plot porosity and permeability distributions<a class="headerlink" href="#plot-porosity-and-permeability-distributions" title="Link to this heading">#</a></h2>
+<p>Plot porosity and x-direction permeability from the Norne model. Use 20 bins
+for each histogram, fit a normal distribution to porosity, and fit a lognormal
+distribution to permeability:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i NORNE_ATW2013 -v poro,permx -hist &#39;20,norm 20,lognorm&#39; -ag 0 -sg 1,2 -fs 15,5 -ll &#39;upper center&#39; -y &#39;[0,10000] [0,23000]&#39; -c &#39;#7274b3,#cddb6e&#39;</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/norne_atw2013_permx.png"><img alt="../_images/norne_atw2013_permx.png" src="../_images/norne_atw2013_permx.png" style="width: 90%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/norne_atw2013_permx.png"><img alt="Porosity and permeability histograms for the Norne model" src="../_images/norne_atw2013_permx.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Porosity with a fitted normal distribution and x-direction permeability
+with a fitted lognormal distribution.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
+</section>
+<section id="histogram-syntax">
+<h2>Histogram syntax<a class="headerlink" href="#histogram-syntax" title="Link to this heading">#</a></h2>
+<p>Use <a class="reference internal" href="../options/plot-types.html#cmdoption-plopm-hist"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-hist</span></code></a> to set the number of bins and an optional fitted
+distribution:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">20</span></code></dt><dd><p>Creates a histogram with 20 bins and no fitted distribution.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">20,norm</span></code></dt><dd><p>Creates a histogram with 20 bins and fits a normal distribution.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">20,lognorm</span></code></dt><dd><p>Creates a histogram with 20 bins and fits a lognormal distribution.</p>
+</dd>
+</dl>
+<p>Separate specifications for multiple plots with spaces. In this example,
+<code class="docutils literal notranslate"><span class="pre">20,norm</span> <span class="pre">20,lognorm</span></code> applies the normal fit to <code class="docutils literal notranslate"><span class="pre">poro</span></code> and the lognormal fit
+to <code class="docutils literal notranslate"><span class="pre">permx</span></code>.</p>
+</section>
+<section id="format-the-figure">
+<h2>Format the figure<a class="headerlink" href="#format-the-figure" title="Link to this heading">#</a></h2>
+<p>The remaining options control the subplot layout and appearance:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-ag"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-ag</span></code></a> disables the axis grid.</p></li>
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-sg"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-sg</span></code></a> places both histograms in one row with two columns.</p></li>
+<li><p><a class="reference internal" href="../options/layout.html#cmdoption-plopm-fs"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-fs</span></code></a> sets the complete figure size to 15 by 5 inches.</p></li>
+<li><p><a class="reference internal" href="../options/titles-labels.html#cmdoption-plopm-ll"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-ll</span></code></a> places each legend at the upper center.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-y"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-y</span></code></a> applies separate y-axis limits to the two plots.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-c</span></code></a> assigns a different color to each histogram.</p></li>
+</ul>
+<p>The two y-axis limits are separated by a space and correspond to the variables
+in the order supplied through <a class="reference internal" href="../options/input-data.html#cmdoption-plopm-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-v</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Lognormal fitting is appropriate only for positive values. Review the data
+and selected property before choosing a fitted distribution.</p>
+</div>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
@@ -577,6 +623,9 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-porosity-and-permeability-distributions">Plot porosity and permeability distributions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#histogram-syntax">Histogram syntax</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#format-the-figure">Format the figure</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>

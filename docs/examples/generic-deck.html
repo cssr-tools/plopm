@@ -52,11 +52,11 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Rotation, translation, and zoom" href="transformations.html" />
-    <link rel="prev" title="Colormaps" href="colormaps.html" />
+    <link rel="prev" title="Colormaps and subfigures" href="colormaps-subfigures.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="2026.10rc0" />
-    <meta name="docbuild:last-update" content="2026-08-30"/>
+    <meta name="docbuild:last-update" content="2026-09-03"/>
   
     
     <script src="../_static/searchtools.js"></script>
@@ -426,9 +426,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hello-world.html">Hello world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="colormaps.html">Colormaps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colormaps-subfigures.html">Colormaps and subfigures</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Generic deck</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transformations.html">Rotation, translation, and zoom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wells-faults.html">Wells and faults</a></li>
 <li class="toctree-l1"><a class="reference internal" href="projections.html">Projections and subfigures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="histograms.html">Histograms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caprock.html">Caprock integrity</a></li>
@@ -501,24 +502,62 @@
                   
   <section id="generic-deck">
 <span id="example-generic-deck"></span><h1>Generic deck<a class="headerlink" href="#generic-deck" title="Link to this heading">#</a></h1>
-<p>Plot a generic OPM Flow model.</p>
-<p>Plot vertical permeability from SPE10 MODEL 2.</p>
+<p>Use <strong>plopm</strong> with a generic OPM Flow model. This example uses SPE10 MODEL 2
+to plot a reservoir property, inspect the grid, and display the wells.</p>
+<section id="plot-vertical-permeability">
+<h2>Plot vertical permeability<a class="headerlink" href="#plot-vertical-permeability" title="Link to this heading">#</a></h2>
+<p>Plot vertical permeability on the fourth slice in the xz plane:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE10_MODEL2 -v permz -s ,4, -clog 1 -xu km -yu km -xnt 6 -yf .2f -t &#39;K$_z$ at the fourth slice in the xz plane&#39; -cl &#39;[1e-7,1e3]&#39;</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/spe10_model2_permz_*,4,*_t0.png"><img alt="../_images/spe10_model2_permz_%2A%2C4%2C%2A_t0.png" src="../_images/spe10_model2_permz_%2A%2C4%2C%2A_t0.png" style="width: 90%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/spe10_model2_permz_*,4,*_t0.png"><img alt="Vertical permeability on the fourth xz slice of SPE10 MODEL 2" src="../_images/spe10_model2_permz_%2A%2C4%2C%2A_t0.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Vertical permeability on the fourth xz slice, displayed with a logarithmic
+color scale between <code class="docutils literal notranslate"><span class="pre">1e-7</span></code> and <code class="docutils literal notranslate"><span class="pre">1e3</span></code> mD.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
-<p>Plot the grid and wells from above.</p>
+<p>The main options are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../options/input-data.html#cmdoption-plopm-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-v</span></code></a> selects vertical permeability, <code class="docutils literal notranslate"><span class="pre">permz</span></code>.</p></li>
+<li><p><a class="reference internal" href="../options/selection.html#cmdoption-plopm-s"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-s</span></code></a> selects the fourth cell in the y direction and leaves the
+x and z entries empty, producing an xz slice.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-clog"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-clog</span></code></a> enables logarithmic color scaling.</p></li>
+<li><p><a class="reference internal" href="../options/styling.html#cmdoption-plopm-cl"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-cl</span></code></a> sets fixed color-scale limits.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-xu"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-xu</span></code></a> and <a class="reference internal" href="../options/axes.html#cmdoption-plopm-yu"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-yu</span></code></a> display spatial coordinates in
+kilometres.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-xnt"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-xnt</span></code></a> sets the number of x-axis ticks.</p></li>
+<li><p><a class="reference internal" href="../options/axes.html#cmdoption-plopm-yf"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-yf</span></code></a> formats the y-axis tick labels with two decimal places.</p></li>
+</ul>
+</section>
+<section id="plot-the-grid-from-above">
+<h2>Plot the grid from above<a class="headerlink" href="#plot-the-grid-from-above" title="Link to this heading">#</a></h2>
+<p>Select the first layer and use the special variable <code class="docutils literal notranslate"><span class="pre">grid</span></code> to inspect the
+model geometry from above:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE10_MODEL2 -s ,,1 -fs 3,4 -fz 8 -v grid -hide 0,0,1,0</span>
-<span class="go">plopm -i SPE10_MODEL2 -s ,,1 -fs 3,4 -fz 8 -v wells -hide 0,0,0,1</span>
 </pre></div>
 </div>
-<figure class="align-center">
-<a class="reference internal image-reference" href="../_images/wells.png"><img alt="../_images/wells.png" src="../_images/wells.png" style="width: 90%;" />
+<p>The four values supplied to <a class="reference internal" href="../options/titles-labels.html#cmdoption-plopm-hide"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-hide</span></code></a> control the left axis,
+bottom axis, colorbar, and title, in that order. Here, the colorbar is hidden
+while the axes and title remain visible.</p>
+</section>
+<section id="plot-the-wells-from-above">
+<h2>Plot the wells from above<a class="headerlink" href="#plot-the-wells-from-above" title="Link to this heading">#</a></h2>
+<p>Use the same layer selection with the special variable <code class="docutils literal notranslate"><span class="pre">wells</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plopm -i SPE10_MODEL2 -s ,,1 -fs 3,4 -fz 8 -v wells -hide 0,0,0,1</span>
+</pre></div>
+</div>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/wells.png"><img alt="SPE10 MODEL 2 grid and wells viewed from above" src="../_images/wells.png" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Top views of the SPE10 MODEL 2 grid and declared wells.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
+<p>For the wells plot, the final value in <a class="reference internal" href="../options/titles-labels.html#cmdoption-plopm-hide"><code class="xref std std-option docutils literal notranslate"><span class="pre">plopm</span> <span class="pre">-hide</span></code></a> removes the title.
+The well locations must be available in the OPM input deck.</p>
+</section>
 <section id="reproduce-this-example">
 <h2>Reproduce this example<a class="headerlink" href="#reproduce-this-example" title="Link to this heading">#</a></h2>
 <p>Run the complete workflow from the repository root:</p>
@@ -550,12 +589,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="colormaps.html"
+       href="colormaps-subfigures.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Colormaps</p>
+        <p class="prev-next-title">Colormaps and subfigures</p>
       </div>
     </a>
     <a class="right-next"
@@ -586,6 +625,9 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-vertical-permeability">Plot vertical permeability</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-the-grid-from-above">Plot the grid from above</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-the-wells-from-above">Plot the wells from above</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproduce-this-example">Reproduce this example</a></li>
 </ul>
   </nav></div>
